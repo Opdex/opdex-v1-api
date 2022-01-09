@@ -5,9 +5,9 @@ using Opdex.Platform.WebApi.Models.Requests.Vaults;
 
 namespace Opdex.Platform.WebApi.Validation.Vaults;
 
-public class VaultGovernanceCertificateFilterParametersValidator : AbstractCursorValidator<VaultGovernanceCertificateFilterParameters, VaultGovernanceCertificatesCursor>
+public class VaultCertificateFilterParametersValidator : AbstractCursorValidator<VaultCertificateFilterParameters, VaultCertificatesCursor>
 {
-    public VaultGovernanceCertificateFilterParametersValidator()
+    public VaultCertificateFilterParametersValidator()
     {
         RuleFor(request => request.Holder).MustBeNetworkAddressOrEmpty().WithMessage("Holder must be valid address.");
         RuleFor(request => request.Status).MustBeValidEnumValueOrDefault().WithMessage("Status must be valid for the enumeration values.");

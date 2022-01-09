@@ -13,25 +13,25 @@ using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Vaults;
 
-public class SelectVaultGovernanceByTokenIdQueryHandlerTests
+public class SelectVaultByTokenIdQueryHandlerTests
 {
     private readonly Mock<IDbContext> _dbContext;
-    private readonly SelectVaultGovernanceByTokenIdQueryHandler _handler;
+    private readonly SelectVaultByTokenIdQueryHandler _handler;
 
-    public SelectVaultGovernanceByTokenIdQueryHandlerTests()
+    public SelectVaultByTokenIdQueryHandlerTests()
     {
         var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
         _dbContext = new Mock<IDbContext>();
-        _handler = new SelectVaultGovernanceByTokenIdQueryHandler(_dbContext.Object, mapper);
+        _handler = new SelectVaultByTokenIdQueryHandler(_dbContext.Object, mapper);
     }
 
     [Fact]
-    public async Task SelectVaultGovernanceByTokenId_Success()
+    public async Task SelectVaultByTokenId_Success()
     {
         const ulong tokenId = 10;
 
-        var expectedEntity = new VaultGovernanceEntity
+        var expectedEntity = new VaultEntity
         {
             Id = 10,
             TokenId = tokenId,
@@ -45,9 +45,9 @@ public class SelectVaultGovernanceByTokenIdQueryHandlerTests
             ModifiedBlock = 2
         };
 
-        var command = new SelectVaultGovernanceByTokenIdQuery(tokenId);
+        var command = new SelectVaultByTokenIdQuery(tokenId);
 
-        _dbContext.Setup(db => db.ExecuteFindAsync<VaultGovernanceEntity>(It.Is<DatabaseQuery>(q => q.Sql.Contains("vault") &&
+        _dbContext.Setup(db => db.ExecuteFindAsync<VaultEntity>(It.Is<DatabaseQuery>(q => q.Sql.Contains("vault") &&
                                                                                                     q.Sql.Contains("TokenId = @TokenId"))))
             .Returns(() => Task.FromResult(expectedEntity));
 
@@ -66,31 +66,31 @@ public class SelectVaultGovernanceByTokenIdQueryHandlerTests
     }
 
     [Fact]
-    public void SelectVaultGovernanceByTokenId_Throws_NotFoundException()
+    public void SelectVaultByTokenId_Throws_NotFoundException()
     {
         const ulong tokenId = 10;
 
-        var command = new SelectVaultGovernanceByTokenIdQuery(tokenId);
+        var command = new SelectVaultByTokenIdQuery(tokenId);
 
-        _dbContext.Setup(db => db.ExecuteFindAsync<VaultGovernanceEntity>(It.IsAny<DatabaseQuery>()))
-            .Returns(() => Task.FromResult<VaultGovernanceEntity>(null));
+        _dbContext.Setup(db => db.ExecuteFindAsync<VaultEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult<VaultEntity>(null));
 
         _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"{nameof(VaultGovernance)} not found.");
+            .WithMessage($"{nameof(Vault)} not found.");
     }
 
     [Fact]
-    public async Task SelectVaultGovernanceByTokenId_ReturnsNull()
+    public async Task SelectVaultByTokenId_ReturnsNull()
     {
         const ulong tokenId = 10;
         const bool findOrThrow = false;
 
-        var command = new SelectVaultGovernanceByTokenIdQuery(tokenId, findOrThrow);
+        var command = new SelectVaultByTokenIdQuery(tokenId, findOrThrow);
 
-        _dbContext.Setup(db => db.ExecuteFindAsync<VaultGovernanceEntity>(It.IsAny<DatabaseQuery>()))
-            .Returns(() => Task.FromResult<VaultGovernanceEntity>(null));
+        _dbContext.Setup(db => db.ExecuteFindAsync<VaultEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult<VaultEntity>(null));
 
         var result = await _handler.Handle(command, CancellationToken.None);
 

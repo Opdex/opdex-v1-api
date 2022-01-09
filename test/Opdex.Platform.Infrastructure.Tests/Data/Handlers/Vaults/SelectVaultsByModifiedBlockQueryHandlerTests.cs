@@ -13,25 +13,25 @@ using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Vaults;
 
-public class SelectVaultGovernancesByModifiedBlockQueryHandlerTests
+public class SelectVaultsByModifiedBlockQueryHandlerTests
 {
     private readonly Mock<IDbContext> _dbContext;
-    private readonly SelectVaultGovernancesByModifiedBlockQueryHandler _handler;
+    private readonly SelectVaultsByModifiedBlockQueryHandler _handler;
 
-    public SelectVaultGovernancesByModifiedBlockQueryHandlerTests()
+    public SelectVaultsByModifiedBlockQueryHandlerTests()
     {
         var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
         _dbContext = new Mock<IDbContext>();
-        _handler = new SelectVaultGovernancesByModifiedBlockQueryHandler(_dbContext.Object, mapper);
+        _handler = new SelectVaultsByModifiedBlockQueryHandler(_dbContext.Object, mapper);
     }
 
     [Fact]
-    public async Task SelectVaultGovernanceById_Success()
+    public async Task SelectVaultById_Success()
     {
         const ulong modifiedBlock = 2;
 
-        var expectedList = new List<VaultGovernanceEntity> {
+        var expectedList = new List<VaultEntity> {
             new()
             {
                 Id = 10,
@@ -47,9 +47,9 @@ public class SelectVaultGovernancesByModifiedBlockQueryHandlerTests
             }
         };
 
-        var command = new SelectVaultGovernancesByModifiedBlockQuery(modifiedBlock);
+        var command = new SelectVaultsByModifiedBlockQuery(modifiedBlock);
 
-        _dbContext.Setup(db => db.ExecuteQueryAsync<VaultGovernanceEntity>(It.Is<DatabaseQuery>(q => q.Sql.Contains("vault") &&
+        _dbContext.Setup(db => db.ExecuteQueryAsync<VaultEntity>(It.Is<DatabaseQuery>(q => q.Sql.Contains("vault") &&
                                                                                                      q.Sql.Contains("ModifiedBlock = @ModifiedBlock"))))
             .ReturnsAsync(expectedList);
 
@@ -72,13 +72,13 @@ public class SelectVaultGovernancesByModifiedBlockQueryHandlerTests
     }
 
     [Fact]
-    public async Task SelectVaultGovernancesByModifiedBlockQuery_ReturnsEmpty()
+    public async Task SelectVaultsByModifiedBlockQuery_ReturnsEmpty()
     {
         const ulong modifiedBlock = 2;
-        var command = new SelectVaultGovernancesByModifiedBlockQuery(modifiedBlock);
+        var command = new SelectVaultsByModifiedBlockQuery(modifiedBlock);
 
-        _dbContext.Setup(db => db.ExecuteQueryAsync<VaultGovernanceEntity>(It.IsAny<DatabaseQuery>()))
-            .ReturnsAsync(Enumerable.Empty<VaultGovernanceEntity>());
+        _dbContext.Setup(db => db.ExecuteQueryAsync<VaultEntity>(It.IsAny<DatabaseQuery>()))
+            .ReturnsAsync(Enumerable.Empty<VaultEntity>());
 
         var result = await _handler.Handle(command, CancellationToken.None);
 

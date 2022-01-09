@@ -28,7 +28,7 @@ public class ProcessVaultProposalPledgeLogCommandHandler : IRequestHandler<Proce
     {
         try
         {
-            var vault = await _mediator.Send(new RetrieveVaultGovernanceByAddressQuery(request.Log.Contract, findOrThrow: false));
+            var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: false));
             if (vault == null) return false;
 
             var proposal = await _mediator.Send(new RetrieveVaultProposalByVaultIdAndPublicIdQuery(vault.Id, request.Log.ProposalId, findOrThrow: false));

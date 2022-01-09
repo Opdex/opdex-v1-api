@@ -10,20 +10,20 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.Vaults;
 
-public class GetVaultGovernanceByAddressQueryHandler : IRequestHandler<GetVaultGovernanceByAddressQuery, VaultGovernanceDto>
+public class GetVaultByAddressQueryHandler : IRequestHandler<GetVaultByAddressQuery, VaultDto>
 {
     private readonly IMediator _mediator;
-    private readonly IModelAssembler<VaultGovernance, VaultGovernanceDto> _vaultAssembler;
+    private readonly IModelAssembler<Vault, VaultDto> _vaultAssembler;
 
-    public GetVaultGovernanceByAddressQueryHandler(IMediator mediator, IModelAssembler<VaultGovernance, VaultGovernanceDto> vaultAssembler)
+    public GetVaultByAddressQueryHandler(IMediator mediator, IModelAssembler<Vault, VaultDto> vaultAssembler)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _vaultAssembler = vaultAssembler ?? throw new ArgumentNullException(nameof(vaultAssembler));
     }
 
-    public async Task<VaultGovernanceDto> Handle(GetVaultGovernanceByAddressQuery request, CancellationToken cancellationToken)
+    public async Task<VaultDto> Handle(GetVaultByAddressQuery request, CancellationToken cancellationToken)
     {
-        var vault = await _mediator.Send(new RetrieveVaultGovernanceByAddressQuery(request.Vault, findOrThrow: true), cancellationToken);
+        var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Vault, findOrThrow: true), cancellationToken);
         return await _vaultAssembler.Assemble(vault);
     }
 }

@@ -13,8 +13,8 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates;
 
-public class SelectVaultGovernanceCertificatesByVaultIdAndOwnerQueryHandler
-    : IRequestHandler<SelectVaultGovernanceCertificatesByVaultIdAndOwnerQuery, IEnumerable<VaultCertificate>>
+public class SelectVaultCertificatesByVaultIdAndOwnerQueryHandler
+    : IRequestHandler<SelectVaultCertificatesByVaultIdAndOwnerQuery, IEnumerable<VaultCertificate>>
 {
     private static readonly string SqlQuery =
         @$"SELECT
@@ -34,13 +34,13 @@ public class SelectVaultGovernanceCertificatesByVaultIdAndOwnerQueryHandler
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
 
-    public SelectVaultGovernanceCertificatesByVaultIdAndOwnerQueryHandler(IDbContext context, IMapper mapper)
+    public SelectVaultCertificatesByVaultIdAndOwnerQueryHandler(IDbContext context, IMapper mapper)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<IEnumerable<VaultCertificate>> Handle(SelectVaultGovernanceCertificatesByVaultIdAndOwnerQuery request,
+    public async Task<IEnumerable<VaultCertificate>> Handle(SelectVaultCertificatesByVaultIdAndOwnerQuery request,
                                                             CancellationToken cancellationToken)
     {
         var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.VaultId, request.Owner), cancellationToken);

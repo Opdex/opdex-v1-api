@@ -9,17 +9,17 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Vaults.Certificates;
 
-public class RetrieveVaultGovernanceCertificatesWithFilterQueryHandler : IRequestHandler<RetrieveVaultGovernanceCertificatesWithFilterQuery, IEnumerable<VaultCertificate>>
+public class RetrieveVaultCertificatesWithFilterQueryHandler : IRequestHandler<RetrieveVaultCertificatesWithFilterQuery, IEnumerable<VaultCertificate>>
 {
     private readonly IMediator _mediator;
 
-    public RetrieveVaultGovernanceCertificatesWithFilterQueryHandler(IMediator mediator)
+    public RetrieveVaultCertificatesWithFilterQueryHandler(IMediator mediator)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    public async Task<IEnumerable<VaultCertificate>> Handle(RetrieveVaultGovernanceCertificatesWithFilterQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<VaultCertificate>> Handle(RetrieveVaultCertificatesWithFilterQuery request, CancellationToken cancellationToken)
     {
-        return await _mediator.Send( new SelectVaultGovernanceCertificatesWithFilterQuery(request.VaultId, request.Cursor), cancellationToken);
+        return await _mediator.Send( new SelectVaultCertificatesWithFilterQuery(request.VaultId, request.Cursor), cancellationToken);
     }
 }

@@ -8,13 +8,13 @@ using Xunit;
 
 namespace Opdex.Platform.WebApi.Tests.Validation.Vaults;
 
-public class VaultGovernanceCertificateFilterParametersValidatorTests
+public class VaultCertificateFilterParametersValidatorTests
 {
-    private readonly VaultGovernanceCertificateFilterParametersValidator _validator;
+    private readonly VaultCertificateFilterParametersValidator _validator;
 
-    public VaultGovernanceCertificateFilterParametersValidatorTests()
+    public VaultCertificateFilterParametersValidatorTests()
     {
-        _validator = new VaultGovernanceCertificateFilterParametersValidator();
+        _validator = new VaultCertificateFilterParametersValidator();
     }
 
     [Theory]
@@ -22,7 +22,7 @@ public class VaultGovernanceCertificateFilterParametersValidatorTests
     public void Holder_Invalid(Address holder)
     {
         // Arrange
-        var request = new VaultGovernanceCertificateFilterParameters
+        var request = new VaultCertificateFilterParameters
         {
             Holder = holder
         };
@@ -41,7 +41,7 @@ public class VaultGovernanceCertificateFilterParametersValidatorTests
     public void Holder_Valid(Address holder)
     {
         // Arrange
-        var request = new VaultGovernanceCertificateFilterParameters
+        var request = new VaultCertificateFilterParameters
         {
             Holder = holder
         };
@@ -57,7 +57,7 @@ public class VaultGovernanceCertificateFilterParametersValidatorTests
     public void Status_Invalid()
     {
         // Arrange
-        var request = new VaultGovernanceCertificateFilterParameters
+        var request = new VaultCertificateFilterParameters
         {
             Status = (VaultCertificateStatusFilter)255
         };
@@ -77,7 +77,7 @@ public class VaultGovernanceCertificateFilterParametersValidatorTests
     public void Status_Valid(VaultCertificateStatusFilter type)
     {
         // Arrange
-        var request = new VaultGovernanceCertificateFilterParameters
+        var request = new VaultCertificateFilterParameters
         {
             Status = type
         };
@@ -93,7 +93,7 @@ public class VaultGovernanceCertificateFilterParametersValidatorTests
     public void Limit_Invalid()
     {
         // Arrange
-        var request = new VaultGovernanceCertificateFilterParameters
+        var request = new VaultCertificateFilterParameters
         {
             Limit = Cursor.DefaultMaxLimit + 1
         };
@@ -109,7 +109,7 @@ public class VaultGovernanceCertificateFilterParametersValidatorTests
     public void Limit_Valid()
     {
         // Arrange
-        var request = new VaultGovernanceCertificateFilterParameters
+        var request = new VaultCertificateFilterParameters
         {
             Limit = Cursor.DefaultMaxLimit
         };

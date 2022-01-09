@@ -111,7 +111,7 @@ public class CreateTransactionCommandHandler : IRequestHandler<CreateTransaction
         var miningPool = await _mediator.Send(new RetrieveMiningPoolByAddressQuery(to, findOrThrow));
         if (miningPool != null) return true;
 
-        var vault = await _mediator.Send(new RetrieveVaultGovernanceByAddressQuery(to, findOrThrow));
+        var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(to, findOrThrow));
         if (vault != null) return true;
 
         var market = await _mediator.Send(new RetrieveMarketByAddressQuery(to, findOrThrow));

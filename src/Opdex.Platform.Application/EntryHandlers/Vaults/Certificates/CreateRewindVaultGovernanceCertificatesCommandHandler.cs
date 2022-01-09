@@ -11,20 +11,20 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.Vaults.Certificates;
 
-public class CreateRewindVaultGovernanceCertificatesCommandHandler : IRequestHandler<CreateRewindVaultGovernanceCertificatesCommand, bool>
+public class CreateRewindVaultCertificatesCommandHandler : IRequestHandler<CreateRewindVaultCertificatesCommand, bool>
 {
     private readonly IMediator _mediator;
-    private readonly ILogger<CreateRewindVaultGovernanceCertificatesCommandHandler> _logger;
+    private readonly ILogger<CreateRewindVaultCertificatesCommandHandler> _logger;
 
-    public CreateRewindVaultGovernanceCertificatesCommandHandler(IMediator mediator, ILogger<CreateRewindVaultGovernanceCertificatesCommandHandler> logger)
+    public CreateRewindVaultCertificatesCommandHandler(IMediator mediator, ILogger<CreateRewindVaultCertificatesCommandHandler> logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<bool> Handle(CreateRewindVaultGovernanceCertificatesCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(CreateRewindVaultCertificatesCommand request, CancellationToken cancellationToken)
     {
-        var certificates = await _mediator.Send(new RetrieveVaultGovernanceCertificatesByModifiedBlockQuery(request.RewindHeight));
+        var certificates = await _mediator.Send(new RetrieveVaultCertificatesByModifiedBlockQuery(request.RewindHeight));
         var certificatesList = certificates.ToList();
         var staleCount = certificatesList.Count;
 
@@ -36,7 +36,7 @@ public class CreateRewindVaultGovernanceCertificatesCommandHandler : IRequestHan
 
         foreach (var vaultCerts in certsByVault)
         {
-            var vault = await _mediator.Send(new RetrieveVaultGovernanceByIdQuery(vaultCerts.Key, findOrThrow: false));
+            var vault = await _mediator.Send(new RetrieveVaultByIdQuery(vaultCerts.Key, findOrThrow: false));
 
             if (vault == null)
             {
@@ -51,7 +51,7 @@ public class CreateRewindVaultGovernanceCertificatesCommandHandler : IRequestHan
             {
                 await Task.WhenAll(chunk.Select(async cert =>
                 {
-                    var summary = await _mediator.Send(new RetrieveVaultGovernanceContractCertificateSummaryByOwnerQuery(vault.Address,
+                    var summary = await _mediator.Send(new RetrieveVaultContractCertificateSummaryByOwnerQuery(vault.Address,
                                                                                                                          cert.Owner,
                                                                                                                          request.RewindHeight));
 
@@ -59,7 +59,7 @@ public class CreateRewindVaultGovernanceCertificatesCommandHandler : IRequestHan
                     {
                         cert.Update(summary, request.RewindHeight);
 
-                        var certRefreshed = await _mediator.Send(new MakeVaultGovernanceCertificateCommand(cert)) > 0;
+                        var certRefreshed = await _mediator.Send(new MakeVaultCertificateCommand(cert)) > 0;
 
                         if (!certRefreshed) refreshFailureCount++;
                     }

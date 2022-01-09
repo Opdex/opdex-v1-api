@@ -197,7 +197,7 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.Redeemed, opt => opt.MapFrom(src => src.Redeemed))
             .ForMember(dest => dest.Revoked, opt => opt.MapFrom(src => src.Revoked));
 
-        CreateMap<VaultGovernance, VaultGovernanceDto>()
+        CreateMap<Vault, VaultDto>()
             .ForMember(dest => dest.Vault, opt => opt.MapFrom(src => src.Address))
             .ForMember(dest => dest.VestingDuration, opt => opt.MapFrom(src => src.VestingDuration))
             .ForAllOtherMembers(opt => opt.Ignore());

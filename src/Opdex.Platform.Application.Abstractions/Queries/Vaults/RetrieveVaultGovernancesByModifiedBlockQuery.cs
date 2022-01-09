@@ -8,13 +8,13 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Vaults;
 /// <summary>
 /// Retrieve vaults by their modified block.
 /// </summary>
-public class RetrieveVaultGovernancesByModifiedBlockQuery : IRequest<IEnumerable<VaultGovernance>>
+public class RetrieveVaultsByModifiedBlockQuery : IRequest<IEnumerable<Vault>>
 {
     /// <summary>
     /// Constructor to initialize a retrieve vaults by modified block query.
     /// </summary>
     /// <param name="blockHeight">The block height the records were modified at.</param>
-    public RetrieveVaultGovernancesByModifiedBlockQuery(ulong blockHeight)
+    public RetrieveVaultsByModifiedBlockQuery(ulong blockHeight)
     {
         if (blockHeight < 1)
         {

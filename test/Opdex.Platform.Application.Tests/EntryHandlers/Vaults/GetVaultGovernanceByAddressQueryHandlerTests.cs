@@ -14,44 +14,44 @@ using Xunit;
 
 namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults;
 
-public class GetVaultGovernanceByAddressQueryHandlerTests
+public class GetVaultByAddressQueryHandlerTests
 {
     private readonly Mock<IMediator> _mediatorMock;
-    private readonly Mock<IModelAssembler<VaultGovernance, VaultGovernanceDto>> _assemblerMock;
+    private readonly Mock<IModelAssembler<Vault, VaultDto>> _assemblerMock;
 
-    private readonly GetVaultGovernanceByAddressQueryHandler _handler;
+    private readonly GetVaultByAddressQueryHandler _handler;
 
-    public GetVaultGovernanceByAddressQueryHandlerTests()
+    public GetVaultByAddressQueryHandlerTests()
     {
         _mediatorMock = new Mock<IMediator>();
-        _assemblerMock = new Mock<IModelAssembler<VaultGovernance, VaultGovernanceDto>>();
+        _assemblerMock = new Mock<IModelAssembler<Vault, VaultDto>>();
 
-        _handler = new GetVaultGovernanceByAddressQueryHandler(_mediatorMock.Object, _assemblerMock.Object);
+        _handler = new GetVaultByAddressQueryHandler(_mediatorMock.Object, _assemblerMock.Object);
     }
 
     [Fact]
-    public async Task Handle_RetrieveVaultGovernanceByAddressQuery_Send()
+    public async Task Handle_RetrieveVaultByAddressQuery_Send()
     {
         // Arrange
         using var cancellationTokenSource = new CancellationTokenSource();
         var cancellationToken = cancellationTokenSource.Token;
-        var request = new GetVaultGovernanceByAddressQuery(new Address("PBHvTPaLKo5cVYBFdTfTgtjqfybLMJJ8W5"));
+        var request = new GetVaultByAddressQuery(new Address("PBHvTPaLKo5cVYBFdTfTgtjqfybLMJJ8W5"));
 
         // Act
         await _handler.Handle(request, cancellationToken);
 
         // Assert
-        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveVaultGovernanceByAddressQuery>(query => query.Vault == request.Vault && query.FindOrThrow), cancellationToken), Times.Once);
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveVaultByAddressQuery>(query => query.Vault == request.Vault && query.FindOrThrow), cancellationToken), Times.Once);
     }
 
     [Fact]
     public async Task Handle_VaultExists_Assemble()
     {
         // Arrange
-        var request = new GetVaultGovernanceByAddressQuery(new Address("PBHvTPaLKo5cVYBFdTfTgtjqfybLMJJ8W5"));
+        var request = new GetVaultByAddressQuery(new Address("PBHvTPaLKo5cVYBFdTfTgtjqfybLMJJ8W5"));
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         // Act
         await _handler.Handle(request, CancellationToken.None);
@@ -64,13 +64,13 @@ public class GetVaultGovernanceByAddressQueryHandlerTests
     public async Task Handle_Assembled_Return()
     {
         // Arrange
-        var request = new GetVaultGovernanceByAddressQuery(new Address("PBHvTPaLKo5cVYBFdTfTgtjqfybLMJJ8W5"));
+        var request = new GetVaultByAddressQuery(new Address("PBHvTPaLKo5cVYBFdTfTgtjqfybLMJJ8W5"));
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
-        var dto = new VaultGovernanceDto();
-        _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<VaultGovernance>())).ReturnsAsync(dto);
+        var dto = new VaultDto();
+        _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Vault>())).ReturnsAsync(dto);
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);

@@ -11,18 +11,18 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Vaults;
 
-public class CallCirrusGetVaultGovernanceContractCertificateSummaryByOwnerQueryHandler
-    : IRequestHandler<CallCirrusGetVaultGovernanceContractCertificateSummaryByOwnerQuery, VaultContractCertificateSummary>
+public class CallCirrusGetVaultContractCertificateSummaryByOwnerQueryHandler
+    : IRequestHandler<CallCirrusGetVaultContractCertificateSummaryByOwnerQuery, VaultContractCertificateSummary>
 {
     private readonly ISmartContractsModule _smartContractsModule;
-    private const string MethodName = VaultGovernanceConstants.Methods.GetCertificate;
+    private const string MethodName = VaultConstants.Methods.GetCertificate;
 
-    public CallCirrusGetVaultGovernanceContractCertificateSummaryByOwnerQueryHandler(ISmartContractsModule smartContractsModule)
+    public CallCirrusGetVaultContractCertificateSummaryByOwnerQueryHandler(ISmartContractsModule smartContractsModule)
     {
         _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
     }
 
-    public async Task<VaultContractCertificateSummary> Handle(CallCirrusGetVaultGovernanceContractCertificateSummaryByOwnerQuery request,
+    public async Task<VaultContractCertificateSummary> Handle(CallCirrusGetVaultContractCertificateSummaryByOwnerQuery request,
                                                               CancellationToken cancellationToken)
     {
         var parameters = new[] { new SmartContractMethodParameter(request.Owner) };

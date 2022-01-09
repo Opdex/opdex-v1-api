@@ -2,7 +2,6 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Exceptions;
-using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
@@ -14,29 +13,29 @@ using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Vaults;
 
-public class SelectVaultGovernanceByAddressQueryHandlerTests
+public class SelectVaultByIdQueryHandlerTests
 {
     private readonly Mock<IDbContext> _dbContext;
-    private readonly SelectVaultGovernanceByAddressQueryHandler _handler;
+    private readonly SelectVaultByIdQueryHandler _handler;
 
-    public SelectVaultGovernanceByAddressQueryHandlerTests()
+    public SelectVaultByIdQueryHandlerTests()
     {
         var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
         _dbContext = new Mock<IDbContext>();
-        _handler = new SelectVaultGovernanceByAddressQueryHandler(_dbContext.Object, mapper);
+        _handler = new SelectVaultByIdQueryHandler(_dbContext.Object, mapper);
     }
 
     [Fact]
-    public async Task SelectVaultGovernanceByAddress_Success()
+    public async Task SelectVaultById_Success()
     {
-        Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+        const ulong id = 10;
 
-        var expectedEntity = new VaultGovernanceEntity
+        var expectedEntity = new VaultEntity
         {
-            Id = 1012,
+            Id = id,
             TokenId = 11,
-            Address = address,
+            Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
             UnassignedSupply = 233,
             ProposedSupply = 100,
             VestingDuration = 19,
@@ -46,9 +45,9 @@ public class SelectVaultGovernanceByAddressQueryHandlerTests
             ModifiedBlock = 2
         };
 
-        var command = new SelectVaultGovernanceByAddressQuery(address);
+        var command = new SelectVaultByIdQuery(id);
 
-        _dbContext.Setup(db => db.ExecuteFindAsync<VaultGovernanceEntity>(It.Is<DatabaseQuery>(q => q.Sql.Contains("vault"))))
+        _dbContext.Setup(db => db.ExecuteFindAsync<VaultEntity>(It.Is<DatabaseQuery>(q => q.Sql.Contains("vault"))))
             .Returns(() => Task.FromResult(expectedEntity));
 
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -66,31 +65,31 @@ public class SelectVaultGovernanceByAddressQueryHandlerTests
     }
 
     [Fact]
-    public void SelectVaultGovernanceByAddress_Throws_NotFoundException()
+    public void SelectVaultById_Throws_NotFoundException()
     {
-        Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+        const ulong id = 10;
 
-        var command = new SelectVaultGovernanceByAddressQuery(address);
+        var command = new SelectVaultByIdQuery(id);
 
-        _dbContext.Setup(db => db.ExecuteFindAsync<VaultGovernanceEntity>(It.IsAny<DatabaseQuery>()))
-            .Returns(() => Task.FromResult<VaultGovernanceEntity>(null));
+        _dbContext.Setup(db => db.ExecuteFindAsync<VaultEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult<VaultEntity>(null));
 
         _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"{nameof(VaultGovernance)} not found.");
+            .WithMessage($"{nameof(Vault)} not found.");
     }
 
     [Fact]
-    public async Task SelectVaultGovernanceByAddress_ReturnsNull()
+    public async Task SelectVaultById_ReturnsNull()
     {
-        Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+        const ulong id = 10;
         const bool findOrThrow = false;
 
-        var command = new SelectVaultGovernanceByAddressQuery(address, findOrThrow);
+        var command = new SelectVaultByIdQuery(id, findOrThrow);
 
-        _dbContext.Setup(db => db.ExecuteFindAsync<VaultGovernanceEntity>(It.IsAny<DatabaseQuery>()))
-            .Returns(() => Task.FromResult<VaultGovernanceEntity>(null));
+        _dbContext.Setup(db => db.ExecuteFindAsync<VaultEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult<VaultEntity>(null));
 
         var result = await _handler.Handle(command, CancellationToken.None);
 

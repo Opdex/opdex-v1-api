@@ -16,7 +16,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults;
 
 public class CreateVaultProposalRevokeCertificateQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateVaultProposalRevokeCertificateQuoteCommand>
 {
-    private const string MethodName = VaultGovernanceConstants.Methods.CreateRevokeCertificateProposal;
+    private const string MethodName = VaultConstants.Methods.CreateRevokeCertificateProposal;
 
     public CreateVaultProposalRevokeCertificateQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
                                                                    IMediator mediator,
@@ -27,7 +27,7 @@ public class CreateVaultProposalRevokeCertificateQuoteCommandHandler : BaseTrans
     public override async Task<TransactionQuoteDto> Handle(CreateVaultProposalRevokeCertificateQuoteCommand request, CancellationToken cancellationToken)
     {
         // ensure vault exists, if not throw to return 404
-        _ = await _mediator.Send(new RetrieveVaultGovernanceByAddressQuery(request.Vault, findOrThrow: true), cancellationToken);
+        _ = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Vault, findOrThrow: true), cancellationToken);
 
         var requestParameters = new List<TransactionQuoteRequestParameter>
         {

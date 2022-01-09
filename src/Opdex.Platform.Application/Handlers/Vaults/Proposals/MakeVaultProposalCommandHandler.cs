@@ -22,7 +22,7 @@ public class MakeVaultProposalCommandHandler : IRequestHandler<MakeVaultProposal
     {
         if (request.RefreshProposal)
         {
-            var vault = await _mediator.Send(new RetrieveVaultGovernanceByIdQuery(request.Proposal.VaultId), CancellationToken.None);
+            var vault = await _mediator.Send(new RetrieveVaultByIdQuery(request.Proposal.VaultId), CancellationToken.None);
 
             var summary = await _mediator.Send(new CallCirrusGetVaultProposalSummaryByProposalIdQuery(vault.Address,
                                                                                                       request.Proposal.PublicId,

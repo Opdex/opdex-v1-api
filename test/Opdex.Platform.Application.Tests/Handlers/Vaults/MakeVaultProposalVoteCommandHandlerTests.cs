@@ -26,7 +26,7 @@ public class MakeVaultProposalVoteCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_Refresh_RetrieveVaultGovernanceByIdQuery()
+    public async Task Handle_Refresh_RetrieveVaultByIdQuery()
     {
         // Arrange
         const ulong blockHeight = 50;
@@ -41,7 +41,7 @@ public class MakeVaultProposalVoteCommandHandlerTests
         catch { }
 
         // Assert
-        _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultGovernanceByIdQuery>(q => q.VaultId == vote.VaultId), It.IsAny<CancellationToken>()), Times.Once);
+        _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultByIdQuery>(q => q.VaultId == vote.VaultId), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -51,9 +51,9 @@ public class MakeVaultProposalVoteCommandHandlerTests
         const ulong blockHeight = 50;
         var vote = new VaultProposalVote(5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, true, blockHeight);
         var request = new MakeVaultProposalVoteCommand(vote, blockHeight, true);
-        var expectedVault = new VaultGovernance(1, "PmH1iT1GLsMroh6zXXNMU9EjmivLgqqARw", 2, 3, 4, 5, 6, 7, 8, 9);
+        var expectedVault = new Vault(1, "PmH1iT1GLsMroh6zXXNMU9EjmivLgqqARw", 2, 3, 4, 5, 6, 7, 8, 9);
 
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByIdQuery>(), CancellationToken.None))
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByIdQuery>(), CancellationToken.None))
             .ReturnsAsync(expectedVault);
 
         // Act
@@ -74,11 +74,11 @@ public class MakeVaultProposalVoteCommandHandlerTests
         const ulong blockHeight = 50;
         var vote = new VaultProposalVote(5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, true, blockHeight);
         var request = new MakeVaultProposalVoteCommand(vote, blockHeight, true);
-        var expectedVault = new VaultGovernance(1, "PmH1iT1GLsMroh6zXXNMU9EjmivLgqqARw", 2, 3, 4, 5, 6, 7, 8, 9);
+        var expectedVault = new Vault(1, "PmH1iT1GLsMroh6zXXNMU9EjmivLgqqARw", 2, 3, 4, 5, 6, 7, 8, 9);
         var expectedProposal = new VaultProposal(1, vote.ProposalId, 1, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN",
                                                  2, "Description", VaultProposalType.Create, VaultProposalStatus.Vote, 6, 7, 8, 9, false, 10, 11);
 
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByIdQuery>(), It.IsAny<CancellationToken>()))
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByIdQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedVault);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalByIdQuery>(), It.IsAny<CancellationToken>()))

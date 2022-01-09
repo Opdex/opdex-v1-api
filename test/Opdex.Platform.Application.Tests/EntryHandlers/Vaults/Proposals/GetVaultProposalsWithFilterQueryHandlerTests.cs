@@ -39,7 +39,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_RetrieveVaultGovernanceByAddressQuery_Send()
+    public async Task Handle_RetrieveVaultByAddressQuery_Send()
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
@@ -58,7 +58,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
         }
 
         // Assert
-        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveVaultGovernanceByAddressQuery>(query => query.Vault == vaultAddress
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveVaultByAddressQuery>(query => query.Vault == vaultAddress
                                                                                                       && query.FindOrThrow), cancellationToken), Times.Once);
     }
 
@@ -71,8 +71,8 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
         var request = new GetVaultProposalsWithFilterQuery(vaultAddress, cursor);
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         // Act
         try
@@ -108,8 +108,8 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
         };
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposals);
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         // Act
         await _handler.Handle(request, CancellationToken.None);
@@ -138,8 +138,8 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposals);
         _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<VaultProposal>())).ReturnsAsync(new VaultProposalDto());
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -168,8 +168,8 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposals);
         _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<VaultProposal>())).ReturnsAsync(new VaultProposalDto());
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -199,8 +199,8 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposals);
         _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<VaultProposal>())).ReturnsAsync(new VaultProposalDto());
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -230,8 +230,8 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposals);
         _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<VaultProposal>())).ReturnsAsync(new VaultProposalDto());
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -261,8 +261,8 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposals);
         _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<VaultProposal>())).ReturnsAsync(new VaultProposalDto());
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -292,8 +292,8 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposals);
         _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<VaultProposal>())).ReturnsAsync(new VaultProposalDto());
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -321,8 +321,8 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposals);
         _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<VaultProposal>())).ReturnsAsync(new VaultProposalDto());
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -350,8 +350,8 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposals);
         _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<VaultProposal>())).ReturnsAsync(new VaultProposalDto());
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);

@@ -44,9 +44,9 @@ public class VaultDtoAssemblerTests
             .Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalanceByOwnerAndTokenQuery>(),
                 It.IsAny<CancellationToken>())).ReturnsAsync(balance);
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
 
-        _mapperMock.Setup(callTo => callTo.Map<VaultGovernanceDto>(vault)).Returns(new VaultGovernanceDto());
+        _mapperMock.Setup(callTo => callTo.Map<VaultDto>(vault)).Returns(new VaultDto());
 
         // Act
         var dto = await _assembler.Assemble(vault);
@@ -67,9 +67,9 @@ public class VaultDtoAssemblerTests
             .Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalanceByOwnerAndTokenQuery>(),
                 It.IsAny<CancellationToken>())).ReturnsAsync(balance);
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
 
-        _mapperMock.Setup(callTo => callTo.Map<VaultGovernanceDto>(vault)).Returns(new VaultGovernanceDto());
+        _mapperMock.Setup(callTo => callTo.Map<VaultDto>(vault)).Returns(new VaultDto());
 
         // Act
         var dto = await _assembler.Assemble(vault);
@@ -89,9 +89,9 @@ public class VaultDtoAssemblerTests
             .Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalanceByOwnerAndTokenQuery>(),
                 It.IsAny<CancellationToken>())).ReturnsAsync((AddressBalance)null);
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
 
-        _mapperMock.Setup(callTo => callTo.Map<VaultGovernanceDto>(vault)).Returns(new VaultGovernanceDto());
+        _mapperMock.Setup(callTo => callTo.Map<VaultDto>(vault)).Returns(new VaultDto());
 
         // Act
         var dto = await _assembler.Assemble(vault);

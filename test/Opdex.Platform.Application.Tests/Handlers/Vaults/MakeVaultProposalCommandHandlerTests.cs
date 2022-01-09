@@ -44,7 +44,7 @@ public class MakeVaultProposalCommandHandlerTests
         catch { }
 
         // Assert
-        _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultGovernanceByIdQuery>(command => command.VaultId == proposal.VaultId),
+        _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultByIdQuery>(command => command.VaultId == proposal.VaultId),
                                                It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -59,9 +59,9 @@ public class MakeVaultProposalCommandHandlerTests
         var proposal = new VaultProposal(5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 50000000,
                                          "Proposal description", VaultProposalType.Revoke, VaultProposalStatus.Pledge, 100000, blockHeight);
         var request = new MakeVaultProposalCommand(proposal, blockHeight, true);
-        var governance = new VaultGovernance(proposal.VaultId, vault, 1, 2, 3, 4, 5, 6, 7, 8);
+        var governance = new Vault(proposal.VaultId, vault, 1, 2, 3, 4, 5, 6, 7, 8);
 
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByIdQuery>(), It.IsAny<CancellationToken>()))
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByIdQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(governance);
 
         // Act

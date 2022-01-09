@@ -9,14 +9,14 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Vaults.Certificat
 /// <summary>
 /// Request to retrieve certificates in a vault.
 /// </summary>
-public class GetVaultGovernanceCertificatesWithFilterQuery : IRequest<VaultCertificatesDto>
+public class GetVaultCertificatesWithFilterQuery : IRequest<VaultCertificatesDto>
 {
     /// <summary>
     /// Creates a request to retrieve certificates in a vault.
     /// </summary>
     /// <param name="vault">Address of the vault.</param>
     /// <param name="cursor">Cursor filters.</param>
-    public GetVaultGovernanceCertificatesWithFilterQuery(Address vault, VaultGovernanceCertificatesCursor cursor)
+    public GetVaultCertificatesWithFilterQuery(Address vault, VaultCertificatesCursor cursor)
     {
         if (vault == Address.Empty) throw new ArgumentNullException(nameof(vault), "Vault address must be set.");
         Vault = vault;
@@ -24,5 +24,5 @@ public class GetVaultGovernanceCertificatesWithFilterQuery : IRequest<VaultCerti
     }
 
     public Address Vault { get; }
-    public VaultGovernanceCertificatesCursor Cursor { get; }
+    public VaultCertificatesCursor Cursor { get; }
 }

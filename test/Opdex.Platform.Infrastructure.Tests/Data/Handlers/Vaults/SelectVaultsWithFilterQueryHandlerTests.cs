@@ -12,17 +12,17 @@ using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Vaults;
 
-public class SelectVaultGovernancesWithFilterQueryHandlerTests
+public class SelectVaultsWithFilterQueryHandlerTests
 {
     private readonly Mock<IDbContext> _dbContext;
-    private readonly SelectVaultGovernancesWithFilterQueryHandler _handler;
+    private readonly SelectVaultsWithFilterQueryHandler _handler;
 
-    public SelectVaultGovernancesWithFilterQueryHandlerTests()
+    public SelectVaultsWithFilterQueryHandlerTests()
     {
         var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
         _dbContext = new Mock<IDbContext>();
-        _handler = new SelectVaultGovernancesWithFilterQueryHandler(_dbContext.Object, mapper);
+        _handler = new SelectVaultsWithFilterQueryHandler(_dbContext.Object, mapper);
     }
 
     [Fact]
@@ -30,13 +30,13 @@ public class SelectVaultGovernancesWithFilterQueryHandlerTests
     {
         // Arrange
         var lockedToken = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-        var cursor = new VaultGovernancesCursor(lockedToken, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+        var cursor = new VaultsCursor(lockedToken, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
 
         // Act
-        await _handler.Handle(new SelectVaultGovernancesWithFilterQuery(cursor), CancellationToken.None);
+        await _handler.Handle(new SelectVaultsWithFilterQuery(cursor), CancellationToken.None);
 
         // Assert
-        _dbContext.Verify(callTo => callTo.ExecuteQueryAsync<VaultGovernanceEntity>(
+        _dbContext.Verify(callTo => callTo.ExecuteQueryAsync<VaultEntity>(
                               It.Is<DatabaseQuery>(q => q.Sql.Contains("JOIN token t ON t.Id = v.TokenId")
                                                         && q.Sql.Contains("t.Address = @LockedToken"))), Times.Once);
     }
@@ -48,14 +48,14 @@ public class SelectVaultGovernancesWithFilterQueryHandlerTests
         // Arrange
         var orderBy = SortDirectionType.ASC;
         var limit = 25U;
-        var cursor = new VaultGovernancesCursor("", orderBy, limit, PagingDirection.Forward, 55);
+        var cursor = new VaultsCursor("", orderBy, limit, PagingDirection.Forward, 55);
 
         // Act
-        await _handler.Handle(new SelectVaultGovernancesWithFilterQuery(cursor), CancellationToken.None);
+        await _handler.Handle(new SelectVaultsWithFilterQuery(cursor), CancellationToken.None);
 
         // Assert
         _dbContext.Verify(callTo =>
-                              callTo.ExecuteQueryAsync<VaultGovernanceEntity>(
+                              callTo.ExecuteQueryAsync<VaultEntity>(
                                   It.Is<DatabaseQuery>(q => q.Sql.Contains("v.Id > @Pointer") &&
                                                             q.Sql.Contains($"ORDER BY v.Id {orderBy}") &&
                                                             q.Sql.Contains($"LIMIT {limit + 1}"))), Times.Once);
@@ -67,14 +67,14 @@ public class SelectVaultGovernancesWithFilterQueryHandlerTests
         // Arrange
         var orderBy = SortDirectionType.DESC;
         var limit = 25U;
-        var cursor = new VaultGovernancesCursor("", orderBy, limit, PagingDirection.Forward, 55);
+        var cursor = new VaultsCursor("", orderBy, limit, PagingDirection.Forward, 55);
 
         // Act
-        await _handler.Handle(new SelectVaultGovernancesWithFilterQuery(cursor), CancellationToken.None);
+        await _handler.Handle(new SelectVaultsWithFilterQuery(cursor), CancellationToken.None);
 
         // Assert
         _dbContext.Verify(callTo =>
-                              callTo.ExecuteQueryAsync<VaultGovernanceEntity>(
+                              callTo.ExecuteQueryAsync<VaultEntity>(
                                   It.Is<DatabaseQuery>(q => q.Sql.Contains("v.Id < @Pointer") &&
                                                             q.Sql.Contains($"ORDER BY v.Id {orderBy}") &&
                                                             q.Sql.Contains($"LIMIT {limit + 1}"))), Times.Once);
@@ -86,14 +86,14 @@ public class SelectVaultGovernancesWithFilterQueryHandlerTests
         // Arrange
         var orderBy = SortDirectionType.DESC;
         var limit = 25U;
-        var cursor = new VaultGovernancesCursor("", orderBy, limit, PagingDirection.Backward, 55);
+        var cursor = new VaultsCursor("", orderBy, limit, PagingDirection.Backward, 55);
 
         // Act
-        await _handler.Handle(new SelectVaultGovernancesWithFilterQuery(cursor), CancellationToken.None);
+        await _handler.Handle(new SelectVaultsWithFilterQuery(cursor), CancellationToken.None);
 
         // Assert
         _dbContext.Verify(callTo =>
-                              callTo.ExecuteQueryAsync<VaultGovernanceEntity>(
+                              callTo.ExecuteQueryAsync<VaultEntity>(
                                   It.Is<DatabaseQuery>(q => q.Sql.Contains("v.Id > @Pointer") &&
                                                             q.Sql.Contains($"ORDER BY v.Id {SortDirectionType.ASC}") &&
                                                             q.Sql.Contains($"LIMIT {limit + 1}"))), Times.Once);
@@ -105,14 +105,14 @@ public class SelectVaultGovernancesWithFilterQueryHandlerTests
         // Arrange
         var orderBy = SortDirectionType.ASC;
         var limit = 25U;
-        var cursor = new VaultGovernancesCursor("", orderBy, limit, PagingDirection.Backward, 55);
+        var cursor = new VaultsCursor("", orderBy, limit, PagingDirection.Backward, 55);
 
         // Act
-        await _handler.Handle(new SelectVaultGovernancesWithFilterQuery(cursor), CancellationToken.None);
+        await _handler.Handle(new SelectVaultsWithFilterQuery(cursor), CancellationToken.None);
 
         // Assert
         _dbContext.Verify(callTo =>
-                              callTo.ExecuteQueryAsync<VaultGovernanceEntity>(
+                              callTo.ExecuteQueryAsync<VaultEntity>(
                                   It.Is<DatabaseQuery>(q => q.Sql.Contains("v.Id < @Pointer") &&
                                                             q.Sql.Contains($"ORDER BY v.Id {SortDirectionType.DESC}") &&
                                                             q.Sql.Contains($"LIMIT {limit + 1}"))), Times.Once);

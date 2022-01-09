@@ -64,7 +64,7 @@ public class CreateRewindVaultProposalPledgesCommandHandlerTests
     }
 
     [Fact]
-    public async Task CreateRewindVaultProposalPledgesCommand_Sends_RetrieveVaultGovernanceByIdQuery()
+    public async Task CreateRewindVaultProposalPledgesCommand_Sends_RetrieveVaultByIdQuery()
     {
         // Arrange
         const ulong rewindHeight = 10;
@@ -89,7 +89,7 @@ public class CreateRewindVaultProposalPledgesCommandHandlerTests
         catch { }
 
         // Assert
-        _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultGovernanceByIdQuery>(q => q.VaultId == vaultId),
+        _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultByIdQuery>(q => q.VaultId == vaultId),
                                                It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -109,10 +109,10 @@ public class CreateRewindVaultProposalPledgesCommandHandlerTests
             new (1, vaultId, proposalId, "Proh6zwmH1iU9EjmXXNMivLgqqART1GLsM", 4, 5, 6, rewindHeight),
         };
 
-        var vault = new VaultGovernance(3, "PXXNsMroh6zwmH1iU9EjmMivLgqqART1GL", 2, 4, 5, 6, 7, 8, 9, 10);
+        var vault = new Vault(3, "PXXNsMroh6zwmH1iU9EjmMivLgqqART1GL", 2, 4, 5, 6, 7, 8, 9, 10);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalPledgesByModifiedBlockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(pledges);
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         // Act
         try
@@ -150,10 +150,10 @@ public class CreateRewindVaultProposalPledgesCommandHandlerTests
             new (4, publicId, vaultId, "Proh6zwmH1iU9EjmXXNMivLgqqART1GLsM", "Proh6zwmH1iU9EjmXXNMivLgqqART1GLsM", 4, "Description", VaultProposalType.TotalPledgeMinimum, VaultProposalStatus.Pledge, 5, 6, 7, 8, false, 9, 12)
         };
 
-        var vault = new VaultGovernance(vaultId, "PXXNsMroh6zwmH1iU9EjmMivLgqqART1GL", 2, 4, 5, 6, 7, 8, 9, 10);
+        var vault = new Vault(vaultId, "PXXNsMroh6zwmH1iU9EjmMivLgqqART1GL", 2, 4, 5, 6, 7, 8, 9, 10);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalPledgesByModifiedBlockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(pledges);
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         foreach (var proposal in proposals)
         {
@@ -202,10 +202,10 @@ public class CreateRewindVaultProposalPledgesCommandHandlerTests
             new (4, publicId, vaultId, "Proh6zwmH1iU9EjmXXNMivLgqqART1GLsM", "Proh6zwmH1iU9EjmXXNMivLgqqART1GLsM", 4, "Description", VaultProposalType.TotalPledgeMinimum, VaultProposalStatus.Pledge, 5, 6, 7, 8, false, 9, 12)
         };
 
-        var vault = new VaultGovernance(vaultId, "PXXNsMroh6zwmH1iU9EjmMivLgqqART1GL", 2, 4, 5, 6, 7, 8, 9, 10);
+        var vault = new Vault(vaultId, "PXXNsMroh6zwmH1iU9EjmMivLgqqART1GL", 2, 4, 5, 6, 7, 8, 9, 10);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalPledgesByModifiedBlockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(pledges);
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         foreach (var proposal in proposals)
         {

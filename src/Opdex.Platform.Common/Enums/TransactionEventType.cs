@@ -41,7 +41,7 @@ public enum TransactionEventType
     RevokeVaultCertificateEvent = 24,
     RedeemVaultCertificateEvent = 25,
 
-    // VaultGovernance
+    // Vault
     CreateVaultProposalEvent = 26,
     CompleteVaultProposalEvent = 27,
     VaultProposalPledgeEvent = 28,

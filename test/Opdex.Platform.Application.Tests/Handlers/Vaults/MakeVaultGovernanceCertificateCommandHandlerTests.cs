@@ -11,15 +11,15 @@ using Xunit;
 
 namespace Opdex.Platform.Application.Tests.Handlers.Vaults;
 
-public class MakeVaultGovernanceCertificateCommandHandlerTests
+public class MakeVaultCertificateCommandHandlerTests
 {
     private readonly Mock<IMediator> _mediator;
-    private readonly MakeVaultGovernanceCertificateCommandHandler _handler;
+    private readonly MakeVaultCertificateCommandHandler _handler;
 
-    public MakeVaultGovernanceCertificateCommandHandlerTests()
+    public MakeVaultCertificateCommandHandlerTests()
     {
         _mediator = new Mock<IMediator>();
-        _handler = new MakeVaultGovernanceCertificateCommandHandler(_mediator.Object);
+        _handler = new MakeVaultCertificateCommandHandler(_mediator.Object);
     }
 
     [Fact]
@@ -28,13 +28,13 @@ public class MakeVaultGovernanceCertificateCommandHandlerTests
         // Arrange
         using var cancellationTokenSource = new CancellationTokenSource();
         var certificate = new VaultCertificate(5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, 50);
-        var request = new MakeVaultGovernanceCertificateCommand(certificate);
+        var request = new MakeVaultCertificateCommand(certificate);
 
         // Act
         await _handler.Handle(request, cancellationTokenSource.Token);
 
         // Assert
-        _mediator.Verify(callTo => callTo.Send(It.Is<PersistVaultGovernanceCertificateCommand>(command => command.Certificate == certificate), CancellationToken.None), Times.Once);
+        _mediator.Verify(callTo => callTo.Send(It.Is<PersistVaultCertificateCommand>(command => command.Certificate == certificate), CancellationToken.None), Times.Once);
     }
 
     [Fact]
@@ -42,10 +42,10 @@ public class MakeVaultGovernanceCertificateCommandHandlerTests
     {
         // Arrange
         var certificate = new VaultCertificate(5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, 50);
-        var request = new MakeVaultGovernanceCertificateCommand(certificate);
+        var request = new MakeVaultCertificateCommand(certificate);
 
         ulong result = 25;
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<PersistVaultGovernanceCertificateCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(result);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<PersistVaultCertificateCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(result);
 
         // Act
         var response = await _handler.Handle(request, CancellationToken.None);

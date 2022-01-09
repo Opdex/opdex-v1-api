@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Vaults.Certificates;
 
-public class RetrieveVaultGovernanceContractCertificateSummaryByOwnerQueryHandler
-    : IRequestHandler<RetrieveVaultGovernanceContractCertificateSummaryByOwnerQuery, VaultContractCertificateSummary>
+public class RetrieveVaultContractCertificateSummaryByOwnerQueryHandler
+    : IRequestHandler<RetrieveVaultContractCertificateSummaryByOwnerQuery, VaultContractCertificateSummary>
 {
     private readonly IMediator _mediator;
 
-    public RetrieveVaultGovernanceContractCertificateSummaryByOwnerQueryHandler(IMediator mediator)
+    public RetrieveVaultContractCertificateSummaryByOwnerQueryHandler(IMediator mediator)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    public Task<VaultContractCertificateSummary> Handle(RetrieveVaultGovernanceContractCertificateSummaryByOwnerQuery request, CancellationToken cancellationToken)
+    public Task<VaultContractCertificateSummary> Handle(RetrieveVaultContractCertificateSummaryByOwnerQuery request, CancellationToken cancellationToken)
     {
-        return _mediator.Send(new CallCirrusGetVaultGovernanceContractCertificateSummaryByOwnerQuery(request.Vault,
+        return _mediator.Send(new CallCirrusGetVaultContractCertificateSummaryByOwnerQuery(request.Vault,
                                                                                                      request.Owner,
                                                                                                      request.BlockHeight), cancellationToken);
     }

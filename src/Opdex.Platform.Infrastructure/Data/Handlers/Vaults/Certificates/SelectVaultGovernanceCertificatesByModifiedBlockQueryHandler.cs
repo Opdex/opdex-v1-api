@@ -12,8 +12,8 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates;
 
-public class SelectVaultGovernanceCertificatesByModifiedBlockQueryHandler
-    : IRequestHandler<SelectVaultGovernanceCertificatesByModifiedBlockQuery, IEnumerable<VaultCertificate>>
+public class SelectVaultCertificatesByModifiedBlockQueryHandler
+    : IRequestHandler<SelectVaultCertificatesByModifiedBlockQuery, IEnumerable<VaultCertificate>>
 {
     private static readonly string SqlQuery =
         $@"SELECT
@@ -32,13 +32,13 @@ public class SelectVaultGovernanceCertificatesByModifiedBlockQueryHandler
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
 
-    public SelectVaultGovernanceCertificatesByModifiedBlockQueryHandler(IDbContext context, IMapper mapper)
+    public SelectVaultCertificatesByModifiedBlockQueryHandler(IDbContext context, IMapper mapper)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<IEnumerable<VaultCertificate>> Handle(SelectVaultGovernanceCertificatesByModifiedBlockQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<VaultCertificate>> Handle(SelectVaultCertificatesByModifiedBlockQuery request, CancellationToken cancellationToken)
     {
         var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.BlockHeight), cancellationToken);
 

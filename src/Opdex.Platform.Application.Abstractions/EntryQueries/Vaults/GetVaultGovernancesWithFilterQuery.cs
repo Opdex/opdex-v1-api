@@ -5,12 +5,12 @@ using System;
 
 namespace Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
 
-public class GetVaultGovernancesWithFilterQuery : IRequest<VaultGovernancesDto>
+public class GetVaultsWithFilterQuery : IRequest<VaultsDto>
 {
-    public GetVaultGovernancesWithFilterQuery(VaultGovernancesCursor cursor)
+    public GetVaultsWithFilterQuery(VaultsCursor cursor)
     {
         Cursor = cursor ?? throw new ArgumentNullException(nameof(cursor));
     }
 
-    public VaultGovernancesCursor Cursor { get; }
+    public VaultsCursor Cursor { get; }
 }

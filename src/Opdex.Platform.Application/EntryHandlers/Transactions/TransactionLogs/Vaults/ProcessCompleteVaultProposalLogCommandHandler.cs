@@ -27,7 +27,7 @@ public class ProcessCompleteVaultProposalLogCommandHandler : IRequestHandler<Pro
     {
         try
         {
-            var vault = await _mediator.Send(new RetrieveVaultGovernanceByAddressQuery(request.Log.Contract, findOrThrow: false));
+            var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: false));
             if (vault == null) return false;
 
             var proposal = await _mediator.Send(new RetrieveVaultProposalByVaultIdAndPublicIdQuery(vault.Id, request.Log.ProposalId, findOrThrow: false));
@@ -57,7 +57,7 @@ public class ProcessCompleteVaultProposalLogCommandHandler : IRequestHandler<Pro
             }
             else if (isCreate) refreshProposedSupply = true;
 
-            var vaultUpdated = await _mediator.Send(new MakeVaultGovernanceCommand(vault, request.BlockHeight,
+            var vaultUpdated = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight,
                                                                                    refreshProposedSupply: refreshProposedSupply,
                                                                                    refreshUnassignedSupply: refreshUnassignedSupply)) > 0;
 

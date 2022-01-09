@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults;
 
-public class SelectVaultGovernancesWithFilterQueryHandler : IRequestHandler<SelectVaultGovernancesWithFilterQuery, IEnumerable<VaultGovernance>>
+public class SelectVaultsWithFilterQueryHandler : IRequestHandler<SelectVaultsWithFilterQuery, IEnumerable<Vault>>
 {
     private const string TableJoins = "{TableJoins}";
     private const string WhereFilter = "{WhereFilter}";
@@ -26,16 +26,16 @@ public class SelectVaultGovernancesWithFilterQueryHandler : IRequestHandler<Sele
 
     private static readonly string SqlQuery =
         @$"SELECT
-                v.{nameof(VaultGovernanceEntity.Id)},
-                v.{nameof(VaultGovernanceEntity.TokenId)},
-                v.{nameof(VaultGovernanceEntity.Address)},
-                v.{nameof(VaultGovernanceEntity.UnassignedSupply)},
-                v.{nameof(VaultGovernanceEntity.ProposedSupply)},
-                v.{nameof(VaultGovernanceEntity.VestingDuration)},
-                v.{nameof(VaultGovernanceEntity.TotalPledgeMinimum)},
-                v.{nameof(VaultGovernanceEntity.TotalVoteMinimum)},
-                v.{nameof(VaultGovernanceEntity.CreatedBlock)},
-                v.{nameof(VaultGovernanceEntity.ModifiedBlock)}
+                v.{nameof(VaultEntity.Id)},
+                v.{nameof(VaultEntity.TokenId)},
+                v.{nameof(VaultEntity.Address)},
+                v.{nameof(VaultEntity.UnassignedSupply)},
+                v.{nameof(VaultEntity.ProposedSupply)},
+                v.{nameof(VaultEntity.VestingDuration)},
+                v.{nameof(VaultEntity.TotalPledgeMinimum)},
+                v.{nameof(VaultEntity.TotalVoteMinimum)},
+                v.{nameof(VaultEntity.CreatedBlock)},
+                v.{nameof(VaultEntity.ModifiedBlock)}
             FROM vault v
             {TableJoins}
             {WhereFilter}
@@ -46,29 +46,29 @@ public class SelectVaultGovernancesWithFilterQueryHandler : IRequestHandler<Sele
     private const string SortDirection = "{SortDirection}";
 
     private static readonly string PagingBackwardQuery =
-        @$"SELECT * FROM ({InnerQuery}) results ORDER BY results.{nameof(VaultGovernanceEntity.Id)} {SortDirection};";
+        @$"SELECT * FROM ({InnerQuery}) results ORDER BY results.{nameof(VaultEntity.Id)} {SortDirection};";
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
 
-    public SelectVaultGovernancesWithFilterQueryHandler(IDbContext context, IMapper mapper)
+    public SelectVaultsWithFilterQueryHandler(IDbContext context, IMapper mapper)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<IEnumerable<VaultGovernance>> Handle(SelectVaultGovernancesWithFilterQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Vault>> Handle(SelectVaultsWithFilterQuery request, CancellationToken cancellationToken)
     {
         var queryParams = new SqlParams(request.Cursor.Pointer, request.Cursor.LockedToken);
 
         var query = DatabaseQuery.Create(QueryBuilder(request), queryParams, cancellationToken);
 
-        var results = await _context.ExecuteQueryAsync<VaultGovernanceEntity>(query);
+        var results = await _context.ExecuteQueryAsync<VaultEntity>(query);
 
-        return _mapper.Map<IEnumerable<VaultGovernance>>(results);
+        return _mapper.Map<IEnumerable<Vault>>(results);
     }
 
-    private static string QueryBuilder(SelectVaultGovernancesWithFilterQuery request)
+    private static string QueryBuilder(SelectVaultsWithFilterQuery request)
     {
         var filterOnLockedToken = request.Cursor.LockedToken != Address.Empty;
 
@@ -90,12 +90,12 @@ public class SelectVaultGovernancesWithFilterQueryHandler : IRequestHandler<Sele
                 _ => throw new ArgumentException("Unrecognised paging and sorting direction.", nameof(request))
             };
 
-            whereFilterBuilder.Append($" WHERE v.{nameof(VaultGovernanceEntity.Id)} {sortOperator} @{nameof(SqlParams.Pointer)}");
+            whereFilterBuilder.Append($" WHERE v.{nameof(VaultEntity.Id)} {sortOperator} @{nameof(SqlParams.Pointer)}");
         }
 
         if (filterOnLockedToken)
         {
-            tableJoinBuilder.Append( $" JOIN token t ON t.{nameof(TokenEntity.Id)} = v.{nameof(VaultGovernanceEntity.TokenId)}");
+            tableJoinBuilder.Append( $" JOIN token t ON t.{nameof(TokenEntity.Id)} = v.{nameof(VaultEntity.TokenId)}");
             whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
             whereFilterBuilder.Append($" t.{nameof(TokenEntity.Address)} = @{nameof(SqlParams.LockedToken)}");
         }
@@ -110,7 +110,7 @@ public class SelectVaultGovernancesWithFilterQueryHandler : IRequestHandler<Sele
             _ => throw new ArgumentException("Unrecognised paging direction.", nameof(request))
         };
 
-        var orderBy = $" ORDER BY v.{nameof(VaultGovernanceEntity.Id)} {direction}";
+        var orderBy = $" ORDER BY v.{nameof(VaultEntity.Id)} {direction}";
 
         var limit = $" LIMIT {request.Cursor.Limit + 1}";
 

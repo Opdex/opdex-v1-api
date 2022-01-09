@@ -364,7 +364,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Certificates))
             .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
 
-        CreateMap<VaultGovernanceDto, VaultGovernanceResponseModel>()
+        CreateMap<VaultDto, VaultResponseModel>()
             .ForMember(dest => dest.Vault, opt => opt.MapFrom(src => src.Vault))
             .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token))
             .ForMember(dest => dest.TokensUnassigned, opt => opt.MapFrom(src => src.TokensUnassigned))
@@ -374,7 +374,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.TotalVoteMinimum, opt => opt.MapFrom(src => src.TotalVoteMinimum))
             .ForMember(dest => dest.VestingDuration, opt => opt.MapFrom(src => src.VestingDuration));
 
-        CreateMap<VaultGovernancesDto, VaultGovernancesResponseModel>()
+        CreateMap<VaultsDto, VaultsResponseModel>()
             .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Vaults))
             .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
 

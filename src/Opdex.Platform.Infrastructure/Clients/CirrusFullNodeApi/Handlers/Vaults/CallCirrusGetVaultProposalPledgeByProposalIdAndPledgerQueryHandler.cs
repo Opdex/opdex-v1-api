@@ -14,7 +14,7 @@ public class CallCirrusGetVaultProposalPledgeByProposalIdAndPledgerQueryHandler
     : IRequestHandler<CallCirrusGetVaultProposalPledgeByProposalIdAndPledgerQuery, ulong>
 {
     private readonly ISmartContractsModule _smartContractsModule;
-    private const string MethodName = VaultGovernanceConstants.Methods.GetProposalPledge;
+    private const string MethodName = VaultConstants.Methods.GetProposalPledge;
 
     public CallCirrusGetVaultProposalPledgeByProposalIdAndPledgerQueryHandler(ISmartContractsModule smartContractsModule)
     {

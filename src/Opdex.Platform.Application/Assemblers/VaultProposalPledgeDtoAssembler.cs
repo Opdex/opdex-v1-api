@@ -25,7 +25,7 @@ public class VaultProposalPledgeDtoAssembler : IModelAssembler<VaultProposalPled
     {
         var dto = _mapper.Map<VaultProposalPledgeDto>(pledge);
 
-        var vault = await _mediator.Send(new RetrieveVaultGovernanceByIdQuery(pledge.VaultId));
+        var vault = await _mediator.Send(new RetrieveVaultByIdQuery(pledge.VaultId));
         var proposal = await _mediator.Send(new RetrieveVaultProposalByIdQuery(pledge.ProposalId));
 
         dto.Vault = vault.Address;

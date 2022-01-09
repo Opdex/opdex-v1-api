@@ -14,33 +14,33 @@ using Xunit;
 
 namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults;
 
-public class CreateRewindVaultGovernancesCommandHandlerTests
+public class CreateRewindVaultsCommandHandlerTests
 {
     private readonly Mock<IMediator> _mediator;
-    private readonly CreateRewindVaultGovernancesCommandHandler _handler;
+    private readonly CreateRewindVaultsCommandHandler _handler;
 
-    public CreateRewindVaultGovernancesCommandHandlerTests()
+    public CreateRewindVaultsCommandHandlerTests()
     {
         _mediator = new Mock<IMediator>();
-        _handler = new CreateRewindVaultGovernancesCommandHandler(_mediator.Object,
-                                                                  Mock.Of<ILogger<CreateRewindVaultGovernancesCommandHandler>>());
+        _handler = new CreateRewindVaultsCommandHandler(_mediator.Object,
+                                                                  Mock.Of<ILogger<CreateRewindVaultsCommandHandler>>());
     }
 
     [Fact]
-    public void CreateRewindVaultGovernancesCommand_InvalidRewindHeight_ThrowsArgumentOutOfRangeException()
+    public void CreateRewindVaultsCommand_InvalidRewindHeight_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
         const ulong rewindHeight = 0;
 
         // Act
-        void Act() => new CreateRewindVaultGovernancesCommand(rewindHeight);
+        void Act() => new CreateRewindVaultsCommand(rewindHeight);
 
         // Assert
         Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Rewind height must be greater than zero.");
     }
 
     [Fact]
-    public async Task CreateRewindVaultGovernancesCommand_Sends_RetrieveVaultGovernancesByModifiedBlockQuery()
+    public async Task CreateRewindVaultsCommand_Sends_RetrieveVaultsByModifiedBlockQuery()
     {
         // Arrange
         const ulong rewindHeight = 10;
@@ -48,22 +48,22 @@ public class CreateRewindVaultGovernancesCommandHandlerTests
         // Act
         try
         {
-            await _handler.Handle(new CreateRewindVaultGovernancesCommand(rewindHeight), CancellationToken.None);
+            await _handler.Handle(new CreateRewindVaultsCommand(rewindHeight), CancellationToken.None);
         }
         catch { }
 
         // Assert
-        _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultGovernancesByModifiedBlockQuery>(q => q.BlockHeight == rewindHeight),
+        _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultsByModifiedBlockQuery>(q => q.BlockHeight == rewindHeight),
                                                It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task CreateRewindVaultGovernancesCommand_Sends_MakeVaultGovernanceCommand()
+    public async Task CreateRewindVaultsCommand_Sends_MakeVaultCommand()
     {
         // Arrange
         const ulong rewindHeight = 12;
 
-        var vaults = new List<VaultGovernance>
+        var vaults = new List<Vault>
         {
             new(1, "PXXNMivLgqqART1GLsMroh6zwmH1iU9Ejm", 2, 3, 4, 5, 6, 7, 8, 9),
             new(2, "PXXNsMroh6zwmH1iU9EjmMivLgqqART1GL", 3, 4, 5, 6, 7, 8, 9, 10),
@@ -71,16 +71,16 @@ public class CreateRewindVaultGovernancesCommandHandlerTests
             new(4, "Proh6zwmH1iU9EjmXXNMivLgqqART1GLsM", 5, 6, 7, 8, 9, 10, 11, 12)
         };
 
-        _mediator.Setup(callTo => callTo.Send(It.Is<RetrieveVaultGovernancesByModifiedBlockQuery>(q => q.BlockHeight == rewindHeight),
+        _mediator.Setup(callTo => callTo.Send(It.Is<RetrieveVaultsByModifiedBlockQuery>(q => q.BlockHeight == rewindHeight),
                                               It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
 
         // Act
-        await _handler.Handle(new CreateRewindVaultGovernancesCommand(rewindHeight), CancellationToken.None);
+        await _handler.Handle(new CreateRewindVaultsCommand(rewindHeight), CancellationToken.None);
 
         // Assert
         foreach (var vault in vaults)
         {
-            _mediator.Verify(callTo => callTo.Send(It.Is<MakeVaultGovernanceCommand>(q => q.BlockHeight == rewindHeight &&
+            _mediator.Verify(callTo => callTo.Send(It.Is<MakeVaultCommand>(q => q.BlockHeight == rewindHeight &&
                                                                                           q.Vault == vault &&
                                                                                           q.RefreshUnassignedSupply == true &&
                                                                                           q.RefreshProposedSupply == true &&

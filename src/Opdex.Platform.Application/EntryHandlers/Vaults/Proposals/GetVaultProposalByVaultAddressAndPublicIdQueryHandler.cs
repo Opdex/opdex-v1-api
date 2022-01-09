@@ -23,7 +23,7 @@ public class GetVaultProposalByVaultAddressAndPublicIdQueryHandler : IRequestHan
     }
     public async Task<VaultProposalDto> Handle(GetVaultProposalByVaultAddressAndPublicIdQuery request, CancellationToken cancellationToken)
     {
-        var vault = await _mediator.Send(new RetrieveVaultGovernanceByAddressQuery(request.Vault, findOrThrow: true), cancellationToken);
+        var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Vault, findOrThrow: true), cancellationToken);
         var proposal = await _mediator.Send(new RetrieveVaultProposalByVaultIdAndPublicIdQuery(vault.Id, request.PublicProposalId, findOrThrow: true), cancellationToken);
         return await _proposalAssembler.Assemble(proposal);
     }

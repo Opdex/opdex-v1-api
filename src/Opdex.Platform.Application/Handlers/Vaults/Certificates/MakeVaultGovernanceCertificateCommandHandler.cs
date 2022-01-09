@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Vaults.Certificates;
 
-public class MakeVaultGovernanceCertificateCommandHandler : IRequestHandler<MakeVaultGovernanceCertificateCommand, ulong>
+public class MakeVaultCertificateCommandHandler : IRequestHandler<MakeVaultCertificateCommand, ulong>
 {
     private readonly IMediator _mediator;
 
-    public MakeVaultGovernanceCertificateCommandHandler(IMediator mediator)
+    public MakeVaultCertificateCommandHandler(IMediator mediator)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    public Task<ulong> Handle(MakeVaultGovernanceCertificateCommand request, CancellationToken cancellationToken)
+    public Task<ulong> Handle(MakeVaultCertificateCommand request, CancellationToken cancellationToken)
     {
-        return _mediator.Send(new PersistVaultGovernanceCertificateCommand(request.Certificate), CancellationToken.None);
+        return _mediator.Send(new PersistVaultCertificateCommand(request.Certificate), CancellationToken.None);
     }
 }

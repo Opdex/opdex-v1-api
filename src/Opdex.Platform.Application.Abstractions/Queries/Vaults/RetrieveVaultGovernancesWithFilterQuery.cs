@@ -6,12 +6,12 @@ using System.Collections.Generic;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.Vaults;
 
-public class RetrieveVaultGovernancesWithFilterQuery : IRequest<IEnumerable<VaultGovernance>>
+public class RetrieveVaultsWithFilterQuery : IRequest<IEnumerable<Vault>>
 {
-    public RetrieveVaultGovernancesWithFilterQuery(VaultGovernancesCursor cursor)
+    public RetrieveVaultsWithFilterQuery(VaultsCursor cursor)
     {
         Cursor = cursor ?? throw new ArgumentNullException(nameof(cursor));
     }
 
-    public VaultGovernancesCursor Cursor { get; }
+    public VaultsCursor Cursor { get; }
 }

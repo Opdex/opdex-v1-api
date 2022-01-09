@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Vaults;
 
-public class RetrieveVaultGovernanceByIdQueryHandler : IRequestHandler<RetrieveVaultGovernanceByIdQuery, VaultGovernance>
+public class RetrieveVaultByIdQueryHandler : IRequestHandler<RetrieveVaultByIdQuery, Vault>
 {
     private readonly IMediator _mediator;
 
-    public RetrieveVaultGovernanceByIdQueryHandler(IMediator mediator)
+    public RetrieveVaultByIdQueryHandler(IMediator mediator)
     {
         _mediator = mediator;
     }
 
-    public Task<VaultGovernance> Handle(RetrieveVaultGovernanceByIdQuery request, CancellationToken cancellationToken)
+    public Task<Vault> Handle(RetrieveVaultByIdQuery request, CancellationToken cancellationToken)
     {
-        return _mediator.Send(new SelectVaultGovernanceByIdQuery(request.VaultId, request.FindOrThrow), cancellationToken);
+        return _mediator.Send(new SelectVaultByIdQuery(request.VaultId, request.FindOrThrow), cancellationToken);
     }
 }

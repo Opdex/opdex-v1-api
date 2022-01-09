@@ -27,7 +27,7 @@ public class GetVaultProposalsWithFilterQueryHandler : EntryFilterQueryHandler<G
 
     public override async Task<VaultProposalsDto> Handle(GetVaultProposalsWithFilterQuery request, CancellationToken cancellationToken)
     {
-        var vault = await _mediator.Send(new RetrieveVaultGovernanceByAddressQuery(request.Vault, findOrThrow: true), cancellationToken);
+        var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Vault, findOrThrow: true), cancellationToken);
 
         var proposals = await _mediator.Send(new RetrieveVaultProposalsWithFilterQuery(vault.Id, request.Cursor), cancellationToken);
 

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Assemblers;
 
-public class VaultDtoAssembler : IModelAssembler<VaultGovernance, VaultGovernanceDto>
+public class VaultDtoAssembler : IModelAssembler<Vault, VaultDto>
 {
     private readonly IMapper _mapper;
     private readonly IMediator _mediator;
@@ -22,9 +22,9 @@ public class VaultDtoAssembler : IModelAssembler<VaultGovernance, VaultGovernanc
         _mediator = mediator;
     }
 
-    public async Task<VaultGovernanceDto> Assemble(VaultGovernance vault)
+    public async Task<VaultDto> Assemble(Vault vault)
     {
-        var dto = _mapper.Map<VaultGovernanceDto>(vault);
+        var dto = _mapper.Map<VaultDto>(vault);
 
         var token = await _mediator.Send(new RetrieveTokenByIdQuery(vault.TokenId));
 

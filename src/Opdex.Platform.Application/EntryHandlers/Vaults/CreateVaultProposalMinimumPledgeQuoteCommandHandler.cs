@@ -18,7 +18,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults;
 
 public class CreateVaultProposalMinimumPledgeQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateVaultProposalMinimumPledgeQuoteCommand>
 {
-    private const string MethodName = VaultGovernanceConstants.Methods.CreateTotalPledgeMinimumProposal;
+    private const string MethodName = VaultConstants.Methods.CreateTotalPledgeMinimumProposal;
 
     public CreateVaultProposalMinimumPledgeQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
                                                                IMediator mediator,
@@ -29,7 +29,7 @@ public class CreateVaultProposalMinimumPledgeQuoteCommandHandler : BaseTransacti
     public override async Task<TransactionQuoteDto> Handle(CreateVaultProposalMinimumPledgeQuoteCommand request, CancellationToken cancellationToken)
     {
         // ensure vault exists, if not throw to return 404
-        var vault = await _mediator.Send(new RetrieveVaultGovernanceByAddressQuery(request.Vault, findOrThrow: true), cancellationToken);
+        var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Vault, findOrThrow: true), cancellationToken);
         var token = await _mediator.Send(new RetrieveTokenByIdQuery(vault.TokenId), cancellationToken);
 
         var requestParameters = new List<TransactionQuoteRequestParameter>

@@ -3,7 +3,7 @@ using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
 
-public class VaultGovernanceEntity : AuditEntity
+public class VaultEntity : AuditEntity
 {
     public ulong Id { get; set; }
     public ulong TokenId { get; set; }

@@ -8,16 +8,16 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Vaults;
 /// <summary>
 /// Retrieves the summary of a vault contract, with selected retrievable properties.
 /// </summary>
-public class RetrieveVaultGovernanceContractSummaryQuery : IRequest<VaultGovernanceContractSummary>
+public class RetrieveVaultContractSummaryQuery : IRequest<VaultContractSummary>
 {
-    public RetrieveVaultGovernanceContractSummaryQuery(Address vault, ulong blockHeight, bool includeVestingDuration = false,
+    public RetrieveVaultContractSummaryQuery(Address vault, ulong blockHeight, bool includeVestingDuration = false,
                                                        bool includeUnassignedSupply = false, bool includeProposedSupply = false,
                                                        bool includeTotalPledgeMinimum = false, bool includeTotalVoteMinimum = false)
     {
         if (vault == Address.Empty) throw new ArgumentNullException(nameof(vault), "Vault address must be provided.");
         if (blockHeight == 0) throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
 
-        VaultGovernance = vault;
+        Vault = vault;
         BlockHeight = blockHeight;
         IncludeVestingDuration = includeVestingDuration;
         IncludeUnassignedSupply = includeUnassignedSupply;
@@ -26,7 +26,7 @@ public class RetrieveVaultGovernanceContractSummaryQuery : IRequest<VaultGoverna
         IncludeTotalVoteMinimum = includeTotalVoteMinimum;
     }
 
-    public Address VaultGovernance { get; }
+    public Address Vault { get; }
     public ulong BlockHeight { get; }
     public bool IncludeVestingDuration { get; }
     public bool IncludeUnassignedSupply { get; }

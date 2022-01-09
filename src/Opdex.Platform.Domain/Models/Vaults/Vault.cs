@@ -9,9 +9,9 @@ namespace Opdex.Platform.Domain.Models.Vaults;
 /// <summary>
 /// Vault that CRS holders can vote on proposals for the allocation of vested certificates. Certificates entitle the holder to Opdex governance upon completion of the vesting period.
 /// </summary>
-public class VaultGovernance : BlockAudit
+public class Vault : BlockAudit
 {
-    public VaultGovernance(Address address, ulong tokenId, ulong vestingDuration, ulong totalPledgeMinimum, ulong totalVoteMinimum, ulong createdBlock)
+    public Vault(Address address, ulong tokenId, ulong vestingDuration, ulong totalPledgeMinimum, ulong totalVoteMinimum, ulong createdBlock)
         : base(createdBlock)
     {
         Address = address != Address.Empty ? address : throw new ArgumentNullException(nameof(address), "Address must be set.");
@@ -21,7 +21,7 @@ public class VaultGovernance : BlockAudit
         TotalVoteMinimum = totalVoteMinimum;
     }
 
-    public VaultGovernance(ulong id, Address address, ulong tokenId, UInt256 unassignedSupply, ulong vestingDuration, UInt256 proposedSupply,
+    public Vault(ulong id, Address address, ulong tokenId, UInt256 unassignedSupply, ulong vestingDuration, UInt256 proposedSupply,
                            ulong totalPledgeMinimum, ulong totalVoteMinimum, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
     {
         Id = id;
@@ -43,7 +43,7 @@ public class VaultGovernance : BlockAudit
     public ulong TotalPledgeMinimum { get; private set; }
     public ulong TotalVoteMinimum { get; private set; }
 
-    public void Update(VaultGovernanceContractSummary summary)
+    public void Update(VaultContractSummary summary)
     {
         if (summary is null) throw new ArgumentNullException(nameof(summary));
 

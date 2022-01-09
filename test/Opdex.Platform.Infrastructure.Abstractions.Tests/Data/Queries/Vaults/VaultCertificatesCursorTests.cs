@@ -8,14 +8,14 @@ using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Vaults;
 
-public class VaultGovernanceCertificatesCursorTests
+public class VaultCertificatesCursorTests
 {
     [Fact]
     public void Create_LimitExceedsMaximum_ThrowArgumentOutOfRangeException()
     {
         // Arrange
         // Act
-        static void Act() => new VaultGovernanceCertificatesCursor("PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", VaultCertificateStatusFilter.Redeemed, SortDirectionType.ASC, 50 + 1, PagingDirection.Forward, 0);
+        static void Act() => new VaultCertificatesCursor("PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", VaultCertificateStatusFilter.Redeemed, SortDirectionType.ASC, 50 + 1, PagingDirection.Forward, 0);
 
         // Assert
         Assert.Throws<ArgumentOutOfRangeException>("limit", Act);
@@ -27,7 +27,7 @@ public class VaultGovernanceCertificatesCursorTests
     {
         // Arrange
         // Act
-        void Act() => new VaultGovernanceCertificatesCursor("PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", VaultCertificateStatusFilter.Redeemed, SortDirectionType.ASC, 25, pagingDirection, pointer);
+        void Act() => new VaultCertificatesCursor("PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", VaultCertificateStatusFilter.Redeemed, SortDirectionType.ASC, 25, pagingDirection, pointer);
 
         // Assert
         Assert.Throws<ArgumentException>("pointer", Act);
@@ -37,7 +37,7 @@ public class VaultGovernanceCertificatesCursorTests
     public void ToString_StringifiesCursor_FormatCorrectly()
     {
         // Arrange
-        var cursor = new VaultGovernanceCertificatesCursor("PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", VaultCertificateStatusFilter.Redeemed, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
+        var cursor = new VaultCertificatesCursor("PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", VaultCertificateStatusFilter.Redeemed, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
 
         // Act
         var result = cursor.ToString();
@@ -54,14 +54,14 @@ public class VaultGovernanceCertificatesCursorTests
     public void Turn_NonIdenticalPointer_ReturnAnotherCursor()
     {
         // Arrange
-        var cursor = new VaultGovernanceCertificatesCursor("PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", VaultCertificateStatusFilter.Redeemed, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
+        var cursor = new VaultCertificatesCursor("PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", VaultCertificateStatusFilter.Redeemed, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
 
         // Act
         var result = cursor.Turn(PagingDirection.Backward, 567);
 
         // Assert
-        result.Should().BeOfType<VaultGovernanceCertificatesCursor>();
-        var adjacentCursor = (VaultGovernanceCertificatesCursor)result;
+        result.Should().BeOfType<VaultCertificatesCursor>();
+        var adjacentCursor = (VaultCertificatesCursor)result;
         adjacentCursor.Holder.Should().Be(cursor.Holder);
         adjacentCursor.SortDirection.Should().Be(cursor.SortDirection);
         adjacentCursor.Limit.Should().Be(cursor.Limit);
@@ -86,7 +86,7 @@ public class VaultGovernanceCertificatesCursorTests
     {
         // Arrange
         // Act
-        var canParse = VaultGovernanceCertificatesCursor.TryParse(stringified, out var cursor);
+        var canParse = VaultCertificatesCursor.TryParse(stringified, out var cursor);
 
         // Assert
         canParse.Should().Be(false);
@@ -100,7 +100,7 @@ public class VaultGovernanceCertificatesCursorTests
         var stringified = "holder:;status:All;direction:ASC;limit:50;paging:Forward;pointer:MTA=;"; // pointer: 10;
 
         // Act
-        var canParse = VaultGovernanceCertificatesCursor.TryParse(stringified, out var cursor);
+        var canParse = VaultCertificatesCursor.TryParse(stringified, out var cursor);
 
         // Assert
         canParse.Should().Be(true);

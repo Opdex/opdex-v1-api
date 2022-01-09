@@ -14,7 +14,7 @@ public class VaultCertificatesFilterParametersTests
     {
         // Arrange
         // Act
-        var filters = new VaultGovernanceCertificateFilterParameters();
+        var filters = new VaultCertificateFilterParameters();
 
         // Assert
         filters.Holder.Should().Be(Address.Empty);
@@ -26,7 +26,7 @@ public class VaultCertificatesFilterParametersTests
     public void BuildCursor_CursorStringNotProvided_ReturnFiltered()
     {
         // Arrange
-        var filters = new VaultGovernanceCertificateFilterParameters
+        var filters = new VaultCertificateFilterParameters
         {
             Holder = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm"),
             Limit = 20,
@@ -49,7 +49,7 @@ public class VaultCertificatesFilterParametersTests
     public void BuildCursor_NotABase64CursorString_ReturnNull()
     {
         // Arrange
-        var filters = new VaultGovernanceCertificateFilterParameters { EncodedCursor = "NOT_BASE_64_****" };
+        var filters = new VaultCertificateFilterParameters { EncodedCursor = "NOT_BASE_64_****" };
 
         // Act
         var cursor = filters.BuildCursor();
@@ -62,7 +62,7 @@ public class VaultCertificatesFilterParametersTests
     public void BuildCursor_NotAValidCursorString_ReturnNull()
     {
         // Arrange
-        var filters = new VaultGovernanceCertificateFilterParameters { EncodedCursor = "Tk9UX1ZBTElE" };
+        var filters = new VaultCertificateFilterParameters { EncodedCursor = "Tk9UX1ZBTElE" };
 
         // Act
         var cursor = filters.BuildCursor();
@@ -75,7 +75,7 @@ public class VaultCertificatesFilterParametersTests
     public void BuildCursor_ValidCursorString_ReturnCursor()
     {
         // Arrange
-        var filters = new VaultGovernanceCertificateFilterParameters { EncodedCursor = "aG9sZGVyOjtzdGF0dXM6QWxsO2RpcmVjdGlvbjpERVNDO2xpbWl0OjU7cGFnaW5nOkZvcndhcmQ7cG9pbnRlcjpNdz09Ow==" };
+        var filters = new VaultCertificateFilterParameters { EncodedCursor = "aG9sZGVyOjtzdGF0dXM6QWxsO2RpcmVjdGlvbjpERVNDO2xpbWl0OjU7cGFnaW5nOkZvcndhcmQ7cG9pbnRlcjpNdz09Ow==" };
 
         // Act
         var cursor = filters.BuildCursor();

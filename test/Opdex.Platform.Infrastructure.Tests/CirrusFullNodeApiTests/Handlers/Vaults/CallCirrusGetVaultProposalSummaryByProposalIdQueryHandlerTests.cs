@@ -92,7 +92,7 @@ public class CallCirrusGetVaultProposalSummaryByProposalIdQueryHandlerTests
 
         // Assert
         _smartContractsModuleMock.Verify(callTo => callTo.LocalCallAsync(It.Is<LocalCallRequestDto>(q => q.Amount == FixedDecimal.Zero &&
-                                                                                                         q.MethodName == VaultGovernanceConstants.Methods.GetProposal &&
+                                                                                                         q.MethodName == VaultConstants.Methods.GetProposal &&
                                                                                                          q.Parameters.All(p => parameters.Contains(p)) &&
                                                                                                          q.ContractAddress == vault &&
                                                                                                          q.BlockHeight == blockHeight),

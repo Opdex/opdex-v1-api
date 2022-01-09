@@ -15,7 +15,7 @@ public class CallCirrusGetVaultProposalSummaryByProposalIdQueryHandler
     : IRequestHandler<CallCirrusGetVaultProposalSummaryByProposalIdQuery, VaultProposalSummary>
 {
     private readonly ISmartContractsModule _smartContractsModule;
-    private const string MethodName = VaultGovernanceConstants.Methods.GetProposal;
+    private const string MethodName = VaultConstants.Methods.GetProposal;
 
     public CallCirrusGetVaultProposalSummaryByProposalIdQueryHandler(ISmartContractsModule smartContractsModule)
     {

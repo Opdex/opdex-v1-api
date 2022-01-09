@@ -14,21 +14,21 @@ using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Vaults.Certificates;
 
-public class SelectVaultGovernanceCertificatesByVaultIdAndOwnerQueryHandlerTests
+public class SelectVaultCertificatesByVaultIdAndOwnerQueryHandlerTests
 {
     private readonly Mock<IDbContext> _dbContext;
-    private readonly SelectVaultGovernanceCertificatesByVaultIdAndOwnerQueryHandler _handler;
+    private readonly SelectVaultCertificatesByVaultIdAndOwnerQueryHandler _handler;
 
-    public SelectVaultGovernanceCertificatesByVaultIdAndOwnerQueryHandlerTests()
+    public SelectVaultCertificatesByVaultIdAndOwnerQueryHandlerTests()
     {
         var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
         _dbContext = new Mock<IDbContext>();
-        _handler = new SelectVaultGovernanceCertificatesByVaultIdAndOwnerQueryHandler(_dbContext.Object, mapper);
+        _handler = new SelectVaultCertificatesByVaultIdAndOwnerQueryHandler(_dbContext.Object, mapper);
     }
 
     [Fact]
-    public async Task SelectVaultGovernanceCertificatesByVaultIdAndOwner_Success()
+    public async Task SelectVaultCertificatesByVaultIdAndOwner_Success()
     {
         const ulong vaultId = 10;
         Address owner = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
@@ -61,7 +61,7 @@ public class SelectVaultGovernanceCertificatesByVaultIdAndOwnerQueryHandlerTests
             }
         };
 
-        var command = new SelectVaultGovernanceCertificatesByVaultIdAndOwnerQuery(vaultId, owner);
+        var command = new SelectVaultCertificatesByVaultIdAndOwnerQuery(vaultId, owner);
 
         _dbContext.Setup(db => db.ExecuteQueryAsync<VaultCertificateEntity>(It.Is<DatabaseQuery>(q => q.Sql.Contains("vault_certificate"))))
             .ReturnsAsync(expected.ToArray());
@@ -84,12 +84,12 @@ public class SelectVaultGovernanceCertificatesByVaultIdAndOwnerQueryHandlerTests
     }
 
     [Fact]
-    public async Task SelectVaultGovernanceCertificatesByVaultIdAndOwner_ReturnsEmpty()
+    public async Task SelectVaultCertificatesByVaultIdAndOwner_ReturnsEmpty()
     {
         const ulong vaultId = 10;
         Address owner = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
 
-        var command = new SelectVaultGovernanceCertificatesByVaultIdAndOwnerQuery(vaultId, owner);
+        var command = new SelectVaultCertificatesByVaultIdAndOwnerQuery(vaultId, owner);
 
         _dbContext.Setup(db => db.ExecuteQueryAsync<VaultCertificateEntity>(It.IsAny<DatabaseQuery>()))
             .ReturnsAsync(Enumerable.Empty<VaultCertificateEntity>);

@@ -29,7 +29,7 @@ public class ProcessCreateVaultProposalLogCommandHandler : IRequestHandler<Proce
     {
         try
         {
-            var vault = await _mediator.Send(new RetrieveVaultGovernanceByAddressQuery(request.Log.Contract, findOrThrow: false));
+            var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: false));
             if (vault == null) return false;
 
             var proposal = await _mediator.Send(new RetrieveVaultProposalByVaultIdAndPublicIdQuery(vault.Id, request.Log.ProposalId, findOrThrow: false));
@@ -45,14 +45,14 @@ public class ProcessCreateVaultProposalLogCommandHandler : IRequestHandler<Proce
 
             if (proposal.Type == VaultProposalType.Create)
             {
-                var vaultUpdated = await _mediator.Send(new MakeVaultGovernanceCommand(vault, request.BlockHeight, refreshProposedSupply: true)) > 0;
+                var vaultUpdated = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight, refreshProposedSupply: true)) > 0;
 
                 if (!vaultUpdated) _logger.LogError("Failure updating the vault for proposed amount.");
             }
 
             if (proposal.Type == VaultProposalType.Revoke)
             {
-                var certificates = await _mediator.Send(new RetrieveVaultGovernanceCertificatesByVaultIdAndOwnerQuery(proposal.VaultId,
+                var certificates = await _mediator.Send(new RetrieveVaultCertificatesByVaultIdAndOwnerQuery(proposal.VaultId,
                                                                                                                       proposal.Wallet), CancellationToken.None);
 
                 var certificate = certificates.SingleOrDefault(certificate => certificate.Amount == proposal.Amount &&

@@ -39,7 +39,7 @@ public class ProcessDistributionLogCommandHandler : IRequestHandler<ProcessDistr
             var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.Contract, findOrThrow: false));
             if (token == null) return false;
 
-            var vault = await _mediator.Send(new RetrieveVaultGovernanceByTokenIdQuery(token.Id, findOrThrow: false));
+            var vault = await _mediator.Send(new RetrieveVaultByTokenIdQuery(token.Id, findOrThrow: false));
             if (vault == null) return false;
 
             var miningGovernance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(token.Id, findOrThrow: false));
@@ -105,7 +105,7 @@ public class ProcessDistributionLogCommandHandler : IRequestHandler<ProcessDistr
             // try to refresh the vault
             if (request.BlockHeight >= vault.ModifiedBlock)
             {
-                var vaultId = await _mediator.Send(new MakeVaultGovernanceCommand(vault, request.BlockHeight,
+                var vaultId = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight,
                                                                                   refreshUnassignedSupply: true));
                 if (vaultId == 0)
                 {

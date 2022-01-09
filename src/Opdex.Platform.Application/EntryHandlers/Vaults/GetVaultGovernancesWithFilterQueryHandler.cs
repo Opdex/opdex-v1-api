@@ -12,21 +12,21 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.Vaults;
 
-public class GetVaultGovernancesWithFilterQueryHandler : EntryFilterQueryHandler<GetVaultGovernancesWithFilterQuery, VaultGovernancesDto>
+public class GetVaultsWithFilterQueryHandler : EntryFilterQueryHandler<GetVaultsWithFilterQuery, VaultsDto>
 {
     private readonly IMediator _mediator;
-    private readonly IModelAssembler<VaultGovernance, VaultGovernanceDto> _vaultAssembler;
+    private readonly IModelAssembler<Vault, VaultDto> _vaultAssembler;
 
-    public GetVaultGovernancesWithFilterQueryHandler(IMediator mediator, IModelAssembler<VaultGovernance, VaultGovernanceDto> vaultAssembler, ILogger<GetVaultGovernancesWithFilterQueryHandler> logger)
+    public GetVaultsWithFilterQueryHandler(IMediator mediator, IModelAssembler<Vault, VaultDto> vaultAssembler, ILogger<GetVaultsWithFilterQueryHandler> logger)
         : base(logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _vaultAssembler = vaultAssembler ?? throw new ArgumentNullException(nameof(vaultAssembler));
     }
 
-    public override async Task<VaultGovernancesDto> Handle(GetVaultGovernancesWithFilterQuery request, CancellationToken cancellationToken)
+    public override async Task<VaultsDto> Handle(GetVaultsWithFilterQuery request, CancellationToken cancellationToken)
     {
-        var vaults = await _mediator.Send(new RetrieveVaultGovernancesWithFilterQuery(request.Cursor), cancellationToken);
+        var vaults = await _mediator.Send(new RetrieveVaultsWithFilterQuery(request.Cursor), cancellationToken);
 
         var vaultsResults = vaults.ToList();
 
@@ -34,6 +34,6 @@ public class GetVaultGovernancesWithFilterQueryHandler : EntryFilterQueryHandler
 
         var assembledResults = await Task.WhenAll(vaultsResults.Select(vault => _vaultAssembler.Assemble(vault)));
 
-        return new VaultGovernancesDto() { Vaults = assembledResults, Cursor = cursorDto };
+        return new VaultsDto() { Vaults = assembledResults, Cursor = cursorDto };
     }
 }

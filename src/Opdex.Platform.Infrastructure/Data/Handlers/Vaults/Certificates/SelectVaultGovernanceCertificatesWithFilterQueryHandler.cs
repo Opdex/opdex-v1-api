@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates;
 
-public class SelectVaultGovernanceCertificatesWithFilterQueryHandler : IRequestHandler<SelectVaultGovernanceCertificatesWithFilterQuery, IEnumerable<VaultCertificate>>
+public class SelectVaultCertificatesWithFilterQueryHandler : IRequestHandler<SelectVaultCertificatesWithFilterQuery, IEnumerable<VaultCertificate>>
 {
     private const string WhereFilter = "{WhereFilter}";
     private const string OrderBy = "{OrderBy}";
@@ -47,13 +47,13 @@ public class SelectVaultGovernanceCertificatesWithFilterQueryHandler : IRequestH
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
 
-    public SelectVaultGovernanceCertificatesWithFilterQueryHandler(IDbContext context, IMapper mapper)
+    public SelectVaultCertificatesWithFilterQueryHandler(IDbContext context, IMapper mapper)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<IEnumerable<VaultCertificate>> Handle(SelectVaultGovernanceCertificatesWithFilterQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<VaultCertificate>> Handle(SelectVaultCertificatesWithFilterQuery request, CancellationToken cancellationToken)
     {
         var queryParams = new SqlParams(request.Cursor.Pointer, request.VaultId, request.Cursor.Holder);
 
@@ -64,7 +64,7 @@ public class SelectVaultGovernanceCertificatesWithFilterQueryHandler : IRequestH
         return _mapper.Map<IEnumerable<VaultCertificate>>(results);
     }
 
-    private string QueryBuilder(SelectVaultGovernanceCertificatesWithFilterQuery request)
+    private string QueryBuilder(SelectVaultCertificatesWithFilterQuery request)
     {
         var whereFilterBuilder = new StringBuilder();
 

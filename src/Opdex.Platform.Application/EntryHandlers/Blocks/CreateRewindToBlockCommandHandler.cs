@@ -60,11 +60,11 @@ public class CreateRewindToBlockCommandHandler : IRequestHandler<CreateRewindToB
         rewound = await _mediator.Send(new CreateRewindMiningPoolsCommand(request.Block), CancellationToken.None) && rewound;
         rewound = await _mediator.Send(new CreateRewindMarketsCommand(request.Block), CancellationToken.None) && rewound;
         rewound = await _mediator.Send(new CreateRewindMarketPermissionsCommand(request.Block), CancellationToken.None) && rewound;
-        rewound = await _mediator.Send(new CreateRewindVaultGovernancesCommand(request.Block), CancellationToken.None) && rewound;
+        rewound = await _mediator.Send(new CreateRewindVaultsCommand(request.Block), CancellationToken.None) && rewound;
         rewound = await _mediator.Send(new CreateRewindVaultProposalsCommand(request.Block), CancellationToken.None) && rewound;
         rewound = await _mediator.Send(new CreateRewindVaultProposalPledgesCommand(request.Block), CancellationToken.None) && rewound;
         rewound = await _mediator.Send(new CreateRewindVaultProposalVotesCommand(request.Block), CancellationToken.None) && rewound;
-        rewound = await _mediator.Send(new CreateRewindVaultGovernanceCertificatesCommand(request.Block), CancellationToken.None) && rewound;
+        rewound = await _mediator.Send(new CreateRewindVaultCertificatesCommand(request.Block), CancellationToken.None) && rewound;
         rewound = await _mediator.Send(new CreateRewindSnapshotsCommand(request.Block), CancellationToken.None) && rewound; // markets/pools/tokens combined
 
         _logger.LogTrace("Refreshing of stale records finished.");

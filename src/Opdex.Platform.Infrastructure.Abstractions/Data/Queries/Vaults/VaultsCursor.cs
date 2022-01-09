@@ -6,9 +6,9 @@ using System.Text;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults;
 
-public class VaultGovernancesCursor : Cursor<ulong>
+public class VaultsCursor : Cursor<ulong>
 {
-    public VaultGovernancesCursor(Address lockedToken, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, ulong pointer)
+    public VaultsCursor(Address lockedToken, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, ulong pointer)
         : base(sortDirection, limit, pagingDirection, pointer)
     {
         LockedToken = lockedToken;
@@ -30,7 +30,7 @@ public class VaultGovernancesCursor : Cursor<ulong>
         if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
         if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical id.");
 
-        return new VaultGovernancesCursor(LockedToken, SortDirection, Limit, direction, pointer);
+        return new VaultsCursor(LockedToken, SortDirection, Limit, direction, pointer);
     }
 
     /// <summary>
@@ -39,7 +39,7 @@ public class VaultGovernancesCursor : Cursor<ulong>
     /// <param name="raw">Stringified cursor</param>
     /// <param name="cursor">Parsed cursor</param>
     /// <returns>True if the value could be parsed, otherwise false</returns>
-    public static bool TryParse(string raw, out VaultGovernancesCursor cursor)
+    public static bool TryParse(string raw, out VaultsCursor cursor)
     {
         cursor = null;
 
@@ -63,7 +63,7 @@ public class VaultGovernancesCursor : Cursor<ulong>
 
         try
         {
-            cursor = new VaultGovernancesCursor(lockedToken, direction, limit, paging, pointer);
+            cursor = new VaultsCursor(lockedToken, direction, limit, paging, pointer);
         }
         catch (Exception)
         {

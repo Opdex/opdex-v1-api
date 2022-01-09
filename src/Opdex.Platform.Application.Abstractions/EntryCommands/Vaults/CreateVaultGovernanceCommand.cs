@@ -7,7 +7,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 /// <summary>
 /// Create a new vault record if one does not already exist.
 /// </summary>
-public class CreateVaultGovernanceCommand : IRequest<ulong>
+public class CreateVaultCommand : IRequest<ulong>
 {
     /// <summary>
     /// Constructor to initialize the create vault command.
@@ -15,7 +15,7 @@ public class CreateVaultGovernanceCommand : IRequest<ulong>
     /// <param name="vault">The address of the vault smart contract.</param>
     /// <param name="tokenId">The tokenId of the locked vault token.</param>
     /// <param name="blockHeight">The block height to retrieve values at.</param>
-    public CreateVaultGovernanceCommand(Address vault, ulong tokenId, ulong blockHeight)
+    public CreateVaultCommand(Address vault, ulong tokenId, ulong blockHeight)
     {
         if (vault == Address.Empty)
         {

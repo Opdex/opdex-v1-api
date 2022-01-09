@@ -9,14 +9,14 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Vaults.Certificates;
 /// <summary>
 /// Request to retrieve certificates in a vault.
 /// </summary>
-public class RetrieveVaultGovernanceCertificatesWithFilterQuery : IRequest<IEnumerable<VaultCertificate>>
+public class RetrieveVaultCertificatesWithFilterQuery : IRequest<IEnumerable<VaultCertificate>>
 {
     /// <summary>
     /// Creates a request to retrieve certificates in a vault.
     /// </summary>
     /// <param name="vaultId">Id of the vault.</param>
     /// <param name="cursor">Cursor filters.</param>
-    public RetrieveVaultGovernanceCertificatesWithFilterQuery(ulong vaultId, VaultGovernanceCertificatesCursor cursor)
+    public RetrieveVaultCertificatesWithFilterQuery(ulong vaultId, VaultCertificatesCursor cursor)
     {
         if (vaultId == 0) throw new ArgumentOutOfRangeException(nameof(vaultId), "Vault id must be greater than zero.");
         VaultId = vaultId;
@@ -24,5 +24,5 @@ public class RetrieveVaultGovernanceCertificatesWithFilterQuery : IRequest<IEnum
     }
 
     public ulong VaultId { get; }
-    public VaultGovernanceCertificatesCursor Cursor { get; }
+    public VaultCertificatesCursor Cursor { get; }
 }

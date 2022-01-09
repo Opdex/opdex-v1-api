@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates;
 
-public class PersistVaultGovernanceCertificateCommandHandler : IRequestHandler<PersistVaultGovernanceCertificateCommand, ulong>
+public class PersistVaultCertificateCommandHandler : IRequestHandler<PersistVaultCertificateCommand, ulong>
 {
     private static readonly string InsertSqlCommand =
         $@"INSERT INTO vault_certificate (
@@ -46,16 +46,16 @@ public class PersistVaultGovernanceCertificateCommandHandler : IRequestHandler<P
                 WHERE {nameof(VaultCertificateEntity.Id)} = @{nameof(VaultCertificateEntity.Id)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
-    private readonly ILogger<PersistVaultGovernanceCertificateCommandHandler> _logger;
+    private readonly ILogger<PersistVaultCertificateCommandHandler> _logger;
     private readonly IMapper _mapper;
 
-    public PersistVaultGovernanceCertificateCommandHandler(IDbContext context, ILogger<PersistVaultGovernanceCertificateCommandHandler> logger, IMapper mapper)
+    public PersistVaultCertificateCommandHandler(IDbContext context, ILogger<PersistVaultCertificateCommandHandler> logger, IMapper mapper)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
-    public async Task<ulong> Handle(PersistVaultGovernanceCertificateCommand request, CancellationToken cancellationToken)
+    public async Task<ulong> Handle(PersistVaultCertificateCommand request, CancellationToken cancellationToken)
     {
         try
         {

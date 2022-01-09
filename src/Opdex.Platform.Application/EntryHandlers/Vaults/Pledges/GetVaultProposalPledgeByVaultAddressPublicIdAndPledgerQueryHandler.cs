@@ -24,7 +24,7 @@ public class GetVaultProposalPledgeByVaultAddressPublicIdAndPledgerQueryHandler 
     }
     public async Task<VaultProposalPledgeDto> Handle(GetVaultProposalPledgeByVaultAddressPublicIdAndPledgerQuery request, CancellationToken cancellationToken)
     {
-        var vault = await _mediator.Send(new RetrieveVaultGovernanceByAddressQuery(request.Vault, findOrThrow: true), cancellationToken);
+        var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Vault, findOrThrow: true), cancellationToken);
         var proposal = await _mediator.Send(new RetrieveVaultProposalByVaultIdAndPublicIdQuery(vault.Id, request.PublicProposalId, findOrThrow: true), cancellationToken);
         var pledge = await _mediator.Send(new RetrieveVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQuery(vault.Id, proposal.Id, request.Pledger, findOrThrow: true), cancellationToken);
         return await _pledgeAssembler.Assemble(pledge);

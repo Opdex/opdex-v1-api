@@ -16,7 +16,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults;
 
 public class CreateVaultProposalVoteQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateVaultProposalVoteQuoteCommand>
 {
-    private const string MethodName = VaultGovernanceConstants.Methods.Vote;
+    private const string MethodName = VaultConstants.Methods.Vote;
 
     public CreateVaultProposalVoteQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler, IMediator mediator, OpdexConfiguration config)
         : base(quoteAssembler, mediator, config)
@@ -26,7 +26,7 @@ public class CreateVaultProposalVoteQuoteCommandHandler : BaseTransactionQuoteCo
     public override async Task<TransactionQuoteDto> Handle(CreateVaultProposalVoteQuoteCommand request, CancellationToken cancellationToken)
     {
         // ensure vault and proposal exists, if not throw to return 404
-        var vault = await _mediator.Send(new RetrieveVaultGovernanceByAddressQuery(request.Vault, findOrThrow: true), cancellationToken);
+        var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Vault, findOrThrow: true), cancellationToken);
         _ = await _mediator.Send(new RetrieveVaultProposalByVaultIdAndPublicIdQuery(vault.Id, request.ProposalId, findOrThrow: true), cancellationToken);
 
         var requestParameters = new List<TransactionQuoteRequestParameter>

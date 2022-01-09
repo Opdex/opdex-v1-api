@@ -23,7 +23,7 @@ public class MakeVaultProposalPledgeCommandHandler : IRequestHandler<MakeVaultPr
     {
         if (request.RefreshBalance)
         {
-            var vault = await _mediator.Send(new RetrieveVaultGovernanceByIdQuery(request.Pledge.VaultId), CancellationToken.None);
+            var vault = await _mediator.Send(new RetrieveVaultByIdQuery(request.Pledge.VaultId), CancellationToken.None);
             var proposal = await _mediator.Send(new RetrieveVaultProposalByIdQuery(request.Pledge.ProposalId), CancellationToken.None);
             var pledge = await _mediator.Send(new CallCirrusGetVaultProposalPledgeByProposalIdAndPledgerQuery(vault.Address,
                                                                                                               proposal.PublicId,

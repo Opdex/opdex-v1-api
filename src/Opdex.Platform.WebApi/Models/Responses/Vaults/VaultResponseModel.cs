@@ -6,7 +6,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Vaults;
 /// <summary>
 /// Vault details.
 /// </summary>
-public class VaultGovernanceResponseModel
+public class VaultResponseModel
 {
     /// <summary>
     /// Address of the vault.

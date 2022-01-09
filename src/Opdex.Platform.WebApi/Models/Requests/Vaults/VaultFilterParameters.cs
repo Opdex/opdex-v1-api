@@ -5,7 +5,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults;
 
 namespace Opdex.Platform.WebApi.Models.Requests.Vaults;
 
-public sealed class VaultGovernanceFilterParameters : FilterParameters<VaultGovernancesCursor>
+public sealed class VaultFilterParameters : FilterParameters<VaultsCursor>
 {
     /// <summary>
     /// Address of the token locked in the vault.
@@ -13,11 +13,11 @@ public sealed class VaultGovernanceFilterParameters : FilterParameters<VaultGove
     /// <example>tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L</example>
     public Address LockedToken { get; set; }
 
-    protected override VaultGovernancesCursor InternalBuildCursor()
+    protected override VaultsCursor InternalBuildCursor()
     {
-        if (EncodedCursor is null) return new VaultGovernancesCursor(LockedToken, Direction, Limit, PagingDirection.Forward, default);
+        if (EncodedCursor is null) return new VaultsCursor(LockedToken, Direction, Limit, PagingDirection.Forward, default);
         Base64Extensions.TryBase64Decode(EncodedCursor, out var decodedCursor);
-        VaultGovernancesCursor.TryParse(decodedCursor, out var cursor);
+        VaultsCursor.TryParse(decodedCursor, out var cursor);
         return cursor;
     }
 }

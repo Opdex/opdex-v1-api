@@ -208,8 +208,8 @@ public class PlatformInfrastructureMapperProfile : Profile
                                                          src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
-        CreateMap<VaultGovernanceEntity, VaultGovernance>()
-            .ConstructUsing(src => new VaultGovernance(src.Id, src.Address, src.TokenId, src.UnassignedSupply, src.VestingDuration, src.ProposedSupply,
+        CreateMap<VaultEntity, Vault>()
+            .ConstructUsing(src => new Vault(src.Id, src.Address, src.TokenId, src.UnassignedSupply, src.VestingDuration, src.ProposedSupply,
                                                        src.TotalPledgeMinimum, src.TotalVoteMinimum, src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -696,7 +696,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
-        CreateMap<VaultGovernance, VaultGovernanceEntity>()
+        CreateMap<Vault, VaultEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
             .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))

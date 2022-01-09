@@ -13,45 +13,45 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults;
 
-public class SelectVaultGovernanceByAddressQueryHandler : IRequestHandler<SelectVaultGovernanceByAddressQuery, VaultGovernance>
+public class SelectVaultByAddressQueryHandler : IRequestHandler<SelectVaultByAddressQuery, Vault>
 {
     private static readonly string SqlQuery =
         @$"SELECT
-                {nameof(VaultGovernanceEntity.Id)},
-                {nameof(VaultGovernanceEntity.Address)},
-                {nameof(VaultGovernanceEntity.TokenId)},
-                {nameof(VaultGovernanceEntity.UnassignedSupply)},
-                {nameof(VaultGovernanceEntity.ProposedSupply)},
-                {nameof(VaultGovernanceEntity.VestingDuration)},
-                {nameof(VaultGovernanceEntity.TotalPledgeMinimum)},
-                {nameof(VaultGovernanceEntity.TotalVoteMinimum)},
-                {nameof(VaultGovernanceEntity.CreatedBlock)},
-                {nameof(VaultGovernanceEntity.ModifiedBlock)}
+                {nameof(VaultEntity.Id)},
+                {nameof(VaultEntity.Address)},
+                {nameof(VaultEntity.TokenId)},
+                {nameof(VaultEntity.UnassignedSupply)},
+                {nameof(VaultEntity.ProposedSupply)},
+                {nameof(VaultEntity.VestingDuration)},
+                {nameof(VaultEntity.TotalPledgeMinimum)},
+                {nameof(VaultEntity.TotalVoteMinimum)},
+                {nameof(VaultEntity.CreatedBlock)},
+                {nameof(VaultEntity.ModifiedBlock)}
             FROM vault
-            WHERE {nameof(VaultGovernanceEntity.Address)} = @{nameof(SqlParams.VaultAddress)}
+            WHERE {nameof(VaultEntity.Address)} = @{nameof(SqlParams.VaultAddress)}
             LIMIT 1;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
 
-    public SelectVaultGovernanceByAddressQueryHandler(IDbContext context, IMapper mapper)
+    public SelectVaultByAddressQueryHandler(IDbContext context, IMapper mapper)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<VaultGovernance> Handle(SelectVaultGovernanceByAddressQuery request, CancellationToken cancellationToken)
+    public async Task<Vault> Handle(SelectVaultByAddressQuery request, CancellationToken cancellationToken)
     {
         var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.Vault), cancellationToken);
 
-        var result = await _context.ExecuteFindAsync<VaultGovernanceEntity>(query);
+        var result = await _context.ExecuteFindAsync<VaultEntity>(query);
 
         if (request.FindOrThrow && result == null)
         {
-            throw new NotFoundException($"{nameof(VaultGovernance)} not found.");
+            throw new NotFoundException($"{nameof(Vault)} not found.");
         }
 
-        return result == null ? null : _mapper.Map<VaultGovernance>(result);
+        return result == null ? null : _mapper.Map<Vault>(result);
     }
 
     private sealed class SqlParams

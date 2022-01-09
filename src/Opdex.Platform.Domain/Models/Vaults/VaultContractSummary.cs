@@ -4,9 +4,9 @@ using System;
 
 namespace Opdex.Platform.Domain.Models.Vaults;
 
-public class VaultGovernanceContractSummary
+public class VaultContractSummary
 {
-    public VaultGovernanceContractSummary(ulong blockHeight)
+    public VaultContractSummary(ulong blockHeight)
     {
         if (blockHeight == 0) throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
         BlockHeight = blockHeight;

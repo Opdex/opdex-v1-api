@@ -15,26 +15,26 @@ using Xunit;
 
 namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults;
 
-public class CreateVaultGovernanceCommandHandlerTests
+public class CreateVaultCommandHandlerTests
 {
     private readonly Mock<IMediator> _mediator;
-    private readonly CreateVaultGovernanceCommandHandler _handler;
+    private readonly CreateVaultCommandHandler _handler;
 
-    public CreateVaultGovernanceCommandHandlerTests()
+    public CreateVaultCommandHandlerTests()
     {
         _mediator = new Mock<IMediator>();
-        _handler = new CreateVaultGovernanceCommandHandler(_mediator.Object);
+        _handler = new CreateVaultCommandHandler(_mediator.Object);
     }
 
     [Fact]
-    public void CreateVaultGovernanceCommand_InvalidVault_ThrowsArgumentNullException()
+    public void CreateVaultCommand_InvalidVault_ThrowsArgumentNullException()
     {
         // Arrange
         const  ulong tokenId = 1;
         const ulong blockHeight = 10;
 
         // Act
-        void Act() => new CreateVaultGovernanceCommand(null, tokenId, blockHeight);
+        void Act() => new CreateVaultCommand(null, tokenId, blockHeight);
 
         // Assert
         Assert.Throws<ArgumentNullException>(Act).Message.Contains("Vault address must be provided.");
@@ -42,35 +42,35 @@ public class CreateVaultGovernanceCommandHandlerTests
 
     [Theory]
     [InlineData(0)]
-    public void CreateVaultGovernanceCommand_InvalidTokenId_ThrowsArgumentOutOfRangeException(ulong tokenId)
+    public void CreateVaultCommand_InvalidTokenId_ThrowsArgumentOutOfRangeException(ulong tokenId)
     {
         // Arrange
         Address vault = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
         const ulong blockHeight = 10;
 
         // Act
-        void Act() => new CreateVaultGovernanceCommand(vault, tokenId, blockHeight);
+        void Act() => new CreateVaultCommand(vault, tokenId, blockHeight);
 
         // Assert
         Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Token Id must be greater than zero.");
     }
 
     [Fact]
-    public void CreateVaultGovernanceCommand_InvalidBlockHeight_ThrowsArgumentOutOfRangeException()
+    public void CreateVaultCommand_InvalidBlockHeight_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
         Address vault = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
         const  ulong tokenId = 1;
 
         // Act
-        void Act() => new CreateVaultGovernanceCommand(vault, tokenId, 0);
+        void Act() => new CreateVaultCommand(vault, tokenId, 0);
 
         // Assert
         Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Block height must be greater than zero.");
     }
 
     [Fact]
-    public async Task CreateVaultGovernanceCommand_Sends_RetrieveVaultGovernanceByAddressQuery()
+    public async Task CreateVaultCommand_Sends_RetrieveVaultByAddressQuery()
     {
         // Arrange
         Address vault = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
@@ -80,18 +80,18 @@ public class CreateVaultGovernanceCommandHandlerTests
         // Act
         try
         {
-            await _handler.Handle(new CreateVaultGovernanceCommand(vault, tokenId, blockHeight), CancellationToken.None);
+            await _handler.Handle(new CreateVaultCommand(vault, tokenId, blockHeight), CancellationToken.None);
         }
         catch { }
 
         // Assert
-        _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultGovernanceByAddressQuery>(q => q.Vault == vault &&
+        _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultByAddressQuery>(q => q.Vault == vault &&
                                                                                        q.FindOrThrow == false),
                                                It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task CreateVaultGovernanceCommand_Returns_VaultExists()
+    public async Task CreateVaultCommand_Returns_VaultExists()
     {
         // Arrange
         Address vault = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
@@ -99,21 +99,21 @@ public class CreateVaultGovernanceCommandHandlerTests
         const ulong blockHeight = 10;
         const ulong vaultId = 100;
 
-        var expectedVault = new VaultGovernance(vaultId, vault, tokenId, 1, 2, 3, 4, 5, 6, 7);
+        var expectedVault = new Vault(vaultId, vault, tokenId, 1, 2, 3, 4, 5, 6, 7);
 
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>()))
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedVault);
 
         // Act
-        var response = await _handler.Handle(new CreateVaultGovernanceCommand(vault, tokenId, blockHeight), CancellationToken.None);
+        var response = await _handler.Handle(new CreateVaultCommand(vault, tokenId, blockHeight), CancellationToken.None);
 
         // Assert
         response.Should().Be(vaultId);
-        _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeVaultGovernanceCommand>(), It.IsAny<CancellationToken>()), Times.Never);
+        _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeVaultCommand>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
-    public async Task CreateVaultGovernanceCommand_Sends_RetrieveVaultGovernanceContractSummaryQuery()
+    public async Task CreateVaultCommand_Sends_RetrieveVaultContractSummaryQuery()
     {
         // Arrange
         Address vault = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
@@ -123,12 +123,12 @@ public class CreateVaultGovernanceCommandHandlerTests
         // Act
         try
         {
-            await _handler.Handle(new CreateVaultGovernanceCommand(vault, tokenId, blockHeight), CancellationToken.None);
+            await _handler.Handle(new CreateVaultCommand(vault, tokenId, blockHeight), CancellationToken.None);
         }
         catch { }
 
         // Assert
-        _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultGovernanceContractSummaryQuery>(q => q.VaultGovernance == vault &&
+        _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultContractSummaryQuery>(q => q.Vault == vault &&
                                                                                                        q.BlockHeight == blockHeight &&
                                                                                                        q.IncludeVestingDuration == true &&
                                                                                                        q.IncludeTotalPledgeMinimum == true &&
@@ -137,7 +137,7 @@ public class CreateVaultGovernanceCommandHandlerTests
     }
 
     [Fact]
-    public async Task CreateVaultGovernanceCommand_Sends_MakeVaultGovernanceCommand()
+    public async Task CreateVaultCommand_Sends_MakeVaultCommand()
     {
         // Arrange
         Address vault = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
@@ -147,20 +147,20 @@ public class CreateVaultGovernanceCommandHandlerTests
         const ulong totalPledge = 20ul;
         const ulong totalVote = 30ul;
 
-        var expectedSummary = new VaultGovernanceContractSummary(blockHeight);
+        var expectedSummary = new VaultContractSummary(blockHeight);
         expectedSummary.SetVestingDuration(new SmartContractMethodParameter(vestingDuration));
         expectedSummary.SetTotalPledgeMinimum(new SmartContractMethodParameter(totalPledge));
         expectedSummary.SetTotalVoteMinimum(new SmartContractMethodParameter(totalVote));
 
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceContractSummaryQuery>(),
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultContractSummaryQuery>(),
                                               It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedSummary);
 
         // Act
-        await _handler.Handle(new CreateVaultGovernanceCommand(vault, tokenId, blockHeight), CancellationToken.None);
+        await _handler.Handle(new CreateVaultCommand(vault, tokenId, blockHeight), CancellationToken.None);
 
         // Assert
-        _mediator.Verify(callTo => callTo.Send(It.Is<MakeVaultGovernanceCommand>(q => q.Vault.Id == 0 &&
+        _mediator.Verify(callTo => callTo.Send(It.Is<MakeVaultCommand>(q => q.Vault.Id == 0 &&
                                                                                       q.Vault.Address == vault &&
                                                                                       q.Vault.TokenId == tokenId &&
                                                                                       q.Vault.VestingDuration == vestingDuration &&

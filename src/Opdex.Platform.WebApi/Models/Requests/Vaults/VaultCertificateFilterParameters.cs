@@ -5,7 +5,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certificate
 
 namespace Opdex.Platform.WebApi.Models.Requests.Vaults;
 
-public sealed class VaultGovernanceCertificateFilterParameters : FilterParameters<VaultGovernanceCertificatesCursor>
+public sealed class VaultCertificateFilterParameters : FilterParameters<VaultCertificatesCursor>
 {
     /// <summary>
     /// Address of the certificate holder.
@@ -19,11 +19,11 @@ public sealed class VaultGovernanceCertificateFilterParameters : FilterParameter
     /// <example>All</example>
     public VaultCertificateStatusFilter Status { get; set; }
 
-    protected override VaultGovernanceCertificatesCursor InternalBuildCursor()
+    protected override VaultCertificatesCursor InternalBuildCursor()
     {
-        if (EncodedCursor is null) return new VaultGovernanceCertificatesCursor(Holder, Status, Direction, Limit, PagingDirection.Forward, default);
+        if (EncodedCursor is null) return new VaultCertificatesCursor(Holder, Status, Direction, Limit, PagingDirection.Forward, default);
         Base64Extensions.TryBase64Decode(EncodedCursor, out var decodedCursor);
-        VaultGovernanceCertificatesCursor.TryParse(decodedCursor, out var cursor);
+        VaultCertificatesCursor.TryParse(decodedCursor, out var cursor);
         return cursor;
     }
 }

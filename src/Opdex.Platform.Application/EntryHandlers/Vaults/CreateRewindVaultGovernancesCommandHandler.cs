@@ -10,20 +10,20 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.Vaults;
 
-public class CreateRewindVaultGovernancesCommandHandler : IRequestHandler<CreateRewindVaultGovernancesCommand, bool>
+public class CreateRewindVaultsCommandHandler : IRequestHandler<CreateRewindVaultsCommand, bool>
 {
     private readonly IMediator _mediator;
-    private readonly ILogger<CreateRewindVaultGovernancesCommandHandler> _logger;
+    private readonly ILogger<CreateRewindVaultsCommandHandler> _logger;
 
-    public CreateRewindVaultGovernancesCommandHandler(IMediator mediator, ILogger<CreateRewindVaultGovernancesCommandHandler> logger)
+    public CreateRewindVaultsCommandHandler(IMediator mediator, ILogger<CreateRewindVaultsCommandHandler> logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<bool> Handle(CreateRewindVaultGovernancesCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(CreateRewindVaultsCommand request, CancellationToken cancellationToken)
     {
-        var vaults = await _mediator.Send(new RetrieveVaultGovernancesByModifiedBlockQuery(request.RewindHeight));
+        var vaults = await _mediator.Send(new RetrieveVaultsByModifiedBlockQuery(request.RewindHeight));
         var vaultsList = vaults.ToList();
         var staleCount = vaultsList.Count;
 
@@ -37,7 +37,7 @@ public class CreateRewindVaultGovernancesCommandHandler : IRequestHandler<Create
         {
             await Task.WhenAll(chunk.Select(async vault =>
             {
-                var vaultId = await _mediator.Send(new MakeVaultGovernanceCommand(vault,
+                var vaultId = await _mediator.Send(new MakeVaultCommand(vault,
                                                                                   request.RewindHeight,
                                                                                   refreshUnassignedSupply: true,
                                                                                   refreshProposedSupply: true,

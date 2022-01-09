@@ -22,31 +22,31 @@ using Xunit;
 
 namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults;
 
-public class GetVaultGovernancesWithFilterQueryHandlerTests
+public class GetVaultsWithFilterQueryHandlerTests
 {
     private readonly Mock<IMediator> _mediatorMock;
-    private readonly Mock<IModelAssembler<VaultGovernance, VaultGovernanceDto>> _assemblerMock;
+    private readonly Mock<IModelAssembler<Vault, VaultDto>> _assemblerMock;
 
-    private readonly GetVaultGovernancesWithFilterQueryHandler _handler;
+    private readonly GetVaultsWithFilterQueryHandler _handler;
 
-    public GetVaultGovernancesWithFilterQueryHandlerTests()
+    public GetVaultsWithFilterQueryHandlerTests()
     {
         _mediatorMock = new Mock<IMediator>();
-        _assemblerMock = new Mock<IModelAssembler<VaultGovernance, VaultGovernanceDto>>();
+        _assemblerMock = new Mock<IModelAssembler<Vault, VaultDto>>();
 
-        _handler = new GetVaultGovernancesWithFilterQueryHandler(_mediatorMock.Object, _assemblerMock.Object, new NullLogger<GetVaultGovernancesWithFilterQueryHandler>());
+        _handler = new GetVaultsWithFilterQueryHandler(_mediatorMock.Object, _assemblerMock.Object, new NullLogger<GetVaultsWithFilterQueryHandler>());
     }
 
     [Fact]
-    public async Task Handle_RetrieveVaultGovernancesWithFilterQuery_Send()
+    public async Task Handle_RetrieveVaultsWithFilterQuery_Send()
     {
         // Arrange
-        var cursor = new VaultGovernancesCursor(Address.Empty, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
-        var request = new GetVaultGovernancesWithFilterQuery(cursor);
+        var cursor = new VaultsCursor(Address.Empty, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+        var request = new GetVaultsWithFilterQuery(cursor);
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         // Act
         try
@@ -59,52 +59,52 @@ public class GetVaultGovernancesWithFilterQueryHandlerTests
         }
 
         // Assert
-        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveVaultGovernancesWithFilterQuery>(query => query.Cursor == cursor), cancellationToken), Times.Once);
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveVaultsWithFilterQuery>(query => query.Cursor == cursor), cancellationToken), Times.Once);
     }
 
     [Fact]
     public async Task Handle_VaultsRetrieved_MapResults()
     {
         // Arrange
-        var cursor = new VaultGovernancesCursor(Address.Empty, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
-        var request = new GetVaultGovernancesWithFilterQuery(cursor);
+        var cursor = new VaultsCursor(Address.Empty, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+        var request = new GetVaultsWithFilterQuery(cursor);
 
         var vaults = new []
         {
-            new VaultGovernance(5, "PX4x5WcA7MAPpHnYJoBEXD47TNMBxH9SvD", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
-            new VaultGovernance(10, "PKHztTdYwqeCVC2MzhPMh7ESGWBhj4i8TT", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
-            new VaultGovernance(15, "PTnQShk1J2ids8xZs2ELG8Xj2HzWbxoW2r", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500)
+            new Vault(5, "PX4x5WcA7MAPpHnYJoBEXD47TNMBxH9SvD", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
+            new Vault(10, "PKHztTdYwqeCVC2MzhPMh7ESGWBhj4i8TT", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
+            new Vault(15, "PTnQShk1J2ids8xZs2ELG8Xj2HzWbxoW2r", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500)
         };
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         // Act
         await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        _assemblerMock.Verify(callTo => callTo.Assemble(It.IsAny<VaultGovernance>()), Times.Exactly(vaults.Length));
+        _assemblerMock.Verify(callTo => callTo.Assemble(It.IsAny<Vault>()), Times.Exactly(vaults.Length));
     }
 
     [Fact]
     public async Task Handle_LessThanLimitPlusOneResults_RemoveZero()
     {
         // Arrange
-        var cursor = new VaultGovernancesCursor(Address.Empty, SortDirectionType.ASC, 3, PagingDirection.Backward, 55);
-        var request = new GetVaultGovernancesWithFilterQuery(cursor);
+        var cursor = new VaultsCursor(Address.Empty, SortDirectionType.ASC, 3, PagingDirection.Backward, 55);
+        var request = new GetVaultsWithFilterQuery(cursor);
 
         var vaults = new []
         {
-            new VaultGovernance(5, "PX4x5WcA7MAPpHnYJoBEXD47TNMBxH9SvD", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
-            new VaultGovernance(10, "PKHztTdYwqeCVC2MzhPMh7ESGWBhj4i8TT", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
-            new VaultGovernance(15, "PTnQShk1J2ids8xZs2ELG8Xj2HzWbxoW2r", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500)
+            new Vault(5, "PX4x5WcA7MAPpHnYJoBEXD47TNMBxH9SvD", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
+            new Vault(10, "PKHztTdYwqeCVC2MzhPMh7ESGWBhj4i8TT", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
+            new Vault(15, "PTnQShk1J2ids8xZs2ELG8Xj2HzWbxoW2r", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500)
         };
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
-        _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<VaultGovernance>())).ReturnsAsync(new VaultGovernanceDto());
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
+        _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Vault>())).ReturnsAsync(new VaultDto());
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -117,20 +117,20 @@ public class GetVaultGovernancesWithFilterQueryHandlerTests
     public async Task Handle_LimitPlusOneResultsPagingBackward_RemoveFirst()
     {
         // Arrange
-        var cursor = new VaultGovernancesCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Backward, 55);
-        var request = new GetVaultGovernancesWithFilterQuery(cursor);
+        var cursor = new VaultsCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Backward, 55);
+        var request = new GetVaultsWithFilterQuery(cursor);
 
         var vaults = new []
         {
-            new VaultGovernance(5, "PX4x5WcA7MAPpHnYJoBEXD47TNMBxH9SvD", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
-            new VaultGovernance(10, "PKHztTdYwqeCVC2MzhPMh7ESGWBhj4i8TT", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
-            new VaultGovernance(15, "PTnQShk1J2ids8xZs2ELG8Xj2HzWbxoW2r", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500)
+            new Vault(5, "PX4x5WcA7MAPpHnYJoBEXD47TNMBxH9SvD", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
+            new Vault(10, "PKHztTdYwqeCVC2MzhPMh7ESGWBhj4i8TT", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
+            new Vault(15, "PTnQShk1J2ids8xZs2ELG8Xj2HzWbxoW2r", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500)
         };
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
-        _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<VaultGovernance>())).ReturnsAsync(new VaultGovernanceDto());
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
+        _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Vault>())).ReturnsAsync(new VaultDto());
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -144,20 +144,20 @@ public class GetVaultGovernancesWithFilterQueryHandlerTests
     public async Task Handle_LimitPlusOneResultsPagingForward_RemoveLast()
     {
         // Arrange
-        var cursor = new VaultGovernancesCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Forward, 55);
-        var request = new GetVaultGovernancesWithFilterQuery(cursor);
+        var cursor = new VaultsCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Forward, 55);
+        var request = new GetVaultsWithFilterQuery(cursor);
 
         var vaults = new []
         {
-            new VaultGovernance(5, "PX4x5WcA7MAPpHnYJoBEXD47TNMBxH9SvD", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
-            new VaultGovernance(10, "PKHztTdYwqeCVC2MzhPMh7ESGWBhj4i8TT", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
-            new VaultGovernance(15, "PTnQShk1J2ids8xZs2ELG8Xj2HzWbxoW2r", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500)
+            new Vault(5, "PX4x5WcA7MAPpHnYJoBEXD47TNMBxH9SvD", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
+            new Vault(10, "PKHztTdYwqeCVC2MzhPMh7ESGWBhj4i8TT", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
+            new Vault(15, "PTnQShk1J2ids8xZs2ELG8Xj2HzWbxoW2r", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500)
         };
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
-        _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<VaultGovernance>())).ReturnsAsync(new VaultGovernanceDto());
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
+        _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Vault>())).ReturnsAsync(new VaultDto());
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -171,20 +171,20 @@ public class GetVaultGovernancesWithFilterQueryHandlerTests
     public async Task Handle_FirstRequestInPagedResults_ReturnCursor()
     {
         // Arrange
-        var cursor = new VaultGovernancesCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Forward, 0);
-        var request = new GetVaultGovernancesWithFilterQuery(cursor);
+        var cursor = new VaultsCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Forward, 0);
+        var request = new GetVaultsWithFilterQuery(cursor);
 
         var vaults = new []
         {
-            new VaultGovernance(5, "PX4x5WcA7MAPpHnYJoBEXD47TNMBxH9SvD", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
-            new VaultGovernance(10, "PKHztTdYwqeCVC2MzhPMh7ESGWBhj4i8TT", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
-            new VaultGovernance(15, "PTnQShk1J2ids8xZs2ELG8Xj2HzWbxoW2r", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500)
+            new Vault(5, "PX4x5WcA7MAPpHnYJoBEXD47TNMBxH9SvD", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
+            new Vault(10, "PKHztTdYwqeCVC2MzhPMh7ESGWBhj4i8TT", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
+            new Vault(15, "PTnQShk1J2ids8xZs2ELG8Xj2HzWbxoW2r", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500)
         };
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
-        _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<VaultGovernance>())).ReturnsAsync(new VaultGovernanceDto());
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
+        _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Vault>())).ReturnsAsync(new VaultDto());
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -198,20 +198,20 @@ public class GetVaultGovernancesWithFilterQueryHandlerTests
     public async Task Handle_PagingForwardWithMoreResults_ReturnCursor()
     {
         // Arrange
-        var cursor = new VaultGovernancesCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
-        var request = new GetVaultGovernancesWithFilterQuery(cursor);
+        var cursor = new VaultsCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
+        var request = new GetVaultsWithFilterQuery(cursor);
 
         var vaults = new []
         {
-            new VaultGovernance(5, "PX4x5WcA7MAPpHnYJoBEXD47TNMBxH9SvD", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
-            new VaultGovernance(10, "PKHztTdYwqeCVC2MzhPMh7ESGWBhj4i8TT", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
-            new VaultGovernance(15, "PTnQShk1J2ids8xZs2ELG8Xj2HzWbxoW2r", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500)
+            new Vault(5, "PX4x5WcA7MAPpHnYJoBEXD47TNMBxH9SvD", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
+            new Vault(10, "PKHztTdYwqeCVC2MzhPMh7ESGWBhj4i8TT", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
+            new Vault(15, "PTnQShk1J2ids8xZs2ELG8Xj2HzWbxoW2r", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500)
         };
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
-        _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<VaultGovernance>())).ReturnsAsync(new VaultGovernanceDto());
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
+        _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Vault>())).ReturnsAsync(new VaultDto());
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -225,20 +225,20 @@ public class GetVaultGovernancesWithFilterQueryHandlerTests
     public async Task Handle_PagingBackwardWithMoreResults_ReturnCursor()
     {
         // Arrange
-        var cursor = new VaultGovernancesCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
-        var request = new GetVaultGovernancesWithFilterQuery(cursor);
+        var cursor = new VaultsCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
+        var request = new GetVaultsWithFilterQuery(cursor);
 
         var vaults = new []
         {
-            new VaultGovernance(5, "PX4x5WcA7MAPpHnYJoBEXD47TNMBxH9SvD", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
-            new VaultGovernance(10, "PKHztTdYwqeCVC2MzhPMh7ESGWBhj4i8TT", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
-            new VaultGovernance(15, "PTnQShk1J2ids8xZs2ELG8Xj2HzWbxoW2r", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500)
+            new Vault(5, "PX4x5WcA7MAPpHnYJoBEXD47TNMBxH9SvD", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
+            new Vault(10, "PKHztTdYwqeCVC2MzhPMh7ESGWBhj4i8TT", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
+            new Vault(15, "PTnQShk1J2ids8xZs2ELG8Xj2HzWbxoW2r", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500)
         };
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
-        _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<VaultGovernance>())).ReturnsAsync(new VaultGovernanceDto());
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
+        _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Vault>())).ReturnsAsync(new VaultDto());
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -252,19 +252,19 @@ public class GetVaultGovernancesWithFilterQueryHandlerTests
     public async Task Handle_PagingForwardLastPage_ReturnCursor()
     {
         // Arrange
-        var cursor = new VaultGovernancesCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
-        var request = new GetVaultGovernancesWithFilterQuery(cursor);
+        var cursor = new VaultsCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
+        var request = new GetVaultsWithFilterQuery(cursor);
 
         var vaults = new []
         {
-            new VaultGovernance(5, "PX4x5WcA7MAPpHnYJoBEXD47TNMBxH9SvD", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
-            new VaultGovernance(10, "PKHztTdYwqeCVC2MzhPMh7ESGWBhj4i8TT", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
+            new Vault(5, "PX4x5WcA7MAPpHnYJoBEXD47TNMBxH9SvD", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
+            new Vault(10, "PKHztTdYwqeCVC2MzhPMh7ESGWBhj4i8TT", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
         };
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
-        _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<VaultGovernance>())).ReturnsAsync(new VaultGovernanceDto());
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
+        _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Vault>())).ReturnsAsync(new VaultDto());
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -278,19 +278,19 @@ public class GetVaultGovernancesWithFilterQueryHandlerTests
     public async Task Handle_PagingBackwardLastPage_ReturnCursor()
     {
         // Arrange
-        var cursor = new VaultGovernancesCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
-        var request = new GetVaultGovernancesWithFilterQuery(cursor);
+        var cursor = new VaultsCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
+        var request = new GetVaultsWithFilterQuery(cursor);
 
         var vaults = new []
         {
-            new VaultGovernance(5, "PX4x5WcA7MAPpHnYJoBEXD47TNMBxH9SvD", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
-            new VaultGovernance(10, "PKHztTdYwqeCVC2MzhPMh7ESGWBhj4i8TT", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
+            new Vault(5, "PX4x5WcA7MAPpHnYJoBEXD47TNMBxH9SvD", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
+            new Vault(10, "PKHztTdYwqeCVC2MzhPMh7ESGWBhj4i8TT", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500),
         };
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
-        _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<VaultGovernance>())).ReturnsAsync(new VaultGovernanceDto());
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
+        _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Vault>())).ReturnsAsync(new VaultDto());
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -302,14 +302,14 @@ public class GetVaultGovernancesWithFilterQueryHandlerTests
 
     private static void AssertNext(CursorDto dto, ulong pointer)
     {
-        VaultGovernancesCursor.TryParse(dto.Next.Base64Decode(), out var next).Should().Be(true);
+        VaultsCursor.TryParse(dto.Next.Base64Decode(), out var next).Should().Be(true);
         next.PagingDirection.Should().Be(PagingDirection.Forward);
         next.Pointer.Should().Be(pointer);
     }
 
     private static void AssertPrevious(CursorDto dto, ulong pointer)
     {
-        VaultGovernancesCursor.TryParse(dto.Previous.Base64Decode(), out var next).Should().Be(true);
+        VaultsCursor.TryParse(dto.Previous.Base64Decode(), out var next).Should().Be(true);
         next.PagingDirection.Should().Be(PagingDirection.Backward);
         next.Pointer.Should().Be(pointer);
     }

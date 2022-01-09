@@ -11,18 +11,18 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Vaults;
 
-public class RetrieveVaultGovernanceContractSummaryQueryHandler : IRequestHandler<RetrieveVaultGovernanceContractSummaryQuery, VaultGovernanceContractSummary>
+public class RetrieveVaultContractSummaryQueryHandler : IRequestHandler<RetrieveVaultContractSummaryQuery, VaultContractSummary>
 {
     private readonly IMediator _mediator;
 
-    public RetrieveVaultGovernanceContractSummaryQueryHandler(IMediator mediator)
+    public RetrieveVaultContractSummaryQueryHandler(IMediator mediator)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    public async Task<VaultGovernanceContractSummary> Handle(RetrieveVaultGovernanceContractSummaryQuery request, CancellationToken cancellationToken)
+    public async Task<VaultContractSummary> Handle(RetrieveVaultContractSummaryQuery request, CancellationToken cancellationToken)
     {
-        var summary = new VaultGovernanceContractSummary(request.BlockHeight);
+        var summary = new VaultContractSummary(request.BlockHeight);
 
         if (request.IncludeUnassignedSupply)
         {
@@ -30,8 +30,8 @@ public class RetrieveVaultGovernanceContractSummaryQueryHandler : IRequestHandle
 
             try
             {
-                totalSupply = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.VaultGovernance,
-                                                                                               VaultGovernanceConstants.StateKeys.TotalSupply,
+                totalSupply = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Vault,
+                                                                                               VaultConstants.StateKeys.TotalSupply,
                                                                                                SmartContractParameterType.UInt256,
                                                                                                request.BlockHeight), cancellationToken);
             }
@@ -49,8 +49,8 @@ public class RetrieveVaultGovernanceContractSummaryQueryHandler : IRequestHandle
 
             try
             {
-                proposedSupply = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.VaultGovernance,
-                                                                                                  VaultGovernanceConstants.StateKeys.TotalProposedAmount,
+                proposedSupply = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Vault,
+                                                                                                  VaultConstants.StateKeys.TotalProposedAmount,
                                                                                                   SmartContractParameterType.UInt256,
                                                                                                   request.BlockHeight), cancellationToken);
             }
@@ -64,8 +64,8 @@ public class RetrieveVaultGovernanceContractSummaryQueryHandler : IRequestHandle
 
         if (request.IncludeTotalPledgeMinimum)
         {
-            var totalPledgeMinimum = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.VaultGovernance,
-                                                                                                      VaultGovernanceConstants.StateKeys.TotalPledgeMinimum,
+            var totalPledgeMinimum = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Vault,
+                                                                                                      VaultConstants.StateKeys.TotalPledgeMinimum,
                                                                                                       SmartContractParameterType.UInt64,
                                                                                                       request.BlockHeight), cancellationToken);
 
@@ -74,8 +74,8 @@ public class RetrieveVaultGovernanceContractSummaryQueryHandler : IRequestHandle
 
         if (request.IncludeTotalVoteMinimum)
         {
-            var totalVoteMinimum = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.VaultGovernance,
-                                                                                                   VaultGovernanceConstants.StateKeys.TotalVoteMinimum,
+            var totalVoteMinimum = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Vault,
+                                                                                                   VaultConstants.StateKeys.TotalVoteMinimum,
                                                                                                    SmartContractParameterType.UInt64,
                                                                                                    request.BlockHeight), cancellationToken);
 
@@ -84,8 +84,8 @@ public class RetrieveVaultGovernanceContractSummaryQueryHandler : IRequestHandle
 
         if (request.IncludeVestingDuration)
         {
-            var vestingDuration = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.VaultGovernance,
-                                                                                                   VaultGovernanceConstants.StateKeys.VestingDuration,
+            var vestingDuration = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Vault,
+                                                                                                   VaultConstants.StateKeys.VestingDuration,
                                                                                                    SmartContractParameterType.UInt64,
                                                                                                    request.BlockHeight), cancellationToken);
 

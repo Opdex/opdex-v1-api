@@ -16,32 +16,32 @@ using Xunit;
 
 namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults.Certificates;
 
-public class CreateRewindVaultGovernanceCertificatesCommandHandlerTests
+public class CreateRewindVaultCertificatesCommandHandlerTests
 {
     private readonly Mock<IMediator> _mediator;
-    private readonly CreateRewindVaultGovernanceCertificatesCommandHandler _handler;
+    private readonly CreateRewindVaultCertificatesCommandHandler _handler;
 
-    public CreateRewindVaultGovernanceCertificatesCommandHandlerTests()
+    public CreateRewindVaultCertificatesCommandHandlerTests()
     {
         _mediator = new Mock<IMediator>();
-        _handler = new CreateRewindVaultGovernanceCertificatesCommandHandler(_mediator.Object, Mock.Of<ILogger<CreateRewindVaultGovernanceCertificatesCommandHandler>>());
+        _handler = new CreateRewindVaultCertificatesCommandHandler(_mediator.Object, Mock.Of<ILogger<CreateRewindVaultCertificatesCommandHandler>>());
     }
 
     [Fact]
-    public void CreateRewindVaultGovernanceCertificatesCommand_InvalidRewindHeight_ThrowsArgumentOutOfRangeException()
+    public void CreateRewindVaultCertificatesCommand_InvalidRewindHeight_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
         const ulong rewindHeight = 0;
 
         // Act
-        void Act() => new CreateRewindVaultGovernanceCertificatesCommand(rewindHeight);
+        void Act() => new CreateRewindVaultCertificatesCommand(rewindHeight);
 
         // Assert
         Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Rewind height must be greater than zero.");
     }
 
     [Fact]
-    public async Task CreateRewindVaultGovernanceCertificatesCommand_Sends_RetrieveVaultGovernanceCertificatesByModifiedBlockQuery()
+    public async Task CreateRewindVaultCertificatesCommand_Sends_RetrieveVaultCertificatesByModifiedBlockQuery()
     {
         // Arrange
         const ulong rewindHeight = 10;
@@ -49,17 +49,17 @@ public class CreateRewindVaultGovernanceCertificatesCommandHandlerTests
         // Act
         try
         {
-            await _handler.Handle(new CreateRewindVaultGovernanceCertificatesCommand(rewindHeight), CancellationToken.None);
+            await _handler.Handle(new CreateRewindVaultCertificatesCommand(rewindHeight), CancellationToken.None);
         }
         catch { }
 
         // Assert
-        _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultGovernanceCertificatesByModifiedBlockQuery>(q => q.BlockHeight == rewindHeight),
+        _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultCertificatesByModifiedBlockQuery>(q => q.BlockHeight == rewindHeight),
                                                It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task CreateRewindVaultGovernanceCertificatesCommand_Sends_RetrieveVaultGovernanceByIdQuery()
+    public async Task CreateRewindVaultCertificatesCommand_Sends_RetrieveVaultByIdQuery()
     {
         // Arrange
         const ulong rewindHeight = 10;
@@ -67,48 +67,48 @@ public class CreateRewindVaultGovernanceCertificatesCommandHandlerTests
 
         var certificates = new List<VaultCertificate> { new(1, vaultId, "PzwmH1iU9EjmXXNMivLgqqART1GLsMroh6", 3, 4, false, true, 5, 6) };
 
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceCertificatesByModifiedBlockQuery>(), It.IsAny<CancellationToken>()))
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesByModifiedBlockQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(certificates);
 
         // Act
         try
         {
-            await _handler.Handle(new CreateRewindVaultGovernanceCertificatesCommand(rewindHeight), CancellationToken.None);
+            await _handler.Handle(new CreateRewindVaultCertificatesCommand(rewindHeight), CancellationToken.None);
         }
         catch { }
 
         // Assert
-        _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultGovernanceByIdQuery>(q => q.VaultId == vaultId),
+        _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultByIdQuery>(q => q.VaultId == vaultId),
                                                It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task CreateRewindVaultGovernanceCertificatesCommand_Sends_RetrieveVaultGovernanceContractCertificateSummaryByOwnerQuery()
+    public async Task CreateRewindVaultCertificatesCommand_Sends_RetrieveVaultContractCertificateSummaryByOwnerQuery()
     {
         // Arrange
         const ulong rewindHeight = 10;
         const ulong vaultId = 1;
-        var vault = new VaultGovernance(vaultId, "PXXNMivLgqqART1GLsMroh6zwmH1iU9Ejm", 2, 3, 4, 5, 6, 7, 8, 9);
+        var vault = new Vault(vaultId, "PXXNMivLgqqART1GLsMroh6zwmH1iU9Ejm", 2, 3, 4, 5, 6, 7, 8, 9);
 
         var certificates = new List<VaultCertificate> { new(1, vaultId, "PzwmH1iU9EjmXXNMivLgqqART1GLsMroh6", 3, 4, false, true, 5, 10), new(2, vaultId, "PzHqqART1GLsMrwmoh61iU9EjmXXNMivLg", 4, 5, true, true, 6, 10) };
 
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceCertificatesByModifiedBlockQuery>(), It.IsAny<CancellationToken>()))
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesByModifiedBlockQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(certificates);
 
-        _mediator.Setup(callTo => callTo.Send(It.Is<RetrieveVaultGovernanceByIdQuery>(q => q.VaultId == vaultId), It.IsAny<CancellationToken>()))
+        _mediator.Setup(callTo => callTo.Send(It.Is<RetrieveVaultByIdQuery>(q => q.VaultId == vaultId), It.IsAny<CancellationToken>()))
             .ReturnsAsync(vault);
 
         // Act
         try
         {
-            await _handler.Handle(new CreateRewindVaultGovernanceCertificatesCommand(rewindHeight), CancellationToken.None);
+            await _handler.Handle(new CreateRewindVaultCertificatesCommand(rewindHeight), CancellationToken.None);
         }
         catch { }
 
         // Assert
         foreach (var certificate in certificates)
         {
-            _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultGovernanceContractCertificateSummaryByOwnerQuery>(q => q.Vault == vault.Address &&
+            _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultContractCertificateSummaryByOwnerQuery>(q => q.Vault == vault.Address &&
                                                                                                                              q.Owner == certificate.Owner &&
                                                                                                                              q.BlockHeight == rewindHeight),
                                                    It.IsAny<CancellationToken>()), Times.Once);
@@ -119,12 +119,12 @@ public class CreateRewindVaultGovernanceCertificatesCommandHandlerTests
     // Single vault, 2 owners, 1 cert each. Multiple certificates per owner will break the test.
     // See comment below for more details.
     [Fact]
-    public async Task CreateRewindVaultGovernanceCertificatesCommand_Sends_MakeVaultGovernanceCertificateCommand()
+    public async Task CreateRewindVaultCertificatesCommand_Sends_MakeVaultCertificateCommand()
     {
         // Arrange
         const ulong rewindHeight = 10;
         const ulong vaultId = 1;
-        var vault = new VaultGovernance(vaultId, "PXXNMivLgqqART1GLsMroh6zwmH1iU9Ejm", 2, 3, 4, 5, 6, 7, 8, 9);
+        var vault = new Vault(vaultId, "PXXNMivLgqqART1GLsMroh6zwmH1iU9Ejm", 2, 3, 4, 5, 6, 7, 8, 9);
 
         var certificates = new List<VaultCertificate> {
             new(1, vaultId, "PzwmH1iU9EjmXXNMivLgqqART1GLsMroh6", 3, 4, false, false, 5, 10),
@@ -133,15 +133,15 @@ public class CreateRewindVaultGovernanceCertificatesCommandHandlerTests
 
         var summaries = new List<VaultContractCertificateSummary> { new(3, 4, false), new(2, 5, false) };
 
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceCertificatesByModifiedBlockQuery>(), It.IsAny<CancellationToken>()))
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesByModifiedBlockQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(certificates);
 
-        _mediator.Setup(callTo => callTo.Send(It.Is<RetrieveVaultGovernanceByIdQuery>(q => q.VaultId == vaultId), It.IsAny<CancellationToken>()))
+        _mediator.Setup(callTo => callTo.Send(It.Is<RetrieveVaultByIdQuery>(q => q.VaultId == vaultId), It.IsAny<CancellationToken>()))
             .ReturnsAsync(vault);
 
         foreach (var certificate in certificates)
         {
-            _mediator.Setup(callTo => callTo.Send(It.Is<RetrieveVaultGovernanceContractCertificateSummaryByOwnerQuery>(q => q.Vault == vault.Address &&
+            _mediator.Setup(callTo => callTo.Send(It.Is<RetrieveVaultContractCertificateSummaryByOwnerQuery>(q => q.Vault == vault.Address &&
                                                                                                                             q.Owner == certificate.Owner),
                                                   It.IsAny<CancellationToken>()))
                 // Hack, VaultContractCertificateSummary doesn't reference an Owner because in code, its not needed.
@@ -152,7 +152,7 @@ public class CreateRewindVaultGovernanceCertificatesCommandHandlerTests
         // Act
         try
         {
-            await _handler.Handle(new CreateRewindVaultGovernanceCertificatesCommand(rewindHeight), CancellationToken.None);
+            await _handler.Handle(new CreateRewindVaultCertificatesCommand(rewindHeight), CancellationToken.None);
         }
         catch { }
 
@@ -163,7 +163,7 @@ public class CreateRewindVaultGovernanceCertificatesCommandHandlerTests
 
             certificate.Update(summary, rewindHeight);
 
-            _mediator.Verify(callTo => callTo.Send(It.Is<MakeVaultGovernanceCertificateCommand>(q => q.Certificate == certificate),
+            _mediator.Verify(callTo => callTo.Send(It.Is<MakeVaultCertificateCommand>(q => q.Certificate == certificate),
                                                    It.IsAny<CancellationToken>()), Times.Once);
         }
     }

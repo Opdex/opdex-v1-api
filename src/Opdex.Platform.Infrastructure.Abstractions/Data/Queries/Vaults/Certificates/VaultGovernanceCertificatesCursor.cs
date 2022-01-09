@@ -6,9 +6,9 @@ using System.Text;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certificates;
 
-public class VaultGovernanceCertificatesCursor : Cursor<ulong>
+public class VaultCertificatesCursor : Cursor<ulong>
 {
-    public VaultGovernanceCertificatesCursor(Address holder, VaultCertificateStatusFilter status, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, ulong pointer)
+    public VaultCertificatesCursor(Address holder, VaultCertificateStatusFilter status, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, ulong pointer)
         : base(sortDirection, limit, pagingDirection, pointer)
     {
         Holder = holder;
@@ -32,7 +32,7 @@ public class VaultGovernanceCertificatesCursor : Cursor<ulong>
         if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
         if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical id.");
 
-        return new VaultGovernanceCertificatesCursor(Holder, Status, SortDirection, Limit, direction, pointer);
+        return new VaultCertificatesCursor(Holder, Status, SortDirection, Limit, direction, pointer);
     }
 
     /// <summary>
@@ -41,7 +41,7 @@ public class VaultGovernanceCertificatesCursor : Cursor<ulong>
     /// <param name="raw">Stringified cursor</param>
     /// <param name="cursor">Parsed cursor</param>
     /// <returns>True if the value could be parsed, otherwise false</returns>
-    public static bool TryParse(string raw, out VaultGovernanceCertificatesCursor cursor)
+    public static bool TryParse(string raw, out VaultCertificatesCursor cursor)
     {
         cursor = null;
 
@@ -67,7 +67,7 @@ public class VaultGovernanceCertificatesCursor : Cursor<ulong>
 
         try
         {
-            cursor = new VaultGovernanceCertificatesCursor(holder, status, direction, limit, paging, pointer);
+            cursor = new VaultCertificatesCursor(holder, status, direction, limit, paging, pointer);
         }
         catch (Exception)
         {

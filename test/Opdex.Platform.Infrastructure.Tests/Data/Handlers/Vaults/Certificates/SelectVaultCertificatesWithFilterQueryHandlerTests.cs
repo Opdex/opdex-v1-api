@@ -12,17 +12,17 @@ using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Vaults.Certificates;
 
-public class SelectVaultGovernanceCertificatesWithFilterQueryHandlerTests
+public class SelectVaultCertificatesWithFilterQueryHandlerTests
 {
     private readonly Mock<IDbContext> _dbContext;
-    private readonly SelectVaultGovernanceCertificatesWithFilterQueryHandler _handler;
+    private readonly SelectVaultCertificatesWithFilterQueryHandler _handler;
 
-    public SelectVaultGovernanceCertificatesWithFilterQueryHandlerTests()
+    public SelectVaultCertificatesWithFilterQueryHandlerTests()
     {
         var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
         _dbContext = new Mock<IDbContext>();
-        _handler = new SelectVaultGovernanceCertificatesWithFilterQueryHandler(_dbContext.Object, mapper);
+        _handler = new SelectVaultCertificatesWithFilterQueryHandler(_dbContext.Object, mapper);
     }
 
     [Fact]
@@ -30,10 +30,10 @@ public class SelectVaultGovernanceCertificatesWithFilterQueryHandlerTests
     {
         // Arrange
         var holder = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-        var cursor = new VaultGovernanceCertificatesCursor(holder, VaultCertificateStatusFilter.Redeemed, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+        var cursor = new VaultCertificatesCursor(holder, VaultCertificateStatusFilter.Redeemed, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
 
         // Act
-        await _handler.Handle(new SelectVaultGovernanceCertificatesWithFilterQuery(5, cursor), CancellationToken.None);
+        await _handler.Handle(new SelectVaultCertificatesWithFilterQuery(5, cursor), CancellationToken.None);
 
         // Assert
         _dbContext.Verify(callTo => callTo.ExecuteQueryAsync<VaultCertificateEntity>(
@@ -47,10 +47,10 @@ public class SelectVaultGovernanceCertificatesWithFilterQueryHandlerTests
         // Arrange
         var orderBy = SortDirectionType.ASC;
         var limit = 25U;
-        var cursor = new VaultGovernanceCertificatesCursor("", VaultCertificateStatusFilter.Revoked, orderBy, limit, PagingDirection.Forward, 55);
+        var cursor = new VaultCertificatesCursor("", VaultCertificateStatusFilter.Revoked, orderBy, limit, PagingDirection.Forward, 55);
 
         // Act
-        await _handler.Handle(new SelectVaultGovernanceCertificatesWithFilterQuery(5, cursor), CancellationToken.None);
+        await _handler.Handle(new SelectVaultCertificatesWithFilterQuery(5, cursor), CancellationToken.None);
 
         // Assert
         _dbContext.Verify(callTo =>
@@ -66,10 +66,10 @@ public class SelectVaultGovernanceCertificatesWithFilterQueryHandlerTests
         // Arrange
         var orderBy = SortDirectionType.DESC;
         var limit = 25U;
-        var cursor = new VaultGovernanceCertificatesCursor("", VaultCertificateStatusFilter.Redeemed, orderBy, limit, PagingDirection.Forward, 55);
+        var cursor = new VaultCertificatesCursor("", VaultCertificateStatusFilter.Redeemed, orderBy, limit, PagingDirection.Forward, 55);
 
         // Act
-        await _handler.Handle(new SelectVaultGovernanceCertificatesWithFilterQuery(5, cursor), CancellationToken.None);
+        await _handler.Handle(new SelectVaultCertificatesWithFilterQuery(5, cursor), CancellationToken.None);
 
         // Assert
         _dbContext.Verify(callTo =>
@@ -85,10 +85,10 @@ public class SelectVaultGovernanceCertificatesWithFilterQueryHandlerTests
         // Arrange
         var orderBy = SortDirectionType.DESC;
         var limit = 25U;
-        var cursor = new VaultGovernanceCertificatesCursor("", VaultCertificateStatusFilter.Redeemed, orderBy, limit, PagingDirection.Backward, 55);
+        var cursor = new VaultCertificatesCursor("", VaultCertificateStatusFilter.Redeemed, orderBy, limit, PagingDirection.Backward, 55);
 
         // Act
-        await _handler.Handle(new SelectVaultGovernanceCertificatesWithFilterQuery(5, cursor), CancellationToken.None);
+        await _handler.Handle(new SelectVaultCertificatesWithFilterQuery(5, cursor), CancellationToken.None);
 
         // Assert
         _dbContext.Verify(callTo =>
@@ -104,10 +104,10 @@ public class SelectVaultGovernanceCertificatesWithFilterQueryHandlerTests
         // Arrange
         var orderBy = SortDirectionType.ASC;
         var limit = 25U;
-        var cursor = new VaultGovernanceCertificatesCursor("", VaultCertificateStatusFilter.Redeemed, orderBy, limit, PagingDirection.Backward, 55);
+        var cursor = new VaultCertificatesCursor("", VaultCertificateStatusFilter.Redeemed, orderBy, limit, PagingDirection.Backward, 55);
 
         // Act
-        await _handler.Handle(new SelectVaultGovernanceCertificatesWithFilterQuery(5, cursor), CancellationToken.None);
+        await _handler.Handle(new SelectVaultCertificatesWithFilterQuery(5, cursor), CancellationToken.None);
 
         // Assert
         _dbContext.Verify(callTo =>

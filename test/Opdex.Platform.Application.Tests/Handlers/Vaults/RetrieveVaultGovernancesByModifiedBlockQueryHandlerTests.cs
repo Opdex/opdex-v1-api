@@ -10,30 +10,30 @@ using Xunit;
 
 namespace Opdex.Platform.Application.Tests.Handlers.Vaults;
 
-public class RetrieveVaultGovernancesByModifiedBlockQueryHandlerTests
+public class RetrieveVaultsByModifiedBlockQueryHandlerTests
 {
     private readonly Mock<IMediator> _mediator;
-    private readonly RetrieveVaultGovernancesByModifiedBlockQueryHandler _handler;
+    private readonly RetrieveVaultsByModifiedBlockQueryHandler _handler;
 
-    public RetrieveVaultGovernancesByModifiedBlockQueryHandlerTests()
+    public RetrieveVaultsByModifiedBlockQueryHandlerTests()
     {
         _mediator = new Mock<IMediator>();
-        _handler = new RetrieveVaultGovernancesByModifiedBlockQueryHandler(_mediator.Object);
+        _handler = new RetrieveVaultsByModifiedBlockQueryHandler(_mediator.Object);
     }
 
     [Fact]
-    public void RetrieveVaultGovernancesByModifiedBlockQuery_InvalidBlockHeight_ThrowsArgumentOutOfRangeException()
+    public void RetrieveVaultsByModifiedBlockQuery_InvalidBlockHeight_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
         // Act
-        void Act() => new RetrieveVaultGovernancesByModifiedBlockQuery(0);
+        void Act() => new RetrieveVaultsByModifiedBlockQuery(0);
 
         // Assert
         Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Block height must be greater than zero.");
     }
 
     [Fact]
-    public async Task RetrieveVaultGovernancesByModifiedBlockQuery_Sends_SelectVaultByModifiedBlockQuery()
+    public async Task RetrieveVaultsByModifiedBlockQuery_Sends_SelectVaultByModifiedBlockQuery()
     {
         // Arrange
         const ulong blockHeight = 10;
@@ -41,11 +41,11 @@ public class RetrieveVaultGovernancesByModifiedBlockQueryHandlerTests
         // Act
         try
         {
-            await _handler.Handle(new RetrieveVaultGovernancesByModifiedBlockQuery(blockHeight), CancellationToken.None);
+            await _handler.Handle(new RetrieveVaultsByModifiedBlockQuery(blockHeight), CancellationToken.None);
         } catch { }
 
         // Assert
-        _mediator.Verify(callTo => callTo.Send(It.Is<SelectVaultGovernancesByModifiedBlockQuery>(q => q.BlockHeight == blockHeight),
+        _mediator.Verify(callTo => callTo.Send(It.Is<SelectVaultsByModifiedBlockQuery>(q => q.BlockHeight == blockHeight),
                                                It.IsAny<CancellationToken>()), Times.Once);
     }
 }

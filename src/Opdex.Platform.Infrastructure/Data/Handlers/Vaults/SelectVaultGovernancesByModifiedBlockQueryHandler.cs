@@ -12,39 +12,39 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults;
 
-public class SelectVaultGovernancesByModifiedBlockQueryHandler : IRequestHandler<SelectVaultGovernancesByModifiedBlockQuery, IEnumerable<VaultGovernance>>
+public class SelectVaultsByModifiedBlockQueryHandler : IRequestHandler<SelectVaultsByModifiedBlockQuery, IEnumerable<Vault>>
 {
     private static readonly string SqlQuery =
         @$"SELECT
-                {nameof(VaultGovernanceEntity.Id)},
-                {nameof(VaultGovernanceEntity.Address)},
-                {nameof(VaultGovernanceEntity.TokenId)},
-                {nameof(VaultGovernanceEntity.UnassignedSupply)},
-                {nameof(VaultGovernanceEntity.ProposedSupply)},
-                {nameof(VaultGovernanceEntity.VestingDuration)},
-                {nameof(VaultGovernanceEntity.TotalPledgeMinimum)},
-                {nameof(VaultGovernanceEntity.TotalVoteMinimum)},
-                {nameof(VaultGovernanceEntity.CreatedBlock)},
-                {nameof(VaultGovernanceEntity.ModifiedBlock)}
+                {nameof(VaultEntity.Id)},
+                {nameof(VaultEntity.Address)},
+                {nameof(VaultEntity.TokenId)},
+                {nameof(VaultEntity.UnassignedSupply)},
+                {nameof(VaultEntity.ProposedSupply)},
+                {nameof(VaultEntity.VestingDuration)},
+                {nameof(VaultEntity.TotalPledgeMinimum)},
+                {nameof(VaultEntity.TotalVoteMinimum)},
+                {nameof(VaultEntity.CreatedBlock)},
+                {nameof(VaultEntity.ModifiedBlock)}
             FROM vault
-            WHERE {nameof(VaultGovernanceEntity.ModifiedBlock)} = @{nameof(SqlParams.ModifiedBlock)};".RemoveExcessWhitespace();
+            WHERE {nameof(VaultEntity.ModifiedBlock)} = @{nameof(SqlParams.ModifiedBlock)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
 
-    public  SelectVaultGovernancesByModifiedBlockQueryHandler(IDbContext context, IMapper mapper)
+    public  SelectVaultsByModifiedBlockQueryHandler(IDbContext context, IMapper mapper)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<IEnumerable<VaultGovernance>> Handle(SelectVaultGovernancesByModifiedBlockQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Vault>> Handle(SelectVaultsByModifiedBlockQuery request, CancellationToken cancellationToken)
     {
         var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.BlockHeight), cancellationToken);
 
-        var result = await _context.ExecuteQueryAsync<VaultGovernanceEntity>(query);
+        var result = await _context.ExecuteQueryAsync<VaultEntity>(query);
 
-        return _mapper.Map<IEnumerable<VaultGovernance>>(result);
+        return _mapper.Map<IEnumerable<Vault>>(result);
     }
 
     private sealed class SqlParams

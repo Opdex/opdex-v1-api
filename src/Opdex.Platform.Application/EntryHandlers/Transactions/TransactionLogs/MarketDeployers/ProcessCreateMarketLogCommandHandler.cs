@@ -79,7 +79,7 @@ public class ProcessCreateMarketLogCommandHandler : IRequestHandler<ProcessCreat
                     return false;
                 }
 
-                var vaultId = await _mediator.Send(new CreateVaultGovernanceCommand(stakingTokenSummary.Vault.Value, stakingToken.Id, request.BlockHeight));
+                var vaultId = await _mediator.Send(new CreateVaultCommand(stakingTokenSummary.Vault.Value, stakingToken.Id, request.BlockHeight));
 
                 var miningGovernanceId = await _mediator.Send(new CreateMiningGovernanceCommand(stakingTokenSummary.MiningGovernance.Value,
                                                                                                 stakingToken.Id, request.BlockHeight));

@@ -8,20 +8,20 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Vaults;
 
-public class MakeVaultGovernanceCommandHandler : IRequestHandler<MakeVaultGovernanceCommand, ulong>
+public class MakeVaultCommandHandler : IRequestHandler<MakeVaultCommand, ulong>
 {
     private readonly IMediator _mediator;
 
-    public MakeVaultGovernanceCommandHandler(IMediator mediator)
+    public MakeVaultCommandHandler(IMediator mediator)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    public async Task<ulong> Handle(MakeVaultGovernanceCommand request, CancellationToken cancellationToken)
+    public async Task<ulong> Handle(MakeVaultCommand request, CancellationToken cancellationToken)
     {
         if (request.Refresh)
         {
-            var summary = await _mediator.Send(new RetrieveVaultGovernanceContractSummaryQuery(request.Vault.Address, request.BlockHeight,
+            var summary = await _mediator.Send(new RetrieveVaultContractSummaryQuery(request.Vault.Address, request.BlockHeight,
                                                                                                includeUnassignedSupply: request.RefreshUnassignedSupply,
                                                                                                includeProposedSupply: request.RefreshProposedSupply,
                                                                                                includeTotalPledgeMinimum: request.RefreshTotalPledgeMinimum,
@@ -30,6 +30,6 @@ public class MakeVaultGovernanceCommandHandler : IRequestHandler<MakeVaultGovern
             request.Vault.Update(summary);
         }
 
-        return await _mediator.Send(new PersistVaultGovernanceCommand(request.Vault), CancellationToken.None);
+        return await _mediator.Send(new PersistVaultCommand(request.Vault), CancellationToken.None);
     }
 }

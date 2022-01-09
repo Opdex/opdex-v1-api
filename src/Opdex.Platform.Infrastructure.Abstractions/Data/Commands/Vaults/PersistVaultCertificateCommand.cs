@@ -4,9 +4,9 @@ using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Vaults;
 
-public class PersistVaultGovernanceCertificateCommand : IRequest<ulong>
+public class PersistVaultCertificateCommand : IRequest<ulong>
 {
-    public PersistVaultGovernanceCertificateCommand(VaultCertificate certificate)
+    public PersistVaultCertificateCommand(VaultCertificate certificate)
     {
         Certificate = certificate ?? throw new ArgumentNullException(nameof(certificate), "Vault certificate must be provided.");
     }

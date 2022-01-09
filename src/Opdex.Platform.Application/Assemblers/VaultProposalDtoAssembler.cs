@@ -30,7 +30,7 @@ public class VaultProposalDtoAssembler : IModelAssembler<VaultProposal, VaultPro
     {
         var dto = _mapper.Map<VaultProposalDto>(proposal);
 
-        var vault = await _mediator.Send(new RetrieveVaultGovernanceByIdQuery(proposal.VaultId));
+        var vault = await _mediator.Send(new RetrieveVaultByIdQuery(proposal.VaultId));
         var token = await _mediator.Send(new RetrieveTokenByIdQuery(vault.TokenId));
 
         dto.Vault = vault.Address;

@@ -7,13 +7,13 @@ using Xunit;
 
 namespace Opdex.Platform.WebApi.Tests.Validation.Vaults;
 
-public class VaultGovernanceFilterParametersValidatorTests
+public class VaultFilterParametersValidatorTests
 {
-    private readonly VaultGovernanceFilterParametersValidator _validator;
+    private readonly VaultFilterParametersValidator _validator;
 
-    public VaultGovernanceFilterParametersValidatorTests()
+    public VaultFilterParametersValidatorTests()
     {
-        _validator = new VaultGovernanceFilterParametersValidator();
+        _validator = new VaultFilterParametersValidator();
     }
 
     [Theory]
@@ -21,7 +21,7 @@ public class VaultGovernanceFilterParametersValidatorTests
     public void LockedToken_Invalid(Address lockedToken)
     {
         // Arrange
-        var request = new VaultGovernanceFilterParameters
+        var request = new VaultFilterParameters
         {
             LockedToken = lockedToken
         };
@@ -40,7 +40,7 @@ public class VaultGovernanceFilterParametersValidatorTests
     public void LockedToken_Valid(Address lockedToken)
     {
         // Arrange
-        var request = new VaultGovernanceFilterParameters
+        var request = new VaultFilterParameters
         {
             LockedToken = lockedToken
         };
@@ -56,7 +56,7 @@ public class VaultGovernanceFilterParametersValidatorTests
     public void Limit_Invalid()
     {
         // Arrange
-        var request = new VaultGovernanceFilterParameters
+        var request = new VaultFilterParameters
         {
             Limit = Cursor.DefaultMaxLimit + 1
         };
@@ -72,7 +72,7 @@ public class VaultGovernanceFilterParametersValidatorTests
     public void Limit_Valid()
     {
         // Arrange
-        var request = new VaultGovernanceFilterParameters
+        var request = new VaultFilterParameters
         {
             Limit = Cursor.DefaultMaxLimit
         };

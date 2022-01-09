@@ -29,21 +29,21 @@ public class ProcessCreateVaultCertificateLogCommandHandler : IRequestHandler<Pr
     {
         try
         {
-            var vault = await _mediator.Send(new RetrieveVaultGovernanceByAddressQuery(request.Log.Contract, findOrThrow: false));
+            var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: false));
 
             if (vault == null) return false;
 
             // Update the vault when applicable
             if (request.BlockHeight >= vault.ModifiedBlock)
             {
-                var vaultId = await _mediator.Send(new MakeVaultGovernanceCommand(vault, request.BlockHeight,
+                var vaultId = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight,
                                                                                   refreshUnassignedSupply: true,
                                                                                   refreshProposedSupply: true));
                 if (vaultId == 0) _logger.LogWarning($"Unexpected error updating vault supply by address: {vault.Address}");
             }
 
             // Validate that we don't already have this vault certificate inserted.
-            var certs = await _mediator.Send(new RetrieveVaultGovernanceCertificatesByVaultIdAndOwnerQuery(vault.Id, request.Log.Owner));
+            var certs = await _mediator.Send(new RetrieveVaultCertificatesByVaultIdAndOwnerQuery(vault.Id, request.Log.Owner));
             if (certs.Any(cert => cert.VestedBlock == request.Log.VestedBlock))
             {
                 return true;
@@ -51,7 +51,7 @@ public class ProcessCreateVaultCertificateLogCommandHandler : IRequestHandler<Pr
 
             var cert = new VaultCertificate(vault.Id, request.Log.Owner, request.Log.Amount, request.Log.VestedBlock, request.BlockHeight);
 
-            var certificateId = await _mediator.Send(new MakeVaultGovernanceCertificateCommand(cert));
+            var certificateId = await _mediator.Send(new MakeVaultCertificateCommand(cert));
 
             if (certificateId == 0)
             {

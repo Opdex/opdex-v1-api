@@ -76,7 +76,7 @@ public class ProcessGovernanceDeploymentTransactionCommandHandler : IRequestHand
                                                                                                         includeMiningGovernance: true));
 
             // Get and/or create vault
-            var vault = await _mediator.Send(new CreateVaultGovernanceCommand(stakingTokenSummary.Vault.GetValueOrDefault(),
+            var vault = await _mediator.Send(new CreateVaultCommand(stakingTokenSummary.Vault.GetValueOrDefault(),
                                                                               stakingTokenId, transaction.BlockHeight));
 
             // Get and/or create mining governance

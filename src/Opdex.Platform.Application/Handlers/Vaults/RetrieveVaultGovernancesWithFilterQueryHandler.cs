@@ -9,17 +9,17 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Vaults;
 
-public class RetrieveVaultGovernancesWithFilterQueryHandler : IRequestHandler<RetrieveVaultGovernancesWithFilterQuery, IEnumerable<VaultGovernance>>
+public class RetrieveVaultsWithFilterQueryHandler : IRequestHandler<RetrieveVaultsWithFilterQuery, IEnumerable<Vault>>
 {
     private readonly IMediator _mediator;
 
-    public RetrieveVaultGovernancesWithFilterQueryHandler(IMediator mediator)
+    public RetrieveVaultsWithFilterQueryHandler(IMediator mediator)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    public async Task<IEnumerable<VaultGovernance>> Handle(RetrieveVaultGovernancesWithFilterQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Vault>> Handle(RetrieveVaultsWithFilterQuery request, CancellationToken cancellationToken)
     {
-        return await _mediator.Send(new SelectVaultGovernancesWithFilterQuery(request.Cursor), cancellationToken);
+        return await _mediator.Send(new SelectVaultsWithFilterQuery(request.Cursor), cancellationToken);
     }
 }

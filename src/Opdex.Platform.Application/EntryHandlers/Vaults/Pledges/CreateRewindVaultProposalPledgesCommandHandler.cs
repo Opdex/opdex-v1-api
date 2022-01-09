@@ -41,7 +41,7 @@ public class CreateRewindVaultProposalPledgesCommandHandler : IRequestHandler<Cr
 
         foreach (var vaultGroup in pledgesByVault)
         {
-            var vault = await _mediator.Send(new RetrieveVaultGovernanceByIdQuery(vaultGroup.Key), CancellationToken.None);
+            var vault = await _mediator.Send(new RetrieveVaultByIdQuery(vaultGroup.Key), CancellationToken.None);
 
             var pledgesByProposal = vaultGroup.GroupBy(pledge => pledge.ProposalId);
 
