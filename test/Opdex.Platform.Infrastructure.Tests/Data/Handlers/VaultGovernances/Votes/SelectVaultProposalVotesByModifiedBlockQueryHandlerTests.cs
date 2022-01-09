@@ -35,7 +35,7 @@ public class SelectVaultProposalVotesByModifiedBlockQueryHandlerTests
             new()
             {
                 Id = 100,
-                VaultGovernanceId = 123,
+                VaultId = 123,
                 ProposalId = 11,
                 Voter = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
                 Vote = 5,
@@ -58,7 +58,7 @@ public class SelectVaultProposalVotesByModifiedBlockQueryHandlerTests
         for (var i = 0; i < resultsList.Count; i++)
         {
             resultsList[i].Id.Should().Be(expectedList[i].Id);
-            resultsList[i].VaultGovernanceId.Should().Be(expectedList[i].VaultGovernanceId);
+            resultsList[i].VaultId.Should().Be(expectedList[i].VaultId);
             resultsList[i].ProposalId.Should().Be(expectedList[i].ProposalId);
             resultsList[i].Voter.Should().Be(expectedList[i].Voter);
             resultsList[i].Vote.Should().Be(expectedList[i].Vote);

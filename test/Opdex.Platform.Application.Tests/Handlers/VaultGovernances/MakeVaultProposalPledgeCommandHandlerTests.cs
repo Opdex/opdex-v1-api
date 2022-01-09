@@ -42,7 +42,7 @@ public class MakeVaultProposalPledgeCommandHandlerTests
         catch { }
 
         // Assert
-        _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultGovernanceByIdQuery>(q => q.VaultId == pledge.VaultGovernanceId), It.IsAny<CancellationToken>()), Times.Once);
+        _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultGovernanceByIdQuery>(q => q.VaultId == pledge.VaultId), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

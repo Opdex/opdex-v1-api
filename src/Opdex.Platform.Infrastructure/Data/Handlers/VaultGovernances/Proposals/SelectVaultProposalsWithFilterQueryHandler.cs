@@ -25,7 +25,7 @@ public class SelectVaultProposalsWithFilterQueryHandler : IRequestHandler<Select
         @$"SELECT
                 {nameof(VaultProposalEntity.Id)},
                 {nameof(VaultProposalEntity.PublicId)},
-                {nameof(VaultProposalEntity.VaultGovernanceId)},
+                {nameof(VaultProposalEntity.VaultId)},
                 {nameof(VaultProposalEntity.Creator)},
                 {nameof(VaultProposalEntity.Wallet)},
                 {nameof(VaultProposalEntity.Amount)},
@@ -93,7 +93,7 @@ public class SelectVaultProposalsWithFilterQueryHandler : IRequestHandler<Select
         }
 
         whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
-        whereFilterBuilder.Append($" {nameof(VaultProposalEntity.VaultGovernanceId)} = @{nameof(SqlParams.VaultId)}");
+        whereFilterBuilder.Append($" {nameof(VaultProposalEntity.VaultId)} = @{nameof(SqlParams.VaultId)}");
 
         if (request.Cursor.Status != default)
         {

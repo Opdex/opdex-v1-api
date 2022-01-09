@@ -24,15 +24,15 @@ public class CreateVaultGovernanceCommandHandler : IRequestHandler<CreateVaultGo
 
         if (vault != null) return vault.Id;
 
-        var vaultGovernanceSummary = await _mediator.Send(new RetrieveVaultGovernanceContractSummaryQuery(request.Vault,
-                                                                                                          request.BlockHeight,
-                                                                                                          includeVestingDuration:true,
-                                                                                                          includeTotalPledgeMinimum: true,
-                                                                                                          includeTotalVoteMinimum: true));
+        var vaultSummary = await _mediator.Send(new RetrieveVaultGovernanceContractSummaryQuery(request.Vault,
+                                                                                                request.BlockHeight,
+                                                                                                includeVestingDuration:true,
+                                                                                                includeTotalPledgeMinimum: true,
+                                                                                                includeTotalVoteMinimum: true));
 
-        vault = new VaultGovernance(request.Vault, request.TokenId, vaultGovernanceSummary.VestingDuration.GetValueOrDefault(),
-                                    vaultGovernanceSummary.TotalPledgeMinimum.GetValueOrDefault(),
-                                    vaultGovernanceSummary.TotalVoteMinimum.GetValueOrDefault(), request.BlockHeight);
+        vault = new VaultGovernance(request.Vault, request.TokenId, vaultSummary.VestingDuration.GetValueOrDefault(),
+                                    vaultSummary.TotalPledgeMinimum.GetValueOrDefault(),
+                                    vaultSummary.TotalVoteMinimum.GetValueOrDefault(), request.BlockHeight);
 
         return await _mediator.Send(new MakeVaultGovernanceCommand(vault, request.BlockHeight));
     }

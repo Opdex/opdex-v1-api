@@ -37,7 +37,7 @@ public class CreateRewindVaultProposalPledgesCommandHandler : IRequestHandler<Cr
 
         int refreshFailureCount = 0;
 
-        var pledgesByVault = pledgesList.GroupBy(pledge => pledge.VaultGovernanceId);
+        var pledgesByVault = pledgesList.GroupBy(pledge => pledge.VaultId);
 
         foreach (var vaultGroup in pledgesByVault)
         {

@@ -17,7 +17,7 @@ public class SelectVaultProposalVotesByModifiedBlockQueryHandler : IRequestHandl
     private static readonly string SqlQuery =
         @$"SELECT
                 {nameof(VaultProposalVoteEntity.Id)},
-                {nameof(VaultProposalVoteEntity.VaultGovernanceId)},
+                {nameof(VaultProposalVoteEntity.VaultId)},
                 {nameof(VaultProposalVoteEntity.ProposalId)},
                 {nameof(VaultProposalVoteEntity.Voter)},
                 {nameof(VaultProposalVoteEntity.Vote)},

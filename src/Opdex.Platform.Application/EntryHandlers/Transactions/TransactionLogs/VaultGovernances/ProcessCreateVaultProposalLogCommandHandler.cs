@@ -52,7 +52,9 @@ public class ProcessCreateVaultProposalLogCommandHandler : IRequestHandler<Proce
 
             if (proposal.Type == VaultProposalType.Revoke)
             {
-                var certificates = await _mediator.Send(new RetrieveVaultGovernanceCertificatesByVaultIdAndOwnerQuery(proposal.VaultGovernanceId, proposal.Wallet));
+                var certificates = await _mediator.Send(new RetrieveVaultGovernanceCertificatesByVaultIdAndOwnerQuery(proposal.VaultId,
+                                                                                                                      proposal.Wallet), CancellationToken.None);
+
                 var certificate = certificates.SingleOrDefault(certificate => certificate.Amount == proposal.Amount &&
                                                                               !certificate.Redeemed &&
                                                                               !certificate.Revoked);
@@ -65,7 +67,7 @@ public class ProcessCreateVaultProposalLogCommandHandler : IRequestHandler<Proce
 
                 var proposalCertificate = new VaultProposalCertificate(proposal.Id, certificate.Id, request.BlockHeight);
 
-                var proposalCertificateId = await _mediator.Send(new MakeVaultProposalCertificateCommand(proposalCertificate));
+                var proposalCertificateId = await _mediator.Send(new MakeVaultProposalCertificateCommand(proposalCertificate), CancellationToken.None);
 
                 if (proposalCertificateId == 0)
                 {

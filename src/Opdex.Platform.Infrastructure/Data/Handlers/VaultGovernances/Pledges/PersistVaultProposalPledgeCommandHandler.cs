@@ -16,7 +16,7 @@ public class PersistVaultProposalPledgeCommandHandler : IRequestHandler<PersistV
 {
     private static readonly string InsertSqlCommand =
         $@"INSERT INTO vault_proposal_pledge (
-                {nameof(VaultProposalPledgeEntity.VaultGovernanceId)},
+                {nameof(VaultProposalPledgeEntity.VaultId)},
                 {nameof(VaultProposalPledgeEntity.ProposalId)},
                 {nameof(VaultProposalPledgeEntity.Pledger)},
                 {nameof(VaultProposalPledgeEntity.Pledge)},
@@ -24,7 +24,7 @@ public class PersistVaultProposalPledgeCommandHandler : IRequestHandler<PersistV
                 {nameof(VaultProposalPledgeEntity.CreatedBlock)},
                 {nameof(VaultProposalPledgeEntity.ModifiedBlock)}
               ) VALUES (
-                @{nameof(VaultProposalPledgeEntity.VaultGovernanceId)},
+                @{nameof(VaultProposalPledgeEntity.VaultId)},
                 @{nameof(VaultProposalPledgeEntity.ProposalId)},
                 @{nameof(VaultProposalPledgeEntity.Pledger)},
                 @{nameof(VaultProposalPledgeEntity.Pledge)},
@@ -72,7 +72,7 @@ public class PersistVaultProposalPledgeCommandHandler : IRequestHandler<PersistV
         {
             using (_logger.BeginScope(new Dictionary<string, object>()
             {
-                { "VaultId", request.Pledge.VaultGovernanceId },
+                { "VaultId", request.Pledge.VaultId },
                 { "ProposalId", request.Pledge.ProposalId },
                 { "Pledger", request.Pledge.Pledger },
                 { "BlockHeight", request.Pledge.ModifiedBlock }

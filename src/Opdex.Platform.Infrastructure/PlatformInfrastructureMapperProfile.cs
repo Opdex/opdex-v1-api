@@ -194,18 +194,18 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<VaultProposalEntity, VaultProposal>()
-            .ConstructUsing(src => new VaultProposal(src.Id, src.PublicId, src.VaultGovernanceId, src.Creator, src.Wallet, src.Amount, src.Description,
+            .ConstructUsing(src => new VaultProposal(src.Id, src.PublicId, src.VaultId, src.Creator, src.Wallet, src.Amount, src.Description,
                                                      (VaultProposalType)src.ProposalTypeId, (VaultProposalStatus)src.ProposalStatusId, src.Expiration,
                                                      src.YesAmount, src.NoAmount, src.PledgeAmount, src.Approved, src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<VaultProposalPledgeEntity, VaultProposalPledge>()
-            .ConstructUsing(src => new VaultProposalPledge(src.Id, src.VaultGovernanceId, src.ProposalId, src.Pledger, src.Pledge, src.Balance,
+            .ConstructUsing(src => new VaultProposalPledge(src.Id, src.VaultId, src.ProposalId, src.Pledger, src.Pledge, src.Balance,
                                                            src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<VaultProposalVoteEntity, VaultProposalVote>()
-            .ConstructUsing(src => new VaultProposalVote(src.Id, src.VaultGovernanceId, src.ProposalId, src.Voter, src.Vote, src.Balance, src.InFavor,
+            .ConstructUsing(src => new VaultProposalVote(src.Id, src.VaultId, src.ProposalId, src.Voter, src.Vote, src.Balance, src.InFavor,
                                                          src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -658,7 +658,7 @@ public class PlatformInfrastructureMapperProfile : Profile
         CreateMap<VaultProposal, VaultProposalEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.PublicId, opt => opt.MapFrom(src => src.PublicId))
-            .ForMember(dest => dest.VaultGovernanceId, opt => opt.MapFrom(src => src.VaultGovernanceId))
+            .ForMember(dest => dest.VaultId, opt => opt.MapFrom(src => src.VaultId))
             .ForMember(dest => dest.Creator, opt => opt.MapFrom(src => src.Creator))
             .ForMember(dest => dest.Wallet, opt => opt.MapFrom(src => src.Wallet))
             .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
@@ -676,7 +676,7 @@ public class PlatformInfrastructureMapperProfile : Profile
 
         CreateMap<VaultProposalPledge, VaultProposalPledgeEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.VaultGovernanceId, opt => opt.MapFrom(src => src.VaultGovernanceId))
+            .ForMember(dest => dest.VaultId, opt => opt.MapFrom(src => src.VaultId))
             .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
             .ForMember(dest => dest.Pledger, opt => opt.MapFrom(src => src.Pledger))
             .ForMember(dest => dest.Pledge, opt => opt.MapFrom(src => src.Pledge))
@@ -687,7 +687,7 @@ public class PlatformInfrastructureMapperProfile : Profile
 
         CreateMap<VaultProposalVote, VaultProposalVoteEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.VaultGovernanceId, opt => opt.MapFrom(src => src.VaultGovernanceId))
+            .ForMember(dest => dest.VaultId, opt => opt.MapFrom(src => src.VaultId))
             .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
             .ForMember(dest => dest.Voter, opt => opt.MapFrom(src => src.Voter))
             .ForMember(dest => dest.Vote, opt => opt.MapFrom(src => src.Vote))

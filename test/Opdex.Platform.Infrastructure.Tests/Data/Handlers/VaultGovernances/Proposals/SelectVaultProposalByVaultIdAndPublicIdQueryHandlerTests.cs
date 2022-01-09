@@ -36,7 +36,7 @@ public class SelectVaultProposalByVaultIdAndPublicIdQueryHandlerTests
         {
             Id = 10,
             PublicId = 11,
-            VaultGovernanceId = 2,
+            VaultId = 2,
             Creator = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
             Wallet = "PGZPZpBXfJ6u1yzNPDw7u4iW4LHVEPMKeh",
             Amount = 233,
@@ -61,7 +61,7 @@ public class SelectVaultProposalByVaultIdAndPublicIdQueryHandlerTests
 
         result.Id.Should().Be(expectedEntity.Id);
         result.PublicId.Should().Be(expectedEntity.PublicId);
-        result.VaultGovernanceId.Should().Be(expectedEntity.VaultGovernanceId);
+        result.VaultId.Should().Be(expectedEntity.VaultId);
         result.Creator.Should().Be(expectedEntity.Creator);
         result.Wallet.Should().Be(expectedEntity.Wallet);
         result.Amount.Should().Be(expectedEntity.Amount);

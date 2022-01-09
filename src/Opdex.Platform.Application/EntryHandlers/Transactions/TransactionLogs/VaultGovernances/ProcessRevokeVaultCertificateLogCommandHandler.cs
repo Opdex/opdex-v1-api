@@ -27,10 +27,10 @@ public class ProcessRevokeVaultCertificateLogCommandHandler : IRequestHandler<Pr
     {
         try
         {
-            var vaultGovernance = await _mediator.Send(new RetrieveVaultGovernanceByAddressQuery(request.Log.Contract, findOrThrow: false));
-            if (vaultGovernance == null) return false;
+            var vault = await _mediator.Send(new RetrieveVaultGovernanceByAddressQuery(request.Log.Contract, findOrThrow: false));
+            if (vault == null) return false;
 
-            var certs = await _mediator.Send(new RetrieveVaultGovernanceCertificatesByVaultIdAndOwnerQuery(vaultGovernance.Id, request.Log.Owner));
+            var certs = await _mediator.Send(new RetrieveVaultGovernanceCertificatesByVaultIdAndOwnerQuery(vault.Id, request.Log.Owner));
 
             // Select certificates using the vestedBlock as an Id
             var certToUpdate = certs.SingleOrDefault(c => c.VestedBlock == request.Log.VestedBlock);
@@ -41,7 +41,7 @@ public class ProcessRevokeVaultCertificateLogCommandHandler : IRequestHandler<Pr
             {
                 certToUpdate.Revoke(request.Log, request.BlockHeight);
 
-                var refreshedSupply = await _mediator.Send(new MakeVaultGovernanceCommand(vaultGovernance, request.BlockHeight,
+                var refreshedSupply = await _mediator.Send(new MakeVaultGovernanceCommand(vault, request.BlockHeight,
                                                                                           refreshUnassignedSupply: true)) > 0;
 
                 if (!refreshedSupply) _logger.LogError("Failure to update vault unassigned supply after revoking certificate.");

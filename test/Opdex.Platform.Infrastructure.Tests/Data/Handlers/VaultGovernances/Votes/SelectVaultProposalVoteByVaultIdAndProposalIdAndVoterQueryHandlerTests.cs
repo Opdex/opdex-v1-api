@@ -30,14 +30,14 @@ public class SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQueryHandlerTe
     [Fact]
     public async Task SelectVaultProposalVoteById_Success()
     {
-        const ulong vaultGovernanceId = 10;
+        const ulong vaultId = 10;
         const ulong proposalId = 11;
         Address voter = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
 
         var expectedEntity = new VaultProposalVoteEntity
         {
             Id = 100,
-            VaultGovernanceId = vaultGovernanceId,
+            VaultId = vaultId,
             ProposalId = proposalId,
             Voter = voter,
             Vote = 5,
@@ -47,7 +47,7 @@ public class SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQueryHandlerTe
             ModifiedBlock = 2
         };
 
-        var command = new SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQuery(vaultGovernanceId, proposalId, voter);
+        var command = new SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQuery(vaultId, proposalId, voter);
 
         _dbContext.Setup(db => db.ExecuteFindAsync<VaultProposalVoteEntity>(It.Is<DatabaseQuery>(q => q.Sql.Contains("vault_proposal_vote"))))
             .Returns(() => Task.FromResult(expectedEntity));
@@ -55,7 +55,7 @@ public class SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQueryHandlerTe
         var result = await _handler.Handle(command, CancellationToken.None);
 
         result.Id.Should().Be(expectedEntity.Id);
-        result.VaultGovernanceId.Should().Be(expectedEntity.VaultGovernanceId);
+        result.VaultId.Should().Be(expectedEntity.VaultId);
         result.ProposalId.Should().Be(expectedEntity.ProposalId);
         result.Voter.Should().Be(expectedEntity.Voter);
         result.Vote.Should().Be(expectedEntity.Vote);
@@ -67,11 +67,11 @@ public class SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQueryHandlerTe
     [Fact]
     public void SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQuery_Throws_NotFoundException()
     {
-        const ulong vaultGovernanceId = 10;
+        const ulong vaultId = 10;
         const ulong proposalId = 11;
         Address voter = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
 
-        var command = new SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQuery(vaultGovernanceId, proposalId, voter);
+        var command = new SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQuery(vaultId, proposalId, voter);
 
         _dbContext.Setup(db => db.ExecuteFindAsync<VaultProposalVoteEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<VaultProposalVoteEntity>(null));
@@ -85,12 +85,12 @@ public class SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQueryHandlerTe
     [Fact]
     public async Task SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQuery_ReturnsNull()
     {
-        const ulong vaultGovernanceId = 10;
+        const ulong vaultId = 10;
         const ulong proposalId = 11;
         Address voter = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
         const bool findOrThrow = false;
 
-        var command = new SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQuery(vaultGovernanceId, proposalId, voter, findOrThrow);
+        var command = new SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQuery(vaultId, proposalId, voter, findOrThrow);
 
         _dbContext.Setup(db => db.ExecuteFindAsync<VaultProposalVoteEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<VaultProposalVoteEntity>(null));

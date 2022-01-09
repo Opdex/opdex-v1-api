@@ -37,7 +37,7 @@ public class SelectVaultProposalsByModifiedBlockQueryHandlerTests
             {
                 Id = 10,
                 PublicId = 11,
-                VaultGovernanceId = 2,
+                VaultId = 2,
                 Creator = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
                 Wallet = "PGZPZpBXfJ6u1yzNPDw7u4iW4LHVEPMKeh",
                 Amount = 233,
@@ -67,7 +67,7 @@ public class SelectVaultProposalsByModifiedBlockQueryHandlerTests
         {
             resultsList[i].Id.Should().Be(expectedList[i].Id);
             resultsList[i].PublicId.Should().Be(expectedList[i].PublicId);
-            resultsList[i].VaultGovernanceId.Should().Be(expectedList[i].VaultGovernanceId);
+            resultsList[i].VaultId.Should().Be(expectedList[i].VaultId);
             resultsList[i].Creator.Should().Be(expectedList[i].Creator);
             resultsList[i].Wallet.Should().Be(expectedList[i].Wallet);
             resultsList[i].Amount.Should().Be(expectedList[i].Amount);

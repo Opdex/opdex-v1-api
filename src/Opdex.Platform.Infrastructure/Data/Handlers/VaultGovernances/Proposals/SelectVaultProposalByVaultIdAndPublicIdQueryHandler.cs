@@ -19,7 +19,7 @@ public class SelectVaultProposalByVaultIdAndPublicIdQueryHandler
         @$"SELECT
                 {nameof(VaultProposalEntity.Id)},
                 {nameof(VaultProposalEntity.PublicId)},
-                {nameof(VaultProposalEntity.VaultGovernanceId)},
+                {nameof(VaultProposalEntity.VaultId)},
                 {nameof(VaultProposalEntity.Creator)},
                 {nameof(VaultProposalEntity.Wallet)},
                 {nameof(VaultProposalEntity.Amount)},
@@ -34,7 +34,7 @@ public class SelectVaultProposalByVaultIdAndPublicIdQueryHandler
                 {nameof(VaultProposalEntity.CreatedBlock)},
                 {nameof(VaultProposalEntity.ModifiedBlock)}
             FROM vault_proposal
-            WHERE {nameof(VaultProposalEntity.VaultGovernanceId)} = @{nameof(SqlParams.VaultId)}
+            WHERE {nameof(VaultProposalEntity.VaultId)} = @{nameof(SqlParams.VaultId)}
                 AND {nameof(VaultProposalEntity.PublicId)} = @{nameof(SqlParams.PublicId)}
             LIMIT 1;".RemoveExcessWhitespace();
 

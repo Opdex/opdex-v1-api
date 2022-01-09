@@ -37,7 +37,7 @@ public class CreateRewindVaultProposalVotesCommandHandler : IRequestHandler<Crea
 
         int refreshFailureCount = 0;
 
-        var votesByVault = votesList.GroupBy(vote => vote.VaultGovernanceId);
+        var votesByVault = votesList.GroupBy(vote => vote.VaultId);
 
         foreach (var vaultGroup in votesByVault)
         {

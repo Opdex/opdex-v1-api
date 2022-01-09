@@ -10,14 +10,14 @@ namespace Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
 /// </summary>
 public class RetrieveVaultGovernanceContractSummaryQuery : IRequest<VaultGovernanceContractSummary>
 {
-    public RetrieveVaultGovernanceContractSummaryQuery(Address vaultGovernance, ulong blockHeight, bool includeVestingDuration = false,
+    public RetrieveVaultGovernanceContractSummaryQuery(Address vault, ulong blockHeight, bool includeVestingDuration = false,
                                                        bool includeUnassignedSupply = false, bool includeProposedSupply = false,
                                                        bool includeTotalPledgeMinimum = false, bool includeTotalVoteMinimum = false)
     {
-        if (vaultGovernance == Address.Empty) throw new ArgumentNullException(nameof(vaultGovernance), "Vault governance address must be provided.");
+        if (vault == Address.Empty) throw new ArgumentNullException(nameof(vault), "Vault governance address must be provided.");
         if (blockHeight == 0) throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
 
-        VaultGovernance = vaultGovernance;
+        VaultGovernance = vault;
         BlockHeight = blockHeight;
         IncludeVestingDuration = includeVestingDuration;
         IncludeUnassignedSupply = includeUnassignedSupply;

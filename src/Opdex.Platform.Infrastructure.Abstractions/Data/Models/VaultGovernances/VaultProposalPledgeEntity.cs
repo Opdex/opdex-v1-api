@@ -5,7 +5,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.VaultGovernance
 public class VaultProposalPledgeEntity : AuditEntity
 {
     public ulong Id { get; set; }
-    public ulong VaultGovernanceId { get; set; }
+    public ulong VaultId { get; set; }
     public ulong ProposalId { get; set; }
     public Address Pledger { get; set; }
     public ulong Pledge { get; set; }

@@ -19,7 +19,7 @@ public class SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQueryHandl
     private static readonly string SqlQuery =
         @$"SELECT
                 {nameof(VaultProposalPledgeEntity.Id)},
-                {nameof(VaultProposalPledgeEntity.VaultGovernanceId)},
+                {nameof(VaultProposalPledgeEntity.VaultId)},
                 {nameof(VaultProposalPledgeEntity.ProposalId)},
                 {nameof(VaultProposalPledgeEntity.Pledger)},
                 {nameof(VaultProposalPledgeEntity.Pledge)},
@@ -27,7 +27,7 @@ public class SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQueryHandl
                 {nameof(VaultProposalPledgeEntity.CreatedBlock)},
                 {nameof(VaultProposalPledgeEntity.ModifiedBlock)}
             FROM vault_proposal_pledge
-            WHERE {nameof(VaultProposalPledgeEntity.VaultGovernanceId)} = @{nameof(SqlParams.VaultId)}
+            WHERE {nameof(VaultProposalPledgeEntity.VaultId)} = @{nameof(SqlParams.VaultId)}
                 AND {nameof(VaultProposalPledgeEntity.ProposalId)} = @{nameof(SqlParams.ProposalId)}
                 AND {nameof(VaultProposalPledgeEntity.Pledger)} = @{nameof(SqlParams.Pledger)}
             LIMIT 1;".RemoveExcessWhitespace();

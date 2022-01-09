@@ -26,7 +26,7 @@ public class SelectVaultProposalPledgesWithFilterQueryHandler : IRequestHandler<
     private static readonly string SqlQuery =
         @$"SELECT
                 p.{nameof(VaultProposalPledgeEntity.Id)},
-                p.{nameof(VaultProposalPledgeEntity.VaultGovernanceId)},
+                p.{nameof(VaultProposalPledgeEntity.VaultId)},
                 p.{nameof(VaultProposalPledgeEntity.ProposalId)},
                 p.{nameof(VaultProposalPledgeEntity.Pledger)},
                 p.{nameof(VaultProposalPledgeEntity.Pledge)},
@@ -95,7 +95,7 @@ public class SelectVaultProposalPledgesWithFilterQueryHandler : IRequestHandler<
         }
 
         whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
-        whereFilterBuilder.Append($" p.{nameof(VaultProposalPledgeEntity.VaultGovernanceId)} = @{nameof(SqlParams.VaultId)}");
+        whereFilterBuilder.Append($" p.{nameof(VaultProposalPledgeEntity.VaultId)} = @{nameof(SqlParams.VaultId)}");
 
         if (filterOnProposal)
         {

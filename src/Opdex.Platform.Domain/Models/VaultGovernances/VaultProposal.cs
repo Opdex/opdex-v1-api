@@ -12,11 +12,11 @@ namespace Opdex.Platform.Domain.Models.VaultGovernances;
 /// </summary>
 public class VaultProposal : BlockAudit
 {
-    public VaultProposal(ulong publicId, ulong vaultGovernanceId, Address creator, Address wallet, UInt256 amount, string description,
+    public VaultProposal(ulong publicId, ulong vaultId, Address creator, Address wallet, UInt256 amount, string description,
                          VaultProposalType type, VaultProposalStatus status, ulong expiration, ulong createdBlock) : base(createdBlock)
     {
         PublicId = publicId > 0 ? publicId : throw new ArgumentOutOfRangeException(nameof(publicId), "Public Id must be greater than zero.");
-        VaultGovernanceId = vaultGovernanceId > 0 ? vaultGovernanceId : throw new ArgumentOutOfRangeException(nameof(vaultGovernanceId), "Vault governance Id must be greater than zero.");
+        VaultId = vaultId > 0 ? vaultId : throw new ArgumentOutOfRangeException(nameof(vaultId), "Vault governance Id must be greater than zero.");
         Creator = creator != Address.Empty ? creator : throw new ArgumentNullException(nameof(creator), "Creator must be set.");
         Wallet = wallet != Address.Empty ? wallet : throw new ArgumentNullException(nameof(wallet), "Wallet must be set.");
         Amount = amount > 0 ? amount : throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than zero.");
@@ -26,14 +26,14 @@ public class VaultProposal : BlockAudit
         Expiration = expiration > 0 ? expiration : throw new ArgumentOutOfRangeException(nameof(expiration), "Expiration must be greater than zero.");
     }
 
-    public VaultProposal(ulong id, ulong publicId, ulong vaultGovernanceId, Address creator, Address wallet, UInt256 amount, string description,
+    public VaultProposal(ulong id, ulong publicId, ulong vaultId, Address creator, Address wallet, UInt256 amount, string description,
                          VaultProposalType type, VaultProposalStatus status, ulong expiration, ulong yesAmount, ulong noAmount, ulong pledgeAmount,
                          bool approved, ulong createdBlock, ulong modifiedBlock)
         : base(createdBlock, modifiedBlock)
     {
         Id = id;
         PublicId = publicId;
-        VaultGovernanceId = vaultGovernanceId;
+        VaultId = vaultId;
         Creator = creator;
         Wallet = wallet;
         Amount = amount;
@@ -49,7 +49,7 @@ public class VaultProposal : BlockAudit
 
     public ulong Id { get; }
     public ulong PublicId { get; }
-    public ulong VaultGovernanceId { get; }
+    public ulong VaultId { get; }
     public Address Creator { get; }
     public Address Wallet { get; }
     public UInt256 Amount { get; }

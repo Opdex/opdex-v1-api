@@ -71,12 +71,7 @@ public class IndexController : ControllerBase
     public async Task<IActionResult> ResyncFromDeployment(ResyncFromDeploymentRequest request, CancellationToken cancellationToken)
     {
         var markets = await _mediator.Send(new RetrieveAllMarketsQuery(), cancellationToken);
-        if (markets.Any())
-        {
-            throw new AlreadyIndexedException("Markets already indexed.");
-        }
-
-        var bestBlock = await _mediator.Send(new GetBestBlockReceiptQuery(), CancellationToken.None);
+        if (markets.Any()) throw new AlreadyIndexedException("Markets already indexed.");
 
         var locked = await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Deploying), CancellationToken.None);
         if (!locked) throw new IndexingAlreadyRunningException();
@@ -85,6 +80,7 @@ public class IndexController : ControllerBase
         {
             await _mediator.Send(new ProcessGovernanceDeploymentTransactionCommand(request.MinedTokenDeploymentHash), CancellationToken.None);
             await _mediator.Send(new ProcessCoreDeploymentTransactionCommand(request.MarketDeployerDeploymentTxHash), CancellationToken.None);
+            var bestBlock = await _mediator.Send(new GetBestBlockReceiptQuery(), CancellationToken.None);
             await _mediator.Send(new ProcessLatestBlocksCommand(bestBlock, _network), CancellationToken.None);
         }
         finally

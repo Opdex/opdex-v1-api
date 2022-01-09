@@ -7,6 +7,7 @@ using Opdex.Platform.Application.Abstractions.Commands.Blocks;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
@@ -42,6 +43,7 @@ public class ProcessGovernanceDeploymentTransactionCommandHandler : IRequestHand
 
             // Hosted environments would not be null, local environments would be null
             var block = await _mediator.Send(new RetrieveBlockByHeightQuery(transaction.BlockHeight, findOrThrow: false));
+            DateTime blockTime;
 
             if (block == null)
             {
@@ -51,10 +53,18 @@ public class ProcessGovernanceDeploymentTransactionCommandHandler : IRequestHand
                 // Get block by hash
                 var blockReceiptDto = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(blockHash, findOrThrow: true));
 
+                blockTime = blockReceiptDto.MedianTime;
+
                 // Make block
                 await _mediator.Send(new MakeBlockCommand(blockReceiptDto.Height, blockReceiptDto.Hash,
                                                           blockReceiptDto.Time, blockReceiptDto.MedianTime));
             }
+            else
+            {
+                blockTime = block.MedianTime;
+            }
+
+            await _mediator.Send(new CreateCrsTokenSnapshotsCommand(blockTime, transaction.BlockHeight), CancellationToken.None);
 
             // Insert Staking Token
             var stakingTokenId = await _mediator.Send(new CreateTokenCommand(transaction.NewContractAddress, transaction.BlockHeight));

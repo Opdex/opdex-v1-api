@@ -1,7 +1,6 @@
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
-using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Proposals;
 using Opdex.Platform.Common.Constants;
@@ -26,7 +25,7 @@ public class VaultProposalPledgeDtoAssembler : IModelAssembler<VaultProposalPled
     {
         var dto = _mapper.Map<VaultProposalPledgeDto>(pledge);
 
-        var vault = await _mediator.Send(new RetrieveVaultGovernanceByIdQuery(pledge.VaultGovernanceId));
+        var vault = await _mediator.Send(new RetrieveVaultGovernanceByIdQuery(pledge.VaultId));
         var proposal = await _mediator.Send(new RetrieveVaultProposalByIdQuery(pledge.ProposalId));
 
         dto.Vault = vault.Address;

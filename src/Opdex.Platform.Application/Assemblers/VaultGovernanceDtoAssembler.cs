@@ -29,14 +29,14 @@ public class VaultGovernanceDtoAssembler : IModelAssembler<VaultGovernance, Vaul
         var token = await _mediator.Send(new RetrieveTokenByIdQuery(vault.TokenId));
 
         // vault may not have a balance yet if it was just created
-        var vaultGovernanceTokenBalance = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(vault.Address, token.Id, findOrThrow: false));
+        var vaultTokenBalance = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(vault.Address, token.Id, findOrThrow: false));
 
         dto.Token = token.Address;
         dto.TokensUnassigned = vault.UnassignedSupply.ToDecimal(token.Decimals);
         dto.TokensProposed = vault.ProposedSupply.ToDecimal(token.Decimals);
-        dto.TokensLocked = vaultGovernanceTokenBalance is null
+        dto.TokensLocked = vaultTokenBalance is null
             ? UInt256.Zero.ToDecimal(token.Decimals)
-            : vaultGovernanceTokenBalance.Balance.ToDecimal(token.Decimals);
+            : vaultTokenBalance.Balance.ToDecimal(token.Decimals);
         dto.TotalPledgeMinimum = vault.TotalPledgeMinimum.ToDecimal(TokenConstants.Cirrus.Decimals);
         dto.TotalVoteMinimum = vault.TotalVoteMinimum.ToDecimal(TokenConstants.Cirrus.Decimals);
 

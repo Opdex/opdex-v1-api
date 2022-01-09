@@ -16,7 +16,7 @@ public class PersistVaultProposalVoteCommandHandler : IRequestHandler<PersistVau
 {
     private static readonly string InsertSqlCommand =
         $@"INSERT INTO vault_proposal_vote (
-                {nameof(VaultProposalVoteEntity.VaultGovernanceId)},
+                {nameof(VaultProposalVoteEntity.VaultId)},
                 {nameof(VaultProposalVoteEntity.ProposalId)},
                 {nameof(VaultProposalVoteEntity.Voter)},
                 {nameof(VaultProposalVoteEntity.Vote)},
@@ -25,7 +25,7 @@ public class PersistVaultProposalVoteCommandHandler : IRequestHandler<PersistVau
                 {nameof(VaultProposalVoteEntity.CreatedBlock)},
                 {nameof(VaultProposalVoteEntity.ModifiedBlock)}
               ) VALUES (
-                @{nameof(VaultProposalVoteEntity.VaultGovernanceId)},
+                @{nameof(VaultProposalVoteEntity.VaultId)},
                 @{nameof(VaultProposalVoteEntity.ProposalId)},
                 @{nameof(VaultProposalVoteEntity.Voter)},
                 @{nameof(VaultProposalVoteEntity.Vote)},
@@ -75,7 +75,7 @@ public class PersistVaultProposalVoteCommandHandler : IRequestHandler<PersistVau
         {
             using (_logger.BeginScope(new Dictionary<string, object>()
             {
-                { "VaultId", request.Vote.VaultGovernanceId },
+                { "VaultId", request.Vote.VaultId },
                 { "ProposalId", request.Vote.ProposalId },
                 { "Voter", request.Vote.Voter },
                 { "BlockHeight", request.Vote.ModifiedBlock }

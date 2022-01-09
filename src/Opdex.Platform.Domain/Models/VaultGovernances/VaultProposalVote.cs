@@ -10,10 +10,10 @@ namespace Opdex.Platform.Domain.Models.VaultGovernances;
 /// </summary>
 public class VaultProposalVote : BlockAudit
 {
-    public VaultProposalVote(ulong vaultGovernanceId, ulong proposalId, Address voter, ulong vote, ulong balance, bool inFavor, ulong createdBlock)
+    public VaultProposalVote(ulong vaultId, ulong proposalId, Address voter, ulong vote, ulong balance, bool inFavor, ulong createdBlock)
         : base(createdBlock)
     {
-        VaultGovernanceId = vaultGovernanceId > 0 ? vaultGovernanceId : throw new ArgumentOutOfRangeException(nameof(vaultGovernanceId), "VaultId must be greater than zero.");
+        VaultId = vaultId > 0 ? vaultId : throw new ArgumentOutOfRangeException(nameof(vaultId), "VaultId must be greater than zero.");
         ProposalId = proposalId > 0 ? proposalId : throw new ArgumentOutOfRangeException(nameof(proposalId), "ProposalId must be greater than zero.");
         Voter = voter != Address.Empty ? voter : throw new ArgumentNullException(nameof(voter), "Voter must be provided.");
         Vote = vote > 0 ? vote : throw new ArgumentNullException(nameof(vote), "Vote must be greater than zero.");
@@ -21,11 +21,11 @@ public class VaultProposalVote : BlockAudit
         InFavor = inFavor;
     }
 
-    public VaultProposalVote(ulong id, ulong vaultGovernanceId, ulong proposalId, Address voter, ulong vote, ulong balance, bool inFavor,
+    public VaultProposalVote(ulong id, ulong vaultId, ulong proposalId, Address voter, ulong vote, ulong balance, bool inFavor,
                              ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
     {
         Id = id;
-        VaultGovernanceId = vaultGovernanceId;
+        VaultId = vaultId;
         ProposalId = proposalId;
         Voter = voter;
         Vote = vote;
@@ -34,7 +34,7 @@ public class VaultProposalVote : BlockAudit
     }
 
     public ulong Id { get; }
-    public ulong VaultGovernanceId { get; }
+    public ulong VaultId { get; }
     public ulong ProposalId { get; }
     public Address Voter { get; }
     public ulong Vote { get; private set; }

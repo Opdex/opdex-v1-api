@@ -29,10 +29,10 @@ public class ProcessRedeemVaultCertificateLogCommandHandler : IRequestHandler<Pr
     {
         try
         {
-            var vaultGovernance = await _mediator.Send(new RetrieveVaultGovernanceByAddressQuery(request.Log.Contract, findOrThrow: false));
-            if (vaultGovernance == null) return false;
+            var vault = await _mediator.Send(new RetrieveVaultGovernanceByAddressQuery(request.Log.Contract, findOrThrow: false));
+            if (vault == null) return false;
 
-            var certs = await _mediator.Send(new RetrieveVaultGovernanceCertificatesByVaultIdAndOwnerQuery(vaultGovernance.Id, request.Log.Owner));
+            var certs = await _mediator.Send(new RetrieveVaultGovernanceCertificatesByVaultIdAndOwnerQuery(vault.Id, request.Log.Owner));
 
             // Select certificates using the vestedBlock as an Id
             var certToUpdate = certs.SingleOrDefault(c => c.VestedBlock == request.Log.VestedBlock);

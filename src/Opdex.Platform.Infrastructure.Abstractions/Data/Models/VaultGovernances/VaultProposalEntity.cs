@@ -7,7 +7,7 @@ public class VaultProposalEntity : AuditEntity
 {
     public ulong Id { get; set; }
     public ulong PublicId { get; set; }
-    public ulong VaultGovernanceId { get; set; }
+    public ulong VaultId { get; set; }
     public Address Creator { get; set; }
     public Address Wallet { get; set; }
     public UInt256 Amount { get; set; }

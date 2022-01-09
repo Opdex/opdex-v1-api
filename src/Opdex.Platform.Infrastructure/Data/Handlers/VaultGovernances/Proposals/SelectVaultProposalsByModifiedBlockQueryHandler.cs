@@ -18,7 +18,7 @@ public class SelectVaultProposalsByModifiedBlockQueryHandler : IRequestHandler<S
         @$"SELECT
                 {nameof(VaultProposalEntity.Id)},
                 {nameof(VaultProposalEntity.PublicId)},
-                {nameof(VaultProposalEntity.VaultGovernanceId)},
+                {nameof(VaultProposalEntity.VaultId)},
                 {nameof(VaultProposalEntity.Creator)},
                 {nameof(VaultProposalEntity.Wallet)},
                 {nameof(VaultProposalEntity.Amount)},
