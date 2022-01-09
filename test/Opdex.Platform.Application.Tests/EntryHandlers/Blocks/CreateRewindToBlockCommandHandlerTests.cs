@@ -13,7 +13,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Permissions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools;
-using Opdex.Platform.Application.Abstractions.EntryCommands.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.EntryHandlers.Blocks;
 using Opdex.Platform.Common.Exceptions;

@@ -6,14 +6,14 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens.Distribution;
-using Opdex.Platform.Application.Abstractions.Commands.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.MiningGovernances.Nominations;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Distribution;
-using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 

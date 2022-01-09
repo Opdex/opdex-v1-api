@@ -1,9 +1,9 @@
 using AutoMapper;
 using MediatR;
-using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
-using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.ProposalCertificates;
-using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Proposals;
-using Opdex.Platform.Domain.Models.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Models.Vaults;
+using Opdex.Platform.Application.Abstractions.Queries.Vaults.ProposalCertificates;
+using Opdex.Platform.Application.Abstractions.Queries.Vaults.Proposals;
+using Opdex.Platform.Domain.Models.Vaults;
 using System.Linq;
 using System.Threading.Tasks;
 

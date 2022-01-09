@@ -1,11 +1,11 @@
 using AutoMapper;
 using MediatR;
-using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
-using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
-using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Proposals;
+using Opdex.Platform.Application.Abstractions.Models.Vaults;
+using Opdex.Platform.Application.Abstractions.Queries.Vaults;
+using Opdex.Platform.Application.Abstractions.Queries.Vaults.Proposals;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models.VaultGovernances;
+using Opdex.Platform.Domain.Models.Vaults;
 using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Assemblers;

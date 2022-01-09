@@ -2,7 +2,7 @@ using FluentAssertions;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Certificates;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certificates;
 using System;
 using Xunit;
 

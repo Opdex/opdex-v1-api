@@ -18,9 +18,9 @@ using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Markets;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Tokens;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vault;
-using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vaults;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
-using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
@@ -45,8 +45,8 @@ using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Mark
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.MiningPools;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Tokens;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Vault;
-using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.VaultGovernances;
-using Opdex.Platform.WebApi.Models.Responses.VaultGovernances;
+using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Vaults;
+using Opdex.Platform.WebApi.Models.Responses.Vaults;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
 
 namespace Opdex.Platform.WebApi.Mappers;

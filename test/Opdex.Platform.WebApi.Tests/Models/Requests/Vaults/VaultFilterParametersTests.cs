@@ -2,7 +2,7 @@ using FluentAssertions;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
-using Opdex.Platform.WebApi.Models.Requests.VaultGovernances;
+using Opdex.Platform.WebApi.Models.Requests.Vaults;
 using Xunit;
 
 namespace Opdex.Platform.WebApi.Tests.Models.Requests.Vaults;
