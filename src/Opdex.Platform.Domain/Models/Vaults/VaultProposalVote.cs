@@ -16,7 +16,7 @@ public class VaultProposalVote : BlockAudit
         VaultId = vaultId > 0 ? vaultId : throw new ArgumentOutOfRangeException(nameof(vaultId), "VaultId must be greater than zero.");
         ProposalId = proposalId > 0 ? proposalId : throw new ArgumentOutOfRangeException(nameof(proposalId), "ProposalId must be greater than zero.");
         Voter = voter != Address.Empty ? voter : throw new ArgumentNullException(nameof(voter), "Voter must be provided.");
-        Vote = vote > 0 ? vote : throw new ArgumentNullException(nameof(vote), "Vote must be greater than zero.");
+        Vote = vote > 0 ? vote : throw new ArgumentOutOfRangeException(nameof(vote), "Vote must be greater than zero.");
         Balance = balance;
         InFavor = inFavor;
     }

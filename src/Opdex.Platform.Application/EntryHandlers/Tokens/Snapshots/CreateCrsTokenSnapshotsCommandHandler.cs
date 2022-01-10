@@ -2,11 +2,13 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
+using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Domain.Models.Tokens;
 using System;
 using System.Linq;
 using System.Threading;
@@ -30,9 +32,21 @@ public class CreateCrsTokenSnapshotsCommandHandler : IRequestHandler<CreateCrsTo
 
     public async Task<bool> Handle(CreateCrsTokenSnapshotsCommand request, CancellationToken cancellationToken)
     {
-        var crs = await _mediator.Send(new GetTokenByAddressQuery(Address.Cirrus));
+        var crs = await _mediator.Send(new RetrieveTokenByAddressQuery(Address.Cirrus, findOrThrow: false), CancellationToken.None);
+        ulong crsId = crs?.Id ?? 0;
 
-        var latestSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crs.Id, CrsMarketId, request.BlockTime, SnapshotType.Minute));
+        // If CRS doesn't exist, create it
+        if (crsId == 0)
+        {
+            crs = new Token(Address.Cirrus, false, TokenConstants.Cirrus.Name, TokenConstants.Cirrus.Symbol, TokenConstants.Cirrus.Decimals,
+                            TokenConstants.Cirrus.Sats, TokenConstants.Cirrus.TotalSupply, request.BlockHeight);
+
+            crsId = await _mediator.Send(new MakeTokenCommand(crs, request.BlockHeight), CancellationToken.None);
+
+            if (crsId == 0) throw new Exception("Unable to create CRS token during create snapshot.");
+        }
+
+        var latestSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crsId, CrsMarketId, request.BlockTime, SnapshotType.Minute));
 
         if (latestSnapshot.EndDate > request.BlockTime) return true;
 
@@ -42,7 +56,7 @@ public class CreateCrsTokenSnapshotsCommandHandler : IRequestHandler<CreateCrsTo
 
         var results = await Task.WhenAll(_snapshotTypes.Select(async snapshotType =>
         {
-            var snapshotOfType = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crs.Id, CrsMarketId, request.BlockTime, snapshotType));
+            var snapshotOfType = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crsId, CrsMarketId, request.BlockTime, snapshotType));
 
             if (snapshotOfType.EndDate < request.BlockTime) snapshotOfType.ResetStaleSnapshot(price, request.BlockTime);
             else snapshotOfType.UpdatePrice(price);

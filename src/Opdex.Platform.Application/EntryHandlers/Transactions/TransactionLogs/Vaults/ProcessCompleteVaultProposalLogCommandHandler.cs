@@ -58,8 +58,8 @@ public class ProcessCompleteVaultProposalLogCommandHandler : IRequestHandler<Pro
             else if (isCreate) refreshProposedSupply = true;
 
             var vaultUpdated = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight,
-                                                                                   refreshProposedSupply: refreshProposedSupply,
-                                                                                   refreshUnassignedSupply: refreshUnassignedSupply)) > 0;
+                                                                         refreshProposedSupply: refreshProposedSupply,
+                                                                         refreshUnassignedSupply: refreshUnassignedSupply)) > 0;
 
             if (!vaultUpdated) _logger.LogError("Failure updating the vault with proposal changes.");
 

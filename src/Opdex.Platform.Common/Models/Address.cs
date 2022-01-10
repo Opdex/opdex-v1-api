@@ -5,6 +5,9 @@ namespace Opdex.Platform.Common.Models;
 
 public readonly struct Address : IEquatable<string>, IEquatable<Address>
 {
+    private const string DevZero = "P8bB9yPr3vVByqfmM5KXftyGckAtAdu6f8";
+    private const string TestZero = "t6vc3nrbAurGs3i17HJUavZuw4ioKTiFCE";
+    private const string MainZero = "CGTta3M4t3yXu8uRgkKvaWd2d8DQvDPnpL";
     private const string CRS = "CRS";
     private const int MinLength = 30;
     private const int MaxLength = 42;
@@ -14,6 +17,8 @@ public readonly struct Address : IEquatable<string>, IEquatable<Address>
     public static readonly Address Cirrus = new(CRS);
 
     public static readonly Address Empty = new(default);
+
+    public bool IsZero => Value is DevZero or TestZero or MainZero;
 
     public Address(string value)
     {

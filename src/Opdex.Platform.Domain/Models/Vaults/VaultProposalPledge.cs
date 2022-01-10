@@ -16,7 +16,7 @@ public class VaultProposalPledge : BlockAudit
         VaultId = vaultId > 0 ? vaultId : throw new ArgumentOutOfRangeException(nameof(vaultId), "Vault id must be greater than zero.");
         ProposalId = proposalId > 0 ? proposalId : throw new ArgumentOutOfRangeException(nameof(proposalId), "ProposalId must be greater than zero.");
         Pledger = pledger != Address.Empty ? pledger : throw new ArgumentNullException(nameof(pledger), "Pledger must be provided.");
-        Pledge = pledge > 0 ? pledge : throw new ArgumentNullException(nameof(pledge), "Pledge must be greater than zero.");
+        Pledge = pledge > 0 ? pledge : throw new ArgumentOutOfRangeException(nameof(pledge), "Pledge must be greater than zero.");
         Balance = balance;
     }
 

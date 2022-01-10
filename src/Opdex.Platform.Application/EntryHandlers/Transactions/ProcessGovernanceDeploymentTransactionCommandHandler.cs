@@ -31,15 +31,11 @@ public class ProcessGovernanceDeploymentTransactionCommandHandler : IRequestHand
     {
         try
         {
-            // Todo: Evaluate, rewrite, and/or reword all of these types of comments, these processes should be idempotent
             // Hosted environments would have indexed transaction already, local would need to reach out to Cirrus to get receipt
             var transaction = await _mediator.Send(new RetrieveTransactionByHashQuery(request.TxHash, findOrThrow: false)) ??
                               await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash));
 
-            if (transaction == null)
-            {
-                return Unit.Value;
-            }
+            if (transaction == null) return Unit.Value;
 
             // Hosted environments would not be null, local environments would be null
             var block = await _mediator.Send(new RetrieveBlockByHeightQuery(transaction.BlockHeight, findOrThrow: false));
@@ -77,7 +73,7 @@ public class ProcessGovernanceDeploymentTransactionCommandHandler : IRequestHand
 
             // Get and/or create vault
             var vault = await _mediator.Send(new CreateVaultCommand(stakingTokenSummary.Vault.GetValueOrDefault(),
-                                                                              stakingTokenId, transaction.BlockHeight));
+                                                                    stakingTokenId, transaction.BlockHeight));
 
             // Get and/or create mining governance
             var miningGovernanceId = await _mediator.Send(new CreateMiningGovernanceCommand(stakingTokenSummary.MiningGovernance.GetValueOrDefault(),

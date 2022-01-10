@@ -37,8 +37,9 @@ public class ProcessCreateVaultCertificateLogCommandHandler : IRequestHandler<Pr
             if (request.BlockHeight >= vault.ModifiedBlock)
             {
                 var vaultId = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight,
-                                                                                  refreshUnassignedSupply: true,
-                                                                                  refreshProposedSupply: true));
+                                                                        refreshUnassignedSupply: true,
+                                                                        refreshProposedSupply: true));
+
                 if (vaultId == 0) _logger.LogWarning($"Unexpected error updating vault supply by address: {vault.Address}");
             }
 
@@ -55,7 +56,7 @@ public class ProcessCreateVaultCertificateLogCommandHandler : IRequestHandler<Pr
 
             if (certificateId == 0)
             {
-                _logger.LogWarning($"Unexpected error making vault certificate");
+                _logger.LogWarning("Unexpected error making vault certificate");
                 return false;
             }
 

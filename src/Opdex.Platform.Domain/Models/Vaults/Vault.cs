@@ -22,7 +22,7 @@ public class Vault : BlockAudit
     }
 
     public Vault(ulong id, Address address, ulong tokenId, UInt256 unassignedSupply, ulong vestingDuration, UInt256 proposedSupply,
-                           ulong totalPledgeMinimum, ulong totalVoteMinimum, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
+                 ulong totalPledgeMinimum, ulong totalVoteMinimum, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
     {
         Id = id;
         Address = address;
