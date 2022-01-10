@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
 using Opdex.Platform.Application.Abstractions.Models.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
@@ -18,7 +19,8 @@ public class GetMarketsWithFilterQueryHandler : EntryFilterQueryHandler<GetMarke
     private readonly IMediator _mediator;
     private readonly IModelAssembler<Market, MarketDto> _marketAssembler;
 
-    public GetMarketsWithFilterQueryHandler(IMediator mediator, IModelAssembler<Market, MarketDto> marketAssembler)
+    public GetMarketsWithFilterQueryHandler(IMediator mediator, IModelAssembler<Market, MarketDto> marketAssembler, ILogger<GetMarketsWithFilterQueryHandler> logger)
+        : base(logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _marketAssembler = marketAssembler ?? throw new ArgumentNullException(nameof(marketAssembler));
