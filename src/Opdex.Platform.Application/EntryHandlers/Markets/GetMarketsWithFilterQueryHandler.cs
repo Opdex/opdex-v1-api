@@ -36,15 +36,15 @@ public class GetMarketsWithFilterQueryHandler : EntryFilterQueryHandler<GetMarke
         {
             return request.Cursor.OrderBy switch
             {
-                MarketOrderByType.LiquidityUsd => (result.Summary?.LiquidityUsd ?? FixedDecimal.Zero, result.Id),
-                MarketOrderByType.StakingUsd => (result.Summary?.Staking.StakingUsd ?? FixedDecimal.Zero, result.Id),
-                MarketOrderByType.StakingWeight => (result.Summary?.Staking.StakingWeight ?? FixedDecimal.Zero, result.Id),
-                MarketOrderByType.VolumeUsd => (result.Summary?.VolumeUsd ?? FixedDecimal.Zero, result.Id),
-                MarketOrderByType.MarketRewardsDailyUsd => (result.Summary?.Rewards.MarketDailyUsd ?? FixedDecimal.Zero, result.Id),
-                MarketOrderByType.ProviderRewardsDailyUsd => (result.Summary?.Rewards.ProviderDailyUsd ?? FixedDecimal.Zero, result.Id),
-                MarketOrderByType.DailyLiquidityUsdChangePercent => (result.Summary?.DailyLiquidityUsdChangePercent ?? FixedDecimal.Zero, result.Id),
-                MarketOrderByType.DailyStakingUsdChangePercent => (result.Summary?.Staking.DailyStakingUsdChangePercent ?? FixedDecimal.Zero, result.Id),
-                MarketOrderByType.DailyStakingWeightChangePercent => (result.Summary?.Staking.DailyStakingWeightChangePercent ?? FixedDecimal.Zero, result.Id),
+                MarketOrderByType.LiquidityUsd => (result.Summary.LiquidityUsd, result.Id),
+                MarketOrderByType.StakingUsd => (result.Summary.Staking.StakingUsd, result.Id),
+                MarketOrderByType.StakingWeight => (result.Summary.Staking.StakingWeight, result.Id),
+                MarketOrderByType.VolumeUsd => (result.Summary.VolumeUsd , result.Id),
+                MarketOrderByType.MarketRewardsDailyUsd => (result.Summary.Rewards.MarketDailyUsd , result.Id),
+                MarketOrderByType.ProviderRewardsDailyUsd => (result.Summary.Rewards.ProviderDailyUsd, result.Id),
+                MarketOrderByType.DailyLiquidityUsdChangePercent => (result.Summary.DailyLiquidityUsdChangePercent, result.Id),
+                MarketOrderByType.DailyStakingUsdChangePercent => (result.Summary.Staking.DailyStakingUsdChangePercent, result.Id),
+                MarketOrderByType.DailyStakingWeightChangePercent => (result.Summary.Staking.DailyStakingWeightChangePercent, result.Id),
                 _ => (FixedDecimal.Zero, result.Id)
             };
         });

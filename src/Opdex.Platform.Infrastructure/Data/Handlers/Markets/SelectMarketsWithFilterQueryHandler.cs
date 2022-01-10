@@ -111,7 +111,6 @@ public class SelectMarketsWithFilterQueryHandler : IRequestHandler<SelectMarkets
 
             var pointerCondition = request.Cursor.OrderBy switch
             {
-                // we coalesce as market summary may be null, if the market has recently been created
                 MarketOrderByType.LiquidityUsd => $"(ms.{nameof(MarketSummaryEntity.LiquidityUsd)}, {suffix}",
                 MarketOrderByType.StakingUsd => $"(ms.{nameof(MarketSummaryEntity.StakingUsd)}, {suffix}",
                 MarketOrderByType.StakingWeight => $"(ms.{nameof(MarketSummaryEntity.StakingWeight)}, {suffix}",
@@ -190,7 +189,6 @@ public class SelectMarketsWithFilterQueryHandler : IRequestHandler<SelectMarkets
 
         var sortPart = cursorOrderBy switch
         {
-            // we coalesce as market summary may be null, if the market has recently been created
             MarketOrderByType.LiquidityUsd => $"{summaryPrefix}.{nameof(MarketSummaryEntity.LiquidityUsd)} {direction},",
             MarketOrderByType.StakingUsd => $"{summaryPrefix}.{nameof(MarketSummaryEntity.StakingUsd)} {direction},",
             MarketOrderByType.StakingWeight => $"{summaryPrefix}.{nameof(MarketSummaryEntity.StakingWeight)} {direction},",
@@ -203,11 +201,7 @@ public class SelectMarketsWithFilterQueryHandler : IRequestHandler<SelectMarkets
             _ => ""
         };
 
-        var stringBuilder = new StringBuilder();
-        stringBuilder.Append(" ORDER BY ").Append(sortPart);
-        stringBuilder.Append(' ').Append(marketPrefix).Append('.').Append(nameof(MarketEntity.Id)).Append(' ').Append(direction);
-
-        return stringBuilder.ToString();
+        return $" ORDER BY {sortPart} {marketPrefix}.{nameof(MarketEntity.Id)} {direction}";
     }
 
     class SqlParams
