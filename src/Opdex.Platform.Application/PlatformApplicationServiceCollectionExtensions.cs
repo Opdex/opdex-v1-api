@@ -568,7 +568,6 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<RetrieveTransactionsWithFilterQuery, IEnumerable<Transaction>>, RetrieveTransactionsWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveTransactionLogsByTransactionIdQuery, IEnumerable<TransactionLog>>, RetrieveTransactionLogsByTransactionIdQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveTransactionByHashQuery, Transaction>, RetrieveTransactionByHashQueryHandler>();
-        services.AddTransient<IRequestHandler<RetrieveCirrusExistsInMempoolQuery, bool>, RetrieveCirrusExistsInMempoolQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveCirrusUnverifiedTransactionSenderByHashQuery, Address>, RetrieveCirrusUnverifiedTransactionSenderByHashQueryHandler>();
 
         // Address Balances

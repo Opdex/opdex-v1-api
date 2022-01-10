@@ -6,6 +6,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Application.EntryHandlers.Transactions;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Domain.Models.Transactions;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -25,7 +26,7 @@ public class CreateNotifyUserOfTransactionBroadcastCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_RetrieveCirrusExistsInMempoolQuery_Send()
+    public async Task Handle_RetrieveTransactionByHashQuery_Send()
     {
         // Arrange
         using var cancellationTokenSource = new CancellationTokenSource();
@@ -37,18 +38,19 @@ public class CreateNotifyUserOfTransactionBroadcastCommandHandlerTests
         await _handler.Handle(request, cancellationToken);
 
         // Assert
-        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveCirrusExistsInMempoolQuery>(
-            q => q.TransactionHash == request.TransactionHash), cancellationToken), Times.Once);
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveTransactionByHashQuery>(
+            q => q.Hash == request.TransactionHash && !q.FindOrThrow), cancellationToken), Times.Once);
     }
 
     [Fact]
-    public async Task Handle_NotFoundInMempool_DoNotNotify()
+    public async Task Handle_TransactionAlreadyIndexed_DoNotNotify()
     {
         // Arrange
         var request = new CreateNotifyUserOfTransactionBroadcastCommand(new Sha256(34283925829));
+        var transaction = new Transaction(1, new Sha256(5340958239), 2, 3, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM");
         _mediatorMock.Setup(callTo =>
-                callTo.Send(It.IsAny<RetrieveCirrusExistsInMempoolQuery>(), It.IsAny<CancellationToken>()))
-                     .ReturnsAsync(false);
+                callTo.Send(It.IsAny<RetrieveTransactionByHashQuery>(), It.IsAny<CancellationToken>()))
+                     .ReturnsAsync(transaction);
 
         // Act
         var notified = await _handler.Handle(request, CancellationToken.None);
@@ -65,8 +67,8 @@ public class CreateNotifyUserOfTransactionBroadcastCommandHandlerTests
         using var cancellationTokenSource = new CancellationTokenSource();
         var cancellationToken = cancellationTokenSource.Token;
         _mediatorMock.Setup(callTo =>
-                callTo.Send(It.IsAny<RetrieveCirrusExistsInMempoolQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+                callTo.Send(It.IsAny<RetrieveTransactionByHashQuery>(), It.IsAny<CancellationToken>()))
+                     .ReturnsAsync((Transaction)null);
 
         var request = new CreateNotifyUserOfTransactionBroadcastCommand(new Sha256(34283925829));
 
@@ -82,8 +84,9 @@ public class CreateNotifyUserOfTransactionBroadcastCommandHandlerTests
     public async Task Handle_SenderNotFound_DoNotNotify()
     {
         // Arrange
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveCirrusExistsInMempoolQuery>(), It.IsAny<CancellationToken>()))
-                     .ReturnsAsync(true);
+        _mediatorMock.Setup(callTo =>
+                callTo.Send(It.IsAny<RetrieveTransactionByHashQuery>(), It.IsAny<CancellationToken>()))
+                     .ReturnsAsync((Transaction)null);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveCirrusUnverifiedTransactionSenderByHashQuery>(), It.IsAny<CancellationToken>()))
                      .ReturnsAsync(Address.Empty);
 
@@ -106,10 +109,11 @@ public class CreateNotifyUserOfTransactionBroadcastCommandHandlerTests
 
         var sender = new Address("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh");
 
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveCirrusExistsInMempoolQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+        _mediatorMock.Setup(callTo =>
+                callTo.Send(It.IsAny<RetrieveTransactionByHashQuery>(), It.IsAny<CancellationToken>()))
+                     .ReturnsAsync((Transaction)null);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveCirrusUnverifiedTransactionSenderByHashQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(sender);
+                     .ReturnsAsync(sender);
 
         var request = new CreateNotifyUserOfTransactionBroadcastCommand(new Sha256(34283925829));
 
