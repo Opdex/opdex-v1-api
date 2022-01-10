@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Staking;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
@@ -17,7 +18,8 @@ public class GetStakingPositionsWithFilterQueryHandler : EntryFilterQueryHandler
     private readonly IMediator _mediator;
     private readonly IModelAssembler<AddressStaking, StakingPositionDto> _stakingPositionAssembler;
 
-    public GetStakingPositionsWithFilterQueryHandler(IMediator mediator, IModelAssembler<AddressStaking, StakingPositionDto> stakingPositionAssembler)
+    public GetStakingPositionsWithFilterQueryHandler(IMediator mediator, IModelAssembler<AddressStaking, StakingPositionDto> stakingPositionAssembler, ILogger<GetStakingPositionsWithFilterQueryHandler> logger)
+        : base(logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _stakingPositionAssembler = stakingPositionAssembler ?? throw new ArgumentNullException(nameof(stakingPositionAssembler));

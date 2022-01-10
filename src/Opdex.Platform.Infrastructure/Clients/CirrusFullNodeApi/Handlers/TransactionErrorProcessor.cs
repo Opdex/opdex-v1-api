@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Extensions;
+using System;
 using System.Collections.Generic;
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers;
@@ -17,7 +18,7 @@ internal class TransactionErrorProcessor
     /// </summary>
     public TransactionErrorProcessor(ILogger<TransactionErrorProcessor> logger)
     {
-        _logger = logger;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     /// <summary>

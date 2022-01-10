@@ -61,7 +61,7 @@ public class CreateSwapTransactionQuoteCommandHandlerTests
                                                                   ulong deadline = 0)
     {
         return new CreateSwapTransactionQuoteCommand(tokenIn, wallet, tokenOut, FixedDecimal.Parse(tokenInAmount), FixedDecimal.Parse(tokenOutAmount),
-                                                     FixedDecimal.Parse(tokenInMaximumAmount),FixedDecimal.Parse(tokenOutMinimumAmount),
+                                                     FixedDecimal.Parse(tokenInMaximumAmount), FixedDecimal.Parse(tokenOutMinimumAmount),
                                                      tokenInExactAmount, recipient, market, deadline);
     }
 

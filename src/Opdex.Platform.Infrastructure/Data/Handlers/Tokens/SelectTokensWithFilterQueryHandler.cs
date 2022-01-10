@@ -14,11 +14,14 @@ using System.Linq;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
+using System.Text;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens;
 
 public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWithFilterQuery, IEnumerable<Token>>
 {
+    private const string Split = "Split";
+
     private const string WhereFilter = "{WhereFilter}";
     private const string OrderBy = "{OrderBy}";
     private const string Limit = "{Limit}";
@@ -33,16 +36,19 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
                 t.{nameof(TokenEntity.Decimals)},
                 t.{nameof(TokenEntity.Sats)},
                 t.{nameof(TokenEntity.TotalSupply)},
-                t.{nameof(TokenEntity.CreatedBlock)},
-                t.{nameof(TokenEntity.ModifiedBlock)},
-                ts.{nameof(TokenSummaryEntity.PriceUsd)},
-                ts.{nameof(TokenSummaryEntity.DailyPriceChangePercent)}
+                MAX(t.{nameof(TokenEntity.CreatedBlock)}) AS {nameof(TokenEntity.CreatedBlock)},
+                MAX(t.{nameof(TokenEntity.ModifiedBlock)}) AS {nameof(TokenEntity.ModifiedBlock)},
+                true as {Split},
+                ANY_VALUE(ts.{nameof(TokenSummaryEntity.Id)}) AS Id,
+                ROUND(AVG(ts.{nameof(TokenSummaryEntity.PriceUsd)}), 8) AS {nameof(TokenSummaryEntity.PriceUsd)},
+                ROUND(AVG(ts.{nameof(TokenSummaryEntity.DailyPriceChangePercent)}), 8) AS {nameof(TokenSummaryEntity.DailyPriceChangePercent)},
+                MAX(ts.{nameof(TokenSummaryEntity.CreatedBlock)}) AS {nameof(TokenSummaryEntity.CreatedBlock)},
+                MAX(ts.{nameof(TokenSummaryEntity.ModifiedBlock)}) AS {nameof(TokenSummaryEntity.ModifiedBlock)}
             FROM token t
-            LEFT JOIN token_attribute ta ON ta.TokenId = t.{nameof(TokenEntity.Id)}
             LEFT JOIN token_summary ts
-                ON ts.{nameof(TokenSummaryEntity.MarketId)} = @{nameof(SqlParams.MarketId)} AND
-                   ts.{nameof(TokenSummaryEntity.TokenId)} = t.{nameof(TokenEntity.Id)}
+                ON ts.{nameof(TokenSummaryEntity.TokenId)} = t.{nameof(TokenEntity.Id)}
             {WhereFilter}
+            GROUP BY t.{nameof(TokenEntity.Id)}
             {OrderBy}
             {Limit}".RemoveExcessWhitespace();
 
@@ -64,18 +70,26 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
     {
         var sqlParams = new SqlParams(request.MarketId, request.Cursor.Pointer, request.Cursor.Keyword, request.Cursor.Tokens);
 
-        var command = DatabaseQuery.Create(QueryBuilder(request), sqlParams, cancellationToken);
+        var query = DatabaseQuery.Create(QueryBuilder(request), sqlParams, cancellationToken);
 
-        var tokenEntities = await _context.ExecuteQueryAsync<TokenEntity>(command);
+        var tokens = await _context.ExecuteQueryAsync<TokenEntity, TokenSummaryEntity, Token>(query,
+            (tokenEntity, summary) =>
+            {
+                var token = _mapper.Map<Token>(tokenEntity);
+                // if there is no summary Id will be 0
+                if (summary.Id > 0) token.SetSummary(_mapper.Map<TokenSummary>(summary));
+                return token;
+            }, splitOn: Split);
 
-        return _mapper.Map<IEnumerable<Token>>(tokenEntities);
+        return tokens;
     }
 
     private static string QueryBuilder(SelectTokensWithFilterQuery request)
     {
-        var whereFilter = request.MarketId > 0
-            ? $" WHERE ts.{nameof(TokenSummaryEntity.MarketId)} = @{nameof(SqlParams.MarketId)}"
-            : $" WHERE (ts.{nameof(TokenSummaryEntity.MarketId)} IS NULL OR ts.{nameof(TokenSummaryEntity.MarketId)} = 0)";
+        var filterOnMarket = request.MarketId > 0;
+
+        var whereFilterBuilder = new StringBuilder();
+        if (filterOnMarket) whereFilterBuilder.Append($" WHERE ts.{nameof(TokenSummaryEntity.MarketId)} = @{nameof(SqlParams.MarketId)}");
 
         if (!request.Cursor.IsFirstRequest)
         {
@@ -95,32 +109,43 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
 
             var finisher = $"t.{nameof(TokenEntity.Id)}) {sortOperator} (@{nameof(SqlParams.OrderByValue)}, @{nameof(SqlParams.TokenId)})";
 
-            whereFilter += request.Cursor.OrderBy switch
+            whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
+            var orderByFilter = request.Cursor.OrderBy switch
             {
-                TokenOrderByType.Name => $" AND (t.{nameof(TokenEntity.Name)}, {finisher}",
-                TokenOrderByType.Symbol => $" AND (t.{nameof(TokenEntity.Symbol)}, {finisher}",
-                TokenOrderByType.PriceUsd => $" AND (ts.{nameof(TokenSummaryEntity.PriceUsd)}, {finisher}",
-                TokenOrderByType.DailyPriceChangePercent => $" AND (ts.{nameof(TokenSummaryEntity.DailyPriceChangePercent)}, {finisher}",
-                _ => $" AND t.{nameof(TokenEntity.Id)} {sortOperator} @{nameof(SqlParams.TokenId)}"
+                TokenOrderByType.Name => $" (t.{nameof(TokenEntity.Name)}, {finisher}",
+                TokenOrderByType.Symbol => $" (t.{nameof(TokenEntity.Symbol)}, {finisher}",
+                TokenOrderByType.PriceUsd => $" (ts.{nameof(TokenSummaryEntity.PriceUsd)}, {finisher}",
+                TokenOrderByType.DailyPriceChangePercent => $" (ts.{nameof(TokenSummaryEntity.DailyPriceChangePercent)}, {finisher}",
+                _ => $" t.{nameof(TokenEntity.Id)} {sortOperator} @{nameof(SqlParams.TokenId)}"
             };
+            whereFilterBuilder.Append(orderByFilter);
         }
 
         if (request.Cursor.Tokens.Any())
         {
-            whereFilter += $" AND t.{nameof(TokenEntity.Address)} IN @{nameof(SqlParams.Tokens)}";
+            whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
+            whereFilterBuilder.Append($" t.{nameof(TokenEntity.Address)} IN @{nameof(SqlParams.Tokens)}");
         }
 
         if (request.Cursor.ProvisionalFilter != TokenProvisionalFilter.All)
         {
+            whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
             var isProvisional = request.Cursor.ProvisionalFilter == TokenProvisionalFilter.Provisional;
-            whereFilter += $" AND t.{nameof(TokenEntity.IsLpt)} = {isProvisional}";
+            whereFilterBuilder.Append($" t.{nameof(TokenEntity.IsLpt)} = {isProvisional}");
         }
 
         if (request.Cursor.Keyword.HasValue())
         {
-            whereFilter += @$" AND (t.{nameof(TokenEntity.Name)} LIKE CONCAT('%', @{nameof(SqlParams.Keyword)}, '%') OR
-                                        t.{nameof(TokenEntity.Symbol)} LIKE CONCAT('%', @{nameof(SqlParams.Keyword)}, '%') OR
-                                        t.{nameof(TokenEntity.Address)} LIKE CONCAT('%', @{nameof(SqlParams.Keyword)}, '%'))";
+            whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
+            whereFilterBuilder.Append(@$" (t.{nameof(TokenEntity.Name)} LIKE CONCAT('%', @{nameof(SqlParams.Keyword)}, '%') OR
+                                           t.{nameof(TokenEntity.Symbol)} LIKE CONCAT('%', @{nameof(SqlParams.Keyword)}, '%') OR
+                                           t.{nameof(TokenEntity.Address)} LIKE CONCAT('%', @{nameof(SqlParams.Keyword)}, '%'))");
+        }
+
+        if (!request.Cursor.IncludeZeroLiquidity)
+        {
+            whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
+            whereFilterBuilder.Append($@" ts.{nameof(TokenSummaryEntity.PriceUsd)} > 0");
         }
 
         // Set the direction, moving backwards with previous requests, the sort order must be reversed first.
@@ -136,7 +161,8 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
 
         var limit = $" LIMIT {request.Cursor.Limit + 1}";
 
-        var query = SqlQuery.Replace(WhereFilter, whereFilter)
+        var query = SqlQuery
+            .Replace(WhereFilter, whereFilterBuilder.ToString())
             .Replace(OrderBy, orderBy)
             .Replace(Limit, limit);
 
@@ -160,8 +186,8 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
         {
             TokenOrderByType.Name => $" ORDER BY {tokenPrefix}.{nameof(TokenEntity.Name)} {direction}, {tokenIdWithDirection}",
             TokenOrderByType.Symbol => $" ORDER BY {tokenPrefix}.{nameof(TokenEntity.Symbol)} {direction}, {tokenIdWithDirection}",
-            TokenOrderByType.PriceUsd => $" ORDER BY {summaryPrefix}.{nameof(TokenSummaryEntity.PriceUsd)} {direction}, {tokenIdWithDirection}",
-            TokenOrderByType.DailyPriceChangePercent => $" ORDER BY {summaryPrefix}.{nameof(TokenSummaryEntity.DailyPriceChangePercent)} {direction}, {tokenIdWithDirection}",
+            TokenOrderByType.PriceUsd => $" ORDER BY AVG({summaryPrefix}.{nameof(TokenSummaryEntity.PriceUsd)}) {direction}, {tokenIdWithDirection}",
+            TokenOrderByType.DailyPriceChangePercent => $" ORDER BY AVG({summaryPrefix}.{nameof(TokenSummaryEntity.DailyPriceChangePercent)}) {direction}, {tokenIdWithDirection}",
             _ => $" ORDER BY {tokenIdWithDirection}"
         };
     }

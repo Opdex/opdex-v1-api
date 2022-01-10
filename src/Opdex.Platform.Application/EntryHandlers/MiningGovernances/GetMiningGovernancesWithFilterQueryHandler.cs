@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.Models.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.MiningGovernances;
@@ -16,7 +17,8 @@ public class GetMiningGovernancesWithFilterQueryHandler : EntryFilterQueryHandle
     private readonly IMediator _mediator;
     private readonly IModelAssembler<MiningGovernance, MiningGovernanceDto> _miningGovernanceAssembler;
 
-    public GetMiningGovernancesWithFilterQueryHandler(IMediator mediator, IModelAssembler<MiningGovernance, MiningGovernanceDto> vaultAssembler)
+    public GetMiningGovernancesWithFilterQueryHandler(IMediator mediator, IModelAssembler<MiningGovernance, MiningGovernanceDto> vaultAssembler, ILogger<GetMiningGovernancesWithFilterQueryHandler> logger)
+        : base(logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _miningGovernanceAssembler = vaultAssembler ?? throw new ArgumentNullException(nameof(vaultAssembler));

@@ -8,7 +8,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.MiningPools.Quotes;
+namespace Opdex.Platform.Application.EntryHandlers.MiningPools;
 
 public class GetMiningPoolByAddressQueryHandler : IRequestHandler<GetMiningPoolByAddressQuery, MiningPoolDto>
 {

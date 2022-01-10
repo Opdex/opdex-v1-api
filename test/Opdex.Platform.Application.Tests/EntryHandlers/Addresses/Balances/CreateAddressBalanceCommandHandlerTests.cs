@@ -82,7 +82,8 @@ public class CreateAddressBalanceCommandHandlerTests
         try
         {
             await _handler.Handle(new CreateAddressBalanceCommand(walletAddress, token, blockHeight), CancellationToken.None);
-        } catch { }
+        }
+        catch { }
 
         // Assert
         _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveTokenByAddressQuery>(q => q.Address == token),
@@ -106,7 +107,8 @@ public class CreateAddressBalanceCommandHandlerTests
         try
         {
             await _handler.Handle(new CreateAddressBalanceCommand(walletAddress, token, blockHeight), CancellationToken.None);
-        } catch { }
+        }
+        catch { }
 
         // Assert
         _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveAddressBalanceByOwnerAndTokenQuery>(q => q.Owner == walletAddress &&

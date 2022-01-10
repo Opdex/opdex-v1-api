@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.MiningPools;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
@@ -9,14 +10,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.MiningPools.Quotes;
+namespace Opdex.Platform.Application.EntryHandlers.MiningPools;
 
 public class GetMiningPoolsWithFilterQueryHandler : EntryFilterQueryHandler<GetMiningPoolsWithFilterQuery, MiningPoolsDto>
 {
     private readonly IMediator _mediator;
     private readonly IModelAssembler<MiningPool, MiningPoolDto> _miningPoolAssembler;
 
-    public GetMiningPoolsWithFilterQueryHandler(IMediator mediator, IModelAssembler<MiningPool, MiningPoolDto> miningPoolAssembler)
+    public GetMiningPoolsWithFilterQueryHandler(IMediator mediator, IModelAssembler<MiningPool, MiningPoolDto> miningPoolAssembler, ILogger<GetMiningPoolsWithFilterQueryHandler> logger)
+        : base(logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _miningPoolAssembler = miningPoolAssembler ?? throw new ArgumentNullException(nameof(miningPoolAssembler));

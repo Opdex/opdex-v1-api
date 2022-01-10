@@ -19,6 +19,7 @@ public class TokensCursorTests
         static void Act() => new TokensCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                                               Enumerable.Empty<Address>(),
                                               TokenProvisionalFilter.Provisional,
+                                              false,
                                               TokenOrderByType.PriceUsd,
                                               SortDirectionType.ASC,
                                               50 + 1,
@@ -38,6 +39,7 @@ public class TokensCursorTests
         void Act() => new TokensCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                                        Enumerable.Empty<Address>(),
                                        TokenProvisionalFilter.NonProvisional,
+                                       false,
                                        TokenOrderByType.PriceUsd,
                                        SortDirectionType.ASC,
                                        25,
@@ -56,6 +58,7 @@ public class TokensCursorTests
         var cursor = new TokensCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                                       null,
                                       TokenProvisionalFilter.Provisional,
+                                      false,
                                       TokenOrderByType.PriceUsd,
                                       SortDirectionType.ASC,
                                       50,
@@ -73,6 +76,7 @@ public class TokensCursorTests
         var cursor = new TokensCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                                       new Address[] { "PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u" },
                                       TokenProvisionalFilter.Provisional,
+                                      false,
                                       TokenOrderByType.DailyPriceChangePercent,
                                       SortDirectionType.ASC,
                                       25,
@@ -101,6 +105,7 @@ public class TokensCursorTests
         var cursor = new TokensCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                                       new Address[] { "PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u" },
                                       TokenProvisionalFilter.NonProvisional,
+                                      false,
                                       TokenOrderByType.DailyPriceChangePercent,
                                       SortDirectionType.ASC,
                                       25,
@@ -151,7 +156,7 @@ public class TokensCursorTests
     public void TryParse_ValidCursor_ReturnTrue()
     {
         // Arrange
-        var stringified = "keyword:PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5;orderBy:PriceUsd;provisional:NonProvisional;tokens:PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L;direction:ASC;limit:50;paging:Forward;pointer:KDUwLjAwLCAxMCk=;"; // pointer: 10;
+        var stringified = "keyword:PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5;includeZeroLiquidity:true;orderBy:PriceUsd;provisional:NonProvisional;tokens:PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L;direction:ASC;limit:50;paging:Forward;pointer:KDUwLjAwLCAxMCk=;"; // pointer: 10;
 
         // Act
         var canParse = TokensCursor.TryParse(stringified, out var cursor);
@@ -160,6 +165,7 @@ public class TokensCursorTests
         canParse.Should().Be(true);
         cursor.Keyword.Should().Be("PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5");
         cursor.OrderBy.Should().Be(TokenOrderByType.PriceUsd);
+        cursor.IncludeZeroLiquidity.Should().Be(true);
         cursor.ProvisionalFilter.Should().Be(TokenProvisionalFilter.NonProvisional);
         cursor.Tokens.Should().ContainSingle(t => t == "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L");
         cursor.SortDirection.Should().Be(SortDirectionType.ASC);

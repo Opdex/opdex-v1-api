@@ -6,6 +6,7 @@ using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Assemblers;
+using Opdex.Platform.Application.EntryHandlers.MarketTokens;
 using Opdex.Platform.Application.EntryHandlers.Tokens;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;

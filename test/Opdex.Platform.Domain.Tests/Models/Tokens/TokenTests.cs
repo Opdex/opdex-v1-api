@@ -102,6 +102,7 @@ public class TokenTests
         UInt256 totalSupply = 987654321;
         const ulong createdBlock = 3;
         const ulong modifiedBlock = 4;
+        TokenSummary summary = new TokenSummary(5, 10, 50);
 
         var token = new Token(id, address, isLpt, name, symbol, decimals, sats, totalSupply, createdBlock, modifiedBlock);
 

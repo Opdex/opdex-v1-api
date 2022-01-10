@@ -89,7 +89,7 @@ public class GetSwapAmountInQueryHandlerTests
     public async Task Handle_RetrieveActiveMarketRouterByMarketIdQuery_Send()
     {
         // Arrange
-        var market = new Market(88, new Address("PWbQLxNnYdyUBLmeEL3ET1WdNx7dvbH8mi"), 10, 20, Address.Empty,
+        var market = new Market(88, new Address("PWbQLxNnYdyUBLmeEL3ET1WdNx7dvbH8mi"), 20, 25, Address.Empty,
                                 new Address("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh"), false, false, false, 3, true, 2, 250);
         var tokenIn = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 6, 1000000000, 21000000000000000, 50, 50);
         var tokenOut = new Token(5, Address.Cirrus, false, "Cirrus", "CRS", 8, 1000000000, 21000000000000000, 50, 50);
@@ -153,7 +153,7 @@ public class GetSwapAmountInQueryHandlerTests
 
         // market
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(market ?? new Market(5, new Address("PWbQLxNnYdyUBLmeEL3ET1WdNx7dvbH8mi"), 10, 20, Address.Empty,
+            .ReturnsAsync(market ?? new Market(5, new Address("PWbQLxNnYdyUBLmeEL3ET1WdNx7dvbH8mi"), 20, 25, Address.Empty,
                                                new Address("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh"), false, false, false, 3, true, 2, 250));
 
         // router

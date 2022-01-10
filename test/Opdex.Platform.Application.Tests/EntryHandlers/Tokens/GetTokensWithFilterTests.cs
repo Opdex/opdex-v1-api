@@ -1,5 +1,6 @@
 using FluentAssertions;
 using MediatR;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.Models;
@@ -33,7 +34,7 @@ public class GetTokensWithFilterTests
         _mediatorMock = new Mock<IMediator>();
         _assemblerMock = new Mock<IModelAssembler<Token, TokenDto>>();
 
-        _handler = new GetTokensWithFilterQueryHandler(_mediatorMock.Object, _assemblerMock.Object);
+        _handler = new GetTokensWithFilterQueryHandler(_mediatorMock.Object, _assemblerMock.Object, new NullLogger<GetTokensWithFilterQueryHandler>());
     }
 
     [Fact]
@@ -54,6 +55,7 @@ public class GetTokensWithFilterTests
         var cursor = new TokensCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                                       new Address[] { "PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u" },
                                       TokenProvisionalFilter.Provisional,
+                                      false,
                                       TokenOrderByType.DailyPriceChangePercent,
                                       SortDirectionType.ASC,
                                       25,
@@ -76,10 +78,10 @@ public class GetTokensWithFilterTests
     public async Task Handle_TokensRetrieved_MapResults()
     {
         // Arrange
-        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All,
+        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false,
                                       TokenOrderByType.DailyPriceChangePercent, SortDirectionType.ASC, 25, PagingDirection.Forward, ("50.00", 10));
         var token = new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10);
-        var tokens = new [] { token };
+        var tokens = new[] { token };
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokensWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(tokens);
 
         // Act
@@ -97,9 +99,9 @@ public class GetTokensWithFilterTests
     public async Task Handle_LessThanLimitPlusOneResults_RemoveZero()
     {
         // Arrange
-        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All,
+        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false,
                                       TokenOrderByType.DailyPriceChangePercent, SortDirectionType.ASC, 4, PagingDirection.Forward, ("50.00", 10));
-        var tokens = new []
+        var tokens = new[]
         {
             new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
             new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10),
@@ -112,8 +114,12 @@ public class GetTokensWithFilterTests
         {
             var tokenDto = new TokenDto
             {
-                Id = tokens[tokenAssembled].Id, Address = tokens[tokenAssembled].Address, Name = tokens[tokenAssembled].Name,
-                Symbol = tokens[tokenAssembled].Symbol, Decimals = tokens[tokenAssembled].Decimals, Sats = tokens[tokenAssembled].Sats,
+                Id = tokens[tokenAssembled].Id,
+                Address = tokens[tokenAssembled].Address,
+                Name = tokens[tokenAssembled].Name,
+                Symbol = tokens[tokenAssembled].Symbol,
+                Decimals = tokens[tokenAssembled].Decimals,
+                Sats = tokens[tokenAssembled].Sats,
                 Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
             };
             tokenAssembled++;
@@ -131,9 +137,9 @@ public class GetTokensWithFilterTests
     public async Task Handle_LimitPlusOneResultsPagingBackward_RemoveFirst()
     {
         // Arrange
-        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All,
+        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false,
                                       TokenOrderByType.Default, SortDirectionType.ASC, 2, PagingDirection.Backward, ("50.00", 10));
-        var tokens = new []
+        var tokens = new[]
         {
             new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
             new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10),
@@ -145,8 +151,12 @@ public class GetTokensWithFilterTests
         {
             var tokenDto = new TokenDto
             {
-                Id = tokens[tokenAssembled].Id, Address = tokens[tokenAssembled].Address, Name = tokens[tokenAssembled].Name,
-                Symbol = tokens[tokenAssembled].Symbol, Decimals = tokens[tokenAssembled].Decimals, Sats = tokens[tokenAssembled].Sats,
+                Id = tokens[tokenAssembled].Id,
+                Address = tokens[tokenAssembled].Address,
+                Name = tokens[tokenAssembled].Name,
+                Symbol = tokens[tokenAssembled].Symbol,
+                Decimals = tokens[tokenAssembled].Decimals,
+                Sats = tokens[tokenAssembled].Sats,
                 Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
             };
             tokenAssembled++;
@@ -164,9 +174,9 @@ public class GetTokensWithFilterTests
     public async Task Handle_LimitPlusOneResultsPagingForward_RemoveLast()
     {
         // Arrange
-        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All,
+        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false,
                                       TokenOrderByType.DailyPriceChangePercent, SortDirectionType.ASC, 2, PagingDirection.Forward, ("50.00", 10));
-        var tokens = new []
+        var tokens = new[]
         {
             new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
             new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10),
@@ -178,8 +188,12 @@ public class GetTokensWithFilterTests
         {
             var tokenDto = new TokenDto
             {
-                Id = tokens[tokenAssembled].Id, Address = tokens[tokenAssembled].Address, Name = tokens[tokenAssembled].Name,
-                Symbol = tokens[tokenAssembled].Symbol, Decimals = tokens[tokenAssembled].Decimals, Sats = tokens[tokenAssembled].Sats,
+                Id = tokens[tokenAssembled].Id,
+                Address = tokens[tokenAssembled].Address,
+                Name = tokens[tokenAssembled].Name,
+                Symbol = tokens[tokenAssembled].Symbol,
+                Decimals = tokens[tokenAssembled].Decimals,
+                Sats = tokens[tokenAssembled].Sats,
                 Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
             };
             tokenAssembled++;
@@ -197,10 +211,10 @@ public class GetTokensWithFilterTests
     public async Task Handle_FirstRequestInPagedResults_ReturnCursor()
     {
         // Arrange
-        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All,
+        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false,
                                       TokenOrderByType.DailyPriceChangePercent, SortDirectionType.ASC, 2, PagingDirection.Forward, default);
 
-        var tokens = new []
+        var tokens = new[]
         {
             new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
             new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10),
@@ -213,8 +227,12 @@ public class GetTokensWithFilterTests
         {
             var tokenDto = new TokenDto
             {
-                Id = tokens[tokenAssembled].Id, Address = tokens[tokenAssembled].Address, Name = tokens[tokenAssembled].Name,
-                Symbol = tokens[tokenAssembled].Symbol, Decimals = tokens[tokenAssembled].Decimals, Sats = tokens[tokenAssembled].Sats,
+                Id = tokens[tokenAssembled].Id,
+                Address = tokens[tokenAssembled].Address,
+                Name = tokens[tokenAssembled].Name,
+                Symbol = tokens[tokenAssembled].Symbol,
+                Decimals = tokens[tokenAssembled].Decimals,
+                Sats = tokens[tokenAssembled].Sats,
                 Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
             };
             tokenAssembled++;
@@ -233,10 +251,10 @@ public class GetTokensWithFilterTests
     public async Task Handle_PagingForwardWithMoreResults_ReturnCursor()
     {
         // Arrange
-        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All,
+        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false,
                                       TokenOrderByType.DailyPriceChangePercent, SortDirectionType.ASC, 2, PagingDirection.Forward, ("10.12", 2));
 
-        var tokens = new []
+        var tokens = new[]
         {
             new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
             new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10),
@@ -249,8 +267,12 @@ public class GetTokensWithFilterTests
         {
             var tokenDto = new TokenDto
             {
-                Id = tokens[tokenAssembled].Id, Address = tokens[tokenAssembled].Address, Name = tokens[tokenAssembled].Name,
-                Symbol = tokens[tokenAssembled].Symbol, Decimals = tokens[tokenAssembled].Decimals, Sats = tokens[tokenAssembled].Sats,
+                Id = tokens[tokenAssembled].Id,
+                Address = tokens[tokenAssembled].Address,
+                Name = tokens[tokenAssembled].Name,
+                Symbol = tokens[tokenAssembled].Symbol,
+                Decimals = tokens[tokenAssembled].Decimals,
+                Sats = tokens[tokenAssembled].Sats,
                 Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
             };
             tokenAssembled++;
@@ -269,10 +291,10 @@ public class GetTokensWithFilterTests
     public async Task Handle_PagingBackwardWithMoreResults_ReturnCursor()
     {
         // Arrange
-        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All,
+        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false,
                                       TokenOrderByType.Symbol, SortDirectionType.ASC, 2, PagingDirection.Backward, ("10.12", 2));
 
-        var tokens = new []
+        var tokens = new[]
         {
             new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
             new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10),
@@ -285,8 +307,12 @@ public class GetTokensWithFilterTests
         {
             var tokenDto = new TokenDto
             {
-                Id = tokens[tokenAssembled].Id, Address = tokens[tokenAssembled].Address, Name = tokens[tokenAssembled].Name,
-                Symbol = tokens[tokenAssembled].Symbol, Decimals = tokens[tokenAssembled].Decimals, Sats = tokens[tokenAssembled].Sats,
+                Id = tokens[tokenAssembled].Id,
+                Address = tokens[tokenAssembled].Address,
+                Name = tokens[tokenAssembled].Name,
+                Symbol = tokens[tokenAssembled].Symbol,
+                Decimals = tokens[tokenAssembled].Decimals,
+                Sats = tokens[tokenAssembled].Sats,
                 Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
             };
             tokenAssembled++;
@@ -305,10 +331,10 @@ public class GetTokensWithFilterTests
     public async Task Handle_PagingForwardLastPage_ReturnCursor()
     {
         // Arrange
-        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All,
+        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false,
                                       TokenOrderByType.Name, SortDirectionType.ASC, 2, PagingDirection.Forward, ("10.12", 2));
 
-        var tokens = new []
+        var tokens = new[]
         {
             new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
             new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10)
@@ -320,8 +346,12 @@ public class GetTokensWithFilterTests
         {
             var tokenDto = new TokenDto
             {
-                Id = tokens[tokenAssembled].Id, Address = tokens[tokenAssembled].Address, Name = tokens[tokenAssembled].Name,
-                Symbol = tokens[tokenAssembled].Symbol, Decimals = tokens[tokenAssembled].Decimals, Sats = tokens[tokenAssembled].Sats,
+                Id = tokens[tokenAssembled].Id,
+                Address = tokens[tokenAssembled].Address,
+                Name = tokens[tokenAssembled].Name,
+                Symbol = tokens[tokenAssembled].Symbol,
+                Decimals = tokens[tokenAssembled].Decimals,
+                Sats = tokens[tokenAssembled].Sats,
                 Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
             };
             tokenAssembled++;
@@ -340,10 +370,10 @@ public class GetTokensWithFilterTests
     public async Task Handle_PagingBackwardLastPage_ReturnCursor()
     {
         // Arrange
-        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All,
+        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false,
                                       TokenOrderByType.PriceUsd, SortDirectionType.ASC, 2, PagingDirection.Backward, ("10.12", 2));
 
-        var tokens = new []
+        var tokens = new[]
         {
             new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
             new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10)
@@ -355,8 +385,12 @@ public class GetTokensWithFilterTests
         {
             var tokenDto = new TokenDto
             {
-                Id = tokens[tokenAssembled].Id, Address = tokens[tokenAssembled].Address, Name = tokens[tokenAssembled].Name,
-                Symbol = tokens[tokenAssembled].Symbol, Decimals = tokens[tokenAssembled].Decimals, Sats = tokens[tokenAssembled].Sats,
+                Id = tokens[tokenAssembled].Id,
+                Address = tokens[tokenAssembled].Address,
+                Name = tokens[tokenAssembled].Name,
+                Symbol = tokens[tokenAssembled].Symbol,
+                Decimals = tokens[tokenAssembled].Decimals,
+                Sats = tokens[tokenAssembled].Sats,
                 Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
             };
             tokenAssembled++;

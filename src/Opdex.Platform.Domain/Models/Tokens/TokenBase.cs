@@ -66,4 +66,10 @@ public abstract class TokenBase : BlockAudit
     public int Decimals { get; }
     public ulong Sats { get; }
     public UInt256 TotalSupply { get; protected set; }
+    public TokenSummary Summary { get; private set; }
+
+    public void SetSummary(TokenSummary summary)
+    {
+        Summary = summary;
+    }
 }

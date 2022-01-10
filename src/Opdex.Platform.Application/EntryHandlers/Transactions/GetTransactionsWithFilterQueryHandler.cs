@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
@@ -16,7 +17,8 @@ public class GetTransactionsWithFilterQueryHandler : EntryFilterQueryHandler<Get
     private readonly IMediator _mediator;
     private readonly IModelAssembler<Transaction, TransactionDto> _assembler;
 
-    public GetTransactionsWithFilterQueryHandler(IMediator mediator, IModelAssembler<Transaction, TransactionDto> assembler)
+    public GetTransactionsWithFilterQueryHandler(IMediator mediator, IModelAssembler<Transaction, TransactionDto> assembler, ILogger<GetTransactionsWithFilterQueryHandler> logger)
+        : base(logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _assembler = assembler ?? throw new ArgumentNullException(nameof(assembler));
@@ -31,6 +33,7 @@ public class GetTransactionsWithFilterQueryHandler : EntryFilterQueryHandler<Get
         var cursor = BuildCursorDto(transactionResults, request.Cursor, pointerSelector: result => result.Id);
 
         var dtos = await Task.WhenAll(transactionResults.Select(transaction => _assembler.Assemble(transaction)));
+
         return new TransactionsDto { Transactions = dtos, Cursor = cursor };
     }
 }
