@@ -21,7 +21,6 @@ using System.Threading;
 namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("vault-governances")]
 public class VaultGovernancesController : ControllerBase
 {
@@ -43,7 +42,6 @@ public class VaultGovernancesController : ControllerBase
     /// <returns>Vault paging results.</returns>
     /// <response code="200">Vault results returned.</response>
     /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
     [HttpGet]
     public async Task<ActionResult<VaultGovernancesResponseModel>> GetVaults([FromQuery] VaultGovernanceFilterParameters filters, CancellationToken cancellationToken)
     {
@@ -95,6 +93,7 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Vault not found.</response>
     [HttpPost("{address}/certificates/redeem")]
+    [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteRedeemCertificate([FromRoute] Address address, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateRedeemVaultCertificateQuoteCommand(address, _context.Wallet), cancellationToken);
@@ -149,6 +148,7 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Vault not found.</response>
     [HttpPost("{address}/proposals/create-certificate")]
+    [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteProposeCreateCertificate([FromRoute] Address address,
                                                                                                  [FromBody] CreateCertificateVaultProposalQuoteRequest request,
                                                                                                  CancellationToken cancellationToken)
@@ -169,6 +169,7 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Vault not found.</response>
     [HttpPost("{address}/proposals/revoke-certificate")]
+    [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteProposeRevokeCertificate([FromRoute] Address address,
                                                                                                  [FromBody] RevokeCertificateVaultProposalQuoteRequest request,
                                                                                                  CancellationToken cancellationToken)
@@ -189,6 +190,7 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Vault not found.</response>
     [HttpPost("{address}/proposals/minimum-pledge")]
+    [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteProposeMinimumPledge([FromRoute] Address address,
                                                                                              [FromBody] MinimumPledgeVaultProposalQuoteRequest request,
                                                                                              CancellationToken cancellationToken)
@@ -209,6 +211,7 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Vault not found.</response>
     [HttpPost("{address}/proposals/minimum-vote")]
+    [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteProposeMinimumVote([FromRoute] Address address, [FromBody] MinimumVoteVaultProposalQuoteRequest request,
                                                                                            CancellationToken cancellationToken)
     {
@@ -246,6 +249,7 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Either vault or proposal not found.</response>
     [HttpPost("{address}/proposals/{proposalId}/complete")]
+    [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteCompleteProposal([FromRoute] Address address, [FromRoute] ulong proposalId, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateCompleteVaultProposalQuoteCommand(address, proposalId, _context.Wallet), cancellationToken);
@@ -265,6 +269,7 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Either vault or proposal not found.</response>
     [HttpPost("{address}/proposals/{proposalId}/pledges")]
+    [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuotePledge([FromRoute] Address address, [FromRoute] ulong proposalId,
                                                                                [FromBody] VaultProposalPledgeQuoteRequest request, CancellationToken cancellationToken)
     {
@@ -285,8 +290,9 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Either vault or proposal not found.</response>
     [HttpPost("{address}/proposals/{proposalId}/pledges/withdraw")]
+    [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteWithdrawPledge([FromRoute] Address address, [FromRoute] ulong proposalId,
-                                                                                     [FromBody] VaultProposalWithdrawPledgeQuoteRequest request, CancellationToken cancellationToken)
+                                                                                       [FromBody] VaultProposalWithdrawPledgeQuoteRequest request, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateWithdrawVaultProposalPledgeQuoteCommand(address, proposalId, request.Amount, _context.Wallet), cancellationToken);
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
@@ -325,6 +331,7 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Either vault or proposal not found.</response>
     [HttpPost("{address}/proposals/{proposalId}/votes")]
+    [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteVote([FromRoute] Address address, [FromRoute] ulong proposalId,
                                                                              [FromBody] VaultProposalVoteQuoteRequest request, CancellationToken cancellationToken)
     {
@@ -345,6 +352,7 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Either vault or proposal not found.</response>
     [HttpPost("{address}/proposals/{proposalId}/votes/withdraw")]
+    [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteWithdrawVote([FromRoute] Address address, [FromRoute] ulong proposalId,
                                                                                      [FromBody] VaultProposalWithdrawVoteQuoteRequest request, CancellationToken cancellationToken)
     {
