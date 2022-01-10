@@ -33,9 +33,6 @@ public class VaultsCursor : Cursor<ulong>
         return new VaultsCursor(LockedToken, SortDirection, Limit, direction, pointer);
     }
 
-    /// <inheritdoc />
-    protected override bool ValidatePointer(ulong pointer) => pointer >= 0 && base.ValidatePointer(pointer);
-
     /// <summary>
     /// Parses a stringified version of the cursor
     /// </summary>

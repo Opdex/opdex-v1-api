@@ -35,6 +35,20 @@ public class MarketsController : ControllerBase
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
+    /// <summary>Get Markets</summary>
+    /// <remarks>Retrieves all of the markets tracked by the API</remarks>
+    /// <param name="filters">Query filters</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Market results</returns>
+    [HttpGet]
+    public async Task<ActionResult<MarketsResponseModel>> GetMarkets(
+        [FromQuery] MarketFilterParameters filters,
+        CancellationToken cancellationToken)
+    {
+        var vaults = await _mediator.Send(new GetMarketsWithFilterQuery(filters.BuildCursor()), cancellationToken);
+        return Ok(_mapper.Map<MarketsResponseModel>(vaults));
+    }
+
     /// <summary>Create Standard Market Quote</summary>
     /// <remarks>Quote a transaction to create a standard market.</remarks>
     /// <param name="request">Information about the standard market.</param>

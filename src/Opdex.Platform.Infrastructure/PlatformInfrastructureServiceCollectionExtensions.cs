@@ -242,6 +242,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<SelectDeployersByModifiedBlockQuery, IEnumerable<Deployer>>, SelectDeployersByModifiedBlockQueryHandler>();
 
         // Market
+        services.AddTransient<IRequestHandler<SelectMarketsWithFilterQuery, IEnumerable<Market>>, SelectMarketsWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<SelectMarketSnapshotWithFilterQuery, MarketSnapshot>, SelectMarketSnapshotWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<SelectMarketByAddressQuery, Market>, SelectMarketByAddressQueryHandler>();
         services.AddTransient<IRequestHandler<SelectMarketSnapshotsWithFilterQuery, IEnumerable<MarketSnapshot>>, SelectMarketSnapshotsWithFilterQueryHandler>();
