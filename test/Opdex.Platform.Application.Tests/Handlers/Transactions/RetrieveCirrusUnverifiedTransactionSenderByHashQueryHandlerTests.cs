@@ -32,6 +32,9 @@ public class RetrieveCirrusUnverifiedTransactionSenderByHashQueryHandlerTests
         using var cancellationTokenSource = new CancellationTokenSource();
         var cancellationToken = cancellationTokenSource.Token;
 
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetRawTransactionQuery>(), It.IsAny<CancellationToken>()))
+                     .ReturnsAsync(GetValidRawTransaction());
+
         var request = new RetrieveCirrusUnverifiedTransactionSenderByHashQuery(new Sha256(235345245268));
 
         // Act
@@ -39,166 +42,27 @@ public class RetrieveCirrusUnverifiedTransactionSenderByHashQueryHandlerTests
 
         // Assert
         _mediatorMock.Verify(callTo => callTo.Send(It.Is<CallCirrusGetRawTransactionQuery>(
-            q => q.TransactionHash == request.TransactionHash), cancellationToken), Times.Once);
+            q => q.TransactionHash == request.TransactionHash), cancellationToken), Times.AtLeastOnce);
     }
 
     [Fact]
     public async Task Handle_RawTransactionNull_ReturnEmpty()
     {
         // Arrange
-        var request = new RetrieveCirrusUnverifiedTransactionSenderByHashQuery(new Sha256(235345245268));
+        using var cancellationTokenSource = new CancellationTokenSource();
+        var cancellationToken = cancellationTokenSource.Token;
+
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetRawTransactionQuery>(), It.IsAny<CancellationToken>()))
                      .ReturnsAsync((RawTransactionDto)null);
 
-        // Act
-        var address = await _handler.Handle(request, CancellationToken.None);
-
-        // Assert
-        address.Should().Be(Address.Empty);
-    }
-
-    [Fact]
-    public async Task Handle_RawTransactionVoutNull_ReturnEmpty()
-    {
-        // Arrange
         var request = new RetrieveCirrusUnverifiedTransactionSenderByHashQuery(new Sha256(235345245268));
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetRawTransactionQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new RawTransactionDto()
-            {
-                Vout = null
-            });
 
         // Act
-        var address = await _handler.Handle(request, CancellationToken.None);
+        var address = await _handler.Handle(request, cancellationToken);
 
         // Assert
-        address.Should().Be(Address.Empty);
-    }
-
-    [Fact]
-    public async Task Handle_RawTransactionVoutEmpty_ReturnEmpty()
-    {
-        // Arrange
-        var request = new RetrieveCirrusUnverifiedTransactionSenderByHashQuery(new Sha256(235345245268));
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetRawTransactionQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new RawTransactionDto()
-            {
-                Vout = Array.Empty<VOutDto>()
-            });
-
-        // Act
-        var address = await _handler.Handle(request, CancellationToken.None);
-
-        // Assert
-        address.Should().Be(Address.Empty);
-    }
-
-    [Fact]
-    public async Task Handle_RawTransactionScriptPubKeyNull_ReturnEmpty()
-    {
-        // Arrange
-        var request = new RetrieveCirrusUnverifiedTransactionSenderByHashQuery(new Sha256(235345245268));
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetRawTransactionQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new RawTransactionDto()
-            {
-                Vout = new[]
-                {
-                    new VOutDto()
-                    {
-                        ScriptPubKey = null
-                    }
-                }
-            });
-
-        // Act
-        var address = await _handler.Handle(request, CancellationToken.None);
-
-        // Assert
-        address.Should().Be(Address.Empty);
-    }
-
-    [Fact]
-    public async Task Handle_RawTransactionAddressesNull_ReturnEmpty()
-    {
-        // Arrange
-        var request = new RetrieveCirrusUnverifiedTransactionSenderByHashQuery(new Sha256(235345245268));
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetRawTransactionQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new RawTransactionDto()
-            {
-                Vout = new[]
-                {
-                    new VOutDto()
-                    {
-                        ScriptPubKey = new ScriptPubKeyDto()
-                        {
-                            Addresses = null
-                        }
-                    }
-                }
-            });
-
-        // Act
-        var address = await _handler.Handle(request, CancellationToken.None);
-
-        // Assert
-        address.Should().Be(Address.Empty);
-    }
-
-    [Fact]
-    public async Task Handle_RawTransactionAddressesEmpty_ReturnEmpty()
-    {
-        // Arrange
-        var request = new RetrieveCirrusUnverifiedTransactionSenderByHashQuery(new Sha256(235345245268));
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetRawTransactionQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new RawTransactionDto()
-            {
-                Vout = new[]
-                {
-                    new VOutDto()
-                    {
-                        ScriptPubKey = new ScriptPubKeyDto()
-                        {
-                            Addresses = Array.Empty<Address>()
-                        }
-                    }
-                }
-            });
-
-        // Act
-        var address = await _handler.Handle(request, CancellationToken.None);
-
-        // Assert
-        address.Should().Be(Address.Empty);
-    }
-
-    [Fact]
-    public async Task Handle_RawTransactionMoreThanOneAddress_ReturnEmpty()
-    {
-        // Arrange
-        var request = new RetrieveCirrusUnverifiedTransactionSenderByHashQuery(new Sha256(235345245268));
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetRawTransactionQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new RawTransactionDto()
-            {
-                Vout = new[]
-                {
-                    new VOutDto()
-                    {
-                        ScriptPubKey = new ScriptPubKeyDto()
-                        {
-                            Addresses = new[]
-                            {
-                                new Address("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh"),
-                                new Address("PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi")
-                            }
-                        }
-                    }
-                }
-            });
-
-        // Act
-        var address = await _handler.Handle(request, CancellationToken.None);
-
-        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<CallCirrusGetRawTransactionQuery>(
+            q => q.TransactionHash == request.TransactionHash), cancellationToken), Times.Exactly(3));
         address.Should().Be(Address.Empty);
     }
 
@@ -206,31 +70,34 @@ public class RetrieveCirrusUnverifiedTransactionSenderByHashQueryHandlerTests
     public async Task Handle_RawTransactionOneAddress_ReturnAddress()
     {
         // Arrange
+        using var cancellationTokenSource = new CancellationTokenSource();
+        var cancellationToken = cancellationTokenSource.Token;
+
         var expectedAddress = new Address("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh");
 
         var request = new RetrieveCirrusUnverifiedTransactionSenderByHashQuery(new Sha256(235345245268));
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetRawTransactionQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new RawTransactionDto()
-            {
-                Vout = new[]
-                {
-                    new VOutDto()
-                    {
-                        ScriptPubKey = new ScriptPubKeyDto()
-                        {
-                            Addresses = new[]
-                            {
-                                expectedAddress
-                            }
-                        }
-                    }
-                }
-            });
+            .ReturnsAsync(GetValidRawTransaction(expectedAddress));
 
         // Act
-        var address = await _handler.Handle(request, CancellationToken.None);
+        var address = await _handler.Handle(request, cancellationToken);
 
         // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<CallCirrusGetRawTransactionQuery>(
+            q => q.TransactionHash == request.TransactionHash), cancellationToken), Times.Exactly(1));
         address.Should().Be(expectedAddress);
+    }
+
+    private RawTransactionDto GetValidRawTransaction(Address expectedAddress = default)
+    {
+        if (expectedAddress == default) expectedAddress = new Address("tPXUEzDyZDrR8YzQ6LiAJWhVuAKB8RUjyt");
+
+        return new RawTransactionDto()
+        {
+            Vout = new[]
+            {
+                new VOutDto() { ScriptPubKey = new ScriptPubKeyDto() { Addresses = new[] { expectedAddress } } }
+            }
+        };
     }
 }
