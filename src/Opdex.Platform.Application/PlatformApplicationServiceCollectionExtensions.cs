@@ -277,6 +277,7 @@ public static class PlatformApplicationServiceCollectionExtensions
 
         // Indexer
         services.AddTransient<IRequestHandler<GetIndexerStatusQuery, IndexerStatusDto>, GetIndexerStatusQueryHandler>();
+        services.AddTransient<IRequestHandler<GetBlockReceiptAtChainSplitCommand, BlockReceipt>, GetBlockReceiptAtChainSplitCommandHandler>();
 
         // Transactions
         services.AddTransient<IRequestHandler<GetTransactionsWithFilterQuery, TransactionsDto>, GetTransactionsWithFilterQueryHandler>();
