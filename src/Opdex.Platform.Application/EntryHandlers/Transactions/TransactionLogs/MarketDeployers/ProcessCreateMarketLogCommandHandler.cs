@@ -5,14 +5,16 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningGovernances;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MarketDeployers;
-using Opdex.Platform.Application.Abstractions.EntryCommands.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Deployers;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.Markets;
+using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MarketDeployers;
@@ -42,10 +44,19 @@ public class ProcessCreateMarketLogCommandHandler : IRequestHandler<ProcessCreat
             var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Log.Market, findOrThrow: false));
             if (market != null) return true;
 
-            // Get potential market staking token
-            // Todo: We _should_ add this token if it doesn't exist however, the contract will return Address.Zero which looks like a real address
-            // -- Would need to attempt to get the token summary to see if it exists, or add Address.Zero per environment to check.
-            var stakingToken = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.StakingToken, findOrThrow: false));
+            // Check if its a staking market, get staking token details
+            Token stakingToken = null;
+            if (!request.Log.StakingToken.IsZero)
+            {
+                var tokenId = await _mediator.Send(new CreateTokenCommand(request.Log.StakingToken, request.BlockHeight));
+                if (tokenId == 0)
+                {
+                    _logger.LogError("Unable to create market staking token");
+                    return false;
+                }
+
+                stakingToken = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.StakingToken, findOrThrow: false), CancellationToken.None);
+            }
 
             // Create market
             market = new Market(request.Log.Market, deployer.Id, stakingToken?.Id ?? 0, request.Log.Owner, request.Log.AuthPoolCreators,
@@ -79,7 +90,7 @@ public class ProcessCreateMarketLogCommandHandler : IRequestHandler<ProcessCreat
                     return false;
                 }
 
-                var vaultId = await _mediator.Send(new CreateVaultGovernanceCommand(stakingTokenSummary.Vault.Value, stakingToken.Id, request.BlockHeight));
+                var vaultId = await _mediator.Send(new CreateVaultCommand(stakingTokenSummary.Vault.Value, stakingToken.Id, request.BlockHeight));
 
                 var miningGovernanceId = await _mediator.Send(new CreateMiningGovernanceCommand(stakingTokenSummary.MiningGovernance.Value,
                                                                                                 stakingToken.Id, request.BlockHeight));

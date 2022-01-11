@@ -3,6 +3,7 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Vaults;
@@ -23,18 +24,22 @@ public class VaultDtoAssembler : IModelAssembler<Vault, VaultDto>
 
     public async Task<VaultDto> Assemble(Vault vault)
     {
-        var vaultDto = _mapper.Map<VaultDto>(vault);
+        var dto = _mapper.Map<VaultDto>(vault);
 
         var token = await _mediator.Send(new RetrieveTokenByIdQuery(vault.TokenId));
 
-        // vault may not have a balance just yet if it was just created
-        var vaultBalance = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(vault.Address, token.Id, findOrThrow: false));
+        // vault may not have a balance yet if it was just created
+        var vaultTokenBalance = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(vault.Address, token.Id, findOrThrow: false));
 
-        vaultDto.TokensLocked = vaultBalance == null
+        dto.Token = token.Address;
+        dto.TokensUnassigned = vault.UnassignedSupply.ToDecimal(token.Decimals);
+        dto.TokensProposed = vault.ProposedSupply.ToDecimal(token.Decimals);
+        dto.TokensLocked = vaultTokenBalance is null
             ? UInt256.Zero.ToDecimal(token.Decimals)
-            : vaultBalance.Balance.ToDecimal(token.Decimals);
-        vaultDto.TokensUnassigned = vault.UnassignedSupply.ToDecimal(token.Decimals);
-        vaultDto.LockedToken = token.Address;
-        return vaultDto;
+            : vaultTokenBalance.Balance.ToDecimal(token.Decimals);
+        dto.TotalPledgeMinimum = vault.TotalPledgeMinimum.ToDecimal(TokenConstants.Cirrus.Decimals);
+        dto.TotalVoteMinimum = vault.TotalVoteMinimum.ToDecimal(TokenConstants.Cirrus.Decimals);
+
+        return dto;
     }
 }

@@ -1,5 +1,6 @@
 using FluentAssertions;
 using MediatR;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.Models;
@@ -33,7 +34,7 @@ public class GetAddressBalancesWithFilterQueryHandlerTests
         _mediatorMock = new Mock<IMediator>();
         _assemblerMock = new Mock<IModelAssembler<AddressBalance, AddressBalanceDto>>();
 
-        _handler = new GetAddressBalancesWithFilterQueryHandler(_mediatorMock.Object, _assemblerMock.Object);
+        _handler = new GetAddressBalancesWithFilterQueryHandler(_mediatorMock.Object, _assemblerMock.Object, new NullLogger<GetAddressBalancesWithFilterQueryHandler>());
     }
 
     [Fact]

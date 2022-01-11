@@ -9,7 +9,7 @@ public class VaultFilterParametersValidator : AbstractCursorValidator<VaultFilte
 {
     public VaultFilterParametersValidator()
     {
-        RuleFor(filter => filter.LockedToken).MustBeNetworkAddressOrEmpty();
-        RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit);
+        RuleFor(request => request.LockedToken).MustBeNetworkAddressOrEmpty().WithMessage("Locked token must be valid address.");
+        RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit).WithMessage($"Limit must be between 1 and {Cursor.DefaultMaxLimit}.");
     }
 }

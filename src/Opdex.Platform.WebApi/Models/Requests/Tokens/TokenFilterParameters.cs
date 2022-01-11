@@ -11,6 +11,7 @@ public sealed class TokenFilterParameters : FilterParameters<TokensCursor>
     public TokenFilterParameters()
     {
         Tokens = new List<Address>();
+        IncludeZeroLiquidity = true;
     }
 
     /// <summary>
@@ -37,10 +38,16 @@ public sealed class TokenFilterParameters : FilterParameters<TokensCursor>
     /// <example>BTC</example>
     public string Keyword { get; set; }
 
+    /// <summary>
+    /// Includes tokens with no liquidity, only if true. Default true.
+    /// </summary>
+    /// <example>true</example>
+    public bool IncludeZeroLiquidity { get; set; }
+
     /// <inheritdoc />
     protected override TokensCursor InternalBuildCursor()
     {
-        if (EncodedCursor is null) return new TokensCursor(Keyword, Tokens, TokenType, OrderBy, Direction, Limit, PagingDirection.Forward, default);
+        if (EncodedCursor is null) return new TokensCursor(Keyword, Tokens, TokenType, IncludeZeroLiquidity, OrderBy, Direction, Limit, PagingDirection.Forward, default);
         Base64Extensions.TryBase64Decode(EncodedCursor, out var decodedCursor);
         _ = TokensCursor.TryParse(decodedCursor, out var cursor);
         return cursor;

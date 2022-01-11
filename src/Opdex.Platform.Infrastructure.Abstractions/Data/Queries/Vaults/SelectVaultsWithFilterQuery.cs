@@ -9,7 +9,7 @@ public class SelectVaultsWithFilterQuery : IRequest<IEnumerable<Vault>>
 {
     public SelectVaultsWithFilterQuery(VaultsCursor cursor)
     {
-        Cursor = cursor ?? throw new ArgumentNullException(nameof(cursor), "Cursor must be set.");
+        Cursor = cursor ?? throw new ArgumentNullException(nameof(cursor));
     }
 
     public VaultsCursor Cursor { get; }

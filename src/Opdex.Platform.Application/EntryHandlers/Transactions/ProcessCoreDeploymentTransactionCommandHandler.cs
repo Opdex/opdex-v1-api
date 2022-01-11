@@ -8,9 +8,9 @@ using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Deployers;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
-using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions;
 
@@ -21,48 +21,34 @@ public class ProcessCoreDeploymentTransactionCommandHandler : IRequestHandler<Pr
 
     public ProcessCoreDeploymentTransactionCommandHandler(IMediator mediator, ILogger<ProcessCoreDeploymentTransactionCommandHandler> logger)
     {
-        _mediator = mediator;
-        _logger = logger;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<Unit> Handle(ProcessCoreDeploymentTransactionCommand request, CancellationToken cancellationToken)
     {
         try
         {
-            var transaction = await _mediator.Send(new RetrieveTransactionByHashQuery(request.TxHash, findOrThrow: false), cancellationToken) ??
+            var transaction = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), CancellationToken.None) ??
                               await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), CancellationToken.None);
 
-            if (transaction == null)
+            if (transaction == null || transaction.Id > 0) return Unit.Value;
+
+            // Deployments can have block gaps between transactions. Create all blocks in from our best block to the current block
+            // that the Core deployment transaction hash is within.
+            var bestBlock = await _mediator.Send(new GetBestBlockReceiptQuery(), CancellationToken.None);
+            var txHashBlockHeight = await _mediator.Send(new RetrieveCirrusBlockHashByHeightQuery(transaction.BlockHeight), CancellationToken.None);
+            var hashBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(txHashBlockHeight, findOrThrow: true), CancellationToken.None);
+
+            while (bestBlock.Height <= hashBlock.Height && bestBlock.NextBlockHash.HasValue)
             {
-                return Unit.Value;
+                await _mediator.Send(new MakeBlockCommand(bestBlock.Height, bestBlock.Hash, bestBlock.Time, bestBlock.MedianTime));
+                bestBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(bestBlock.NextBlockHash.Value, findOrThrow: true));
             }
 
-            // Hosted environments would not be null, local environments would be null
-            var block = await _mediator.Send(new RetrieveBlockByHeightQuery(transaction.BlockHeight, findOrThrow: false));
-            var blockTime = block?.MedianTime;
-
-            if (block == null)
-            {
-                // Get transaction block hash
-                var blockHash = await _mediator.Send(new RetrieveCirrusBlockHashByHeightQuery(transaction.BlockHeight));
-
-                // Get block by hash
-                var blockReceipt = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(blockHash, findOrThrow: true));
-
-                blockTime = blockReceipt.MedianTime;
-
-                // Make block
-                await _mediator.Send(new MakeBlockCommand(blockReceipt.Height, blockReceipt.Hash, blockReceipt.Time, blockReceipt.MedianTime));
-            }
-
-            await _mediator.Send(new CreateCrsTokenSnapshotsCommand(blockTime.Value, transaction.BlockHeight));
-
-            var deployerId = await _mediator.Send(new CreateDeployerCommand(transaction.NewContractAddress, transaction.From, transaction.BlockHeight));
-
-            if (transaction.Id == 0)
-            {
-                await _mediator.Send(new MakeTransactionCommand(transaction), CancellationToken.None);
-            }
+            await _mediator.Send(new CreateCrsTokenSnapshotsCommand(hashBlock.MedianTime, transaction.BlockHeight), CancellationToken.None);
+            await _mediator.Send(new CreateDeployerCommand(transaction.NewContractAddress, transaction.From, transaction.BlockHeight), CancellationToken.None);
+            await _mediator.Send(new MakeTransactionCommand(transaction), CancellationToken.None);
         }
         catch (Exception ex)
         {

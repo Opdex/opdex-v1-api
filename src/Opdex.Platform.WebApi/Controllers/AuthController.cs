@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System.Net;
 using Opdex.Platform.Common.Models;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,7 +37,7 @@ public class AuthController : ControllerBase
     {
         _opdexConfiguration = opdexConfiguration ?? throw new ArgumentNullException(nameof(opdexConfiguration));
         _authConfiguration = authConfiguration ?? throw new ArgumentNullException(nameof(authConfiguration));
-        _logger = logger;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _twoWayEncryptionProvider = twoWayEncryptionProvider ?? throw new ArgumentNullException(nameof(twoWayEncryptionProvider));
     }

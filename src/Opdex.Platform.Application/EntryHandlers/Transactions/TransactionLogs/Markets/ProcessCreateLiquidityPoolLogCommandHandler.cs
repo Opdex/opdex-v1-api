@@ -7,15 +7,12 @@ using Opdex.Platform.Application.Abstractions.Commands.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Markets;
-using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Configurations;
-using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.LiquidityPools;
-using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Markets;
@@ -55,19 +52,12 @@ public class ProcessCreateLiquidityPoolLogCommandHandler : IRequestHandler<Proce
             var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Pool, findOrThrow: false)) ??
                                 new LiquidityPool(request.Log.Pool, name, srcTokenId, lpTokenId, market.Id, request.BlockHeight);
 
-            ulong liquidityPoolId = liquidityPool.Id;
-            var isNewLiquidityPool = liquidityPoolId == 0;
-            if (isNewLiquidityPool)
-            {
-                liquidityPoolId = await _mediator.Send(new MakeLiquidityPoolCommand(liquidityPool));
+            if (liquidityPool.Id > 0) return true;
 
-                var block = await _mediator.Send(new RetrieveBlockByHeightQuery(request.BlockHeight));
-                var snapshot = new LiquidityPoolSnapshot(liquidityPoolId, SnapshotType.Daily, block.MedianTime);
-                await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(snapshot, request.BlockHeight));
-            }
+            var liquidityPoolId = await _mediator.Send(new MakeLiquidityPoolCommand(liquidityPool));
 
             // If it's the staking market, a new liquidity pool, and the pool src token isn't the markets staking token
-            if (market.IsStakingMarket && isNewLiquidityPool && srcTokenId != market.StakingTokenId)
+            if (market.IsStakingMarket && srcTokenId != market.StakingTokenId)
             {
                 await _mediator.Send(new CreateMiningPoolCommand(liquidityPool.Address, liquidityPoolId, request.BlockHeight));
             }

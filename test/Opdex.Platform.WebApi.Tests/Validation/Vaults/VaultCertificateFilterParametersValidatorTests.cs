@@ -1,6 +1,7 @@
 using FluentValidation.TestHelper;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certificates;
 using Opdex.Platform.WebApi.Models.Requests.Vaults;
 using Opdex.Platform.WebApi.Validation.Vaults;
 using Xunit;
@@ -30,7 +31,7 @@ public class VaultCertificateFilterParametersValidatorTests
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(request => request.Holder);
+        result.ShouldHaveValidationErrorFor(r => r.Holder);
     }
 
     [Theory]
@@ -49,7 +50,43 @@ public class VaultCertificateFilterParametersValidatorTests
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldNotHaveValidationErrorFor(request => request.Holder);
+        result.ShouldNotHaveValidationErrorFor(r => r.Holder);
+    }
+
+    [Fact]
+    public void Status_Invalid()
+    {
+        // Arrange
+        var request = new VaultCertificateFilterParameters
+        {
+            Status = (VaultCertificateStatusFilter)255
+        };
+
+        // Act
+        var result = _validator.TestValidate(request);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(r => r.Status);
+    }
+
+    [Theory]
+    [InlineData(default(VaultCertificateStatusFilter))]
+    [InlineData(VaultCertificateStatusFilter.Vesting)]
+    [InlineData(VaultCertificateStatusFilter.Redeemed)]
+    [InlineData(VaultCertificateStatusFilter.Revoked)]
+    public void Status_Valid(VaultCertificateStatusFilter type)
+    {
+        // Arrange
+        var request = new VaultCertificateFilterParameters
+        {
+            Status = type
+        };
+
+        // Act
+        var result = _validator.TestValidate(request);
+
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(r => r.Status);
     }
 
     [Fact]
@@ -65,7 +102,7 @@ public class VaultCertificateFilterParametersValidatorTests
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(request => request.Limit);
+        result.ShouldHaveValidationErrorFor(r => r.Limit);
     }
 
     [Fact]
@@ -81,6 +118,6 @@ public class VaultCertificateFilterParametersValidatorTests
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldNotHaveValidationErrorFor(request => request.Limit);
+        result.ShouldNotHaveValidationErrorFor(r => r.Limit);
     }
 }

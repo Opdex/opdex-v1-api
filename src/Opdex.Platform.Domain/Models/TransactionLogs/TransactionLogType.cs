@@ -45,14 +45,10 @@ public enum TransactionLogType : uint
     CreateVaultCertificateLog = 24,
     RevokeVaultCertificateLog = 25,
     RedeemVaultCertificateLog = 26,
-    SetPendingVaultOwnershipLog = 27,
-    ClaimPendingVaultOwnershipLog = 28,
-
-    // Vault governance logs
-    CreateVaultProposalLog = 29,
-    CompleteVaultProposalLog = 30,
-    VaultProposalPledgeLog = 31,
-    VaultProposalWithdrawPledgeLog = 32,
-    VaultProposalVoteLog = 33,
-    VaultProposalWithdrawVoteLog = 34
+    CreateVaultProposalLog = 27,
+    CompleteVaultProposalLog = 28,
+    VaultProposalPledgeLog = 29,
+    VaultProposalWithdrawPledgeLog = 30,
+    VaultProposalVoteLog = 31,
+    VaultProposalWithdrawVoteLog = 32
 }

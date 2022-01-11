@@ -117,9 +117,6 @@ public static class TransactionErrors
         private const string FailedVaultDistribution = "FAILED_VAULT_DISTRIBUTION";
         private const string NominationPeriodActive = "NOMINATION_PERIOD_ACTIVE";
         private const string TokenDistributionRequired = "TOKEN_DISTRIBUTION_REQUIRED";
-        private const string InvalidCertificateHolder = "INVALID_CERTIFICATE_HOLDER";
-        private const string TokensBurned = "TOKENS_BURNED";
-        private const string CertificateLimitReached = "CERTIFICATE_LIMIT_REACHED";
         private const string CertificateExists = "CERTIFICATE_EXISTS";
         private const string InsufficientVaultSupply = "INSUFFICIENT_VAULT_SUPPLY";
         private const string InvalidCertificate = "INVALID_CERTIFICATE";
@@ -138,6 +135,8 @@ public static class TransactionErrors
         private const string ExcessiveAmount = "EXCESSIVE_AMOUNT";
         private const string InvalidDescription = "INVALID_DESCRIPTION";
         private const string NotPayable = "NOT_PAYABLE";
+        private const string InsufficientDeposit = "INSUFFICIENT_DEPOSIT";
+        private const string InvalidCreator = "INVALID_CREATOR";
         private const string InsufficientWithdrawAmount = "INSUFFICIENT_WITHDRAW_AMOUNT";
         private const string InsufficientFunds = "INSUFFICIENT_FUNDS";
 
@@ -200,12 +199,6 @@ public static class TransactionErrors
         private const string MiningGovernanceRewardMiningPool = "OpdexMiningGovernance.RewardMiningPool()";
 
         private const string VaultNotifyDistribution = "OpdexVault.NotifyDistribution(UInt256 amount)";
-        private const string VaultCreateCertificate = "OpdexVault.CreateCertificate(Address to, UInt256 amount)";
-        private const string VaultRedeemCertificates = "OpdexVault.RedeemCertificates()";
-        private const string VaultRevokeCertificates = "OpdexVault.RevokeCertificates(Address wallet)";
-        private const string VaultSetPendingOwnership = "OpdexVault.SetPendingOwnership(Address pendingOwner)";
-        private const string VaultClaimPendingOwnership = "OpdexVault.ClaimPendingOwnership()";
-
         private const string VaultCreateNewCertificateProposal = "OpdexVault.CreateNewCertificateProposal(UInt256 amount, Address recipient, string description)";
         private const string VaultCreateRevokeCertificateProposal = "OpdexVault.CreateRevokeCertificateProposal(Address recipient, string description)";
         private const string VaultCreateTotalPledgeMinimumProposal = "OpdexVault.CreateTotalPledgeMinimumProposal(UInt256 amount, string description)";
@@ -501,41 +494,29 @@ public static class TransactionErrors
 
                 // --- Vault ---
                 (VaultNotifyDistribution, Unauthorized) => "Unable to notify distribution, unauthorized.",
-
-                (VaultCreateCertificate, Unauthorized) => "Unable to create vault certificate, unauthorized.",
-                (VaultCreateCertificate, InvalidCertificateHolder) => "Unable to create vault certificate, cannot create certificate for vault owner.",
-                (VaultCreateCertificate, InvalidAmount) => "Unable to create vault certificate, invalid amount.",
-                (VaultCreateCertificate, TokensBurned) => "Unable to create vault certificate, vault lifetime expired.",
-                (VaultCreateCertificate, CertificateLimitReached) => "Unable to create vault certificate, maximum limit reached for holder.",
-
-                (VaultRedeemCertificates, TransferToFailed) => "Unable to redeem certificates, token transfer failed.",
-
-                (VaultRevokeCertificates, Unauthorized) => "Unable to revoke certificates, unauthorized.",
-
-                (VaultSetPendingOwnership, Unauthorized) => "Unable to set vault ownership, unauthorized.",
-
-                (VaultClaimPendingOwnership, Unauthorized) => "Unable to claim vault ownership, unauthorized.",
-
-                // --- Vault Governance ---
-                (VaultCreateNewCertificateProposal, NotPayable) => "Unable to create new certificate proposal, message value expected to be zero.",
+                (VaultCreateNewCertificateProposal, InvalidCreator) => "Unable to create new certificate proposal, proposal creator must not be a smart contract.",
+                (VaultCreateNewCertificateProposal, InsufficientDeposit) => "Unable to create new certificate proposal, proposal deposit is required.",
                 (VaultCreateNewCertificateProposal, InvalidDescription) => "Unable to create new certificate proposal, invalid description.",
                 (VaultCreateNewCertificateProposal, InvalidAmount) => "Unable to create new certificate proposal, amount must be greater than zero.",
                 (VaultCreateNewCertificateProposal, CertificateExists) => "Unable to create new certificate proposal, recipient already has a certificate.",
                 (VaultCreateNewCertificateProposal, InsufficientVaultSupply) => "Unable to create new certificate proposal, requested value exceeds available vault supply.",
                 (VaultCreateNewCertificateProposal, RecipientProposalInProgress) => "Unable to create new certificate proposal, recipient already has an active proposal.",
 
-                (VaultCreateRevokeCertificateProposal, NotPayable) => "Unable to create revoke certificate proposal, message value expected to be zero.",
+                (VaultCreateRevokeCertificateProposal, InvalidCreator) => "Unable to create revoke certificate proposal, proposal creator must not be a smart contract.",
+                (VaultCreateRevokeCertificateProposal, InsufficientDeposit) => "Unable to create revoke certificate proposal, proposal deposit is required.",
                 (VaultCreateRevokeCertificateProposal, InvalidDescription) => "Unable to create revoke certificate proposal, invalid description.",
                 (VaultCreateRevokeCertificateProposal, InvalidAmount) => "Unable to create revoke certificate proposal, amount must be greater than zero.",
                 (VaultCreateRevokeCertificateProposal, InvalidCertificate) => "Unable to create revoke certificate proposal, certificate cannot be revoked.",
                 (VaultCreateRevokeCertificateProposal, RecipientProposalInProgress) => "Unable to create revoke certificate proposal, recipient already has an active proposal.",
 
-                (VaultCreateTotalPledgeMinimumProposal, NotPayable) => "Unable to create total pledge minimum proposal, message value expected to be zero.",
+                (VaultCreateTotalPledgeMinimumProposal, InvalidCreator) => "Unable to create total pledge minimum proposal, proposal creator must not be a smart contract.",
+                (VaultCreateTotalPledgeMinimumProposal, InsufficientDeposit) => "Unable to create total pledge minimum proposal, proposal deposit is required.",
                 (VaultCreateTotalPledgeMinimumProposal, InvalidDescription) => "Unable to create total pledge minimum proposal, invalid description.",
                 (VaultCreateTotalPledgeMinimumProposal, InvalidAmount) => "Unable to create total pledge minimum proposal, amount must be greater than zero.",
                 (VaultCreateTotalPledgeMinimumProposal, ExcessiveAmount) => "Unable to create total pledge minimum proposal, proposed amount too high.",
 
-                (VaultCreateTotalVoteMinimumProposal, NotPayable) => "Unable to create total vote minimum proposal, message value expected to be zero.",
+                (VaultCreateTotalVoteMinimumProposal, InvalidCreator) => "Unable to create total vote minimum proposal, proposal creator must not be a smart contract.",
+                (VaultCreateTotalVoteMinimumProposal, InsufficientDeposit) => "Unable to create total vote minimum proposal, proposal deposit is required.",
                 (VaultCreateTotalVoteMinimumProposal, InvalidDescription) => "Unable to create total vote minimum proposal, invalid description.",
                 (VaultCreateTotalVoteMinimumProposal, InvalidAmount) => "Unable to create total vote minimum proposal, amount must be greater than zero.",
                 (VaultCreateTotalVoteMinimumProposal, ExcessiveAmount) => "Unable to create total vote minimum proposal, proposed amount too high.",

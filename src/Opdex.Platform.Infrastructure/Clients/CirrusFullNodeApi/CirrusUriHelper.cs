@@ -36,11 +36,6 @@ public static class CirrusUriHelper
         public const string GetRawTransaction = "Node/getrawtransaction?trxid={0}&verbose={1}";
     }
 
-    public static class Mempool
-    {
-        public const string GetRawMempool = "Mempool/getrawmempool";
-    }
-
     public static class Wallet
     {
         public const string VerifyMessage = "Wallet/verifymessage";

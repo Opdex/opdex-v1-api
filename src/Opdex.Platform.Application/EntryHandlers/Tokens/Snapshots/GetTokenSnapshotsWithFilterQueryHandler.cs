@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
@@ -16,7 +17,8 @@ public class GetTokenSnapshotsWithFilterQueryHandler : EntryFilterQueryHandler<G
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
-    public GetTokenSnapshotsWithFilterQueryHandler(IMediator mediator, IMapper mapper)
+    public GetTokenSnapshotsWithFilterQueryHandler(IMediator mediator, IMapper mapper, ILogger<GetTokenSnapshotsWithFilterQueryHandler> logger)
+        : base(logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));

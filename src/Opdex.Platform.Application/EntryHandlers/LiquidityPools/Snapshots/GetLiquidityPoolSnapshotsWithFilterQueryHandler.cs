@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
@@ -19,7 +20,9 @@ public class GetLiquidityPoolSnapshotsWithFilterQueryHandler : EntryFilterQueryH
     private readonly IModelAssembler<IList<LiquidityPoolSnapshot>, IEnumerable<LiquidityPoolSnapshotDto>> _assembler;
 
     public GetLiquidityPoolSnapshotsWithFilterQueryHandler(IMediator mediator,
-                                                           IModelAssembler<IList<LiquidityPoolSnapshot>, IEnumerable<LiquidityPoolSnapshotDto>> assembler)
+                                                           IModelAssembler<IList<LiquidityPoolSnapshot>, IEnumerable<LiquidityPoolSnapshotDto>> assembler,
+                                                           ILogger<GetLiquidityPoolSnapshotsWithFilterQueryHandler> logger)
+        : base(logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _assembler = assembler ?? throw new ArgumentNullException(nameof(assembler));

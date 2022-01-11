@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
@@ -6,6 +7,7 @@ using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +19,8 @@ public class GetLiquidityPoolsWithFilterQueryHandler : EntryFilterQueryHandler<G
     private readonly IMediator _mediator;
     private readonly IModelAssembler<LiquidityPool, LiquidityPoolDto> _assembler;
 
-    public GetLiquidityPoolsWithFilterQueryHandler(IMediator mediator, IModelAssembler<LiquidityPool, LiquidityPoolDto> assembler)
+    public GetLiquidityPoolsWithFilterQueryHandler(IMediator mediator, IModelAssembler<LiquidityPool, LiquidityPoolDto> assembler, ILogger<GetLiquidityPoolsWithFilterQueryHandler> logger)
+        : base(logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _assembler = assembler ?? throw new ArgumentNullException(nameof(assembler));
@@ -35,8 +38,8 @@ public class GetLiquidityPoolsWithFilterQueryHandler : EntryFilterQueryHandler<G
         {
             return request.Cursor.OrderBy switch
             {
-                LiquidityPoolOrderByType.Liquidity => (result.Summary.Reserves.Usd.ToString(), result.Id),
-                LiquidityPoolOrderByType.Volume => (result.Summary.Volume.DailyUsd.ToString(), result.Id),
+                LiquidityPoolOrderByType.Liquidity => (result.Summary.Reserves.Usd.ToString(CultureInfo.InvariantCulture), result.Id),
+                LiquidityPoolOrderByType.Volume => (result.Summary.Volume.DailyUsd.ToString(CultureInfo.InvariantCulture), result.Id),
                 LiquidityPoolOrderByType.StakingWeight => (result.Summary.Staking?.Weight.ToString(), result.Id),
                 LiquidityPoolOrderByType.Name => (result.Name, result.Id),
                 _ => (string.Empty, result.Id)

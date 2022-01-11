@@ -2,12 +2,14 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
+using System.Globalization;
 using System.Linq;
 
 namespace Opdex.Platform.Application.EntryHandlers.Tokens;
@@ -17,7 +19,8 @@ public class GetTokensWithFilterQueryHandler : EntryFilterQueryHandler<GetTokens
     private readonly IMediator _mediator;
     private readonly IModelAssembler<Token, TokenDto> _tokenAssembler;
 
-    public GetTokensWithFilterQueryHandler(IMediator mediator, IModelAssembler<Token, TokenDto> tokenAssembler)
+    public GetTokensWithFilterQueryHandler(IMediator mediator, IModelAssembler<Token, TokenDto> tokenAssembler, ILogger<GetTokensWithFilterQueryHandler> logger)
+        : base(logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _tokenAssembler = tokenAssembler ?? throw new ArgumentNullException(nameof(tokenAssembler));
@@ -31,17 +34,14 @@ public class GetTokensWithFilterQueryHandler : EntryFilterQueryHandler<GetTokens
 
         var dtoResults = dtos.ToList();
 
-        var cursor = BuildCursorDto(dtoResults, request.Cursor, pointerSelector: result =>
-        {
-            return request.Cursor.OrderBy switch
+        var cursor = BuildCursorDto(dtoResults, request.Cursor, pointerSelector: result => request.Cursor.OrderBy switch
             {
                 TokenOrderByType.Name => (result.Name, result.Id),
                 TokenOrderByType.Symbol => (result.Symbol, result.Id),
-                TokenOrderByType.PriceUsd => (result.Summary?.PriceUsd.ToString(), result.Id),
-                TokenOrderByType.DailyPriceChangePercent => (result.Summary?.DailyPriceChangePercent.ToString(), result.Id),
+                TokenOrderByType.PriceUsd => (result.Summary?.PriceUsd.ToString(CultureInfo.InvariantCulture), result.Id),
+                TokenOrderByType.DailyPriceChangePercent => (result.Summary?.DailyPriceChangePercent.ToString(CultureInfo.InvariantCulture), result.Id),
                 _ => (string.Empty, result.Id)
-            };
-        });
+            });
 
         return new TokensDto { Tokens = dtoResults, Cursor = cursor };
     }

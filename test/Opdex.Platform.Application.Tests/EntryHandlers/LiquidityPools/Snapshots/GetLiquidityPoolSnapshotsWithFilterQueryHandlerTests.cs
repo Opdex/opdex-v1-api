@@ -1,5 +1,6 @@
 using FluentAssertions;
 using MediatR;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Models;
@@ -35,7 +36,7 @@ public class GetLiquidityPoolSnapshotsWithFilterQueryHandlerTests
         _mediatorMock = new Mock<IMediator>();
         _assemblerMock = new Mock<IModelAssembler<IList<LiquidityPoolSnapshot>, IEnumerable<LiquidityPoolSnapshotDto>>>();
 
-        _handler = new GetLiquidityPoolSnapshotsWithFilterQueryHandler(_mediatorMock.Object, _assemblerMock.Object);
+        _handler = new GetLiquidityPoolSnapshotsWithFilterQueryHandler(_mediatorMock.Object, _assemblerMock.Object, new NullLogger<GetLiquidityPoolSnapshotsWithFilterQueryHandler>());
     }
 
     [Fact]

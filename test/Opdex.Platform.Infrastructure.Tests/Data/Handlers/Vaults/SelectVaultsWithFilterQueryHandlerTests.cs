@@ -56,7 +56,7 @@ public class SelectVaultsWithFilterQueryHandlerTests
         // Assert
         _dbContext.Verify(callTo =>
                               callTo.ExecuteQueryAsync<VaultEntity>(
-                                  It.Is<DatabaseQuery>(q => q.Sql.Contains("v.Id > @VaultId") &&
+                                  It.Is<DatabaseQuery>(q => q.Sql.Contains("v.Id > @Pointer") &&
                                                             q.Sql.Contains($"ORDER BY v.Id {orderBy}") &&
                                                             q.Sql.Contains($"LIMIT {limit + 1}"))), Times.Once);
     }
@@ -75,7 +75,7 @@ public class SelectVaultsWithFilterQueryHandlerTests
         // Assert
         _dbContext.Verify(callTo =>
                               callTo.ExecuteQueryAsync<VaultEntity>(
-                                  It.Is<DatabaseQuery>(q => q.Sql.Contains("v.Id < @VaultId") &&
+                                  It.Is<DatabaseQuery>(q => q.Sql.Contains("v.Id < @Pointer") &&
                                                             q.Sql.Contains($"ORDER BY v.Id {orderBy}") &&
                                                             q.Sql.Contains($"LIMIT {limit + 1}"))), Times.Once);
     }
@@ -94,7 +94,7 @@ public class SelectVaultsWithFilterQueryHandlerTests
         // Assert
         _dbContext.Verify(callTo =>
                               callTo.ExecuteQueryAsync<VaultEntity>(
-                                  It.Is<DatabaseQuery>(q => q.Sql.Contains("v.Id > @VaultId") &&
+                                  It.Is<DatabaseQuery>(q => q.Sql.Contains("v.Id > @Pointer") &&
                                                             q.Sql.Contains($"ORDER BY v.Id {SortDirectionType.ASC}") &&
                                                             q.Sql.Contains($"LIMIT {limit + 1}"))), Times.Once);
     }
@@ -113,7 +113,7 @@ public class SelectVaultsWithFilterQueryHandlerTests
         // Assert
         _dbContext.Verify(callTo =>
                               callTo.ExecuteQueryAsync<VaultEntity>(
-                                  It.Is<DatabaseQuery>(q => q.Sql.Contains("v.Id < @VaultId") &&
+                                  It.Is<DatabaseQuery>(q => q.Sql.Contains("v.Id < @Pointer") &&
                                                             q.Sql.Contains($"ORDER BY v.Id {SortDirectionType.DESC}") &&
                                                             q.Sql.Contains($"LIMIT {limit + 1}"))), Times.Once);
     }

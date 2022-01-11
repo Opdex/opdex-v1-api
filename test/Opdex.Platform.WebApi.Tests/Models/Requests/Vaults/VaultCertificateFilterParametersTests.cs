@@ -18,7 +18,7 @@ public class VaultCertificatesFilterParametersTests
 
         // Assert
         filters.Holder.Should().Be(Address.Empty);
-        filters.Direction.Should().Be(default(SortDirectionType));
+        filters.Direction.Should().Be(default);
         filters.Limit.Should().Be(default);
     }
 
@@ -75,7 +75,7 @@ public class VaultCertificatesFilterParametersTests
     public void BuildCursor_ValidCursorString_ReturnCursor()
     {
         // Arrange
-        var filters = new VaultCertificateFilterParameters { EncodedCursor = "ZGlyZWN0aW9uOkRFU0M7bGltaXQ6NTtwYWdpbmc6Rm9yd2FyZDtwb2ludGVyOk13PT07" };
+        var filters = new VaultCertificateFilterParameters { EncodedCursor = "aG9sZGVyOjtzdGF0dXM6QWxsO2RpcmVjdGlvbjpERVNDO2xpbWl0OjU7cGFnaW5nOkZvcndhcmQ7cG9pbnRlcjpNdz09Ow==" };
 
         // Act
         var cursor = filters.BuildCursor();

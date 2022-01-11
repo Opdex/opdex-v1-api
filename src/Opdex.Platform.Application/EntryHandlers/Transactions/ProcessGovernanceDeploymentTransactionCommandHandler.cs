@@ -7,6 +7,7 @@ using Opdex.Platform.Application.Abstractions.Commands.Blocks;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
@@ -22,26 +23,22 @@ public class ProcessGovernanceDeploymentTransactionCommandHandler : IRequestHand
 
     public ProcessGovernanceDeploymentTransactionCommandHandler(IMediator mediator, ILogger<ProcessGovernanceDeploymentTransactionCommandHandler> logger)
     {
-        _mediator = mediator;
-        _logger = logger;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<Unit> Handle(ProcessGovernanceDeploymentTransactionCommand request, CancellationToken cancellationToken)
     {
         try
         {
-            // Todo: Evaluate, rewrite, and/or reword all of these types of comments, these processes should be idempotent
-            // Hosted environments would have indexed transaction already, local would need to reach out to Cirrus to get receipt
-            var transaction = await _mediator.Send(new RetrieveTransactionByHashQuery(request.TxHash, findOrThrow: false)) ??
-                              await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash));
+            var transaction = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), CancellationToken.None) ??
+                              await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), CancellationToken.None);
 
-            if (transaction == null)
-            {
-                return Unit.Value;
-            }
+            if (transaction == null || transaction.Id > 0) return Unit.Value;
 
             // Hosted environments would not be null, local environments would be null
             var block = await _mediator.Send(new RetrieveBlockByHeightQuery(transaction.BlockHeight, findOrThrow: false));
+            DateTime blockTime;
 
             if (block == null)
             {
@@ -51,10 +48,18 @@ public class ProcessGovernanceDeploymentTransactionCommandHandler : IRequestHand
                 // Get block by hash
                 var blockReceiptDto = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(blockHash, findOrThrow: true));
 
+                blockTime = blockReceiptDto.MedianTime;
+
                 // Make block
                 await _mediator.Send(new MakeBlockCommand(blockReceiptDto.Height, blockReceiptDto.Hash,
                                                           blockReceiptDto.Time, blockReceiptDto.MedianTime));
             }
+            else
+            {
+                blockTime = block.MedianTime;
+            }
+
+            await _mediator.Send(new CreateCrsTokenSnapshotsCommand(blockTime, transaction.BlockHeight), CancellationToken.None);
 
             // Insert Staking Token
             var stakingTokenId = await _mediator.Send(new CreateTokenCommand(transaction.NewContractAddress, transaction.BlockHeight));
@@ -67,7 +72,7 @@ public class ProcessGovernanceDeploymentTransactionCommandHandler : IRequestHand
 
             // Get and/or create vault
             var vault = await _mediator.Send(new CreateVaultCommand(stakingTokenSummary.Vault.GetValueOrDefault(),
-                                                                    stakingTokenId, transaction.From, transaction.BlockHeight));
+                                                                    stakingTokenId, transaction.BlockHeight));
 
             // Get and/or create mining governance
             var miningGovernanceId = await _mediator.Send(new CreateMiningGovernanceCommand(stakingTokenSummary.MiningGovernance.GetValueOrDefault(),

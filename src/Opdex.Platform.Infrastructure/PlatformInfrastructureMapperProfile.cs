@@ -19,10 +19,8 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
-using Opdex.Platform.Domain.Models.TransactionLogs.VaultGovernances;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 using Opdex.Platform.Domain.Models.Transactions;
-using Opdex.Platform.Domain.Models.VaultGovernances;
 using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
@@ -36,7 +34,6 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using System;
@@ -56,7 +53,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<TokenEntity, Token>()
-            .ConstructUsing(src => new Token(src.Id, src.Address, src.IsLpt, src.Name, src.Symbol, src.Decimals, src.Sats, src.TotalSupply, src.CreatedBlock, src.ModifiedBlock))
+            .ConstructUsing((src, ctx) => new Token(src.Id, src.Address, src.IsLpt, src.Name, src.Symbol, src.Decimals, src.Sats, src.TotalSupply, src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<TokenSummaryEntity, TokenSummary>()
@@ -174,14 +171,13 @@ public class PlatformInfrastructureMapperProfile : Profile
                                                              (SnapshotType)src.SnapshotTypeId, src.StartDate, src.EndDate))
             .ForAllOtherMembers(opt => opt.Ignore());
 
-        CreateMap<VaultEntity, Vault>()
-            .ConstructUsing(src => new Vault(src.Id, src.Address, src.TokenId, src.PendingOwner, src.Owner, src.Genesis, src.UnassignedSupply,
-                                             src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
-
         CreateMap<VaultCertificateEntity, VaultCertificate>()
             .ConstructUsing(src => new VaultCertificate(src.Id, src.VaultId, src.Owner, src.Amount, src.VestedBlock, src.Redeemed, src.Revoked,
                                                         src.CreatedBlock, src.ModifiedBlock))
+            .ForAllOtherMembers(opt => opt.Ignore());
+
+        CreateMap<VaultProposalCertificateEntity, VaultProposalCertificate>()
+            .ConstructUsing(src => new VaultProposalCertificate(src.Id, src.ProposalId, src.CertificateId, src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<AddressBalanceEntity, AddressBalance>()
@@ -197,23 +193,23 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<VaultProposalEntity, VaultProposal>()
-            .ConstructUsing(src => new VaultProposal(src.Id, src.PublicId, src.VaultGovernanceId, src.Creator, src.Wallet, src.Amount, src.Description,
+            .ConstructUsing(src => new VaultProposal(src.Id, src.PublicId, src.VaultId, src.Creator, src.Wallet, src.Amount, src.Description,
                                                      (VaultProposalType)src.ProposalTypeId, (VaultProposalStatus)src.ProposalStatusId, src.Expiration,
                                                      src.YesAmount, src.NoAmount, src.PledgeAmount, src.Approved, src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<VaultProposalPledgeEntity, VaultProposalPledge>()
-            .ConstructUsing(src => new VaultProposalPledge(src.Id, src.VaultGovernanceId, src.ProposalId, src.Pledger, src.Pledge, src.Balance,
+            .ConstructUsing(src => new VaultProposalPledge(src.Id, src.VaultId, src.ProposalId, src.Pledger, src.Pledge, src.Balance,
                                                            src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<VaultProposalVoteEntity, VaultProposalVote>()
-            .ConstructUsing(src => new VaultProposalVote(src.Id, src.VaultGovernanceId, src.ProposalId, src.Voter, src.Vote, src.Balance, src.InFavor,
+            .ConstructUsing(src => new VaultProposalVote(src.Id, src.VaultId, src.ProposalId, src.Voter, src.Vote, src.Balance, src.InFavor,
                                                          src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
-        CreateMap<VaultGovernanceEntity, VaultGovernance>()
-            .ConstructUsing(src => new VaultGovernance(src.Id, src.Address, src.TokenId, src.UnassignedSupply, src.VestingDuration, src.ProposedSupply,
+        CreateMap<VaultEntity, Vault>()
+            .ConstructUsing(src => new Vault(src.Id, src.Address, src.TokenId, src.UnassignedSupply, src.VestingDuration, src.ProposedSupply,
                                                        src.TotalPledgeMinimum, src.TotalVoteMinimum, src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -258,13 +254,11 @@ public class PlatformInfrastructureMapperProfile : Profile
                     (int)TransactionLogType.NominationLog => new NominationLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
 
                     // Vault
-                    (int)TransactionLogType.SetPendingVaultOwnershipLog => new SetPendingVaultOwnershipLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                    (int)TransactionLogType.ClaimPendingVaultOwnershipLog => new ClaimPendingVaultOwnershipLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                     (int)TransactionLogType.CreateVaultCertificateLog => new CreateVaultCertificateLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                     (int)TransactionLogType.RevokeVaultCertificateLog => new RevokeVaultCertificateLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                     (int)TransactionLogType.RedeemVaultCertificateLog => new RedeemVaultCertificateLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
 
-                    // Vault Governance
+                    // Vault
                     (int)TransactionLogType.CompleteVaultProposalLog => new CompleteVaultProposalLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                     (int)TransactionLogType.CreateVaultProposalLog => new CreateVaultProposalLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                     (int)TransactionLogType.VaultProposalPledgeLog => new VaultProposalPledgeLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
@@ -319,13 +313,11 @@ public class PlatformInfrastructureMapperProfile : Profile
                     nameof(RewardMiningPoolLog) => new RewardMiningPoolLog(src.Log.Data, src.Address, src.SortOrder),
 
                     // Vaults
-                    nameof(SetPendingVaultOwnershipLog) => new SetPendingVaultOwnershipLog(src.Log.Data, src.Address, src.SortOrder),
-                    nameof(ClaimPendingVaultOwnershipLog) => new ClaimPendingVaultOwnershipLog(src.Log.Data, src.Address, src.SortOrder),
                     nameof(CreateVaultCertificateLog) => new CreateVaultCertificateLog(src.Log.Data, src.Address, src.SortOrder),
                     nameof(RevokeVaultCertificateLog) => new RevokeVaultCertificateLog(src.Log.Data, src.Address, src.SortOrder),
                     nameof(RedeemVaultCertificateLog) => new RedeemVaultCertificateLog(src.Log.Data, src.Address, src.SortOrder),
 
-                    // Vault Governance
+                    // Vault
                     nameof(CompleteVaultProposalLog) => new CompleteVaultProposalLog(src.Log.Data, src.Address, src.SortOrder),
                     nameof(CreateVaultProposalLog) => new CreateVaultProposalLog(src.Log.Data, src.Address, src.SortOrder),
                     nameof(VaultProposalPledgeLog) => new VaultProposalPledgeLog(src.Log.Data, src.Address, src.SortOrder),
@@ -615,14 +607,10 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.LogTypeId, opt => opt.MapFrom(src => (int)src.LogType))
             .ForAllOtherMembers(opt => opt.Ignore());
 
-        CreateMap<Vault, VaultEntity>()
+        CreateMap<VaultProposalCertificate, VaultProposalCertificateEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
-            .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
-            .ForMember(dest => dest.PendingOwner, opt => opt.MapFrom(src => src.PendingOwner))
-            .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
-            .ForMember(dest => dest.Genesis, opt => opt.MapFrom(src => src.Genesis))
-            .ForMember(dest => dest.UnassignedSupply, opt => opt.MapFrom(src => src.UnassignedSupply))
+            .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
+            .ForMember(dest => dest.CertificateId, opt => opt.MapFrom(src => src.CertificateId))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
@@ -669,7 +657,7 @@ public class PlatformInfrastructureMapperProfile : Profile
         CreateMap<VaultProposal, VaultProposalEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.PublicId, opt => opt.MapFrom(src => src.PublicId))
-            .ForMember(dest => dest.VaultGovernanceId, opt => opt.MapFrom(src => src.VaultGovernanceId))
+            .ForMember(dest => dest.VaultId, opt => opt.MapFrom(src => src.VaultId))
             .ForMember(dest => dest.Creator, opt => opt.MapFrom(src => src.Creator))
             .ForMember(dest => dest.Wallet, opt => opt.MapFrom(src => src.Wallet))
             .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
@@ -687,7 +675,7 @@ public class PlatformInfrastructureMapperProfile : Profile
 
         CreateMap<VaultProposalPledge, VaultProposalPledgeEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.VaultGovernanceId, opt => opt.MapFrom(src => src.VaultGovernanceId))
+            .ForMember(dest => dest.VaultId, opt => opt.MapFrom(src => src.VaultId))
             .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
             .ForMember(dest => dest.Pledger, opt => opt.MapFrom(src => src.Pledger))
             .ForMember(dest => dest.Pledge, opt => opt.MapFrom(src => src.Pledge))
@@ -698,7 +686,7 @@ public class PlatformInfrastructureMapperProfile : Profile
 
         CreateMap<VaultProposalVote, VaultProposalVoteEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.VaultGovernanceId, opt => opt.MapFrom(src => src.VaultGovernanceId))
+            .ForMember(dest => dest.VaultId, opt => opt.MapFrom(src => src.VaultId))
             .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
             .ForMember(dest => dest.Voter, opt => opt.MapFrom(src => src.Voter))
             .ForMember(dest => dest.Vote, opt => opt.MapFrom(src => src.Vote))
@@ -708,7 +696,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
-        CreateMap<VaultGovernance, VaultGovernanceEntity>()
+        CreateMap<Vault, VaultEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
             .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
