@@ -48,7 +48,7 @@ public class CreateCrsTokenSnapshotsCommandHandler : IRequestHandler<CreateCrsTo
 
         var latestSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crsId, CrsMarketId, request.BlockTime, SnapshotType.Minute));
 
-        if (latestSnapshot.EndDate > request.BlockTime) return true;
+        if (latestSnapshot.Id > 0) return true;
 
         var price = await _mediator.Send(new RetrieveCmcStraxPriceQuery(request.BlockTime));
 

@@ -31,11 +31,10 @@ public class ProcessGovernanceDeploymentTransactionCommandHandler : IRequestHand
     {
         try
         {
-            // Hosted environments would have indexed transaction already, local would need to reach out to Cirrus to get receipt
-            var transaction = await _mediator.Send(new RetrieveTransactionByHashQuery(request.TxHash, findOrThrow: false)) ??
-                              await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash));
+            var transaction = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), CancellationToken.None) ??
+                              await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), CancellationToken.None);
 
-            if (transaction == null) return Unit.Value;
+            if (transaction == null || transaction.Id > 0) return Unit.Value;
 
             // Hosted environments would not be null, local environments would be null
             var block = await _mediator.Send(new RetrieveBlockByHeightQuery(transaction.BlockHeight, findOrThrow: false));

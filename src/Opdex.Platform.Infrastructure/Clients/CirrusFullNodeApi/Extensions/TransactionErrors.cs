@@ -117,9 +117,6 @@ public static class TransactionErrors
         private const string FailedVaultDistribution = "FAILED_VAULT_DISTRIBUTION";
         private const string NominationPeriodActive = "NOMINATION_PERIOD_ACTIVE";
         private const string TokenDistributionRequired = "TOKEN_DISTRIBUTION_REQUIRED";
-        private const string InvalidCertificateHolder = "INVALID_CERTIFICATE_HOLDER";
-        private const string TokensBurned = "TOKENS_BURNED";
-        private const string CertificateLimitReached = "CERTIFICATE_LIMIT_REACHED";
         private const string CertificateExists = "CERTIFICATE_EXISTS";
         private const string InsufficientVaultSupply = "INSUFFICIENT_VAULT_SUPPLY";
         private const string InvalidCertificate = "INVALID_CERTIFICATE";

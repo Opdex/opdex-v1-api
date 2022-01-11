@@ -24,7 +24,7 @@ namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("vault-governances")]
+[Route("vaults")]
 public class VaultsController : ControllerBase
 {
     private readonly IApplicationContext _context;

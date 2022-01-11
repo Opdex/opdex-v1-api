@@ -177,7 +177,7 @@ public class CreateCrsTokenSnapshotsCommandHandlerTests
         const ulong blockHeight = 10;
         var token = new Token(1, Address.Cirrus, false, TokenConstants.Cirrus.Name, TokenConstants.Cirrus.Symbol, TokenConstants.Cirrus.Decimals,
                               TokenConstants.Cirrus.Sats, TokenConstants.Cirrus.TotalSupply, blockHeight, blockHeight);
-        var latestSnapshot = new TokenSnapshot(1, 2, 3, new Ohlc<decimal>(), SnapshotType.Daily, latestSnapshotTime, latestSnapshotTime, latestSnapshotTime);
+        var latestSnapshot = new TokenSnapshot(2, 3, SnapshotType.Daily, latestSnapshotTime);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), CancellationToken.None))
             .ReturnsAsync(token);
@@ -205,7 +205,7 @@ public class CreateCrsTokenSnapshotsCommandHandlerTests
         const ulong blockHeight = 10;
         var token = new Token(1, Address.Cirrus, false, TokenConstants.Cirrus.Name, TokenConstants.Cirrus.Symbol, TokenConstants.Cirrus.Decimals,
                               TokenConstants.Cirrus.Sats, TokenConstants.Cirrus.TotalSupply, blockHeight, blockHeight);
-        var latestSnapshot = new TokenSnapshot(1, 2, 3, new Ohlc<decimal>(), SnapshotType.Daily, latestSnapshotTime, latestSnapshotTime, latestSnapshotTime);
+        var latestSnapshot = new TokenSnapshot(2, 3,SnapshotType.Daily, latestSnapshotTime);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), CancellationToken.None))
             .ReturnsAsync(token);
@@ -230,7 +230,7 @@ public class CreateCrsTokenSnapshotsCommandHandlerTests
         const ulong blockHeight = 10;
         var token = new Token(1, Address.Cirrus, false, TokenConstants.Cirrus.Name, TokenConstants.Cirrus.Symbol, TokenConstants.Cirrus.Decimals,
                               TokenConstants.Cirrus.Sats, TokenConstants.Cirrus.TotalSupply, blockHeight, blockHeight);
-        var latestSnapshot = new TokenSnapshot(1, 2, 3, new Ohlc<decimal>(), SnapshotType.Daily, latestSnapshotTime, latestSnapshotTime, latestSnapshotTime);
+        var latestSnapshot = new TokenSnapshot(2, 3, SnapshotType.Minute, latestSnapshotTime);
         const decimal price = 1.1m;
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), CancellationToken.None))
@@ -271,7 +271,7 @@ public class CreateCrsTokenSnapshotsCommandHandlerTests
         const ulong blockHeight = 10;
         var token = new Token(1, Address.Cirrus, false, TokenConstants.Cirrus.Name, TokenConstants.Cirrus.Symbol, TokenConstants.Cirrus.Decimals,
                                  TokenConstants.Cirrus.Sats, TokenConstants.Cirrus.TotalSupply, blockHeight, blockHeight);
-        var latestSnapshot = new TokenSnapshot(1, 2, 3, new Ohlc<decimal>(), SnapshotType.Daily, latestSnapshotTime, latestSnapshotTime, latestSnapshotTime);
+        var latestSnapshot = new TokenSnapshot(2, 3, SnapshotType.Daily, latestSnapshotTime);
         const decimal price = 1.1m;
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), CancellationToken.None))
