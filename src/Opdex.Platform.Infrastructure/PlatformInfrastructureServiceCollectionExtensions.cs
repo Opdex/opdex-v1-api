@@ -101,8 +101,7 @@ using Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Mining;
 using Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Staking;
 using Opdex.Platform.Infrastructure.Clients.SignalR.Handlers;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Mempool;
-using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Mempool;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MiningGovernances.Nominations;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Permissions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Summaries;
@@ -233,6 +232,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<SelectDeployersByModifiedBlockQuery, IEnumerable<Deployer>>, SelectDeployersByModifiedBlockQueryHandler>();
 
         // Market
+        services.AddTransient<IRequestHandler<SelectMarketsWithFilterQuery, IEnumerable<Market>>, SelectMarketsWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<SelectMarketSnapshotWithFilterQuery, MarketSnapshot>, SelectMarketSnapshotWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<SelectMarketByAddressQuery, Market>, SelectMarketByAddressQueryHandler>();
         services.AddTransient<IRequestHandler<SelectMarketSnapshotsWithFilterQuery, IEnumerable<MarketSnapshot>>, SelectMarketSnapshotsWithFilterQueryHandler>();
@@ -342,10 +342,6 @@ public static class PlatformInfrastructureServiceCollectionExtensions
             .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
             .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
 
-        services.AddHttpClient<IMempoolModule, MempoolModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
-            .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
-            .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
-
         services.AddHttpClient<INodeModule, NodeModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
             .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
             .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
@@ -358,7 +354,6 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<CallCirrusGetBestBlockReceiptQuery, BlockReceipt>, CallCirrusGetBestBlockReceiptQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetBlockReceiptByHashQuery, BlockReceipt>, CallCirrusGetBlockReceiptByHashQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetTransactionByHashQuery, Transaction>, CallCirrusGetTransactionByHashQueryHandler>();
-        services.AddTransient<IRequestHandler<CallCirrusGetExistsInMempoolQuery, bool>, CallCirrusGetExistsInMempoolQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetRawTransactionQuery, RawTransactionDto>, CallCirrusGetRawTransactionQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetStandardTokenContractSummaryQuery, StandardTokenContractSummary>, CallCirrusGetStandardTokenContractSummaryQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetMiningPoolRewardPerTokenMiningQuery, UInt256>, CallCirrusGetMiningPoolRewardPerTokenMiningQueryHandler>();

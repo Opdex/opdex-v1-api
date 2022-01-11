@@ -222,6 +222,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<GetAdminByAddressQuery, AdminDto>, GetAdminByAddressQueryHandler>();
 
         // Markets
+        services.AddTransient<IRequestHandler<GetMarketsWithFilterQuery, MarketsDto>, GetMarketsWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<GetMarketByAddressQuery, MarketDto>, GetMarketByAddressQueryHandler>();
         services.AddTransient<IRequestHandler<GetMarketSnapshotsWithFilterQuery, MarketSnapshotsDto>, GetMarketSnapshotsWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<GetMarketPermissionsForAddressQuery, IEnumerable<MarketPermissionType>>, GetMarketPermissionsForAddressQueryHandler>();
@@ -437,6 +438,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<RetrieveDeployerContractSummaryQuery, DeployerContractSummary>, RetrieveDeployerContractSummaryQueryHandler>();
 
         // Markets
+        services.AddTransient<IRequestHandler<RetrieveMarketsWithFilterQuery, IEnumerable<Market>>, RetrieveMarketsWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveMarketSnapshotWithFilterQuery, MarketSnapshot>, RetrieveMarketSnapshotWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveMarketSnapshotsWithFilterQuery, IEnumerable<MarketSnapshot>>, RetrieveMarketSnapshotsWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveMarketByAddressQuery, Market>, RetrieveMarketByAddressQueryHandler>();
@@ -525,7 +527,6 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<RetrieveTransactionsWithFilterQuery, IEnumerable<Transaction>>, RetrieveTransactionsWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveTransactionLogsByTransactionIdQuery, IEnumerable<TransactionLog>>, RetrieveTransactionLogsByTransactionIdQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveTransactionByHashQuery, Transaction>, RetrieveTransactionByHashQueryHandler>();
-        services.AddTransient<IRequestHandler<RetrieveCirrusExistsInMempoolQuery, bool>, RetrieveCirrusExistsInMempoolQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveCirrusUnverifiedTransactionSenderByHashQuery, Address>, RetrieveCirrusUnverifiedTransactionSenderByHashQueryHandler>();
 
         // Address Balances

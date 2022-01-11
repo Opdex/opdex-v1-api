@@ -1,10 +1,8 @@
-using FluentAssertions;
 using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Handlers.Transactions;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Mempool;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,13 +22,11 @@ public class MakeNotifyUserOfTransactionBroadcastCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_TransactionWasFoundInMempool_AttemptToNotifyUser()
+    public async Task Handle_Notify_Send()
     {
         // Arrange
         var request = new MakeNotifyUserOfTransactionBroadcastCommand("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", new Sha256(43594389025));
         var cancellationToken = new CancellationTokenSource().Token;
-
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetExistsInMempoolQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
         // Act
         await _handler.Handle(request, cancellationToken);

@@ -259,6 +259,11 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
             .ForAllOtherMembers(opt => opt.Ignore());
 
+        CreateMap<MarketsDto, MarketsResponseModel>()
+            .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Markets))
+            .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor))
+            .ForAllOtherMembers(opt => opt.Ignore());
+
         CreateMap<MarketSummaryDto, MarketSummaryResponseModel>()
             .ForMember(dest => dest.LiquidityUsd, opt => opt.MapFrom(src => src.LiquidityUsd))
             .ForMember(dest => dest.DailyLiquidityUsdChangePercent, opt => opt.MapFrom(src => src.DailyLiquidityUsdChangePercent))

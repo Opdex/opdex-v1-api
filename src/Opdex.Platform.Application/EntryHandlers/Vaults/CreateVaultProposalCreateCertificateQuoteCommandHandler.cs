@@ -19,9 +19,10 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults;
 public class CreateVaultProposalCreateCertificateQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateVaultProposalCreateCertificateQuoteCommand>
 {
     private const string MethodName = VaultConstants.Methods.CreateNewCertificateProposal;
+    private readonly FixedDecimal _deposit = FixedDecimal.Parse("500.00000000");
 
-    public CreateVaultProposalCreateCertificateQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
-                                                                   IMediator mediator,
+    public CreateVaultProposalCreateCertificateQuoteCommandHandler(IMediator mediator,
+                                                                   IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
                                                                    OpdexConfiguration config) : base(quoteAssembler, mediator, config)
     {
     }
@@ -39,7 +40,7 @@ public class CreateVaultProposalCreateCertificateQuoteCommandHandler : BaseTrans
             new TransactionQuoteRequestParameter("Description", request.Description),
         };
 
-        var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.Vault, FixedDecimal.Zero, MethodName, _callbackEndpoint, requestParameters);
+        var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.Vault, _deposit, MethodName, _callbackEndpoint, requestParameters);
 
         return await ExecuteAsync(quoteRequest, cancellationToken);
     }

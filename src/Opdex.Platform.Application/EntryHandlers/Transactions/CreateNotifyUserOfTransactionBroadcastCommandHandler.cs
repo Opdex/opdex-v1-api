@@ -20,9 +20,11 @@ public class CreateNotifyUserOfTransactionBroadcastCommandHandler : IRequestHand
 
     public async Task<bool> Handle(CreateNotifyUserOfTransactionBroadcastCommand request, CancellationToken cancellationToken)
     {
-        var existsInMempool = await _mediator.Send(new RetrieveCirrusExistsInMempoolQuery(request.TransactionHash), cancellationToken);
-        if (!existsInMempool) return false;
-        
+        // if transaction is already indexed, do not notify
+        var transaction = await _mediator.Send(new RetrieveTransactionByHashQuery(request.TransactionHash, false), cancellationToken);
+        if (transaction is not null) return false;
+
+        // find transaction on node
         var sender = await _mediator.Send(new RetrieveCirrusUnverifiedTransactionSenderByHashQuery(request.TransactionHash), cancellationToken);
         if (sender == Address.Empty) return false;
 
