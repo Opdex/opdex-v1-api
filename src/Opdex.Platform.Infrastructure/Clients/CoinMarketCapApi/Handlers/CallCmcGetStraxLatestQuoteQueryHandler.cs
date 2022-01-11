@@ -25,7 +25,7 @@ public class CallCmcGetStraxLatestQuoteQueryHandler : IRequestHandler<CallCmcGet
 
         if (quote?.Data == null || !quote.Data.TryGetValue(CmcTokens.STRAX.ToString(), out var tokenDetails))
         {
-            _logger.LogError($"STRAX quote not found at {DateTime.UtcNow}");
+            _logger.LogError("STRAX USD price not found");
             return 0m;
         }
 
@@ -35,7 +35,7 @@ public class CallCmcGetStraxLatestQuoteQueryHandler : IRequestHandler<CallCmcGet
             return quotePrice.Price;
         }
 
-        _logger.LogError($"STRAX USD price not found at {DateTime.UtcNow}");
+        _logger.LogError("STRAX USD price not found");
         return 0m;
     }
 }

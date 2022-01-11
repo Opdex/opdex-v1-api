@@ -14,9 +14,12 @@ public class CallCmcGetStraxHistoricalQuoteQuery : IRequest<decimal>
     /// <param name="dateTime">The datetime to get the price at.</param>
     public CallCmcGetStraxHistoricalQuoteQuery(DateTime dateTime)
     {
-        DateTime = !dateTime.Equals(default)
-            ? dateTime
-            : throw new ArgumentOutOfRangeException(nameof(dateTime), "CMC quote datetime must be set.");
+        if (dateTime == default || dateTime > DateTime.UtcNow)
+        {
+            throw new ArgumentOutOfRangeException(nameof(dateTime), "Datetime must be set and in the past");
+        }
+
+        DateTime = dateTime;
     }
 
     public DateTime DateTime { get; }
