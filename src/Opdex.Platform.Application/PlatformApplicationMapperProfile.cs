@@ -235,6 +235,7 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
             .ForMember(dest => dest.NewContractAddress, opt => opt.MapFrom(src => src.NewContractAddress))
             .ForMember(dest => dest.Success, opt => opt.MapFrom(src => src.Success))
+            .ForMember(dest => dest.Error, opt => opt.MapFrom(src => src.Error))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<TransactionLog, TransactionEventDto>()

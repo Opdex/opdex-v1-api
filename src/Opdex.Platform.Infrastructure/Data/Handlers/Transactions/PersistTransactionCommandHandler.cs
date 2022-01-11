@@ -21,6 +21,7 @@ public class PersistTransactionCommandHandler : IRequestHandler<PersistTransacti
                 {nameof(TransactionEntity.Hash)},
                 {nameof(TransactionEntity.GasUsed)},
                 {nameof(TransactionEntity.Success)},
+                {nameof(TransactionEntity.Error)},
                 {nameof(TransactionEntity.Block)}
               ) VALUES (
                 @{nameof(TransactionEntity.From)},
@@ -29,6 +30,7 @@ public class PersistTransactionCommandHandler : IRequestHandler<PersistTransacti
                 @{nameof(TransactionEntity.Hash)},
                 @{nameof(TransactionEntity.GasUsed)},
                 @{nameof(TransactionEntity.Success)},
+                @{nameof(TransactionEntity.Error)},
                 @{nameof(TransactionEntity.Block)}
               );
               SELECT LAST_INSERT_ID();";

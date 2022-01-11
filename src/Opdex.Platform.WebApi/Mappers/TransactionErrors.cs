@@ -1,7 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Extensions;
+namespace Opdex.Platform.WebApi.Mappers;
 
 public static class TransactionErrors
 {

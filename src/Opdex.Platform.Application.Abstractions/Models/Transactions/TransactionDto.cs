@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Opdex.Platform.Application.Abstractions.Models.Transactions;
 
-public class TransactionDto
+public class TransactionDto : ITransactionDto
 {
     public TransactionDto()
     {
@@ -13,6 +13,7 @@ public class TransactionDto
     }
 
     public bool Success { get; set; }
+    public string Error { get; set; }
     public Sha256 Hash { get; set; }
     public Address NewContractAddress { get; set; }
     public BlockDto BlockDto { get; set; }

@@ -49,7 +49,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<TransactionEntity, Transaction>()
-            .ConstructUsing(src => new Transaction(src.Id, src.Hash, src.Block, src.GasUsed, src.From, src.To, src.Success, src.NewContractAddress))
+            .ConstructUsing(src => new Transaction(src.Id, src.Hash, src.Block, src.GasUsed, src.From, src.To, src.Success, src.Error, src.NewContractAddress))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<TokenEntity, Token>()
@@ -596,6 +596,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.GasUsed, opt => opt.MapFrom(src => src.GasUsed))
             .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
             .ForMember(dest => dest.Success, opt => opt.MapFrom(src => src.Success))
+            .ForMember(dest => dest.Error, opt => opt.MapFrom(src => src.Error))
             .ForMember(dest => dest.NewContractAddress, opt => opt.MapFrom(src => src.NewContractAddress))
             .ForAllOtherMembers(opt => opt.Ignore());
 

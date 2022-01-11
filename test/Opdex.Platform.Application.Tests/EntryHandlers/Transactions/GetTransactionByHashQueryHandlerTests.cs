@@ -54,7 +54,7 @@ public class GetTransactionByHashQueryHandlerTests
     {
         // Arrange
         var request = new GetTransactionByHashQuery(new Sha256(5340958239));
-        var transaction = new Transaction(1, new Sha256(5340958239), 2, 3, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM");
+        var transaction = new Transaction(1, new Sha256(5340958239), 2, 3, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, null, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM");
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionByHashQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(transaction);

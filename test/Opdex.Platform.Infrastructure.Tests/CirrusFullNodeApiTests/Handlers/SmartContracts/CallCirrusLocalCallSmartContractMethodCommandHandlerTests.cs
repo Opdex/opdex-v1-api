@@ -30,7 +30,7 @@ public class CallCirrusLocalCallSmartContractMethodCommandHandlerTests
 
         var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
-        _handler = new CallCirrusLocalCallSmartContractMethodCommandHandler(_smartContractsModuleMock.Object, mapper, new NullLoggerFactory());
+        _handler = new CallCirrusLocalCallSmartContractMethodCommandHandler(_smartContractsModuleMock.Object, mapper, new NullLogger<CallCirrusLocalCallSmartContractMethodCommandHandler>());
     }
 
     [Fact]
@@ -160,7 +160,7 @@ public class CallCirrusLocalCallSmartContractMethodCommandHandlerTests
         var response = await _handler.Handle(new CallCirrusLocalCallSmartContractMethodCommand(request), CancellationToken.None);
 
         // Assert
-        response.Error.Should().NotBe(error);
+        response.Error.Should().Be(error);
         response.Request.Should().BeEquivalentTo(request);
         response.Result.Should().BeNull();
         response.Logs.Should().BeEmpty();

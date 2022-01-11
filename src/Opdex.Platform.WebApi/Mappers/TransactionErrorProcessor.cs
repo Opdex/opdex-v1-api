@@ -1,9 +1,8 @@
 using Microsoft.Extensions.Logging;
-using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Extensions;
 using System;
 using System.Collections.Generic;
 
-namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers;
+namespace Opdex.Platform.WebApi.Mappers;
 
 /// <summary>
 /// Processor to log and parse transaction errors into user-friendly messages.
@@ -49,7 +48,7 @@ internal class TransactionErrorProcessor
 
         using (_logger.BeginScope(errorProperties))
         {
-            _logger.LogWarning("Transaction error occurred.");
+            _logger.LogWarning("Transaction error occurred");
         }
 
         return friendlyError ?? "Unexpected error occurred.";

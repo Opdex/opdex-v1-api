@@ -442,6 +442,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))
             .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
             .ForMember(dest => dest.Events, opt => opt.MapFrom(src => src.Events))
+            .AfterMap<TransactionErrorMappingAction>()
             .ForAllOtherMembers(opt => opt.Ignore());
 
         // Transaction Events
@@ -616,10 +617,10 @@ public class PlatformWebApiMapperProfile : Profile
 
         CreateMap<TransactionQuoteDto, TransactionQuoteResponseModel>()
             .ForMember(dest => dest.Result, opt => opt.MapFrom(src => src.Result))
-            .ForMember(dest => dest.Error, opt => opt.MapFrom(src => src.Error))
             .ForMember(dest => dest.GasUsed, opt => opt.MapFrom(src => src.GasUsed))
             .ForMember(dest => dest.Events, opt => opt.MapFrom(src => src.Events))
             .ForMember(dest => dest.Request, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Request).Base64Encode()))
+            .AfterMap<TransactionErrorMappingAction>()
             .ForAllOtherMembers(opt => opt.Ignore());
 
         // Vaults
