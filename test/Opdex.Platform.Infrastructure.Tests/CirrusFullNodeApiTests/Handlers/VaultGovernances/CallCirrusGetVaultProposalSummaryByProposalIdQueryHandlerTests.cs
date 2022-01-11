@@ -108,6 +108,7 @@ public class CallCirrusGetVaultProposalSummaryByProposalIdQueryHandlerTests
         const ulong blockHeight = 10;
 
         var expectedSummary = new ProposalResponse {
+            Creator = "PXNMjmivLgqqARwmH1iT1GLU9EsMroh6zX",
             Amount = 100,
             Wallet = "PU9EsMroh6zXXNMjmivLgqqARwmH1iT1GL",
             Type = 1,
@@ -127,6 +128,7 @@ public class CallCirrusGetVaultProposalSummaryByProposalIdQueryHandlerTests
         var response = await _handler.Handle(new CallCirrusGetVaultProposalSummaryByProposalIdQuery(vault, proposalId, blockHeight), CancellationToken.None);
 
         // Assert
+        response.Creator.Should().Be(expectedSummary.Creator);
         response.Amount.Should().Be(expectedSummary.Amount);
         response.Wallet.Should().Be(expectedSummary.Wallet);
         response.Type.Should().Be((VaultProposalType)expectedSummary.Type);
@@ -139,6 +141,7 @@ public class CallCirrusGetVaultProposalSummaryByProposalIdQueryHandlerTests
 
     private sealed class ProposalResponse
     {
+        public Address Creator { get; set; }
         public UInt256 Amount { get; set; }
         public Address Wallet { get; set; }
         public byte Type { get; set; }

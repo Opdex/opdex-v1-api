@@ -19,6 +19,7 @@ namespace Opdex.Platform.Application.EntryHandlers.VaultGovernances;
 public class CreateVaultProposalMinimumPledgeQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateVaultProposalMinimumPledgeQuoteCommand>
 {
     private const string MethodName = VaultGovernanceConstants.Methods.CreateTotalPledgeMinimumProposal;
+    private readonly FixedDecimal _deposit = FixedDecimal.Parse("500.00000000");
 
     public CreateVaultProposalMinimumPledgeQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
                                                                IMediator mediator,
@@ -38,7 +39,7 @@ public class CreateVaultProposalMinimumPledgeQuoteCommandHandler : BaseTransacti
             new TransactionQuoteRequestParameter("Description", request.Description),
         };
 
-        var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.Vault, FixedDecimal.Zero, MethodName, _callbackEndpoint, requestParameters);
+        var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.Vault, _deposit, MethodName, _callbackEndpoint, requestParameters);
 
         return await ExecuteAsync(quoteRequest, cancellationToken);
     }

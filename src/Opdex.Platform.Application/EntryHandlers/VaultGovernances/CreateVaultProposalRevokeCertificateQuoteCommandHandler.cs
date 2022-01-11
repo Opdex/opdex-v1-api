@@ -17,6 +17,7 @@ namespace Opdex.Platform.Application.EntryHandlers.VaultGovernances;
 public class CreateVaultProposalRevokeCertificateQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateVaultProposalRevokeCertificateQuoteCommand>
 {
     private const string MethodName = VaultGovernanceConstants.Methods.CreateRevokeCertificateProposal;
+    private readonly FixedDecimal _deposit = FixedDecimal.Parse("500.00000000");
 
     public CreateVaultProposalRevokeCertificateQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
                                                                    IMediator mediator,
@@ -35,7 +36,7 @@ public class CreateVaultProposalRevokeCertificateQuoteCommandHandler : BaseTrans
             new TransactionQuoteRequestParameter("Description", request.Description),
         };
 
-        var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.Vault, FixedDecimal.Zero, MethodName, _callbackEndpoint, requestParameters);
+        var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.Vault, _deposit, MethodName, _callbackEndpoint, requestParameters);
 
         return await ExecuteAsync(quoteRequest, cancellationToken);
     }
