@@ -6,7 +6,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Application.EntryHandlers.Vaults;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Domain.Models.Vaults;
 using System;
 using System.Threading;
@@ -31,29 +31,13 @@ public class CreateVaultCommandHandlerTests
     {
         // Arrange
         const  ulong tokenId = 1;
-        Address owner = "Poh6zXXNMU9EjmivLgqqARwmH1iT1GLsMr";
         const ulong blockHeight = 10;
 
         // Act
-        void Act() => new CreateVaultCommand(null, tokenId, owner, blockHeight);
+        void Act() => new CreateVaultCommand(null, tokenId, blockHeight);
 
         // Assert
         Assert.Throws<ArgumentNullException>(Act).Message.Contains("Vault address must be provided.");
-    }
-
-    [Fact]
-    public void CreateVaultCommand_InvalidOwner_ThrowsArgumentNullException()
-    {
-        // Arrange
-        Address vault = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
-        const  ulong tokenId = 1;
-        const ulong blockHeight = 10;
-
-        // Act
-        void Act() => new CreateVaultCommand(vault, tokenId, null, blockHeight);
-
-        // Assert
-        Assert.Throws<ArgumentNullException>(Act).Message.Contains("Owner address must be provided.");
     }
 
     [Theory]
@@ -62,11 +46,10 @@ public class CreateVaultCommandHandlerTests
     {
         // Arrange
         Address vault = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
-        Address owner = "Poh6zXXNMU9EjmivLgqqARwmH1iT1GLsMr";
         const ulong blockHeight = 10;
 
         // Act
-        void Act() => new CreateVaultCommand(vault, tokenId, owner, blockHeight);
+        void Act() => new CreateVaultCommand(vault, tokenId, blockHeight);
 
         // Assert
         Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Token Id must be greater than zero.");
@@ -78,10 +61,9 @@ public class CreateVaultCommandHandlerTests
         // Arrange
         Address vault = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
         const  ulong tokenId = 1;
-        Address owner = "Poh6zXXNMU9EjmivLgqqARwmH1iT1GLsMr";
 
         // Act
-        void Act() => new CreateVaultCommand(vault, tokenId, owner, 0);
+        void Act() => new CreateVaultCommand(vault, tokenId, 0);
 
         // Assert
         Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Block height must be greater than zero.");
@@ -93,13 +75,12 @@ public class CreateVaultCommandHandlerTests
         // Arrange
         Address vault = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
         const  ulong tokenId = 1;
-        Address owner = "Poh6zXXNMU9EjmivLgqqARwmH1iT1GLsMr";
         const ulong blockHeight = 10;
 
         // Act
         try
         {
-            await _handler.Handle(new CreateVaultCommand(vault, tokenId, owner, blockHeight), CancellationToken.None);
+            await _handler.Handle(new CreateVaultCommand(vault, tokenId, blockHeight), CancellationToken.None);
         }
         catch { }
 
@@ -115,21 +96,44 @@ public class CreateVaultCommandHandlerTests
         // Arrange
         Address vault = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
         const  ulong tokenId = 1;
-        Address owner = "Poh6zXXNMU9EjmivLgqqARwmH1iT1GLsMr";
         const ulong blockHeight = 10;
         const ulong vaultId = 100;
 
-        var expectedVault = new Vault(vaultId, vault, tokenId, Address.Empty, owner, 0ul, UInt256.Zero, blockHeight, blockHeight);
+        var expectedVault = new Vault(vaultId, vault, tokenId, 1, 2, 3, 4, 5, 6, 7);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedVault);
 
         // Act
-        var response = await _handler.Handle(new CreateVaultCommand(vault, tokenId, owner, blockHeight), CancellationToken.None);
+        var response = await _handler.Handle(new CreateVaultCommand(vault, tokenId, blockHeight), CancellationToken.None);
 
         // Assert
         response.Should().Be(vaultId);
         _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeVaultCommand>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task CreateVaultCommand_Sends_RetrieveVaultContractSummaryQuery()
+    {
+        // Arrange
+        Address vault = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
+        const  ulong tokenId = 1;
+        const ulong blockHeight = 10;
+
+        // Act
+        try
+        {
+            await _handler.Handle(new CreateVaultCommand(vault, tokenId, blockHeight), CancellationToken.None);
+        }
+        catch { }
+
+        // Assert
+        _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultContractSummaryQuery>(q => q.Vault == vault &&
+                                                                                                       q.BlockHeight == blockHeight &&
+                                                                                                       q.IncludeVestingDuration == true &&
+                                                                                                       q.IncludeTotalPledgeMinimum == true &&
+                                                                                                       q.IncludeTotalVoteMinimum == true),
+                                               It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -138,14 +142,32 @@ public class CreateVaultCommandHandlerTests
         // Arrange
         Address vault = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
         const  ulong tokenId = 1;
-        Address owner = "Poh6zXXNMU9EjmivLgqqARwmH1iT1GLsMr";
         const ulong blockHeight = 10;
+        const ulong vestingDuration = 10ul;
+        const ulong totalPledge = 20ul;
+        const ulong totalVote = 30ul;
+
+        var expectedSummary = new VaultContractSummary(blockHeight);
+        expectedSummary.SetVestingDuration(new SmartContractMethodParameter(vestingDuration));
+        expectedSummary.SetTotalPledgeMinimum(new SmartContractMethodParameter(totalPledge));
+        expectedSummary.SetTotalVoteMinimum(new SmartContractMethodParameter(totalVote));
+
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultContractSummaryQuery>(),
+                                              It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedSummary);
 
         // Act
-        await _handler.Handle(new CreateVaultCommand(vault, tokenId, owner, blockHeight), CancellationToken.None);
+        await _handler.Handle(new CreateVaultCommand(vault, tokenId, blockHeight), CancellationToken.None);
 
         // Assert
         _mediator.Verify(callTo => callTo.Send(It.Is<MakeVaultCommand>(q => q.Vault.Id == 0 &&
-                                                                            q.Refresh == false), It.IsAny<CancellationToken>()), Times.Once);
+                                                                                      q.Vault.Address == vault &&
+                                                                                      q.Vault.TokenId == tokenId &&
+                                                                                      q.Vault.VestingDuration == vestingDuration &&
+                                                                                      q.Vault.TotalPledgeMinimum == totalPledge &&
+                                                                                      q.Vault.TotalVoteMinimum == totalVote &&
+                                                                                      q.BlockHeight == blockHeight &&
+                                                                                      q.Refresh == false),
+                                               It.IsAny<CancellationToken>()), Times.Once);
     }
 }

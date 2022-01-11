@@ -7,9 +7,10 @@ public class VaultEntity : AuditEntity
 {
     public ulong Id { get; set; }
     public ulong TokenId { get; set; }
-    public Address PendingOwner { get; set; }
     public Address Address { get; set; }
-    public Address Owner { get; set; }
-    public ulong Genesis { get; set; }
     public UInt256 UnassignedSupply { get; set; }
+    public UInt256 ProposedSupply { get; set; }
+    public ulong VestingDuration { get; set; }
+    public ulong TotalPledgeMinimum { get; set; }
+    public ulong TotalVoteMinimum { get; set; }
 }

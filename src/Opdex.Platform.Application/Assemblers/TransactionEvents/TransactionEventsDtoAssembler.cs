@@ -7,7 +7,7 @@ using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Markets;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Tokens;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vault;
-using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vaults;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningGovernances;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
@@ -15,7 +15,6 @@ using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
-using Opdex.Platform.Domain.Models.TransactionLogs.VaultGovernances;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 using System;
 using System.Collections.Generic;
@@ -91,13 +90,9 @@ public class TransactionEventsDtoAssembler : IModelAssembler<IEnumerable<Transac
                 TransactionLogType.RewardMiningPoolLog => _mapper.Map<RewardMiningPoolEventDto>((RewardMiningPoolLog)log),
 
                 // Vaults
-                TransactionLogType.ClaimPendingVaultOwnershipLog => _mapper.Map<ClaimPendingVaultOwnershipEventDto>((ClaimPendingVaultOwnershipLog)log),
-                TransactionLogType.SetPendingVaultOwnershipLog => _mapper.Map<SetPendingVaultOwnershipEventDto>((SetPendingVaultOwnershipLog)log),
                 TransactionLogType.CreateVaultCertificateLog => _mapper.Map<CreateVaultCertificateEventDto>((CreateVaultCertificateLog)log),
                 TransactionLogType.RedeemVaultCertificateLog => _mapper.Map<RedeemVaultCertificateEventDto>((RedeemVaultCertificateLog)log),
                 TransactionLogType.RevokeVaultCertificateLog => _mapper.Map<RevokeVaultCertificateEventDto>((RevokeVaultCertificateLog)log),
-
-                // Vault Governance
                 TransactionLogType.CreateVaultProposalLog => _mapper.Map<CreateVaultProposalEventDto>((CreateVaultProposalLog)log),
                 TransactionLogType.CompleteVaultProposalLog => _mapper.Map<CompleteVaultProposalEventDto>((CompleteVaultProposalLog)log),
                 TransactionLogType.VaultProposalPledgeLog => _mapper.Map<VaultProposalPledgeEventDto>((VaultProposalPledgeLog)log),

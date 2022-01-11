@@ -137,7 +137,7 @@ public class IndexerBackgroundService : BackgroundService
                 }
                 catch(MaximumReorgException ex)
                 {
-                    _logger.LogCritical("Encountered a reorg which exceeds max reorg limit");
+                    _logger.LogCritical(ex, "Encountered a reorg which exceeds max reorg limit");
                 }
                 catch (Exception ex)
                 {

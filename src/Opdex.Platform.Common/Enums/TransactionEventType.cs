@@ -40,14 +40,12 @@ public enum TransactionEventType
     CreateVaultCertificateEvent = 23,
     RevokeVaultCertificateEvent = 24,
     RedeemVaultCertificateEvent = 25,
-    SetPendingVaultOwnershipEvent = 26,
-    ClaimPendingVaultOwnershipEvent = 27,
 
-    // VaultGovernance
-    CreateVaultProposalEvent = 28,
-    CompleteVaultProposalEvent = 29,
-    VaultProposalPledgeEvent = 30,
-    VaultProposalWithdrawPledgeEvent = 31,
-    VaultProposalVoteEvent = 32,
-    VaultProposalWithdrawVoteEvent = 33
+    // Vault
+    CreateVaultProposalEvent = 26,
+    CompleteVaultProposalEvent = 27,
+    VaultProposalPledgeEvent = 28,
+    VaultProposalWithdrawPledgeEvent = 29,
+    VaultProposalVoteEvent = 30,
+    VaultProposalWithdrawVoteEvent = 31
 }

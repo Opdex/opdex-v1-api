@@ -1,4 +1,3 @@
-using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Transactions;
 using System;
@@ -9,70 +8,44 @@ public class VaultContractSummary
 {
     public VaultContractSummary(ulong blockHeight)
     {
-        if (blockHeight == 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
-        }
-
+        if (blockHeight == 0) throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
         BlockHeight = blockHeight;
     }
 
     public ulong BlockHeight { get; }
-    public Address? LockedToken { get; private set; }
-    public ulong? Genesis { get; private set; }
-    public Address? PendingOwner { get; private set; }
-    public Address? Owner { get; private set; }
+    public ulong? VestingDuration { get; private set; }
     public UInt256? UnassignedSupply { get; private set; }
+    public UInt256? ProposedSupply { get; private set; }
+    public ulong? TotalPledgeMinimum { get; private set; }
+    public ulong? TotalVoteMinimum { get; private set; }
 
-    public void SetLockedToken(SmartContractMethodParameter value)
+    public void SetUnassignedSupply(SmartContractMethodParameter unassignedSupplyParameter)
     {
-        var token = value.Parse<Address>();
-
-        if (token == Address.Empty)
-        {
-            throw new ArgumentNullException(nameof(token), "Token address must be provided.");
-        }
-
-        LockedToken = token;
+        if (unassignedSupplyParameter is null) throw new ArgumentNullException(nameof(unassignedSupplyParameter));
+        UnassignedSupply = unassignedSupplyParameter.Parse<UInt256>();
     }
 
-    public void SetGenesis(SmartContractMethodParameter value)
+    public void SetProposedSupply(SmartContractMethodParameter proposedSupplyParameter)
     {
-        var genesis = value.Parse<ulong>();
-
-        // Zero is valid, nothing to check
-        Genesis = genesis;
+        if (proposedSupplyParameter is null) throw new ArgumentNullException(nameof(proposedSupplyParameter));
+        ProposedSupply = proposedSupplyParameter.Parse<UInt256>();
     }
 
-    public void SetPendingOwner(SmartContractMethodParameter value)
+    public void SetTotalPledgeMinimum(SmartContractMethodParameter totalPledgeMinimum)
     {
-        var pendingOwner = value.Parse<Address>();
-
-        if (pendingOwner == Address.Empty)
-        {
-            throw new ArgumentNullException(nameof(pendingOwner), "Pending owner address must be provided.");
-        }
-
-        PendingOwner = pendingOwner;
+        if (totalPledgeMinimum is null) throw new ArgumentNullException(nameof(totalPledgeMinimum));
+        TotalPledgeMinimum = totalPledgeMinimum.Parse<ulong>();
     }
 
-    public void SetOwner(SmartContractMethodParameter value)
+    public void SetTotalVoteMinimum(SmartContractMethodParameter totalVoteMinimum)
     {
-        var owner = value.Parse<Address>();
-
-        if (owner == Address.Empty)
-        {
-            throw new ArgumentNullException(nameof(owner), "Owner address must be provided.");
-        }
-
-        Owner = owner;
+        if (totalVoteMinimum is null) throw new ArgumentNullException(nameof(totalVoteMinimum));
+        TotalVoteMinimum = totalVoteMinimum.Parse<ulong>();
     }
 
-    public void SetUnassignedSupply(SmartContractMethodParameter value)
+    public void SetVestingDuration(SmartContractMethodParameter vestingDuration)
     {
-        var supply = value.Parse<UInt256>();
-
-        // Zero is valid, nothing to check
-        UnassignedSupply = supply;
+        if (vestingDuration is null) throw new ArgumentNullException(nameof(vestingDuration));
+        VestingDuration = vestingDuration.Parse<ulong>();
     }
 }

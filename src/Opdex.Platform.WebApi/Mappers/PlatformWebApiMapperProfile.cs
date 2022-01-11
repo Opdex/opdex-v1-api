@@ -18,10 +18,9 @@ using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Markets;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Tokens;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vault;
-using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vaults;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
-using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
@@ -46,9 +45,8 @@ using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Mark
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.MiningPools;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Tokens;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Vault;
-using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.VaultGovernances;
+using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Vaults;
 using Opdex.Platform.WebApi.Models.Responses.Vaults;
-using Opdex.Platform.WebApi.Models.Responses.VaultGovernances;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
 
 namespace Opdex.Platform.WebApi.Mappers;
@@ -337,20 +335,6 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.MiningGovernances))
             .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
 
-        CreateMap<VaultDto, VaultResponseModel>()
-            .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
-            .ForMember(dest => dest.PendingOwner, opt => opt.MapFrom(src => src.PendingOwner))
-            .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
-            .ForMember(dest => dest.Genesis, opt => opt.MapFrom(src => src.Genesis))
-            .ForMember(dest => dest.TokensLocked, opt => opt.MapFrom(src => src.TokensLocked))
-            .ForMember(dest => dest.TokensUnassigned, opt => opt.MapFrom(src => src.TokensUnassigned))
-            .ForMember(dest => dest.LockedToken, opt => opt.MapFrom(src => src.LockedToken))
-            .ForAllOtherMembers(opt => opt.Ignore());
-
-        CreateMap<VaultsDto, VaultsResponseModel>()
-            .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Vaults))
-            .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
-
         CreateMap<BlockDto, BlockResponseModel>()
             .ForMember(dest => dest.Height, opt => opt.MapFrom(src => src.Height))
             .ForMember(dest => dest.Hash, opt => opt.MapFrom(src => src.Hash))
@@ -378,13 +362,14 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.VestingStartBlock, opt => opt.MapFrom(src => src.VestingStartBlock))
             .ForMember(dest => dest.VestingEndBlock, opt => opt.MapFrom(src => src.VestingEndBlock))
             .ForMember(dest => dest.Redeemed, opt => opt.MapFrom(src => src.Redeemed))
-            .ForMember(dest => dest.Revoked, opt => opt.MapFrom(src => src.Revoked));
+            .ForMember(dest => dest.Revoked, opt => opt.MapFrom(src => src.Revoked))
+            .ForMember(dest => dest.Proposals, opt => opt.MapFrom(src => src.Proposals));
 
         CreateMap<VaultCertificatesDto, VaultCertificatesResponseModel>()
             .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Certificates))
             .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
 
-        CreateMap<VaultGovernanceDto, VaultGovernanceResponseModel>()
+        CreateMap<VaultDto, VaultResponseModel>()
             .ForMember(dest => dest.Vault, opt => opt.MapFrom(src => src.Vault))
             .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token))
             .ForMember(dest => dest.TokensUnassigned, opt => opt.MapFrom(src => src.TokensUnassigned))
@@ -394,7 +379,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.TotalVoteMinimum, opt => opt.MapFrom(src => src.TotalVoteMinimum))
             .ForMember(dest => dest.VestingDuration, opt => opt.MapFrom(src => src.VestingDuration));
 
-        CreateMap<VaultGovernancesDto, VaultGovernancesResponseModel>()
+        CreateMap<VaultsDto, VaultsResponseModel>()
             .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Vaults))
             .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
 
@@ -412,7 +397,8 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.YesAmount, opt => opt.MapFrom(src => src.YesAmount))
             .ForMember(dest => dest.NoAmount, opt => opt.MapFrom(src => src.NoAmount))
             .ForMember(dest => dest.PledgeAmount, opt => opt.MapFrom(src => src.PledgeAmount))
-            .ForMember(dest => dest.Approved, opt => opt.MapFrom(src => src.Approved));
+            .ForMember(dest => dest.Approved, opt => opt.MapFrom(src => src.Approved))
+            .ForMember(dest => dest.Certificate, opt => opt.MapFrom(src => src.Certificate));
 
         CreateMap<VaultProposalsDto, VaultProposalsResponseModel>()
             .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Proposals))
@@ -609,12 +595,6 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight));
 
         // Vaults Transaction Events
-        CreateMap<ClaimPendingVaultOwnershipEventDto, ClaimPendingVaultOwnershipEvent>()
-            .IncludeBase<OwnershipEventDto, OwnershipEvent>();
-
-        CreateMap<SetPendingVaultOwnershipEventDto, SetPendingVaultOwnershipEvent>()
-            .IncludeBase<OwnershipEventDto, OwnershipEvent>();
-
         CreateMap<CreateVaultCertificateEventDto, CreateVaultCertificateEvent>()
             .IncludeBase<TransactionEventDto, TransactionEvent>()
             .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
@@ -642,7 +622,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Request, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Request).Base64Encode()))
             .ForAllOtherMembers(opt => opt.Ignore());
 
-        // Vault Governances
+        // Vaults
         CreateMap<CompleteVaultProposalEventDto, CompleteVaultProposalEvent>()
             .IncludeBase<TransactionEventDto, TransactionEvent>()
             .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))

@@ -10,13 +10,18 @@ public sealed class VaultCertificateFilterParameters : FilterParameters<VaultCer
     /// <summary>
     /// Address of the certificate holder.
     /// </summary>
-    /// <example>tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm</example>
+    /// <example>tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L</example>
     public Address Holder { get; set; }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Status of certificates.
+    /// </summary>
+    /// <example>All</example>
+    public VaultCertificateStatusFilter Status { get; set; }
+
     protected override VaultCertificatesCursor InternalBuildCursor()
     {
-        if (EncodedCursor is null) return new VaultCertificatesCursor(Holder, Direction, Limit, PagingDirection.Forward, default);
+        if (EncodedCursor is null) return new VaultCertificatesCursor(Holder, Status, Direction, Limit, PagingDirection.Forward, default);
         Base64Extensions.TryBase64Decode(EncodedCursor, out var decodedCursor);
         VaultCertificatesCursor.TryParse(decodedCursor, out var cursor);
         return cursor;

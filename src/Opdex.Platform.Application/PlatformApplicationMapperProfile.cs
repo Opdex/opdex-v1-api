@@ -18,11 +18,10 @@ using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Markets;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Tokens;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vault;
-using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vaults;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Blocks;
-using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
@@ -36,13 +35,11 @@ using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
-using Opdex.Platform.Domain.Models.TransactionLogs.VaultGovernances;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 using Opdex.Platform.Domain.Models.Transactions;
-using Opdex.Platform.Domain.Models.VaultGovernances;
-using Opdex.Platform.Domain.Models.Vaults;
 using System.Linq;
-using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Models.Vaults;
+using Opdex.Platform.Domain.Models.Vaults;
 using System;
 
 namespace Opdex.Platform.Application;
@@ -191,13 +188,7 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.Spender, opt => opt.MapFrom(src => src.Spender))
             .ForAllOtherMembers(opt => opt.Ignore());
 
-        CreateMap<Vault, VaultDto>()
-            .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
-            .ForMember(dest => dest.PendingOwner, opt => opt.MapFrom(src => src.PendingOwner))
-            .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
-            .ForMember(dest => dest.Genesis, opt => opt.MapFrom(src => src.Genesis))
-            .ForAllOtherMembers(opt => opt.Ignore());
-
+        // Todo: Can be wiped when the original Vault is removed, new vault will use assembler
         CreateMap<VaultCertificate, VaultCertificateDto>()
             .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
             .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount.ToDecimal(TokenConstants.Opdex.Decimals)))
@@ -206,7 +197,7 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.Redeemed, opt => opt.MapFrom(src => src.Redeemed))
             .ForMember(dest => dest.Revoked, opt => opt.MapFrom(src => src.Revoked));
 
-        CreateMap<VaultGovernance, VaultGovernanceDto>()
+        CreateMap<Vault, VaultDto>()
             .ForMember(dest => dest.Vault, opt => opt.MapFrom(src => src.Address))
             .ForMember(dest => dest.VestingDuration, opt => opt.MapFrom(src => src.VestingDuration))
             .ForAllOtherMembers(opt => opt.Ignore());
@@ -361,12 +352,6 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount.ToDecimal(TokenConstants.Opdex.Decimals)));
 
         // Vault Events
-        CreateMap<SetPendingVaultOwnershipLog, SetPendingVaultOwnershipEventDto>()
-            .IncludeBase<OwnershipLog, OwnershipEventDto>();
-
-        CreateMap<ClaimPendingVaultOwnershipLog, ClaimPendingVaultOwnershipEventDto>()
-            .IncludeBase<OwnershipLog, OwnershipEventDto>();
-
         CreateMap<CreateVaultCertificateLog, CreateVaultCertificateEventDto>()
             .IncludeBase<TransactionLog, TransactionEventDto>()
             .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount.ToDecimal(TokenConstants.Opdex.Decimals)))
@@ -386,7 +371,7 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.Holder, opt => opt.MapFrom(src => src.Owner))
             .ForMember(dest => dest.VestedBlock, opt => opt.MapFrom(src => src.VestedBlock));
 
-        // Vault Governance Events
+        // Vault Events
         CreateMap<CompleteVaultProposalLog, CompleteVaultProposalEventDto>()
             .IncludeBase<TransactionLog, TransactionEventDto>()
             .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))

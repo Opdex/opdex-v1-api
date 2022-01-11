@@ -15,7 +15,6 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Transac
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Deployers;
 using Opdex.Platform.Application.Abstractions.Queries.MiningGovernances;
@@ -112,14 +111,14 @@ public class CreateTransactionCommandHandler : IRequestHandler<CreateTransaction
         var miningPool = await _mediator.Send(new RetrieveMiningPoolByAddressQuery(to, findOrThrow));
         if (miningPool != null) return true;
 
-        var miningGovernance = await _mediator.Send(new RetrieveMiningGovernanceByAddressQuery(to, findOrThrow));
-        if (miningGovernance != null) return true;
-
         var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(to, findOrThrow));
         if (vault != null) return true;
 
         var market = await _mediator.Send(new RetrieveMarketByAddressQuery(to, findOrThrow));
         if (market != null) return true;
+
+        var miningGovernance = await _mediator.Send(new RetrieveMiningGovernanceByAddressQuery(to, findOrThrow));
+        if (miningGovernance != null) return true;
 
         var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(to, findOrThrow));
         return deployer != null;
@@ -175,9 +174,7 @@ public class CreateTransactionCommandHandler : IRequestHandler<CreateTransaction
                     TransactionLogType.CreateVaultCertificateLog => await _mediator.Send(new ProcessCreateVaultCertificateLogCommand(log, tx.From, tx.BlockHeight)),
                     TransactionLogType.RevokeVaultCertificateLog => await _mediator.Send(new ProcessRevokeVaultCertificateLogCommand(log, tx.From, tx.BlockHeight)),
                     TransactionLogType.RedeemVaultCertificateLog => await _mediator.Send(new ProcessRedeemVaultCertificateLogCommand(log, tx.From, tx.BlockHeight)),
-                    TransactionLogType.ClaimPendingVaultOwnershipLog => await _mediator.Send(new ProcessClaimPendingVaultOwnershipLogCommand(log, tx.From, tx.BlockHeight)),
-                    TransactionLogType.SetPendingVaultOwnershipLog => await _mediator.Send(new ProcessSetPendingVaultOwnershipLogCommand(log, tx.From, tx.BlockHeight)),
-                    // Vault Governance
+                    // Vault
                     TransactionLogType.CompleteVaultProposalLog => await _mediator.Send(new ProcessCompleteVaultProposalLogCommand(log, tx.From, tx.BlockHeight)),
                     TransactionLogType.CreateVaultProposalLog => await _mediator.Send(new ProcessCreateVaultProposalLogCommand(log, tx.From, tx.BlockHeight)),
                     TransactionLogType.VaultProposalPledgeLog => await _mediator.Send(new ProcessVaultProposalPledgeLogCommand(log, tx.From, tx.BlockHeight)),

@@ -1,19 +1,15 @@
 using MediatR;
 using Opdex.Platform.Domain.Models.Vaults;
+using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Vaults;
 
-public class PersistVaultCertificateCommand : IRequest<bool>
+public class PersistVaultCertificateCommand : IRequest<ulong>
 {
-    public PersistVaultCertificateCommand(VaultCertificate vaultCertificate)
+    public PersistVaultCertificateCommand(VaultCertificate certificate)
     {
-        if (vaultCertificate == null)
-        {
-            VaultCertificate = vaultCertificate;
-        }
-            
-        VaultCertificate = vaultCertificate;
+        Certificate = certificate ?? throw new ArgumentNullException(nameof(certificate), "Vault certificate must be provided.");
     }
-        
-    public VaultCertificate VaultCertificate { get; }
+
+    public VaultCertificate Certificate { get; }
 }

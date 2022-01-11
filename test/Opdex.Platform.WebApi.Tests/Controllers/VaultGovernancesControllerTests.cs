@@ -3,21 +3,19 @@ using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Opdex.Platform.Application.Abstractions.EntryCommands.VaultGovernances;
-using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances;
-using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Certificates;
-using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Pledges;
-using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Proposals;
-using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Votes;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults.Certificates;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults.Pledges;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults.Proposals;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults.Votes;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
-using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Controllers;
 using Opdex.Platform.WebApi.Models;
-using Opdex.Platform.WebApi.Models.Requests.VaultGovernances;
+using Opdex.Platform.WebApi.Models.Requests.Vaults;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
-using Opdex.Platform.WebApi.Models.Responses.VaultGovernances;
 using Opdex.Platform.WebApi.Models.Responses.Vaults;
 using System;
 using System.Threading;
@@ -26,20 +24,20 @@ using Xunit;
 
 namespace Opdex.Platform.WebApi.Tests.Controllers;
 
-public class VaultGovernancesControllerTests
+public class VaultsControllerTests
 {
     private readonly Mock<IApplicationContext> _applicationContextMock;
     private readonly Mock<IMapper> _mapperMock;
     private readonly Mock<IMediator> _mediatorMock;
-    private readonly VaultGovernancesController _controller;
+    private readonly VaultsController _controller;
 
-    public VaultGovernancesControllerTests()
+    public VaultsControllerTests()
     {
         _applicationContextMock = new Mock<IApplicationContext>();
         _mapperMock = new Mock<IMapper>();
         _mediatorMock = new Mock<IMediator>();
 
-        _controller = new VaultGovernancesController(_applicationContextMock.Object, _mapperMock.Object, _mediatorMock.Object);
+        _controller = new VaultsController(_applicationContextMock.Object, _mapperMock.Object, _mediatorMock.Object);
     }
 
     [Fact]
@@ -50,23 +48,23 @@ public class VaultGovernancesControllerTests
         var cancellationToken = cancellationTokenSource.Token;
 
         // Act
-        await _controller.GetVaults(new VaultGovernanceFilterParameters(), cancellationToken);
+        await _controller.GetVaults(new VaultFilterParameters(), cancellationToken);
 
         // Assert
-        _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetVaultGovernancesWithFilterQuery>(query => query.Cursor != null), cancellationToken), Times.Once);
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetVaultsWithFilterQuery>(query => query.Cursor != null), cancellationToken), Times.Once);
     }
 
     [Fact]
     public async Task GetVaults_Result_ReturnOk()
     {
         // Arrange
-        var vaults = new VaultGovernancesResponseModel();
+        var vaults = new VaultsResponseModel();
 
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetVaultGovernancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new VaultGovernancesDto());
-        _mapperMock.Setup(callTo => callTo.Map<VaultGovernancesResponseModel>(It.IsAny<VaultGovernancesDto>())).Returns(vaults);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetVaultsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new VaultsDto());
+        _mapperMock.Setup(callTo => callTo.Map<VaultsResponseModel>(It.IsAny<VaultsDto>())).Returns(vaults);
 
         // Act
-        var response = await _controller.GetVaults(new VaultGovernanceFilterParameters(), CancellationToken.None);
+        var response = await _controller.GetVaults(new VaultFilterParameters(), CancellationToken.None);
 
         // Assert
         response.Result.Should().BeOfType<OkObjectResult>();
@@ -74,7 +72,7 @@ public class VaultGovernancesControllerTests
     }
 
     [Fact]
-    public async Task GetVault_GetVaultGovernanceByAddressQuery_Send()
+    public async Task GetVault_GetVaultByAddressQuery_Send()
     {
         // Arrange
         Address vault = new("PBHvTPaLKo5cVYBFdTfTgtjqfybLMJJ8W5");
@@ -86,31 +84,31 @@ public class VaultGovernancesControllerTests
         await _controller.GetVault(vault, cancellationToken);
 
         // Assert
-        _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetVaultGovernanceByAddressQuery>(query => query.Vault == vault), cancellationToken), Times.Once);
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetVaultByAddressQuery>(query => query.Vault == vault), cancellationToken), Times.Once);
     }
 
     [Fact]
     public async Task GetVault_VaultExists_MapResult()
     {
         // Arrange
-        var dto = new VaultGovernanceDto();
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(dto);
+        var dto = new VaultDto();
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(dto);
 
         // Act
         await _controller.GetVault(new Address("PBHvTPaLKo5cVYBFdTfTgtjqfybLMJJ8W5"), CancellationToken.None);
 
         // Assert
-        _mapperMock.Verify(callTo => callTo.Map<VaultGovernanceResponseModel>(dto), Times.Once);
+        _mapperMock.Verify(callTo => callTo.Map<VaultResponseModel>(dto), Times.Once);
     }
 
     [Fact]
     public async Task GetVault_VaultExists_Return200Ok()
     {
         // Arrange
-        var expectedResponse = new VaultGovernanceResponseModel();
-        var dto = new VaultGovernanceDto();
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(dto);
-        _mapperMock.Setup(callTo => callTo.Map<VaultGovernanceResponseModel>(dto)).Returns(expectedResponse);
+        var expectedResponse = new VaultResponseModel();
+        var dto = new VaultDto();
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(dto);
+        _mapperMock.Setup(callTo => callTo.Map<VaultResponseModel>(dto)).Returns(expectedResponse);
 
         // Act
         var response = await _controller.GetVault(new Address("PBHvTPaLKo5cVYBFdTfTgtjqfybLMJJ8W5"), CancellationToken.None);
@@ -121,7 +119,7 @@ public class VaultGovernancesControllerTests
     }
 
     [Fact]
-    public async Task GetCertificates_GetVaultGovernanceCertificatesWithFilterQuery_Send()
+    public async Task GetCertificates_GetVaultCertificatesWithFilterQuery_Send()
     {
         // Arrange
         using var cancellationTokenSource = new CancellationTokenSource();
@@ -129,10 +127,10 @@ public class VaultGovernancesControllerTests
         Address vault = new("PR71udY85pAcNcitdDfzQevp6Zar9DizHM");
 
         // Act
-        await _controller.GetCertificates(vault, new VaultGovernanceCertificateFilterParameters(), cancellationToken);
+        await _controller.GetCertificates(vault, new VaultCertificateFilterParameters(), cancellationToken);
 
         // Assert
-        _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetVaultGovernanceCertificatesWithFilterQuery>(
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetVaultCertificatesWithFilterQuery>(
             query => query.Vault == vault && query.Cursor != null), cancellationToken), Times.Once);
     }
 
@@ -142,11 +140,11 @@ public class VaultGovernancesControllerTests
         // Arrange
         var certificates = new VaultCertificatesResponseModel();
 
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetVaultGovernanceCertificatesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new VaultCertificatesDto());
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetVaultCertificatesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new VaultCertificatesDto());
         _mapperMock.Setup(callTo => callTo.Map<VaultCertificatesResponseModel>(It.IsAny<VaultCertificatesDto>())).Returns(certificates);
 
         // Act
-        var response = await _controller.GetCertificates(new Address("PR71udY85pAcNcitdDfzQevp6Zar9DizHM"), new VaultGovernanceCertificateFilterParameters(), CancellationToken.None);
+        var response = await _controller.GetCertificates(new Address("PR71udY85pAcNcitdDfzQevp6Zar9DizHM"), new VaultCertificateFilterParameters(), CancellationToken.None);
 
         // Assert
         response.Result.Should().BeOfType<OkObjectResult>();

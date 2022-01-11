@@ -9,7 +9,7 @@ using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Mark
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.MiningPools;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Tokens;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Vault;
-using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.VaultGovernances;
+using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Vaults;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
@@ -38,8 +38,6 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents;
 [KnownType(typeof(SetPendingDeployerOwnershipEvent))]
 [KnownType(typeof(ClaimPendingMarketOwnershipEvent))]
 [KnownType(typeof(SetPendingMarketOwnershipEvent))]
-[KnownType(typeof(ClaimPendingVaultOwnershipEvent))]
-[KnownType(typeof(SetPendingVaultOwnershipEvent))]
 [KnownType(typeof(ApprovalEvent))]
 [KnownType(typeof(DistributionEvent))]
 [KnownType(typeof(TransferEvent))]

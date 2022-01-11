@@ -30,7 +30,7 @@ public class VaultFilterParametersValidatorTests
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(request => request.LockedToken);
+        result.ShouldHaveValidationErrorFor(r => r.LockedToken);
     }
 
     [Theory]
@@ -49,7 +49,7 @@ public class VaultFilterParametersValidatorTests
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldNotHaveValidationErrorFor(request => request.LockedToken);
+        result.ShouldNotHaveValidationErrorFor(r => r.LockedToken);
     }
 
     [Fact]
@@ -65,7 +65,7 @@ public class VaultFilterParametersValidatorTests
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(request => request.Limit);
+        result.ShouldHaveValidationErrorFor(r => r.Limit);
     }
 
     [Fact]
@@ -81,6 +81,6 @@ public class VaultFilterParametersValidatorTests
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldNotHaveValidationErrorFor(request => request.Limit);
+        result.ShouldNotHaveValidationErrorFor(r => r.Limit);
     }
 }

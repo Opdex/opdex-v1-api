@@ -4,17 +4,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using Opdex.Platform.Application.Abstractions.EntryCommands.VaultGovernances;
-using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances;
-using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Certificates;
-using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Pledges;
-using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Proposals;
-using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Votes;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults.Certificates;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults.Pledges;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults.Proposals;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults.Votes;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models;
-using Opdex.Platform.WebApi.Models.Requests.VaultGovernances;
+using Opdex.Platform.WebApi.Models.Requests.Vaults;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
-using Opdex.Platform.WebApi.Models.Responses.VaultGovernances;
 using Opdex.Platform.WebApi.Models.Responses.Vaults;
 using Opdex.Platform.WebApi.OpenApi.VaultsGovernances;
 using System;
@@ -25,14 +24,14 @@ namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("vault-governances")]
-public class VaultGovernancesController : ControllerBase
+[Route("vaults")]
+public class VaultsController : ControllerBase
 {
     private readonly IApplicationContext _context;
     private readonly IMapper _mapper;
     private readonly IMediator _mediator;
 
-    public VaultGovernancesController(IApplicationContext context, IMapper mapper, IMediator mediator)
+    public VaultsController(IApplicationContext context, IMapper mapper, IMediator mediator)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -48,13 +47,13 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="400">The request is not valid.</response>
     /// <response code="401">Unauthorized.</response>
     [HttpGet]
-    [ProducesResponseType(typeof(VaultGovernancesResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(VaultsResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<VaultGovernancesResponseModel>> GetVaults([FromQuery] VaultGovernanceFilterParameters filters, CancellationToken cancellationToken)
+    public async Task<ActionResult<VaultsResponseModel>> GetVaults([FromQuery] VaultFilterParameters filters, CancellationToken cancellationToken)
     {
-        var vaults = await _mediator.Send(new GetVaultGovernancesWithFilterQuery(filters.BuildCursor()), cancellationToken);
-        return Ok(_mapper.Map<VaultGovernancesResponseModel>(vaults));
+        var vaults = await _mediator.Send(new GetVaultsWithFilterQuery(filters.BuildCursor()), cancellationToken);
+        return Ok(_mapper.Map<VaultsResponseModel>(vaults));
     }
 
     /// <summary>Get Vault</summary>
@@ -68,14 +67,14 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="404">Vault not found.</response>
     [HttpGet("{address}")]
     [OpenApiOperationProcessor(typeof(GetVaultOperationProcessor))]
-    [ProducesResponseType(typeof(VaultGovernanceResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(VaultResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<VaultGovernanceResponseModel>> GetVault([FromRoute] Address address, CancellationToken cancellationToken)
+    public async Task<ActionResult<VaultResponseModel>> GetVault([FromRoute] Address address, CancellationToken cancellationToken)
     {
-        var dto = await _mediator.Send(new GetVaultGovernanceByAddressQuery(address), cancellationToken);
-        var response = _mapper.Map<VaultGovernanceResponseModel>(dto);
+        var dto = await _mediator.Send(new GetVaultByAddressQuery(address), cancellationToken);
+        var response = _mapper.Map<VaultResponseModel>(dto);
         return Ok(response);
     }
 
@@ -95,9 +94,9 @@ public class VaultGovernancesController : ControllerBase
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<VaultCertificatesResponseModel>> GetCertificates([FromRoute] Address address, [FromQuery] VaultGovernanceCertificateFilterParameters filters, CancellationToken cancellationToken)
+    public async Task<ActionResult<VaultCertificatesResponseModel>> GetCertificates([FromRoute] Address address, [FromQuery] VaultCertificateFilterParameters filters, CancellationToken cancellationToken)
     {
-        var certificates = await _mediator.Send(new GetVaultGovernanceCertificatesWithFilterQuery(address, filters.BuildCursor()), cancellationToken);
+        var certificates = await _mediator.Send(new GetVaultCertificatesWithFilterQuery(address, filters.BuildCursor()), cancellationToken);
         return Ok(_mapper.Map<VaultCertificatesResponseModel>(certificates));
     }
 

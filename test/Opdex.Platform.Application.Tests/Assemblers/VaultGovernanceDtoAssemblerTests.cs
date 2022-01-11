@@ -2,7 +2,7 @@ using AutoMapper;
 using FluentAssertions;
 using MediatR;
 using Moq;
-using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Assemblers;
@@ -10,26 +10,26 @@ using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Tokens;
-using Opdex.Platform.Domain.Models.VaultGovernances;
+using Opdex.Platform.Domain.Models.Vaults;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace Opdex.Platform.Application.Tests.Assemblers;
 
-public class VaultGovernanceDtoAssemblerTests
+public class VaultDtoAssemblerTests
 {
     private readonly Mock<IMapper> _mapperMock;
     private readonly Mock<IMediator> _mediatorMock;
 
-    private readonly VaultGovernanceDtoAssembler _assembler;
+    private readonly VaultDtoAssembler _assembler;
 
-    public VaultGovernanceDtoAssemblerTests()
+    public VaultDtoAssemblerTests()
     {
         _mediatorMock = new Mock<IMediator>();
         _mapperMock = new Mock<IMapper>();
 
-        _assembler = new VaultGovernanceDtoAssembler(_mapperMock.Object, _mediatorMock.Object);
+        _assembler = new VaultDtoAssembler(_mapperMock.Object, _mediatorMock.Object);
     }
 
     [Fact]
@@ -44,9 +44,9 @@ public class VaultGovernanceDtoAssemblerTests
             .Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalanceByOwnerAndTokenQuery>(),
                 It.IsAny<CancellationToken>())).ReturnsAsync(balance);
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
 
-        _mapperMock.Setup(callTo => callTo.Map<VaultGovernanceDto>(vault)).Returns(new VaultGovernanceDto());
+        _mapperMock.Setup(callTo => callTo.Map<VaultDto>(vault)).Returns(new VaultDto());
 
         // Act
         var dto = await _assembler.Assemble(vault);
@@ -67,9 +67,9 @@ public class VaultGovernanceDtoAssemblerTests
             .Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalanceByOwnerAndTokenQuery>(),
                 It.IsAny<CancellationToken>())).ReturnsAsync(balance);
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
 
-        _mapperMock.Setup(callTo => callTo.Map<VaultGovernanceDto>(vault)).Returns(new VaultGovernanceDto());
+        _mapperMock.Setup(callTo => callTo.Map<VaultDto>(vault)).Returns(new VaultDto());
 
         // Act
         var dto = await _assembler.Assemble(vault);
@@ -89,9 +89,9 @@ public class VaultGovernanceDtoAssemblerTests
             .Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalanceByOwnerAndTokenQuery>(),
                 It.IsAny<CancellationToken>())).ReturnsAsync((AddressBalance)null);
 
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
+        var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
 
-        _mapperMock.Setup(callTo => callTo.Map<VaultGovernanceDto>(vault)).Returns(new VaultGovernanceDto());
+        _mapperMock.Setup(callTo => callTo.Map<VaultDto>(vault)).Returns(new VaultDto());
 
         // Act
         var dto = await _assembler.Assemble(vault);

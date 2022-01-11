@@ -3,7 +3,6 @@ using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 using System;
-using System.Reflection;
 
 namespace Opdex.Platform.Domain.Models.Vaults;
 
@@ -23,7 +22,7 @@ public class VaultCertificate : BlockAudit
 
         if (vestedBlock < 1)
         {
-            throw new ArgumentNullException(nameof(vestedBlock), "Vested block must be greater than 0.");
+            throw new ArgumentOutOfRangeException(nameof(vestedBlock), "Vested block must be greater than 0.");
         }
 
         if (amount == 0)
