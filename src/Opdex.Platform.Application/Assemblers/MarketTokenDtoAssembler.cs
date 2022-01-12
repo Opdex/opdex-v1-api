@@ -34,7 +34,10 @@ public class MarketTokenDtoAssembler : IModelAssembler<MarketToken, MarketTokenD
         }
 
         var tokenAttributes = await _mediator.Send(new RetrieveTokenAttributesByTokenIdQuery(token.Id), CancellationToken.None);
-        var isLpt = tokenAttributes.Select(attr => attr.AttributeType).Contains(TokenAttributeType.Provisional);
+
+        marketTokenDto.Attributes = tokenAttributes.Select(attr => attr.AttributeType);
+
+        var isLpt = marketTokenDto.Attributes.Contains(TokenAttributeType.Provisional);
 
         var liquidityPool = isLpt
             ? await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(token.Address))

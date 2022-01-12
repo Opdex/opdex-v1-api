@@ -120,6 +120,9 @@ public class MarketTokenDtoAssemblerTests
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(liquidityPool);
 
+        _mediatorMock.Setup(callTo => callTo.Send(It.Is<RetrieveTokenAttributesByTokenIdQuery>(query => query.TokenId == token.Id), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new [] { new TokenAttribute(1, 1, TokenAttributeType.NonProvisional)});
+
         // Act
         var tokenDto = await _assembler.Assemble(marketToken);
 
@@ -131,6 +134,7 @@ public class MarketTokenDtoAssemblerTests
         tokenDto.Decimals.Should().Be(token.Decimals);
         tokenDto.Sats.Should().Be(token.Sats);
         tokenDto.TotalSupply.Should().Be(token.TotalSupply.ToDecimal(token.Decimals));
+        tokenDto.Attributes.Should().BeEquivalentTo(new [] {TokenAttributeType.NonProvisional});
         tokenDto.Summary.PriceUsd.Should().Be(token.Summary.PriceUsd);
         tokenDto.Summary.DailyPriceChangePercent.Should().Be(token.Summary.DailyPriceChangePercent);
         tokenDto.Summary.ModifiedBlock.Should().Be(token.Summary.ModifiedBlock);

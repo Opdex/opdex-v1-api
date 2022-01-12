@@ -1,5 +1,7 @@
 using NJsonSchema.Annotations;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Responses.Tokens;
@@ -52,6 +54,12 @@ public class TokenResponseModel
     /// <example>"2100000000000000"</example>
     [NotNull]
     public FixedDecimal TotalSupply { get; set; }
+
+    /// <summary>
+    /// Attributes currently applied to the token.
+    /// </summary>
+    /// <example>["NonProvisional", "Staking"]</example>
+    public IEnumerable<TokenAttributeType> Attributes { get; set; }
 
     /// <summary>
     /// A summary including the USD price of the token and daily price change percentage if exists. Market tokens receive

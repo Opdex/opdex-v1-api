@@ -35,6 +35,6 @@ public class CreateTokenCommand : IRequest<ulong>
     }
 
     public Address Token { get; }
-    public  IEnumerable<TokenAttributeType> Attributes { get; }
+    public IEnumerable<TokenAttributeType> Attributes { get; }
     public ulong BlockHeight { get; }
 }
