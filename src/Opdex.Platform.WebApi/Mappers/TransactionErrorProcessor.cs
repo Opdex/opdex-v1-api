@@ -32,23 +32,12 @@ internal class TransactionErrorProcessor
 
     private string ProcessError(string rawError, TryParseFriendlyErrorMessage tryParseProcessor)
     {
-        var isKnownError = false;
-        var errorProperties = new Dictionary<string, object>()
+        if (!tryParseProcessor(rawError, out var friendlyError))
         {
-            ["RawError"] = rawError
-        };
-
-        if (tryParseProcessor(rawError, out var friendlyError))
-        {
-            isKnownError = true;
-            errorProperties.Add("Error", friendlyError);
-        }
-
-        errorProperties.Add("Known", isKnownError);
-
-        using (_logger.BeginScope(errorProperties))
-        {
-            _logger.LogWarning("Transaction error occurred");
+            using (_logger.BeginScope(new Dictionary<string, object> { ["RawError"] = rawError }))
+            {
+                _logger.LogWarning("Unknown Opdex transaction error found");
+            }
         }
 
         return friendlyError ?? "Unexpected error occurred.";
