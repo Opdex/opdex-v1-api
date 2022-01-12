@@ -28,7 +28,7 @@ public class CallCmcGetStraxHistoricalQuoteQueryHandler : IRequestHandler<CallCm
 
         if (fiatPrices == null)
         {
-            _logger.LogError($"STRAX quote not found for {request.DateTime}");
+            _logger.LogError("STRAX quote not found for {RequestedTime}", request.DateTime);
             return 0m;
         }
 
@@ -38,7 +38,7 @@ public class CallCmcGetStraxHistoricalQuoteQueryHandler : IRequestHandler<CallCm
             return usd.Price;
         }
 
-        _logger.LogError($"STRAX USD price not found for {request.DateTime}");
+        _logger.LogError("STRAX USD price not found for {RequestedTime}", request.DateTime);
         return 0m;
     }
 }
