@@ -23,7 +23,7 @@ public class CallCoinGeckoGetStraxLatestPriceQueryHandler : IRequestHandler<Call
         var result = await _client.CoinsClient.GetAllCoinDataWithId(CoinGeckoTokens.STRAX, "false", false, true, false, false, false);
         if ((result?.MarketData?.CurrentPrice?.TryGetValue(CoinGeckoTokens.USD, out var usdPrice) ?? false) && usdPrice.HasValue)
         {
-            return result.MarketData.CurrentPrice[CoinGeckoTokens.USD]!.Value;
+            return usdPrice.Value;
         }
 
         _logger.LogError("STRAX quote not found");
