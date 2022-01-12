@@ -130,38 +130,38 @@ public class TokenFilterParametersValidatorTests
 
     [Theory]
     [InlineData((TokenAttributeFilter)1000)]
-    public void AttributeFilter_Item_Invalid(TokenAttributeFilter filter)
+    public void AttributeFilter_Items_Invalid(TokenAttributeFilter filter)
     {
         // Arrange
         var request = new TokenFilterParameters
         {
-            TokenType = filter
+            TokenAttributes = new List<TokenAttributeFilter> {filter}
         };
 
         // Act
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(r => r.TokenType);
+        result.ShouldHaveValidationErrorFor(r => r.TokenAttributes);
     }
 
     [Theory]
-    [InlineData(TokenAttributeFilter.All)]
-    [InlineData(TokenAttributeFilter.Provisional)]
-    [InlineData(TokenAttributeFilter.NonProvisional)]
-    public void AttributeFilter_Item_Valid(TokenAttributeFilter filter)
+    [InlineData(TokenAttributeFilter.Provisional, TokenAttributeFilter.NonProvisional)]
+    [InlineData(TokenAttributeFilter.NonProvisional, TokenAttributeFilter.NonProvisional)]
+    [InlineData(TokenAttributeFilter.Staking, TokenAttributeFilter.NonProvisional)]
+    public void AttributeFilter_Items_Valid(TokenAttributeFilter first, TokenAttributeFilter second)
     {
         // Arrange
         var request = new TokenFilterParameters
         {
-            TokenType = filter
+            TokenAttributes = new List<TokenAttributeFilter> {first, second}
         };
 
         // Act
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldNotHaveValidationErrorFor(r => r.TokenType);
+        result.ShouldNotHaveValidationErrorFor(r => r.TokenAttributes);
     }
 
     [Fact]

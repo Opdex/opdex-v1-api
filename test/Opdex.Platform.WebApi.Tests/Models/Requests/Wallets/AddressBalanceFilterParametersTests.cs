@@ -4,6 +4,7 @@ using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 using Opdex.Platform.WebApi.Models.Requests.Wallets;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Opdex.Platform.WebApi.Tests.Models.Requests.Wallets;
@@ -19,7 +20,7 @@ public class AddressBalanceFilterParametersTests
 
         // Assert
         filters.Tokens.Should().BeEmpty();
-        filters.TokenType.Should().Be(TokenAttributeFilter.All);
+        filters.TokenAttributes.Should().BeEmpty();
         filters.IncludeZeroBalances.Should().Be(false);
         filters.Direction.Should().Be(default(SortDirectionType));
         filters.Limit.Should().Be(default);
@@ -32,7 +33,11 @@ public class AddressBalanceFilterParametersTests
         var filters = new AddressBalanceFilterParameters
         {
             Tokens = new Address[] { new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm") },
-            TokenType = TokenAttributeFilter.Provisional,
+            TokenAttributes = new List<TokenAttributeFilter>
+            {
+                TokenAttributeFilter.Provisional,
+                TokenAttributeFilter.Staking
+            },
             IncludeZeroBalances = true,
             Limit = 20,
             Direction = SortDirectionType.DESC
@@ -43,7 +48,7 @@ public class AddressBalanceFilterParametersTests
 
         // Assert
         cursor.Tokens.Should().BeEquivalentTo(filters.Tokens);
-        cursor.TokenType.Should().Be(filters.TokenType);
+        cursor.TokenAttributes.Should().BeEquivalentTo(filters.TokenAttributes);
         cursor.IncludeZeroBalances.Should().Be(filters.IncludeZeroBalances);
         cursor.SortDirection.Should().Be(filters.Direction);
         cursor.Limit.Should().Be(filters.Limit);

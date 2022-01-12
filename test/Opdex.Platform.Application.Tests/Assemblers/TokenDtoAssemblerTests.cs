@@ -57,7 +57,6 @@ public class TokenDtoAssemblerTests
         catch { }
 
         // Assert
-
         _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveTokenAttributesByTokenIdQuery>(query => query.TokenId == token.Id),
                                                    It.IsAny<CancellationToken>()), Times.Once);
     }

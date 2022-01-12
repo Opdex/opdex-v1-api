@@ -11,18 +11,18 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Bala
 
 public class AddressBalancesCursor : Cursor<ulong>
 {
-    public AddressBalancesCursor(IEnumerable<Address> tokens, TokenAttributeFilter tokenType, bool includeZeroBalances,
+    public AddressBalancesCursor(IEnumerable<Address> tokens, IEnumerable<TokenAttributeFilter> tokenAttributes, bool includeZeroBalances,
                                  SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection,
                                  ulong pointer)
         : base(sortDirection, limit, pagingDirection, pointer)
     {
         Tokens = tokens ?? Enumerable.Empty<Address>();
-        TokenType = tokenType;
+        TokenAttributes = tokenAttributes ?? Enumerable.Empty<TokenAttributeFilter>();
         IncludeZeroBalances = includeZeroBalances;
     }
 
     public IEnumerable<Address> Tokens { get; }
-    public TokenAttributeFilter TokenType { get; }
+    public IEnumerable<TokenAttributeFilter> TokenAttributes { get; }
     public bool IncludeZeroBalances { get; }
 
     /// <inheritdoc />
@@ -34,7 +34,7 @@ public class AddressBalancesCursor : Cursor<ulong>
         var sb = new StringBuilder();
         sb.AppendFormat("direction:{0};limit:{1};paging:{2};", SortDirection, Limit, PagingDirection);
         foreach (var token in Tokens) sb.AppendFormat("tokens:{0};", token);
-        sb.AppendFormat("tokenType:{0};", TokenType);
+        foreach (var attribute in TokenAttributes) sb.AppendFormat("tokenAttributes:{0};", attribute);
         sb.AppendFormat("includeZeroBalances:{0};", IncludeZeroBalances);
         sb.AppendFormat("pointer:{0};", encodedPointer);
         return sb.ToString();
@@ -46,7 +46,7 @@ public class AddressBalancesCursor : Cursor<ulong>
         if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
         if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical id.");
 
-        return new AddressBalancesCursor(Tokens, TokenType, IncludeZeroBalances, SortDirection, Limit, direction, pointer);
+        return new AddressBalancesCursor(Tokens, TokenAttributes, IncludeZeroBalances, SortDirection, Limit, direction, pointer);
     }
 
     /// <inheritdoc />
@@ -68,7 +68,7 @@ public class AddressBalancesCursor : Cursor<ulong>
 
         TryGetCursorProperties<Address>(values, "tokens", out var tokens);
 
-        if (!TryGetCursorProperty<TokenAttributeFilter>(values, "tokenType", out var tokenType)) return false;
+        TryGetCursorProperties<TokenAttributeFilter>(values, "tokenAttributes", out var tokenAttributes);
 
         if (!TryGetCursorProperty<bool>(values, "includeZeroBalances", out var includeZeroBalances)) return false;
 
@@ -86,7 +86,7 @@ public class AddressBalancesCursor : Cursor<ulong>
 
         try
         {
-            cursor = new AddressBalancesCursor(tokens, tokenType, includeZeroBalances, direction, limit, paging, pointer);
+            cursor = new AddressBalancesCursor(tokens, tokenAttributes, includeZeroBalances, direction, limit, paging, pointer);
         }
         catch (Exception)
         {

@@ -18,7 +18,7 @@ public class TokenFilterParametersValidator : AbstractCursorValidator<TokenFilte
             .WithMessage("Keyword must consist of letters, numbers and spaces only.");
 
         RuleFor(filter => filter.OrderBy).MustBeValidEnumValue().WithMessage("Order must be valid for the enumeration values.");
-        RuleFor(filter => filter.TokenType).MustBeValidEnumValue().WithMessage("Token type must be valid for the enumeration values.");
+        RuleForEach(filter => filter.TokenAttributes).MustBeValidEnumValue().WithMessage("Token attributes must be valid for the enumeration values.");
         RuleForEach(filter => filter.Tokens).MustBeNetworkAddress().WithMessage("Token must be valid address.");
         RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit).WithMessage($"Limit must be between 1 and {Cursor.DefaultMaxLimit}.");
     }

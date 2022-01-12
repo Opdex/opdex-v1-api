@@ -10,14 +10,14 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 
 public class TokensCursor : Cursor<(string, ulong)>
 {
-    public TokensCursor(string keyword, IEnumerable<Address> tokens, TokenAttributeFilter provisionalFilter, bool includeZeroLiquidity, TokenOrderByType orderBy,
+    public TokensCursor(string keyword, IEnumerable<Address> tokens, IEnumerable<TokenAttributeFilter> tokenAttributes, bool includeZeroLiquidity, TokenOrderByType orderBy,
                         SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, (string, ulong) pointer)
         : base(sortDirection, limit, pagingDirection, pointer)
     {
         Keyword = keyword;
         OrderBy = orderBy;
         Tokens = tokens ?? Enumerable.Empty<Address>();
-        AttributeFilter = provisionalFilter;
+        TokenAttributes = tokenAttributes ?? Enumerable.Empty<TokenAttributeFilter>();
         IncludeZeroLiquidity = includeZeroLiquidity;
     }
 
@@ -37,9 +37,9 @@ public class TokensCursor : Cursor<(string, ulong)>
     public IEnumerable<Address> Tokens { get; }
 
     /// <summary>
-    /// The type of token to filter for, liquidity pool tokens or not.
+    /// The types of token to filter for.
     /// </summary>
-    public TokenAttributeFilter AttributeFilter { get; }
+    public IEnumerable<TokenAttributeFilter> TokenAttributes { get; }
 
     /// <summary>
     /// Includes tokens with no liquidity if true.
@@ -55,7 +55,7 @@ public class TokensCursor : Cursor<(string, ulong)>
         var sb = new StringBuilder();
         sb.AppendFormat("direction:{0};limit:{1};paging:{2};", SortDirection, Limit, PagingDirection);
         foreach (var token in Tokens) sb.AppendFormat("tokens:{0};", token);
-        sb.AppendFormat("provisional:{0};", AttributeFilter);
+        foreach (var attribute in TokenAttributes) sb.AppendFormat("tokenAttributes:{0};", attribute);
         sb.AppendFormat("includeZeroLiquidity:{0};", IncludeZeroLiquidity);
         sb.AppendFormat("keyword:{0};", Keyword);
         sb.AppendFormat("orderBy:{0};", OrderBy);
@@ -69,7 +69,7 @@ public class TokensCursor : Cursor<(string, ulong)>
         if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
         if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical pointer.");
 
-        return new TokensCursor(Keyword, Tokens, AttributeFilter, IncludeZeroLiquidity, OrderBy, SortDirection, Limit, direction, pointer);
+        return new TokensCursor(Keyword, Tokens, TokenAttributes, IncludeZeroLiquidity, OrderBy, SortDirection, Limit, direction, pointer);
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ public class TokensCursor : Cursor<(string, ulong)>
 
         TryGetCursorProperties<Address>(values, "tokens", out var tokens);
 
-        TryGetCursorProperty<TokenAttributeFilter>(values, "provisional", out var provisional);
+        TryGetCursorProperties<TokenAttributeFilter>(values, "tokenAttributes", out var tokenAttributes);
 
         TryGetCursorProperty<bool>(values, "includeZeroLiquidity", out var includeZeroLiquidity);
 
@@ -110,7 +110,7 @@ public class TokensCursor : Cursor<(string, ulong)>
 
         try
         {
-            cursor = new TokensCursor(keyword, tokens, provisional, includeZeroLiquidity, orderBy, direction, limit, paging, pointer);
+            cursor = new TokensCursor(keyword, tokens, tokenAttributes, includeZeroLiquidity, orderBy, direction, limit, paging, pointer);
         }
         catch (Exception)
         {
@@ -140,29 +140,24 @@ public class TokensCursor : Cursor<(string, ulong)>
 }
 
 /// <summary>
-/// Filter for a tokens status whether it is an Opdex liquidity pool token or not.
+/// Filter tokens by their applied attributes.
 /// </summary>
 public enum TokenAttributeFilter
 {
-    /// <summary>
-    /// Non Opdex liquidity pool tokens.
-    /// </summary>
-    NonProvisional = 0,
-
     /// <summary>
     /// Opdex liquidity pool tokens.
     /// </summary>
     Provisional = 1,
 
     /// <summary>
-    /// Opdex mined, staking tokens
+    /// Non Opdex liquidity pool tokens.
     /// </summary>
-    Staking = 2,
+    NonProvisional = 2,
 
     /// <summary>
-    /// All tokens.
+    /// Opdex mined, staking tokens
     /// </summary>
-    All = 3
+    Staking = 3,
 }
 
 /// <summary>

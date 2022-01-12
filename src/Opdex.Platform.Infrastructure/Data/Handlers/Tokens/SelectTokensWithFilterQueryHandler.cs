@@ -69,7 +69,7 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
 
     public async Task<IEnumerable<Token>> Handle(SelectTokensWithFilterQuery request, CancellationToken cancellationToken)
     {
-        var sqlParams = new SqlParams(request.MarketId, request.Cursor.Pointer, request.Cursor.Keyword, request.Cursor.Tokens, request.Cursor.AttributeFilter);
+        var sqlParams = new SqlParams(request.MarketId, request.Cursor.Pointer, request.Cursor.Keyword, request.Cursor.Tokens, request.Cursor.TokenAttributes);
 
         var query = DatabaseQuery.Create(QueryBuilder(request), sqlParams, cancellationToken);
 
@@ -130,11 +130,11 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
             whereFilterBuilder.Append($" t.{nameof(TokenEntity.Address)} IN @{nameof(SqlParams.Tokens)}");
         }
 
-        if (request.Cursor.AttributeFilter != TokenAttributeFilter.All)
+        if (request.Cursor.TokenAttributes.Any())
         {
             tableJoins.Append($" LEFT JOIN token_attribute ta ON ta.{nameof(TokenAttributeEntity.TokenId)} = t.{nameof(TokenEntity.Id)}");
             whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
-            whereFilterBuilder.Append($" ta.{nameof(TokenAttributeEntity.AttributeTypeId)} = @{nameof(SqlParams.AttributeType)}");
+            whereFilterBuilder.Append($" ta.{nameof(TokenAttributeEntity.AttributeTypeId)} IN @{nameof(SqlParams.TokenAttributes)}");
         }
 
         if (request.Cursor.Keyword.HasValue())
@@ -198,14 +198,14 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
 
     private sealed class SqlParams
     {
-        internal SqlParams(ulong marketId, (string, ulong) pointer, string keyword, IEnumerable<Address> tokens, TokenAttributeFilter attributeType)
+        internal SqlParams(ulong marketId, (string, ulong) pointer, string keyword, IEnumerable<Address> tokens, IEnumerable<TokenAttributeFilter> tokenAttributes)
         {
             MarketId = marketId;
             OrderByValue = pointer.Item1;
             TokenId = pointer.Item2;
             Keyword = keyword;
             Tokens = tokens.Select(token => token.ToString());
-            AttributeType = attributeType;
+            TokenAttributes = tokenAttributes;
         }
 
         public ulong MarketId { get; }
@@ -213,6 +213,6 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
         public ulong TokenId { get; }
         public string Keyword { get; }
         public IEnumerable<string> Tokens { get; }
-        public TokenAttributeFilter AttributeType { get; }
+        public IEnumerable<TokenAttributeFilter> TokenAttributes { get; }
     }
 }

@@ -10,6 +10,7 @@ public class AddressBalanceFilterParametersValidator : AbstractCursorValidator<A
     public AddressBalanceFilterParametersValidator()
     {
         RuleForEach(filter => filter.Tokens).MustBeNetworkAddress().WithMessage("Token must be valid address.");
+        RuleForEach(filter => filter.TokenAttributes).MustBeValidEnumValue().WithMessage("Token attributes must be valid for the enumeration values.");
         RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit).WithMessage($"Limit must be between 1 and {Cursor.DefaultMaxLimit}.");
     }
 }
