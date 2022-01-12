@@ -199,10 +199,10 @@ public static class TransactionErrors
         private const string MiningGovernanceRewardMiningPool = "OpdexMiningGovernance.RewardMiningPool()";
 
         private const string VaultNotifyDistribution = "OpdexVault.NotifyDistribution(UInt256 amount)";
-        private const string VaultCreateNewCertificateProposal = "OpdexVault.CreateNewCertificateProposal(UInt256 amount, Address recipient, string description)";
-        private const string VaultCreateRevokeCertificateProposal = "OpdexVault.CreateRevokeCertificateProposal(Address recipient, string description)";
-        private const string VaultCreateTotalPledgeMinimumProposal = "OpdexVault.CreateTotalPledgeMinimumProposal(UInt256 amount, string description)";
-        private const string VaultCreateTotalVoteMinimumProposal = "OpdexVault.CreateTotalVoteMinimumProposal(UInt256 amount, string description)";
+        private const string VaultCreateNewCertificateProposal = "OpdexVault.CreateNewCertificateProposal(UInt256 amount, Address recipient, String description)";
+        private const string VaultCreateRevokeCertificateProposal = "OpdexVault.CreateRevokeCertificateProposal(Address recipient, String description)";
+        private const string VaultCreateTotalPledgeMinimumProposal = "OpdexVault.CreateTotalPledgeMinimumProposal(UInt256 amount, String description)";
+        private const string VaultCreateTotalVoteMinimumProposal = "OpdexVault.CreateTotalVoteMinimumProposal(UInt256 amount, String description)";
         private const string VaultPledge = "OpdexVault.Pledge(UInt64 proposalId)";
         private const string VaultVote = "OpdexVault.Vote(UInt64 proposalId, Boolean inFavor)";
         private const string VaultWithdrawPledge = "OpdexVault.WithdrawPledge(UInt64 proposalId, UInt64 withdrawAmount)";
