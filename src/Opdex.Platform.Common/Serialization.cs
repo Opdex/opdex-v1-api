@@ -11,7 +11,7 @@ public static class Serialization
     public static JsonSerializerSettings DefaultJsonSettings => new JsonSerializerSettings
     {
         NullValueHandling = NullValueHandling.Ignore,
-        ContractResolver = new CamelCasePropertyNamesContractResolver(),
+        ContractResolver = new OpdexContractResolver(),
         Converters = new List<JsonConverter>
         {
             new StringEnumConverter(),

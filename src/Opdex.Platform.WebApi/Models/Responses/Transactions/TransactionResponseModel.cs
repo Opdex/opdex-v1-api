@@ -9,7 +9,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions;
 /// <summary>
 /// Transaction details.
 /// </summary>
-public class TransactionResponseModel
+public class TransactionResponseModel : ITransactionResponseModel
 {
     public TransactionResponseModel()
     {
@@ -21,6 +21,11 @@ public class TransactionResponseModel
     /// </summary>
     /// <example>true</example>
     public bool Success { get; set; }
+
+    /// <summary>
+    /// Transaction error details, if transaction failed
+    /// </summary>
+    public TransactionErrorResponseModel Error { get; set; }
 
     /// <summary>
     /// SHA-256 transaction hash.

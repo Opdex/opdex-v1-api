@@ -126,7 +126,8 @@ public class Startup
 
         services.AddHttpClient();
 
-        // Automapper Profiles
+        // Automapper
+        services.AddTransient<TransactionErrorMappingAction>();
         services.AddAutoMapper(mapperConfig =>
         {
             mapperConfig.AddProfile<PlatformApplicationMapperProfile>();

@@ -31,6 +31,7 @@ public class SelectTransactionForVaultProposalPledgeRewindQueryHandler
                 t.{nameof(TransactionEntity.GasUsed)},
                 t.{nameof(TransactionEntity.NewContractAddress)},
                 t.{nameof(TransactionEntity.Success)},
+                t.{nameof(TransactionEntity.Error)},
                 true as {Split},
                 tl.{nameof(TransactionLogEntity.Id)},
                 tl.{nameof(TransactionLogEntity.TransactionId)},

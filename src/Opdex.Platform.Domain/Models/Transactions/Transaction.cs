@@ -9,7 +9,7 @@ namespace Opdex.Platform.Domain.Models.Transactions;
 public class Transaction
 {
     public Transaction(Sha256 txHash, ulong blockHeight, int gasUsed, Address from, Address to, bool success,
-                       Address newContractAddress, IList<TransactionLog> logs)
+                       string error, Address newContractAddress, IList<TransactionLog> logs)
     {
         if (blockHeight == 0)
         {
@@ -37,11 +37,12 @@ public class Transaction
         From = from;
         To = to;
         Success = success;
+        Error = error;
         NewContractAddress = newContractAddress;
         Logs = logs ?? new List<TransactionLog>();
     }
 
-    public Transaction(ulong id, Sha256 txHash, ulong blockHeight, int gasUsed, Address from, Address to, bool success, Address newContractAddress)
+    public Transaction(ulong id, Sha256 txHash, ulong blockHeight, int gasUsed, Address from, Address to, bool success, string error, Address newContractAddress)
     {
         Id = id;
         Hash = txHash;
@@ -50,6 +51,7 @@ public class Transaction
         From = from;
         To = to;
         Success = success;
+        Error = error;
         NewContractAddress = newContractAddress;
         Logs = new List<TransactionLog>();
     }
@@ -61,6 +63,8 @@ public class Transaction
     public Address From { get; }
     public Address To { get; }
     public bool Success { get; }
+
+    public string Error { get; }
     public Address NewContractAddress { get; }
 
     public IList<TransactionLog> Logs { get; }

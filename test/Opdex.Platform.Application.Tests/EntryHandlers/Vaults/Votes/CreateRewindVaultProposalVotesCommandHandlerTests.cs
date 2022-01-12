@@ -215,7 +215,7 @@ public class CreateRewindVaultProposalVotesCommandHandlerTests
 
         foreach (var vote in votes)
         {
-            var transaction = new Transaction(1, new Sha256(5340958239), 2, 3, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null);
+            var transaction = new Transaction(1, new Sha256(5340958239), 2, 3, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null, null);
             var log = JsonConvert.SerializeObject(new VoteLogDetails
             {
                 ProposalId = publicId,

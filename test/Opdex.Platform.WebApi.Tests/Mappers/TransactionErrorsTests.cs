@@ -1,8 +1,8 @@
 using FluentAssertions;
-using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Extensions;
+using Opdex.Platform.WebApi.Mappers;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Extensions;
+namespace Opdex.Platform.WebApi.Tests.Mappers;
 
 public class TransactionErrorsTests
 {
