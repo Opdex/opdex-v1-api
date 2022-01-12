@@ -41,14 +41,17 @@ public class CreateRewindTokenDailySnapshotCommandHandler : IRequestHandler<Crea
         {
             var token = await _mediator.Send(new RetrieveTokenByIdQuery(request.TokenId));
 
+            var tokenAttributes = await _mediator.Send(new RetrieveTokenAttributesByTokenIdQuery(token.Id), CancellationToken.None);
+            var isLpt = tokenAttributes.Select(attr => attr.AttributeType).Contains(TokenAttributeType.Provisional);
+
             // Liquidity pool tokens share the same address as liquidity pools, SRC tokens do not.
-            var liquidityPool = token.IsLpt
+            var liquidityPool = isLpt
                 ? await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(token.Address))
                 : await _mediator.Send(new RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery(request.TokenId, request.MarketId));
 
             var liquidityPoolSnapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(liquidityPool.Id, request.StartDate, SnapshotType.Daily));
 
-            if (token.IsLpt)
+            if (isLpt)
             {
                 // Calc OLPT price based on total reserves USD / OLPT total supply
                 var tokenPrice = MathExtensions.FiatPerToken(token.TotalSupply, liquidityPoolSnapshot.Reserves.Usd.Close, token.Sats);

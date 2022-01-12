@@ -36,7 +36,7 @@ public class VaultDtoAssemblerTests
     public async Task Assemble_TokenAddress()
     {
         // Arrange
-        var token = new Token(5, "PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
+        var token = new Token(5, "PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
 
         var balance = new AddressBalance(5, 5, "PQFv8x66vXEQEjw7ZBi8kCavrz15S1ShcG", 500000000, 5, 50);
@@ -59,7 +59,7 @@ public class VaultDtoAssemblerTests
     public async Task Assemble_BalanceNotNull_TokensLockedFromBalance()
     {
         // Arrange
-        var token = new Token(5, "PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
+        var token = new Token(5, "PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
 
         var balance = new AddressBalance(5, 5, "PQFv8x66vXEQEjw7ZBi8kCavrz15S1ShcG", 500000000, 5, 50);
@@ -82,7 +82,7 @@ public class VaultDtoAssemblerTests
     public async Task Assemble_NullBalance_TokensLockedZero()
     {
         // Arrange
-        var token = new Token(5, "PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
+        var token = new Token(5, "PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
 
         _mediatorMock

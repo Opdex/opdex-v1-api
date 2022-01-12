@@ -18,7 +18,6 @@ public class SelectTokenByAddressQueryHandler : IRequestHandler<SelectTokenByAdd
         @$"Select
                 {nameof(TokenEntity.Id)},
                 {nameof(TokenEntity.Address)},
-                {nameof(TokenEntity.IsLpt)},
                 {nameof(TokenEntity.Name)},
                 {nameof(TokenEntity.Symbol)},
                 {nameof(TokenEntity.Decimals)},

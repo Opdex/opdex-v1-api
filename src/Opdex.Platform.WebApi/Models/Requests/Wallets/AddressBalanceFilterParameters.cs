@@ -13,7 +13,7 @@ public sealed class AddressBalanceFilterParameters : FilterParameters<AddressBal
     public AddressBalanceFilterParameters()
     {
         Tokens = new List<Address>();
-        TokenType = TokenProvisionalFilter.All;
+        TokenType = TokenAttributeFilter.All;
     }
 
     /// <summary>
@@ -27,7 +27,7 @@ public sealed class AddressBalanceFilterParameters : FilterParameters<AddressBal
     /// The type of token to filter by, either provisional or non-provisional.
     /// </summary>
     /// <example>Provisional</example>
-    public TokenProvisionalFilter TokenType { get; set; }
+    public TokenAttributeFilter TokenType { get; set; }
 
     /// <summary>
     /// Includes zero balances if true, otherwise filters out zero balances if false. Default false.

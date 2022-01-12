@@ -22,6 +22,7 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
 {
     private const string Split = "Split";
 
+    private const string TableJoins = "{TableJoins}";
     private const string WhereFilter = "{WhereFilter}";
     private const string OrderBy = "{OrderBy}";
     private const string Limit = "{Limit}";
@@ -29,7 +30,6 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
     private static readonly string SqlQuery =
         $@"SELECT DISTINCT
                 t.{nameof(TokenEntity.Id)},
-                t.{nameof(TokenEntity.IsLpt)},
                 t.{nameof(TokenEntity.Address)},
                 t.{nameof(TokenEntity.Name)},
                 t.{nameof(TokenEntity.Symbol)},
@@ -47,6 +47,7 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
             FROM token t
             LEFT JOIN token_summary ts
                 ON ts.{nameof(TokenSummaryEntity.TokenId)} = t.{nameof(TokenEntity.Id)}
+            {TableJoins}
             {WhereFilter}
             GROUP BY t.{nameof(TokenEntity.Id)}
             {OrderBy}
@@ -68,7 +69,7 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
 
     public async Task<IEnumerable<Token>> Handle(SelectTokensWithFilterQuery request, CancellationToken cancellationToken)
     {
-        var sqlParams = new SqlParams(request.MarketId, request.Cursor.Pointer, request.Cursor.Keyword, request.Cursor.Tokens);
+        var sqlParams = new SqlParams(request.MarketId, request.Cursor.Pointer, request.Cursor.Keyword, request.Cursor.Tokens, request.Cursor.AttributeFilter);
 
         var query = DatabaseQuery.Create(QueryBuilder(request), sqlParams, cancellationToken);
 
@@ -88,7 +89,9 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
     {
         var filterOnMarket = request.MarketId > 0;
 
+        var tableJoins = new StringBuilder();
         var whereFilterBuilder = new StringBuilder();
+
         if (filterOnMarket) whereFilterBuilder.Append($" WHERE ts.{nameof(TokenSummaryEntity.MarketId)} = @{nameof(SqlParams.MarketId)}");
 
         if (!request.Cursor.IsFirstRequest)
@@ -127,11 +130,11 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
             whereFilterBuilder.Append($" t.{nameof(TokenEntity.Address)} IN @{nameof(SqlParams.Tokens)}");
         }
 
-        if (request.Cursor.ProvisionalFilter != TokenProvisionalFilter.All)
+        if (request.Cursor.AttributeFilter != TokenAttributeFilter.All)
         {
+            tableJoins.Append($" LEFT JOIN token_attribute ta ON ta.{nameof(TokenAttributeEntity.TokenId)} = t.{nameof(TokenEntity.Id)}");
             whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
-            var isProvisional = request.Cursor.ProvisionalFilter == TokenProvisionalFilter.Provisional;
-            whereFilterBuilder.Append($" t.{nameof(TokenEntity.IsLpt)} = {isProvisional}");
+            whereFilterBuilder.Append($" ta.{nameof(TokenAttributeEntity.AttributeTypeId)} = @{nameof(SqlParams.AttributeType)}");
         }
 
         if (request.Cursor.Keyword.HasValue())
@@ -163,6 +166,7 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
 
         var query = SqlQuery
             .Replace(WhereFilter, whereFilterBuilder.ToString())
+            .Replace(TableJoins, tableJoins.ToString())
             .Replace(OrderBy, orderBy)
             .Replace(Limit, limit);
 
@@ -194,13 +198,14 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
 
     private sealed class SqlParams
     {
-        internal SqlParams(ulong marketId, (string, ulong) pointer, string keyword, IEnumerable<Address> tokens)
+        internal SqlParams(ulong marketId, (string, ulong) pointer, string keyword, IEnumerable<Address> tokens, TokenAttributeFilter attributeType)
         {
             MarketId = marketId;
             OrderByValue = pointer.Item1;
             TokenId = pointer.Item2;
             Keyword = keyword;
             Tokens = tokens.Select(token => token.ToString());
+            AttributeType = attributeType;
         }
 
         public ulong MarketId { get; }
@@ -208,5 +213,6 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
         public ulong TokenId { get; }
         public string Keyword { get; }
         public IEnumerable<string> Tokens { get; }
+        public TokenAttributeFilter AttributeType { get; }
     }
 }

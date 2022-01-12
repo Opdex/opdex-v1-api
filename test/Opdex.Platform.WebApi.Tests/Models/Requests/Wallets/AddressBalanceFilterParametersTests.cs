@@ -19,7 +19,7 @@ public class AddressBalanceFilterParametersTests
 
         // Assert
         filters.Tokens.Should().BeEmpty();
-        filters.TokenType.Should().Be(TokenProvisionalFilter.All);
+        filters.TokenType.Should().Be(TokenAttributeFilter.All);
         filters.IncludeZeroBalances.Should().Be(false);
         filters.Direction.Should().Be(default(SortDirectionType));
         filters.Limit.Should().Be(default);
@@ -32,7 +32,7 @@ public class AddressBalanceFilterParametersTests
         var filters = new AddressBalanceFilterParameters
         {
             Tokens = new Address[] { new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm") },
-            TokenType = TokenProvisionalFilter.Provisional,
+            TokenType = TokenAttributeFilter.Provisional,
             IncludeZeroBalances = true,
             Limit = 20,
             Direction = SortDirectionType.DESC

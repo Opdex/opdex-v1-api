@@ -10,14 +10,14 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 
 public class TokensCursor : Cursor<(string, ulong)>
 {
-    public TokensCursor(string keyword, IEnumerable<Address> tokens, TokenProvisionalFilter provisionalFilter, bool includeZeroLiquidity, TokenOrderByType orderBy,
+    public TokensCursor(string keyword, IEnumerable<Address> tokens, TokenAttributeFilter provisionalFilter, bool includeZeroLiquidity, TokenOrderByType orderBy,
                         SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, (string, ulong) pointer)
         : base(sortDirection, limit, pagingDirection, pointer)
     {
         Keyword = keyword;
         OrderBy = orderBy;
         Tokens = tokens ?? Enumerable.Empty<Address>();
-        ProvisionalFilter = provisionalFilter;
+        AttributeFilter = provisionalFilter;
         IncludeZeroLiquidity = includeZeroLiquidity;
     }
 
@@ -39,7 +39,7 @@ public class TokensCursor : Cursor<(string, ulong)>
     /// <summary>
     /// The type of token to filter for, liquidity pool tokens or not.
     /// </summary>
-    public TokenProvisionalFilter ProvisionalFilter { get; }
+    public TokenAttributeFilter AttributeFilter { get; }
 
     /// <summary>
     /// Includes tokens with no liquidity if true.
@@ -55,7 +55,7 @@ public class TokensCursor : Cursor<(string, ulong)>
         var sb = new StringBuilder();
         sb.AppendFormat("direction:{0};limit:{1};paging:{2};", SortDirection, Limit, PagingDirection);
         foreach (var token in Tokens) sb.AppendFormat("tokens:{0};", token);
-        sb.AppendFormat("provisional:{0};", ProvisionalFilter);
+        sb.AppendFormat("provisional:{0};", AttributeFilter);
         sb.AppendFormat("includeZeroLiquidity:{0};", IncludeZeroLiquidity);
         sb.AppendFormat("keyword:{0};", Keyword);
         sb.AppendFormat("orderBy:{0};", OrderBy);
@@ -69,7 +69,7 @@ public class TokensCursor : Cursor<(string, ulong)>
         if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
         if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical pointer.");
 
-        return new TokensCursor(Keyword, Tokens, ProvisionalFilter, IncludeZeroLiquidity, OrderBy, SortDirection, Limit, direction, pointer);
+        return new TokensCursor(Keyword, Tokens, AttributeFilter, IncludeZeroLiquidity, OrderBy, SortDirection, Limit, direction, pointer);
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ public class TokensCursor : Cursor<(string, ulong)>
 
         TryGetCursorProperties<Address>(values, "tokens", out var tokens);
 
-        TryGetCursorProperty<TokenProvisionalFilter>(values, "provisional", out var provisional);
+        TryGetCursorProperty<TokenAttributeFilter>(values, "provisional", out var provisional);
 
         TryGetCursorProperty<bool>(values, "includeZeroLiquidity", out var includeZeroLiquidity);
 
@@ -142,7 +142,7 @@ public class TokensCursor : Cursor<(string, ulong)>
 /// <summary>
 /// Filter for a tokens status whether it is an Opdex liquidity pool token or not.
 /// </summary>
-public enum TokenProvisionalFilter
+public enum TokenAttributeFilter
 {
     /// <summary>
     /// Non Opdex liquidity pool tokens.
@@ -155,9 +155,14 @@ public enum TokenProvisionalFilter
     Provisional = 1,
 
     /// <summary>
+    /// Opdex mined, staking tokens
+    /// </summary>
+    Staking = 2,
+
+    /// <summary>
     /// All tokens.
     /// </summary>
-    All = 2
+    All = 3
 }
 
 /// <summary>

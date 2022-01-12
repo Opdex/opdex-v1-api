@@ -182,8 +182,8 @@ public class CreateSwapTransactionQuoteCommandHandlerTests
         var command = BuildCommand();
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var tokenIn = new Token(5, command.TokenIn, false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
-        var tokenOut = new Token(5, command.TokenOut, false, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
+        var tokenIn = new Token(5, command.TokenIn, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
+        var tokenOut = new Token(5, command.TokenOut, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
 
         _mediatorMock.Setup(callTo => callTo.Send(It.Is<RetrieveTokenByAddressQuery>(p => p.Address == command.TokenIn), cancellationToken)).ReturnsAsync(tokenIn);
         _mediatorMock.Setup(callTo => callTo.Send(It.Is<RetrieveTokenByAddressQuery>(p => p.Address == command.TokenOut), cancellationToken)).ReturnsAsync(tokenOut);
@@ -207,8 +207,8 @@ public class CreateSwapTransactionQuoteCommandHandlerTests
         var command = BuildCommand();
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var tokenIn = new Token(5, command.TokenIn, false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
-        var tokenOut = new Token(5, command.TokenOut, false, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
+        var tokenIn = new Token(5, command.TokenIn, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
+        var tokenOut = new Token(5, command.TokenOut, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
 
         var market = new Market(1, command.Market, 2, 3, Address.Empty, "Pz6364jVFCDoHJgUK3jsy1XTenAyWcdTKU", true, true, true, 3, true, 4, 5);
         _mediatorMock.Setup(callTo => callTo.Send(It.Is<RetrieveTokenByAddressQuery>(p => p.Address == command.TokenIn), cancellationToken)).ReturnsAsync(tokenIn);
@@ -234,8 +234,8 @@ public class CreateSwapTransactionQuoteCommandHandlerTests
         var command = BuildCommand();
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var tokenIn = new Token(5, command.TokenIn, false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
-        var tokenOut = new Token(5, command.TokenOut, false, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
+        var tokenIn = new Token(5, command.TokenIn, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
+        var tokenOut = new Token(5, command.TokenOut, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
 
         var market = new Market(1, command.Market, 2, 3, Address.Empty, "Pz6364jVFCDoHJgUK3jsy1XTenAyWcdTKU", true, true, true, 3, true, 4, 5);
         var router = new MarketRouter(2, "Pz636HJgUK3jsy1XTenAyWcdTKU4jVFCDo", market.Id, true, 4, 5);
@@ -282,8 +282,8 @@ public class CreateSwapTransactionQuoteCommandHandlerTests
         var command = BuildCommand(tokenInExactAmount: false);
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var tokenIn = new Token(5, command.TokenIn, false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
-        var tokenOut = new Token(5, command.TokenOut, false, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
+        var tokenIn = new Token(5, command.TokenIn, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
+        var tokenOut = new Token(5, command.TokenOut, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
 
         var market = new Market(1, command.Market, 2, 3, Address.Empty, "Pz6364jVFCDoHJgUK3jsy1XTenAyWcdTKU", true, true, true, 3, true, 4, 5);
         var router = new MarketRouter(2, "Pz636HJgUK3jsy1XTenAyWcdTKU4jVFCDo", market.Id, true, 4, 5);
@@ -330,8 +330,8 @@ public class CreateSwapTransactionQuoteCommandHandlerTests
         var command = BuildCommand(tokenIn: "CRS", tokenOut: "PoHJgWcdTKUz6UK3jsy1XTenAy364jVFCD");
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var tokenIn = new Token(5, command.TokenIn, false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
-        var tokenOut = new Token(5, command.TokenOut, false, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
+        var tokenIn = new Token(5, command.TokenIn, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
+        var tokenOut = new Token(5, command.TokenOut, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
 
         var market = new Market(1, command.Market, 2, 3, Address.Empty, "Pz6364jVFCDoHJgUK3jsy1XTenAyWcdTKU", true, true, true, 3, true, 4, 5);
         var router = new MarketRouter(2, "Pz636HJgUK3jsy1XTenAyWcdTKU4jVFCDo", market.Id, true, 4, 5);
@@ -377,8 +377,8 @@ public class CreateSwapTransactionQuoteCommandHandlerTests
         var command = BuildCommand(tokenIn: "CRS", tokenOut: "PoHJgWcdTKUz6UK3jsy1XTenAy364jVFCD", tokenInExactAmount: false);
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var tokenIn = new Token(5, command.TokenIn, false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
-        var tokenOut = new Token(5, command.TokenOut, false, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
+        var tokenIn = new Token(5, command.TokenIn, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
+        var tokenOut = new Token(5, command.TokenOut, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
 
         var market = new Market(1, command.Market, 2, 3, Address.Empty, "Pz6364jVFCDoHJgUK3jsy1XTenAyWcdTKU", true, true, true, 3, true, 4, 5);
         var router = new MarketRouter(2, "Pz636HJgUK3jsy1XTenAyWcdTKU4jVFCDo", market.Id, true, 4, 5);
@@ -424,8 +424,8 @@ public class CreateSwapTransactionQuoteCommandHandlerTests
         var command = BuildCommand(tokenIn: "PdTKUnAy36oHJgWc4jVFCDz6UK3jsy1XTe", tokenOut: "PoHJgWcdTKUz6UK3jsy1XTenAy364jVFCD");
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var tokenIn = new Token(5, command.TokenIn, false, "Wrapped Bitcoin", "WBTC", 8, 100_000_000, UInt256.Parse("21000000"), 5, 15);
-        var tokenOut = new Token(5, command.TokenOut, false, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
+        var tokenIn = new Token(5, command.TokenIn, "Wrapped Bitcoin", "WBTC", 8, 100_000_000, UInt256.Parse("21000000"), 5, 15);
+        var tokenOut = new Token(5, command.TokenOut, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
         var market = new Market(1, command.Market, 2, 3, Address.Empty, "Pz6364jVFCDoHJgUK3jsy1XTenAyWcdTKU", true, true, true, 3, true, 4, 5);
         var router = new MarketRouter(2, "Pz636HJgUK3jsy1XTenAyWcdTKU4jVFCDo", market.Id, true, 4, 5);
 
@@ -472,8 +472,8 @@ public class CreateSwapTransactionQuoteCommandHandlerTests
         var command = BuildCommand(tokenIn: "PdTKUnAy36oHJgWc4jVFCDz6UK3jsy1XTe", tokenOut: "PoHJgWcdTKUz6UK3jsy1XTenAy364jVFCD", tokenInExactAmount: false);
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var tokenIn = new Token(5, command.TokenIn, false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
-        var tokenOut = new Token(5, command.TokenOut, false, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
+        var tokenIn = new Token(5, command.TokenIn, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
+        var tokenOut = new Token(5, command.TokenOut, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
 
         var market = new Market(1, command.Market, 2, 3, Address.Empty, "Pz6364jVFCDoHJgUK3jsy1XTenAyWcdTKU", true, true, true, 3, true, 4, 5);
         var router = new MarketRouter(2, "Pz636HJgUK3jsy1XTenAyWcdTKU4jVFCDo", market.Id, true, 4, 5);

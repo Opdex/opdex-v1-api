@@ -91,7 +91,7 @@ public class CreateRewindAddressBalancesCommandHandlerTests
             new AddressBalance(2, 2, "P5uJYUcmAsqAEgUXjBJPuCXfcNKdN28FQf", 5, 3, 4)
         };
 
-        var tokenResponse = new Token(2, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk", false, "TokenName", "Symbol", 8, 100_000_00, 10000000000, 4, 5);
+        var tokenResponse = new Token(2, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk", "TokenName", "Symbol", 8, 100_000_00, 10000000000, 4, 5);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalancesByModifiedBlockQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(balances);

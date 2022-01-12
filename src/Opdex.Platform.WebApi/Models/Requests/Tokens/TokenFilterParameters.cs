@@ -25,7 +25,7 @@ public sealed class TokenFilterParameters : FilterParameters<TokensCursor>
     /// The type of token to filter for, liquidity pool tokens or not.
     /// </summary>
     /// <example>Provisional</example>
-    public TokenProvisionalFilter TokenType { get; set; }
+    public TokenAttributeFilter TokenType { get; set; }
 
     /// <summary>
     /// Tokens to filter specifically for.

@@ -11,7 +11,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Bala
 
 public class AddressBalancesCursor : Cursor<ulong>
 {
-    public AddressBalancesCursor(IEnumerable<Address> tokens, TokenProvisionalFilter tokenType, bool includeZeroBalances,
+    public AddressBalancesCursor(IEnumerable<Address> tokens, TokenAttributeFilter tokenType, bool includeZeroBalances,
                                  SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection,
                                  ulong pointer)
         : base(sortDirection, limit, pagingDirection, pointer)
@@ -22,7 +22,7 @@ public class AddressBalancesCursor : Cursor<ulong>
     }
 
     public IEnumerable<Address> Tokens { get; }
-    public TokenProvisionalFilter TokenType { get; }
+    public TokenAttributeFilter TokenType { get; }
     public bool IncludeZeroBalances { get; }
 
     /// <inheritdoc />
@@ -68,7 +68,7 @@ public class AddressBalancesCursor : Cursor<ulong>
 
         TryGetCursorProperties<Address>(values, "tokens", out var tokens);
 
-        if (!TryGetCursorProperty<TokenProvisionalFilter>(values, "tokenType", out var tokenType)) return false;
+        if (!TryGetCursorProperty<TokenAttributeFilter>(values, "tokenType", out var tokenType)) return false;
 
         if (!TryGetCursorProperty<bool>(values, "includeZeroBalances", out var includeZeroBalances)) return false;
 

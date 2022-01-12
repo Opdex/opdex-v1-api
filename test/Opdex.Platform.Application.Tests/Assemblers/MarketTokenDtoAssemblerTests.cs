@@ -5,6 +5,7 @@ using Moq;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Assemblers;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.LiquidityPools;
@@ -34,7 +35,7 @@ public class MarketTokenDtoAssemblerTests
     public async Task Assemble_RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery_Send()
     {
         // Arrange
-        var token = new Token(1, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", false, "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), 9, 10);
+        var token = new Token(1, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), 9, 10);
         var market = new Market(19, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 2, 3, null, "nkfGPPGgMkN2kwXwmu3wuFYmPBWQ38k7iY", true, true, true, 3, true, 9, 10);
         var marketToken = new MarketToken(market, token);
 
@@ -55,12 +56,39 @@ public class MarketTokenDtoAssemblerTests
     }
 
     [Fact]
+    public async Task Assemble_RetrieveTokenAttributesByTokenIdQuery_Send()
+    {
+        // Arrange
+        var token = new Token(1, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), 9, 10);
+        var market = new Market(19, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 2, 3, null, "nkfGPPGgMkN2kwXwmu3wuFYmPBWQ38k7iY", true, true, true, 3, true, 9, 10);
+        var marketToken = new MarketToken(market, token);
+
+        // Act
+        try
+        {
+            await _assembler.Assemble(marketToken);
+        }
+        catch
+        {
+            // ignored
+        }
+
+        // Assert
+
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveTokenAttributesByTokenIdQuery>(query => query.TokenId == token.Id),
+                                                   It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
     public async Task Assemble_RetrieveLiquidityPoolByAddressQuery_Send()
     {
         // Arrange
-        var token = new Token(1, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", true, "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), 9, 10);
+        var token = new Token(1, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), 9, 10);
         var market = new Market(19, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 2, 3, null, "nkfGPPGgMkN2kwXwmu3wuFYmPBWQ38k7iY", true, true, true, 3, true, 9, 10);
         var marketToken = new MarketToken(market, token);
+
+        _mediatorMock.Setup(callTo => callTo.Send(It.Is<RetrieveTokenAttributesByTokenIdQuery>(query => query.TokenId == token.Id), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new [] { new TokenAttribute(1, 1, TokenAttributeType.Provisional)});
 
         // Act
         try
@@ -82,7 +110,7 @@ public class MarketTokenDtoAssemblerTests
     public async Task Assemble_HappyPath_Map()
     {
         // Arrange
-        var token = new Token(1, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", false, "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), 9, 10);
+        var token = new Token(1, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), 9, 10);
         token.SetSummary(new TokenSummary(5, 10, 15, -5.00m, 23.53m, 50, 50));
         var market = new Market(19, "kN2kwXwmu3wuFYmPBWQ38k7iYnkfGPPGgM", 2, 3, null, "nkfGPPGgMkN2kwXwmu3wuFYmPBWQ38k7iY", true, true, true, 3, true, 9, 10);
         var marketToken = new MarketToken(market, token);

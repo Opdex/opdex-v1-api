@@ -1,6 +1,8 @@
 using MediatR;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using System;
+using System.Collections.Generic;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 
@@ -13,8 +15,9 @@ public class CreateTokenCommand : IRequest<ulong>
     /// Constructor for the create token command.
     /// </summary>
     /// <param name="token">The SRC token contract address.</param>
+    /// <param name="attributes">List of token attributes to apply to the token.</param>
     /// <param name="blockHeight">The block height the token is being added at.</param>
-    public CreateTokenCommand(Address token, ulong blockHeight)
+    public CreateTokenCommand(Address token, IEnumerable<TokenAttributeType> attributes, ulong blockHeight)
     {
         if (token == Address.Empty)
         {
@@ -28,8 +31,10 @@ public class CreateTokenCommand : IRequest<ulong>
 
         Token = token;
         BlockHeight = blockHeight;
+        Attributes = attributes;
     }
 
     public Address Token { get; }
+    public  IEnumerable<TokenAttributeType> Attributes { get; }
     public ulong BlockHeight { get; }
 }

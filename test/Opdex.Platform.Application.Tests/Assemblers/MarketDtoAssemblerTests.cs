@@ -76,7 +76,7 @@ public class MarketDtoAssemblerTests
         // Arrange
         var market = new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25);
         var summary = new MarketSummary(10, 25);
-        var crs = new Token(1, "CRS", false, "Cirrus", "CRS", 8, 100_000_000, new UInt256("2100000000000000"), 10, 11);
+        var crs = new Token(1, "CRS", "Cirrus", "CRS", 8, 100_000_000, new UInt256("2100000000000000"), 10, 11);
 
         _mediatorMock.Setup(callTo => callTo.Send(It.Is<RetrieveMarketSummaryByMarketIdQuery>(query => query.MarketId == market.Id),
                                                   CancellationToken.None)).ReturnsAsync(summary);
@@ -99,7 +99,7 @@ public class MarketDtoAssemblerTests
         // Arrange
         var market = new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25);
         var summary = new MarketSummary(10, 25);
-        var crs = new Token(1, "CRS", false, "Cirrus", "CRS", 8, 100_000_000, new UInt256("2100000000000000"), 10, 11);
+        var crs = new Token(1, "CRS", "Cirrus", "CRS", 8, 100_000_000, new UInt256("2100000000000000"), 10, 11);
 
         _mediatorMock.Setup(callTo => callTo.Send(It.Is<RetrieveMarketSummaryByMarketIdQuery>(query => query.MarketId == market.Id),
                                                   CancellationToken.None)).ReturnsAsync(summary);
@@ -126,8 +126,8 @@ public class MarketDtoAssemblerTests
         // Arrange
         var market = new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 2, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25);
         var summary = new MarketSummary(10, 25);
-        var crs = new Token(1, "CRS", false, "Cirrus", "CRS", 8, 100_000_000, new UInt256("2100000000000000"), 10, 11);
-        var stakingToken = new Token(5, "t5BL2FAC3iS1PEGC43eYNvVsovkDgib1MD", false, "Opdex Token", "ODX", 8, 100_000_000, new UInt256("2100000000000000"), 10, 11);
+        var crs = new Token(1, "CRS", "Cirrus", "CRS", 8, 100_000_000, new UInt256("2100000000000000"), 10, 11);
+        var stakingToken = new Token(5, "t5BL2FAC3iS1PEGC43eYNvVsovkDgib1MD", "Opdex Token", "ODX", 8, 100_000_000, new UInt256("2100000000000000"), 10, 11);
         var marketToken = new MarketToken(market, stakingToken);
         _mediatorMock.Setup(callTo => callTo.Send(It.Is<RetrieveMarketSummaryByMarketIdQuery>(query => query.MarketId == market.Id),
                                                   CancellationToken.None)).ReturnsAsync(summary);

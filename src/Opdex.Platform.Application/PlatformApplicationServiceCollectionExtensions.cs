@@ -487,6 +487,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<RetrieveTokenByIdQuery, Token>, RetrieveTokenByIdQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveTokenByAddressQuery, Token>, RetrieveTokenByAddressQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveTokenSummaryByMarketAndTokenIdQuery, TokenSummary>, RetrieveTokenSummaryByMarketAndTokenIdQueryHandler>();
+        services.AddTransient<IRequestHandler<RetrieveTokenAttributesByTokenIdQuery, IEnumerable<TokenAttribute>>, RetrieveTokenAttributesByTokenIdQueryHandler>();
 
         // Mining Governances
         services.AddTransient<IRequestHandler<RetrieveMiningGovernanceContractSummaryByAddressQuery, MiningGovernanceContractSummary>, RetrieveMiningGovernanceContractSummaryByAddressQueryHandler>();

@@ -17,7 +17,7 @@ public class AddressBalancesCursorTests
     {
         // Arrange
         // Act
-        static void Act() => new AddressBalancesCursor(Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false, SortDirectionType.ASC, 50 + 1, PagingDirection.Forward, 0);
+        static void Act() => new AddressBalancesCursor(Enumerable.Empty<Address>(), TokenAttributeFilter.All, false, SortDirectionType.ASC, 50 + 1, PagingDirection.Forward, 0);
 
         // Assert
         Assert.Throws<ArgumentOutOfRangeException>("limit", Act);
@@ -29,7 +29,7 @@ public class AddressBalancesCursorTests
     {
         // Arrange
         // Act
-        void Act() => new AddressBalancesCursor(Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false, SortDirectionType.ASC, 25, pagingDirection, pointer);
+        void Act() => new AddressBalancesCursor(Enumerable.Empty<Address>(), TokenAttributeFilter.All, false, SortDirectionType.ASC, 25, pagingDirection, pointer);
 
         // Assert
         Assert.Throws<ArgumentException>("pointer", Act);
@@ -40,7 +40,7 @@ public class AddressBalancesCursorTests
     {
         // Arrange
         // Act
-        var cursor = new AddressBalancesCursor(null, TokenProvisionalFilter.All, false, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
+        var cursor = new AddressBalancesCursor(null, TokenAttributeFilter.All, false, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
 
         // Assert
         cursor.Tokens.Should().BeEmpty();
@@ -50,7 +50,7 @@ public class AddressBalancesCursorTests
     public void ToString_StringifiesCursor_FormatCorrectly()
     {
         // Arrange
-        var cursor = new AddressBalancesCursor(new Address[] { "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", "P8bB9yPr3vVByqfmM5KXftyGckAtAdu6f8" }, TokenProvisionalFilter.Provisional, false, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
+        var cursor = new AddressBalancesCursor(new Address[] { "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", "P8bB9yPr3vVByqfmM5KXftyGckAtAdu6f8" }, TokenAttributeFilter.Provisional, false, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
 
         // Act
         var result = cursor.ToString();
@@ -70,7 +70,7 @@ public class AddressBalancesCursorTests
     public void Turn_NonIdenticalPointer_ReturnAnotherCursor()
     {
         // Arrange
-        var cursor = new AddressBalancesCursor(new Address[] { "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L" }, TokenProvisionalFilter.Provisional, false, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
+        var cursor = new AddressBalancesCursor(new Address[] { "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L" }, TokenAttributeFilter.Provisional, false, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
 
         // Act
         var result = cursor.Turn(PagingDirection.Backward, 567);
@@ -127,7 +127,7 @@ public class AddressBalancesCursorTests
         // Assert
         canParse.Should().Be(true);
         cursor.Tokens.Should().ContainSingle(token => token == "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L");
-        cursor.TokenType.Should().Be(TokenProvisionalFilter.NonProvisional);
+        cursor.TokenType.Should().Be(TokenAttributeFilter.NonProvisional);
         cursor.IncludeZeroBalances.Should().Be(false);
         cursor.SortDirection.Should().Be(SortDirectionType.ASC);
         cursor.Limit.Should().Be(50);

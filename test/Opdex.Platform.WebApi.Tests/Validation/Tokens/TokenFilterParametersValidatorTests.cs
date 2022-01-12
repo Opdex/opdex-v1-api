@@ -129,8 +129,8 @@ public class TokenFilterParametersValidatorTests
     }
 
     [Theory]
-    [InlineData((TokenProvisionalFilter)1000)]
-    public void ProvisionalFilter_Item_Invalid(TokenProvisionalFilter filter)
+    [InlineData((TokenAttributeFilter)1000)]
+    public void AttributeFilter_Item_Invalid(TokenAttributeFilter filter)
     {
         // Arrange
         var request = new TokenFilterParameters
@@ -146,10 +146,10 @@ public class TokenFilterParametersValidatorTests
     }
 
     [Theory]
-    [InlineData(TokenProvisionalFilter.All)]
-    [InlineData(TokenProvisionalFilter.Provisional)]
-    [InlineData(TokenProvisionalFilter.NonProvisional)]
-    public void ProvisionalFilter_Item_Valid(TokenProvisionalFilter filter)
+    [InlineData(TokenAttributeFilter.All)]
+    [InlineData(TokenAttributeFilter.Provisional)]
+    [InlineData(TokenAttributeFilter.NonProvisional)]
+    public void AttributeFilter_Item_Valid(TokenAttributeFilter filter)
     {
         // Arrange
         var request = new TokenFilterParameters

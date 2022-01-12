@@ -135,7 +135,7 @@ public class GetMiningPositionByPoolQueryHandlerTests
         var liqudityPool = new LiquidityPool(5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "GOV-CRS", 10, 15, 20, 25, 30);
         var addressMining = new AddressMining(5, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 100000000000, 50, 500);
         var miningPool = new MiningPool(5, 5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", 10, 10, 10000, 25, 30);
-        var token = new Token(5, "PDrzyNsewpj4KDnDttqcJT5EK7vZXQufNU", false, "Governance Token", "GOV", 8, 10000000, 10000000000000000000, 10, 20);
+        var token = new Token(5, "PDrzyNsewpj4KDnDttqcJT5EK7vZXQufNU", "Governance Token", "GOV", 8, 10000000, 10000000000000000000, 10, 20);
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(liqudityPool);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(miningPool);

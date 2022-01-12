@@ -47,7 +47,7 @@ public class SelectTokensWithFilterQueryHandlerTests
     {
         // Arrange
         ulong marketId = 1;
-        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false, TokenOrderByType.Default,
+        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenAttributeFilter.All, false, TokenOrderByType.Default,
                                       SortDirectionType.ASC, 5, PagingDirection.Forward, default);
         string expected = "WHERE ts.MarketId = @MarketId";
 
@@ -67,7 +67,7 @@ public class SelectTokensWithFilterQueryHandlerTests
     {
         // Arrange
         var tokens = new Address[] { "PKHsZBS9Mbt4fE4W2T1U8wgTKSazNjhvYs" };
-        var cursor = new TokensCursor(null, tokens, TokenProvisionalFilter.All, false, TokenOrderByType.Default,
+        var cursor = new TokensCursor(null, tokens, TokenAttributeFilter.All, false, TokenOrderByType.Default,
                                       SortDirectionType.ASC, 5, PagingDirection.Forward, default);
 
         var expected = "t.Address IN @Tokens";
@@ -84,42 +84,23 @@ public class SelectTokensWithFilterQueryHandlerTests
     }
 
     [Theory]
-    [InlineData(TokenProvisionalFilter.NonProvisional)]
-    [InlineData(TokenProvisionalFilter.Provisional)]
-    public async Task Handle_ShouldFilter_Provisional(TokenProvisionalFilter filter)
+    [InlineData(TokenAttributeFilter.NonProvisional)]
+    [InlineData(TokenAttributeFilter.Provisional)]
+    public async Task Handle_ShouldFilter_TokenAttribute(TokenAttributeFilter filter)
     {
         // Arrange
         var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), filter, false, TokenOrderByType.Default,
                                       SortDirectionType.ASC, 5, PagingDirection.Forward, default);
 
-        var expected = $"t.IsLpt = {filter == TokenProvisionalFilter.Provisional}";
+        const string expectedJoin = "LEFT JOIN token_attribute ta ON ta.TokenId = t.Id";
+        const string expectedWhere = "ta.AttributeTypeId = @AttributeType";
 
         // Act
         await _handler.Handle(new SelectTokensWithFilterQuery(0, cursor), CancellationToken.None);
 
         // Assert
         _dbContext.Verify(callTo => callTo.ExecuteQueryAsync(
-                It.Is<DatabaseQuery>(q => q.Sql.Contains(expected)),
-                It.IsAny<Func<TokenEntity, TokenSummaryEntity, Token>>(),
-                "Split"),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task Handle_ShouldNotFilter_Provisional()
-    {
-        // Arrange
-        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false, TokenOrderByType.Default,
-                                      SortDirectionType.ASC, 5, PagingDirection.Forward, default);
-
-        var notExpected = "AND t.IsLpt";
-
-        // Act
-        await _handler.Handle(new SelectTokensWithFilterQuery(0, cursor), CancellationToken.None);
-
-        // Assert
-        _dbContext.Verify(callTo => callTo.ExecuteQueryAsync(
-                It.Is<DatabaseQuery>(q => !q.Sql.Contains(notExpected)),
+                It.Is<DatabaseQuery>(q => q.Sql.Contains(expectedJoin) && q.Sql.Contains(expectedWhere)),
                 It.IsAny<Func<TokenEntity, TokenSummaryEntity, Token>>(),
                 "Split"),
             Times.Once);
@@ -129,7 +110,7 @@ public class SelectTokensWithFilterQueryHandlerTests
     public async Task Handle_ShouldFilter_Keyword()
     {
         // Arrange
-        var cursor = new TokensCursor("BTC", Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false, TokenOrderByType.Default,
+        var cursor = new TokensCursor("BTC", Enumerable.Empty<Address>(), TokenAttributeFilter.All, false, TokenOrderByType.Default,
                                       SortDirectionType.ASC, 5, PagingDirection.Forward, default);
 
         const string name = "(t.Name LIKE CONCAT('%', @Keyword, '%') OR";
@@ -151,7 +132,7 @@ public class SelectTokensWithFilterQueryHandlerTests
     public async Task Handle_ShouldNotFilter_NoLiquidity()
     {
         // Arrange
-        var cursor = new TokensCursor("BTC", Enumerable.Empty<Address>(), TokenProvisionalFilter.All, true, TokenOrderByType.Default,
+        var cursor = new TokensCursor("BTC", Enumerable.Empty<Address>(), TokenAttributeFilter.All, true, TokenOrderByType.Default,
             SortDirectionType.ASC, 5, PagingDirection.Forward, default);
 
         // Act
@@ -169,7 +150,7 @@ public class SelectTokensWithFilterQueryHandlerTests
     public async Task Handle_ShouldFilter_NoLiquidity()
     {
         // Arrange
-        var cursor = new TokensCursor("BTC", Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false, TokenOrderByType.Default,
+        var cursor = new TokensCursor("BTC", Enumerable.Empty<Address>(), TokenAttributeFilter.All, false, TokenOrderByType.Default,
             SortDirectionType.ASC, 5, PagingDirection.Forward, default);
 
         // Act
@@ -189,7 +170,7 @@ public class SelectTokensWithFilterQueryHandlerTests
         // Arrange
         const SortDirectionType orderBy = SortDirectionType.ASC;
         const uint limit = 25U;
-        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false, TokenOrderByType.Default,
+        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenAttributeFilter.All, false, TokenOrderByType.Default,
                                       orderBy, limit, PagingDirection.Forward, (null, 10));
         // Act
         await _handler.Handle(new SelectTokensWithFilterQuery(0, cursor), CancellationToken.None);
@@ -210,7 +191,7 @@ public class SelectTokensWithFilterQueryHandlerTests
         // Arrange
         const SortDirectionType orderBy = SortDirectionType.DESC;
         const uint limit = 25U;
-        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false, TokenOrderByType.Name,
+        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenAttributeFilter.All, false, TokenOrderByType.Name,
                                       orderBy, limit, PagingDirection.Forward, ("Bitcoin", 10));
         // Act
         await _handler.Handle(new SelectTokensWithFilterQuery(0, cursor), CancellationToken.None);
@@ -231,7 +212,7 @@ public class SelectTokensWithFilterQueryHandlerTests
         // Arrange
         const SortDirectionType orderBy = SortDirectionType.DESC;
         const uint limit = 25U;
-        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false, TokenOrderByType.Symbol,
+        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenAttributeFilter.All, false, TokenOrderByType.Symbol,
                                       orderBy, limit, PagingDirection.Backward, ("BTC", 10));
         // Act
         await _handler.Handle(new SelectTokensWithFilterQuery(0, cursor), CancellationToken.None);
@@ -252,7 +233,7 @@ public class SelectTokensWithFilterQueryHandlerTests
         // Arrange
         const SortDirectionType orderBy = SortDirectionType.ASC;
         const uint limit = 25U;
-        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false, TokenOrderByType.PriceUsd,
+        var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenAttributeFilter.All, false, TokenOrderByType.PriceUsd,
                                       orderBy, limit, PagingDirection.Backward, ("10.1", 10));
         // Act
         await _handler.Handle(new SelectTokensWithFilterQuery(0, cursor), CancellationToken.None);

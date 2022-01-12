@@ -3,6 +3,7 @@ using MediatR;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Addresses;
+using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
@@ -36,6 +37,7 @@ public class SelectAddressBalancesWithFilterQueryHandler : IRequestHandler<Selec
             FROM address_balance ab
             {TableJoins}
             {WhereFilter}
+            GROUP BY t.{nameof(TokenEntity.Id)}
             {OrderBy}
             {Limit}".RemoveExcessWhitespace();
 
@@ -58,7 +60,7 @@ public class SelectAddressBalancesWithFilterQueryHandler : IRequestHandler<Selec
     {
         var balanceId = request.Cursor.Pointer;
 
-        var queryParams = new SqlParams(balanceId, request.Address, request.Cursor.Tokens);
+        var queryParams = new SqlParams(balanceId, request.Address, request.Cursor.Tokens, request.Cursor.TokenType);
 
         var query = DatabaseQuery.Create(QueryBuilder(request), queryParams, cancellationToken);
 
@@ -72,7 +74,7 @@ public class SelectAddressBalancesWithFilterQueryHandler : IRequestHandler<Selec
         var whereFilter = $"WHERE ab.{nameof(AddressBalanceEntity.Owner)} = @{nameof(SqlParams.Wallet)}";
         var tableJoins = string.Empty;
 
-        if (request.Cursor.Tokens.Any() || request.Cursor.TokenType != TokenProvisionalFilter.All)
+        if (request.Cursor.Tokens.Any() || request.Cursor.TokenType != TokenAttributeFilter.All)
         {
             tableJoins += $" JOIN token t ON t.{nameof(TokenEntity.Id)} = ab.{nameof(AddressBalanceEntity.TokenId)}";
         }
@@ -101,10 +103,10 @@ public class SelectAddressBalancesWithFilterQueryHandler : IRequestHandler<Selec
             whereFilter += $" AND t.{nameof(TokenEntity.Address)} IN @{nameof(SqlParams.Tokens)}";
         }
 
-        if (request.Cursor.TokenType != TokenProvisionalFilter.All)
+        if (request.Cursor.TokenType != TokenAttributeFilter.All)
         {
-            var isLpt = request.Cursor.TokenType == TokenProvisionalFilter.Provisional;
-            whereFilter += $" AND t.{nameof(TokenEntity.IsLpt)} = {isLpt.ToString().ToLower()}";
+            tableJoins += $" LEFT JOIN token_attribute ta ON ta.{nameof(TokenAttributeEntity.TokenId)} = t.{nameof(TokenEntity.Id)}";
+            whereFilter += $" AND ta.{nameof(TokenAttributeEntity.AttributeTypeId)} = @{nameof(SqlParams.AttributeType)}";
         }
 
         if (!request.Cursor.IncludeZeroBalances)
@@ -141,15 +143,17 @@ public class SelectAddressBalancesWithFilterQueryHandler : IRequestHandler<Selec
 
     private sealed class SqlParams
     {
-        internal SqlParams(ulong balanceId, Address wallet, IEnumerable<Address> tokens)
+        internal SqlParams(ulong balanceId, Address wallet, IEnumerable<Address> tokens, TokenAttributeFilter attributeType)
         {
             BalanceId = balanceId;
             Wallet = wallet;
             Tokens = tokens.Select(token => token.ToString());
+            AttributeType = attributeType;
         }
 
         public ulong BalanceId { get; }
         public Address Wallet { get; }
         public IEnumerable<string> Tokens { get; }
+        public TokenAttributeFilter AttributeType { get; }
     }
 }
