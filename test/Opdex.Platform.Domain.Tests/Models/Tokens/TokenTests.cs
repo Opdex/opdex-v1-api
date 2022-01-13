@@ -14,14 +14,13 @@ public class TokenTests
     {
         Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
         const string name = "Opdex Token";
-        const bool isLpt = true;
         const string symbol = "OPDX";
         const int decimals = 18;
         const ulong sats = 10000000000000000;
         UInt256 totalSupply = 987654321;
         const ulong createdBlock = 3;
 
-        var token = new Token(address, isLpt, name, symbol, decimals, sats, totalSupply, createdBlock);
+        var token = new Token(address, name, symbol, decimals, sats, totalSupply, createdBlock);
 
         token.Id.Should().Be(0);
         token.Address.Should().Be(address);
@@ -37,7 +36,7 @@ public class TokenTests
     {
         // Arrange
         // Act
-        static void Act() => new Token(Address.Empty, true, "name", "symbol", 8, 100_000_000, 100, 2);
+        static void Act() => new Token(Address.Empty, "name", "symbol", 8, 100_000_000, 100, 2);
 
         // Assert
         Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Token address must be set.");
@@ -48,7 +47,7 @@ public class TokenTests
     {
         // Arrange
         // Act
-        static void Act() => new Token("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, "", "symbol", 8, 100_000_000, 100, 2);
+        static void Act() => new Token("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "", "symbol", 8, 100_000_000, 100, 2);
 
         // Assert
         Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Token name must be set.");
@@ -59,7 +58,7 @@ public class TokenTests
     {
         // Arrange
         // Act
-        static void Act() => new Token("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, "name", "", 8, 100_000_000, 100, 2);
+        static void Act() => new Token("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "name", "", 8, 100_000_000, 100, 2);
 
         // Assert
         Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Token symbol must be set.");
@@ -72,7 +71,7 @@ public class TokenTests
     {
         // Arrange
         // Act
-        void Act() => new Token("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, "name", "symbol", decimals, 100_000_000, 100, 2);
+        void Act() => new Token("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "name", "symbol", decimals, 100_000_000, 100, 2);
 
         // Assert
         Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Token must have between 0 and 18 decimal denominations.");
@@ -83,7 +82,7 @@ public class TokenTests
     {
         // Arrange
         // Act
-        void Act() => new Token("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, "name", "symbol", 8, 0, 100, 2);
+        void Act() => new Token("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "name", "symbol", 8, 0, 100, 2);
 
         // Assert
         Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Sats must be greater than zero.");
@@ -95,7 +94,6 @@ public class TokenTests
         const ulong id = 1;
         Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
         const string name = "Opdex Token";
-        const bool isLpt = true;
         const string symbol = "OPDX";
         const int decimals = 18;
         const ulong sats = 10000000000000000;
@@ -104,7 +102,7 @@ public class TokenTests
         const ulong modifiedBlock = 4;
         TokenSummary summary = new TokenSummary(5, 10, 50);
 
-        var token = new Token(id, address, isLpt, name, symbol, decimals, sats, totalSupply, createdBlock, modifiedBlock);
+        var token = new Token(id, address, name, symbol, decimals, sats, totalSupply, createdBlock, modifiedBlock);
 
         token.Id.Should().Be(id);
         token.Address.Should().Be(address);
@@ -123,7 +121,7 @@ public class TokenTests
         UInt256 totalSupply = 200;
         const ulong updateBlock = 10;
 
-        var token = new Token("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, "name", "symbol", 8, 100_000_000, 100, 2);
+        var token = new Token("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "name", "symbol", 8, 100_000_000, 100, 2);
 
         token.UpdateTotalSupply(totalSupply, updateBlock);
 

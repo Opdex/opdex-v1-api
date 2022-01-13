@@ -29,7 +29,7 @@ public class PersistTokenCommandHandlerTests
     [Fact]
     public async Task PersistsToken_Success()
     {
-        var token = new Token("PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM", true, "TokenName", "TKN", 8, 100_000_000, 500000000, 1);
+        var token = new Token("PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM", "TokenName", "TKN", 8, 100_000_000, 500000000, 1);
         var command = new PersistTokenCommand(token);
 
         _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
@@ -43,7 +43,7 @@ public class PersistTokenCommandHandlerTests
     [Fact]
     public async Task PersistsToken_Fail()
     {
-        var token = new Token("PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM", true, "TokenName", "TKN", 8, 100_000_000, 500000000, 1);
+        var token = new Token("PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM", "TokenName", "TKN", 8, 100_000_000, 500000000, 1);
         var command = new PersistTokenCommand(token);
 
         _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))

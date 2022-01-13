@@ -16,7 +16,6 @@ public class PersistTokenCommandHandler : IRequestHandler<PersistTokenCommand, u
     private static readonly string InsertSqlCommand =
         $@"INSERT INTO token (
                 {nameof(TokenEntity.Address)},
-                {nameof(TokenEntity.IsLpt)},
                 {nameof(TokenEntity.Name)},
                 {nameof(TokenEntity.Symbol)},
                 {nameof(TokenEntity.Decimals)},
@@ -26,7 +25,6 @@ public class PersistTokenCommandHandler : IRequestHandler<PersistTokenCommand, u
                 {nameof(TokenEntity.ModifiedBlock)}
               ) VALUES (
                 @{nameof(TokenEntity.Address)},
-                @{nameof(TokenEntity.IsLpt)},
                 @{nameof(TokenEntity.Name)},
                 @{nameof(TokenEntity.Symbol)},
                 @{nameof(TokenEntity.Decimals)},

@@ -103,7 +103,7 @@ public class StakingPositionDtoAssemblerTests
         var market = new Market(5, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM", 10, 50, Address.Empty, "PCiNwuLQemjMk63A6r5mS2Ma9Kskki6HZK", false, false, false, 1, true, 500, 505);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
 
-        var token = new Token(50, "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy", true, "Governance Token", "GOV", 8, 8, UInt256.Parse("10000000000000000000"), 500, 505);
+        var token = new Token(50, "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy", "Governance Token", "GOV", 8, 8, UInt256.Parse("10000000000000000000"), 500, 505);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
 
         // Act

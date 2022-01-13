@@ -38,7 +38,7 @@ public class CreateCrsTokenSnapshotsCommandHandler : IRequestHandler<CreateCrsTo
         // If CRS doesn't exist, create it
         if (crsId == 0)
         {
-            crs = new Token(Address.Cirrus, false, TokenConstants.Cirrus.Name, TokenConstants.Cirrus.Symbol, TokenConstants.Cirrus.Decimals,
+            crs = new Token(Address.Cirrus, TokenConstants.Cirrus.Name, TokenConstants.Cirrus.Symbol, TokenConstants.Cirrus.Decimals,
                             TokenConstants.Cirrus.Sats, TokenConstants.Cirrus.TotalSupply, request.BlockHeight);
 
             crsId = await _mediator.Send(new MakeTokenCommand(crs, request.BlockHeight), CancellationToken.None);

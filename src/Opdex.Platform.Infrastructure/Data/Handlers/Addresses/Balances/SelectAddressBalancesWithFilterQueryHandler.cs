@@ -36,6 +36,7 @@ public class SelectAddressBalancesWithFilterQueryHandler : IRequestHandler<Selec
             FROM address_balance ab
             {TableJoins}
             {WhereFilter}
+            GROUP BY t.{nameof(TokenEntity.Id)}
             {OrderBy}
             {Limit}".RemoveExcessWhitespace();
 
@@ -58,7 +59,7 @@ public class SelectAddressBalancesWithFilterQueryHandler : IRequestHandler<Selec
     {
         var balanceId = request.Cursor.Pointer;
 
-        var queryParams = new SqlParams(balanceId, request.Address, request.Cursor.Tokens);
+        var queryParams = new SqlParams(balanceId, request.Address, request.Cursor.Tokens, request.Cursor.TokenAttributes);
 
         var query = DatabaseQuery.Create(QueryBuilder(request), queryParams, cancellationToken);
 
@@ -69,13 +70,10 @@ public class SelectAddressBalancesWithFilterQueryHandler : IRequestHandler<Selec
 
     private static string QueryBuilder(SelectAddressBalancesWithFilterQuery request)
     {
-        var whereFilter = $"WHERE ab.{nameof(AddressBalanceEntity.Owner)} = @{nameof(SqlParams.Wallet)}";
-        var tableJoins = string.Empty;
-
-        if (request.Cursor.Tokens.Any() || request.Cursor.TokenType != TokenProvisionalFilter.All)
-        {
-            tableJoins += $" JOIN token t ON t.{nameof(TokenEntity.Id)} = ab.{nameof(AddressBalanceEntity.TokenId)}";
-        }
+        var whereFilter = $" WHERE ab.{nameof(AddressBalanceEntity.Owner)} = @{nameof(SqlParams.Wallet)}";
+        var tableJoins = $" JOIN token t ON t.{nameof(TokenEntity.Id)} = ab.{nameof(AddressBalanceEntity.TokenId)}";
+        var filterTokens = request.Cursor.Tokens.Any();
+        var filterTokenAttributes = request.Cursor.TokenAttributes.Any();
 
         if (!request.Cursor.IsFirstRequest)
         {
@@ -96,15 +94,15 @@ public class SelectAddressBalancesWithFilterQueryHandler : IRequestHandler<Selec
             whereFilter += $" AND ab.{nameof(AddressBalanceEntity.Id)} {sortOperator} @{nameof(SqlParams.BalanceId)}";
         }
 
-        if (request.Cursor.Tokens.Any())
+        if (filterTokens)
         {
             whereFilter += $" AND t.{nameof(TokenEntity.Address)} IN @{nameof(SqlParams.Tokens)}";
         }
 
-        if (request.Cursor.TokenType != TokenProvisionalFilter.All)
+        if (filterTokenAttributes)
         {
-            var isLpt = request.Cursor.TokenType == TokenProvisionalFilter.Provisional;
-            whereFilter += $" AND t.{nameof(TokenEntity.IsLpt)} = {isLpt.ToString().ToLower()}";
+            tableJoins += $" LEFT JOIN token_attribute ta ON ta.{nameof(TokenAttributeEntity.TokenId)} = t.{nameof(TokenEntity.Id)}";
+            whereFilter += $" AND ta.{nameof(TokenAttributeEntity.AttributeTypeId)} IN @{nameof(SqlParams.TokenAttributes)}";
         }
 
         if (!request.Cursor.IncludeZeroBalances)
@@ -141,15 +139,17 @@ public class SelectAddressBalancesWithFilterQueryHandler : IRequestHandler<Selec
 
     private sealed class SqlParams
     {
-        internal SqlParams(ulong balanceId, Address wallet, IEnumerable<Address> tokens)
+        internal SqlParams(ulong balanceId, Address wallet, IEnumerable<Address> tokens, IEnumerable<TokenAttributeFilter> tokenAttributes)
         {
             BalanceId = balanceId;
             Wallet = wallet;
             Tokens = tokens.Select(token => token.ToString());
+            TokenAttributes = tokenAttributes;
         }
 
         public ulong BalanceId { get; }
         public Address Wallet { get; }
         public IEnumerable<string> Tokens { get; }
+        public IEnumerable<TokenAttributeFilter> TokenAttributes { get; }
     }
 }

@@ -8,7 +8,7 @@ namespace Opdex.Platform.Domain.Models.Tokens;
 
 public abstract class TokenBase : BlockAudit
 {
-    protected TokenBase(Address address, bool isLpt, string name, string symbol, int decimals, ulong sats, UInt256 totalSupply, ulong createdBlock)
+    protected TokenBase(Address address, string name, string symbol, int decimals, ulong sats, UInt256 totalSupply, ulong createdBlock)
         : base(createdBlock)
     {
         if (address == Address.Empty)
@@ -37,7 +37,6 @@ public abstract class TokenBase : BlockAudit
         }
 
         Address = address;
-        IsLpt = isLpt;
         Name = name;
         Symbol = symbol;
         Decimals = decimals;
@@ -45,12 +44,11 @@ public abstract class TokenBase : BlockAudit
         TotalSupply = totalSupply;
     }
 
-    protected TokenBase(ulong id, Address address, bool isLpt, string name, string symbol, int decimals, ulong sats, UInt256 totalSupply,
+    protected TokenBase(ulong id, Address address, string name, string symbol, int decimals, ulong sats, UInt256 totalSupply,
                         ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
     {
         Id = id;
         Address = address;
-        IsLpt = isLpt;
         Name = name;
         Symbol = symbol;
         Decimals = decimals;
@@ -60,7 +58,6 @@ public abstract class TokenBase : BlockAudit
 
     public ulong Id { get; }
     public Address Address { get; }
-    public bool IsLpt { get; }
     public string Name { get; }
     public string Symbol { get; }
     public int Decimals { get; }

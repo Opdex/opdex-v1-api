@@ -12,6 +12,7 @@ public sealed class TokenFilterParameters : FilterParameters<TokensCursor>
     public TokenFilterParameters()
     {
         Tokens = new List<Address>();
+        TokenAttributes = new List<TokenAttributeFilter>();
         IncludeZeroLiquidity = true;
     }
 
@@ -22,10 +23,10 @@ public sealed class TokenFilterParameters : FilterParameters<TokensCursor>
     public TokenOrderByType OrderBy { get; set; }
 
     /// <summary>
-    /// The type of token to filter for, liquidity pool tokens or not.
+    /// The types of token to filter for.
     /// </summary>
     /// <example>Provisional</example>
-    public TokenProvisionalFilter TokenType { get; set; }
+    public IEnumerable<TokenAttributeFilter> TokenAttributes { get; set; }
 
     /// <summary>
     /// Tokens to filter specifically for.
@@ -50,7 +51,7 @@ public sealed class TokenFilterParameters : FilterParameters<TokensCursor>
     /// <inheritdoc />
     protected override TokensCursor InternalBuildCursor()
     {
-        if (EncodedCursor is null) return new TokensCursor(Keyword, Tokens, TokenType, IncludeZeroLiquidity, OrderBy, Direction, Limit, PagingDirection.Forward, default);
+        if (EncodedCursor is null) return new TokensCursor(Keyword, Tokens, TokenAttributes, IncludeZeroLiquidity, OrderBy, Direction, Limit, PagingDirection.Forward, default);
         Base64Extensions.TryBase64Decode(EncodedCursor, out var decodedCursor);
         _ = TokensCursor.TryParse(decodedCursor, out var cursor);
         return cursor;

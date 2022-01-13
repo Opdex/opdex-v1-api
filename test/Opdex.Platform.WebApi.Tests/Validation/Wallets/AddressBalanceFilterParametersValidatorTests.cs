@@ -1,8 +1,10 @@
 using FluentValidation.TestHelper;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 using Opdex.Platform.WebApi.Models.Requests.Wallets;
 using Opdex.Platform.WebApi.Validation.Wallets;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Opdex.Platform.WebApi.Tests.Validation.Wallets;
@@ -49,6 +51,42 @@ public class AddressBalanceFilterParametersValidatorTests
 
         // Assert
         result.ShouldNotHaveValidationErrorFor(request => request.Tokens);
+    }
+
+    [Theory]
+    [InlineData((TokenAttributeFilter)1000)]
+    public void TokenAttributes_Invalid(TokenAttributeFilter filter)
+    {
+        // Arrange
+        var request = new AddressBalanceFilterParameters
+        {
+            TokenAttributes = new List<TokenAttributeFilter> {filter}
+        };
+
+        // Act
+        var result = _validator.TestValidate(request);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(r => r.TokenAttributes);
+    }
+
+    [Theory]
+    [InlineData(TokenAttributeFilter.Provisional, TokenAttributeFilter.NonProvisional)]
+    [InlineData(TokenAttributeFilter.NonProvisional, TokenAttributeFilter.NonProvisional)]
+    [InlineData(TokenAttributeFilter.Staking, TokenAttributeFilter.NonProvisional)]
+    public void TokenAttributes_Valid(TokenAttributeFilter first, TokenAttributeFilter second)
+    {
+        // Arrange
+        var request = new AddressBalanceFilterParameters
+        {
+            TokenAttributes = new List<TokenAttributeFilter> {first, second}
+        };
+
+        // Act
+        var result = _validator.TestValidate(request);
+
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(r => r.TokenAttributes);
     }
 
     [Fact]

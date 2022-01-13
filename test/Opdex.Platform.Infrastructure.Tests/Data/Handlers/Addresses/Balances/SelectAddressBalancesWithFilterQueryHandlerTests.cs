@@ -8,6 +8,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Balances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 using Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -72,15 +73,15 @@ public class SelectAddressBalancesWithFilterQueryHandlerTests
     }
 
     [Fact]
-    public async Task SelectAddressBalancesWithFilter_OnlyProvisionalTokens()
+    public async Task SelectAddressBalancesWithFilter_FilterTokenAttributes()
     {
         // Arrange
         const SortDirectionType direction = SortDirectionType.ASC;
         Address wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-        const TokenProvisionalFilter tokenType = TokenProvisionalFilter.Provisional;
+        var tokenAttributes = new [] {TokenAttributeFilter.Provisional};
         const uint limit = 10;
 
-        var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), tokenType, false, direction, limit, PagingDirection.Backward, 50);
+        var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), tokenAttributes, false, direction, limit, PagingDirection.Backward, 50);
 
         var command = new SelectAddressBalancesWithFilterQuery(wallet, cursor);
 
@@ -91,30 +92,8 @@ public class SelectAddressBalancesWithFilterQueryHandlerTests
         _dbContext.Verify(callTo =>
                               callTo.ExecuteQueryAsync<AddressBalanceEntity>(
                                   It.Is<DatabaseQuery>(q => q.Sql.Contains("JOIN token t") &&
-                                                            q.Sql.Contains("t.IsLpt = true"))), Times.Once);
-    }
-
-    [Fact]
-    public async Task SelectAddressBalancesWithFilter_OnlyNonProvisionalTokens()
-    {
-        // Arrange
-        const SortDirectionType direction = SortDirectionType.ASC;
-        Address wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-        const TokenProvisionalFilter tokenType = TokenProvisionalFilter.NonProvisional;
-        const uint limit = 10;
-
-        var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), tokenType, false, direction, limit, PagingDirection.Backward, 50);
-
-        var command = new SelectAddressBalancesWithFilterQuery(wallet, cursor);
-
-        // Act
-        await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        _dbContext.Verify(callTo =>
-                              callTo.ExecuteQueryAsync<AddressBalanceEntity>(
-                                  It.Is<DatabaseQuery>(q => q.Sql.Contains("JOIN token t") &&
-                                                            q.Sql.Contains("t.IsLpt = false"))), Times.Once);
+                                                            q.Sql.Contains("LEFT JOIN token_attribute ta ON ta.TokenId = t.Id") &&
+                                                            q.Sql.Contains("AND ta.AttributeTypeId IN @TokenAttributes"))), Times.Once);
     }
 
     [Fact]
@@ -123,10 +102,10 @@ public class SelectAddressBalancesWithFilterQueryHandlerTests
         // Arrange
         const SortDirectionType direction = SortDirectionType.ASC;
         Address wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-        const TokenProvisionalFilter tokenType = TokenProvisionalFilter.All;
+        var tokenAttributes = Array.Empty<TokenAttributeFilter>();
         const uint limit = 10;
 
-        var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), tokenType, false, direction, limit, PagingDirection.Backward, 50);
+        var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), tokenAttributes, false, direction, limit, PagingDirection.Backward, 50);
 
         var command = new SelectAddressBalancesWithFilterQuery(wallet, cursor);
 
@@ -136,8 +115,8 @@ public class SelectAddressBalancesWithFilterQueryHandlerTests
         // Assert
         _dbContext.Verify(callTo =>
                               callTo.ExecuteQueryAsync<AddressBalanceEntity>(
-                                  It.Is<DatabaseQuery>(q => !q.Sql.Contains("JOIN token t") &&
-                                                            !q.Sql.Contains("t.IsLpt = @IsLpt"))), Times.Once);
+                                  It.Is<DatabaseQuery>(q => q.Sql.Contains("JOIN token t") &&
+                                                            !q.Sql.Contains("LEFT JOIN token_attribute"))), Times.Once);
     }
 
     [Fact]
