@@ -12,7 +12,7 @@ public class VaultProposalResponseModel
     /// <summary>
     /// Address of the vault.
     /// </summary>
-    /// <example>tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i</example>
+    /// <example>t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G</example>
     public Address Vault { get; set; }
 
     /// <summary>

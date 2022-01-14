@@ -24,14 +24,14 @@ using Opdex.Platform.WebApi.Models.Responses.Index;
 namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
-[Route("index")]
-public class IndexController : ControllerBase
+[Route("indexer")]
+public class IndexerController : ControllerBase
 {
     private readonly IMapper _mapper;
     private readonly IMediator _mediator;
     private readonly NetworkType _network;
 
-    public IndexController(IMapper mapper, IMediator mediator, OpdexConfiguration opdexConfiguration)
+    public IndexerController(IMapper mapper, IMediator mediator, OpdexConfiguration opdexConfiguration)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

@@ -246,7 +246,7 @@ public class LiquidityPoolsCursorTests
         cursor.Keyword.Should().Be("PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5");
         cursor.OrderBy.Should().Be(LiquidityPoolOrderByType.Name);
         cursor.StakingFilter.Should().Be(LiquidityPoolStakingStatusFilter.Enabled);
-        cursor.NominationFilter.Should().Be(LiquidityPoolNominationStatusFilter.NonNominated);
+        cursor.NominationFilter.Should().Be(LiquidityPoolNominationStatusFilter.Excluded);
         cursor.MiningFilter.Should().Be(LiquidityPoolMiningStatusFilter.Any);
         cursor.Markets.Should().ContainSingle(m => m == "PL3XhYPefjjc9U4kSqkCUMpPykkfqdrc4L");
         cursor.LiquidityPools.Should().ContainSingle(lp => lp == "PqkCUMpPykkfqdrc4LL3XhYPefjjc9U4kS");

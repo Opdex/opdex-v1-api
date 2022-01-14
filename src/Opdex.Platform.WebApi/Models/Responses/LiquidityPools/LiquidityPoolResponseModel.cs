@@ -31,7 +31,7 @@ public class LiquidityPoolResponseModel
     /// <summary>
     /// Tokens involved in the pool.
     /// </summary>
-    public LiquidityPoolTokenGroupResponseModel Token { get; set; }
+    public LiquidityPoolTokenGroupResponseModel Tokens { get; set; }
 
     /// <summary>
     /// Summary for the pool.

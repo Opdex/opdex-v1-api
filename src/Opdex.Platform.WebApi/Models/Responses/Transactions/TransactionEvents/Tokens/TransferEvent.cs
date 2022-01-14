@@ -10,7 +10,7 @@ public class TransferEvent : TransactionEvent
     /// <summary>
     /// Address that the tokens were transferred from.
     /// </summary>
-    /// <example>t8XpH1pNYDgCnqk91ZQKLgpUVeJ7XmomLT</example>
+    /// <example>tAFxpxRdcV9foADqD6gK3c8sY5MeANzFp5</example>
     public Address From { get; set; }
 
     /// <summary>

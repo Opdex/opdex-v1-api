@@ -19,7 +19,7 @@ export let options = {
 };
 
 const API_BASE_URL = __ENV.api_base_url;
-const MARKET = 't8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH';
+const MARKET = 't7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb';
 const WALLET = 'tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm';
 const today = new Date();
 const lastWeekYesterday = new Date(today.valueOf());

@@ -11,7 +11,7 @@ public class MarketTokenResponseModel : TokenResponseModel
     /// <summary>
     /// The market contract address that the token is included in with an associated liquidity pool.
     /// </summary>
-    /// <example>t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH</example>
+    /// <example>t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb</example>
     public Address Market { get; set; }
 
     /// <summary>

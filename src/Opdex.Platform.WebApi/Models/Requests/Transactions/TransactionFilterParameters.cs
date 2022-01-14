@@ -24,7 +24,7 @@ public sealed class TransactionFilterParameters : FilterParameters<TransactionsC
     /// <summary>
     /// Optional list of smart contract addresses to filter transactions by.
     /// </summary>
-    /// <example>[ "tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i" ]</example>
+    /// <example>[ "t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G" ]</example>
     public IEnumerable<Address> Contracts { get; set; }
 
     /// <summary>

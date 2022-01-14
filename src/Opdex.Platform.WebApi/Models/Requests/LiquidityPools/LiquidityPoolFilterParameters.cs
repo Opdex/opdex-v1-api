@@ -24,7 +24,7 @@ public class LiquidityPoolFilterParameters : FilterParameters<LiquidityPoolsCurs
     /// <summary>
     /// Markets to search liquidity pools within.
     /// </summary>
-    /// <example>[ "t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH" ]</example>
+    /// <example>[ "t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb" ]</example>
     public IEnumerable<Address> Markets { get; set; }
 
     /// <summary>
@@ -43,19 +43,19 @@ public class LiquidityPoolFilterParameters : FilterParameters<LiquidityPoolsCurs
     /// Staking status filter, default ignores filter.
     /// </summary>
     /// <example>Any</example>
-    public LiquidityPoolStakingStatusFilter StakingFilter { get; set; }
+    public LiquidityPoolStakingStatusFilter StakingStatus { get; set; }
 
     /// <summary>
     /// Nomination status filter, default ignores filter.
     /// </summary>
     /// <example>Enabled</example>
-    public LiquidityPoolNominationStatusFilter NominationFilter { get; set; }
+    public LiquidityPoolNominationStatusFilter NominationStatus { get; set; }
 
     /// <summary>
     /// Mining status filter, default ignores filter.
     /// </summary>
     /// <example>Enabled</example>
-    public LiquidityPoolMiningStatusFilter MiningFilter { get; set; }
+    public LiquidityPoolMiningStatusFilter MiningStatus { get; set; }
 
     /// <summary>
     /// The order to sort records by.
@@ -66,7 +66,7 @@ public class LiquidityPoolFilterParameters : FilterParameters<LiquidityPoolsCurs
     /// <inheritdoc />
     protected override LiquidityPoolsCursor InternalBuildCursor()
     {
-        if (EncodedCursor is null) return new LiquidityPoolsCursor(Keyword, Markets, LiquidityPools, Tokens, StakingFilter, NominationFilter, MiningFilter,
+        if (EncodedCursor is null) return new LiquidityPoolsCursor(Keyword, Markets, LiquidityPools, Tokens, StakingStatus, NominationStatus, MiningStatus,
                                                                    OrderBy, Direction, Limit, PagingDirection.Forward, default);
         Base64Extensions.TryBase64Decode(EncodedCursor, out var decodedCursor);
         _ = LiquidityPoolsCursor.TryParse(decodedCursor, out var cursor);

@@ -35,7 +35,7 @@ public class SwapAmountInTests
     public async Task SwapAmountIn_GetLiquidityPoolSwapAmountInQuery_Send()
     {
         // Arrange
-        Address market = new Address("t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH");
+        Address market = new Address("t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb");
         Address tokenIn = new Address("tNgQhNxvachxKGvRonk2S8nrpYi44carYv");
         var request = new SwapAmountInQuoteRequestModel
         {
@@ -59,7 +59,7 @@ public class SwapAmountInTests
     public async Task SwapAmountIn_Response_ReturnOk()
     {
         // Arrange
-        Address market = new Address("t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH");
+        Address market = new Address("t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb");
         Address tokenIn = new Address("tNgQhNxvachxKGvRonk2S8nrpYi44carYv");
         var request = new SwapAmountInQuoteRequestModel
         {

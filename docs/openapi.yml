@@ -33,7 +33,7 @@ tags:
   - name: Transactions
     description: View and build transactions
   - name: Vaults
-    description: Interact with the Opdex vault DAO
+    description: Interact with an Opdex vault DAO
   - name: Wallets
     description: Track and query token balances
 components:
@@ -44,6 +44,18 @@ components:
       bearerFormat: JWT
       description: Authorize with a bearer token obtained from SignalR
   responses:
+    LiquidityPoolNotFound:
+      description: Liquidity pool not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/problemDetails"
+          example:
+            type: https://httpstatuses.com/404
+            title: Not Found
+            status: 404
+            extensions:
+              traceId: 00-00000000000000000000000000000000-0000000000000000-00
     MiningGovernanceNotFound:
       description: Mining governance not found
       content:
@@ -241,6 +253,30 @@ components:
       enum:
         - Provisional
         - NonProvisional
+    stakingStatus:
+      type: string
+      description: Staking status filter
+      enum:
+        - Enabled
+        - Disabled
+    miningStatus:
+      description: Mining status filter
+      enum:
+        - Enabled
+        - Disabled
+    nominationStatus:
+      description: Nomination status filter
+      enum:
+        - Nominated
+        - Excluded
+    liquidityPoolOrderByType:
+      type: string
+      description: Property to sort liquidity pools by
+      enum:
+        - Liquidity
+        - Volume
+        - StakingWeight
+        - Name
     marketOrderByType:
       type: string
       description: Property to sort markets by
@@ -302,6 +338,14 @@ components:
         - Vesting
         - Redeemed
         - Revoked
+    tokenAttribute:
+      type: string
+      description: Attribute that can be applied to a token
+      enum:
+        - Provisional
+        - NonProvisional
+        - Staking
+        - Security
     transactionEventType:
       type: string
       description: Opdex event type identifier
@@ -1265,6 +1309,128 @@ components:
         publicKey:
           $ref: "#/components/schemas/address"
           description: Address of the message signer
+    quoteCreateLiquidityPoolRequest:
+      type: object
+      description: Request to retrieve a create liquidity pool call quote
+      required:
+        - token
+        - market
+      properties:
+        token:
+          $ref: "#/components/schemas/address"
+          description: Address of the SRC token in the pool
+        market:
+          $ref: "#/components/schemas/address"
+          description: Address of the market containing the pool
+    quoteAddLiquidityRequest:
+      type: object
+      description: Request to retrieve an add liquidity to pool call quote
+      required:
+        - amountCrs
+        - amountSrc
+        - amountCrsMin
+        - amountSrcMin
+        - recipient
+      properties:
+        amountCrs:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of CRS to add to the pool
+        amountSrc:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of SRC tokens to add to the pool
+        amountCrsMin:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Minimum amount of CRS to add to the pool, accounting for slippage
+        amountSrcMin:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Minimum amount of SRC tokens to add to the pool, accounting for slippage
+        recipient:
+          $ref: "#/components/schemas/address"
+          description: Address of the recipient for the liquidity pool tokens
+        deadline:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number limit that the transaction is valid for
+    liquidityAmountInQuoteRequest:
+      type: object
+      description: Request detailing desired liquidity deposit
+      required:
+        - amountIn
+        - tokenIn
+      properties:
+        amountIn:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of tokens to input to the pool
+        tokenIn:
+          $ref: "#/components/schemas/tokenAddress"
+          description: Address of the token to input to the pool
+    quoteRemoveLiquidityRequest:
+      type: object
+      description: Request to retrieve a remove liquidity from pool call quote
+      required:
+        - liquidity
+        - amountCrsMin
+        - amountSrcMin
+        - recipient
+      properties:
+        liquidity:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of liquidity pool tokens to remove
+        amountCrsMin:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Minimum amount of CRS to remove from the pool, accounting for slippage
+        amountSrcMin:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Minimum amount of SRC tokens to remove from the pool, accounting for slippage
+        recipient:
+          $ref: "#/components/schemas/address"
+          description: Address of the recipient for the liquidated tokens
+        deadline:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number limit that the transaction is valid for
+    quoteSkimRequest:
+      type: object
+      description: Request to retrieve a skim liquidity pool call quote
+      required:
+        - recipient
+      properties:
+        recipient:
+          $ref: "#/components/schemas/address"
+          description: Address of the recipient for the skimmed tokens
+    quoteStartStakingRequest:
+      type: object
+      description: Request to retrieve a start staking call quote
+      required:
+        - amount
+      properties:
+        amount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of governance tokens to stake in the pool
+    quoteStopStakingRequest:
+      type: object
+      description: Request to retrieve a start staking call quote
+      required:
+        - liquidate
+        - amount
+      properties:
+        liquidate:
+          type: boolean
+          description: Option to liquidate earned liquidity pool tokens back into the pool reserve tokens
+        amount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of governance tokens to stop staking in the pool
+    quoteCollectStakingRewardsRequest:
+      type: object
+      description: Request to retrieve a collect staking rewards call quote
+      required:
+        - liquidate
+      properties:
+        liquidate:
+          type: boolean
+          description: Option to liquidate earned liquidity pool tokens back into the pool reserve tokens
     quoteSwapTransactionRequest:
       type: object
       description: Request to retrieve a token swap call quote
@@ -1365,6 +1531,194 @@ components:
         quote:
           type: string
           description: Previously received encoded transaction quote
+    liquidityPoolsResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/liquidityPoolResponse"
+        paging:
+          $ref: "#/components/schemas/pagingResponse"
+    liquidityPoolResponse:
+      type: object
+      properties:
+        address:
+          $ref: "#/components/schemas/address"
+          description: Address of the liquidity pool
+        name:
+          type: string
+          description: Name of the liquidity pool
+        transactionFee:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+          description: Percentage fee for a trade
+        tokens:
+          $ref: "#/components/schemas/liquidityPoolTokenBreakdown"
+          description: Breakdown of tokens tied to the pool
+        summary:
+          $ref: "#/components/schemas/liquidityPoolSummary"
+    liquidityPoolTokenBreakdown:
+      type: object
+      properties:
+        crs:
+          $ref: "#/components/schemas/tokenResponse"
+        src:
+          $ref: "#/components/schemas/tokenResponse"
+        lp:
+          $ref: "#/components/schemas/tokenResponse"
+    liquidityPoolSummary:
+      type: object
+      properties:
+        reserves:
+          $ref: "#/components/schemas/reservesSummary"
+        rewards:
+          $ref: "#/components/schemas/rewardSummary"
+        volume:
+          $ref: "#/components/schemas/volumeSummary"
+        cost:
+          $ref: "#/components/schemas/costSummary"
+        staking:
+          $ref: "#/components/schemas/liquidityPoolStakingSummary"
+        miningPool:
+          $ref: "#/components/schemas/miningPoolResponse"
+    reservesSummary:
+      type: object
+      properties:
+        crs:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: CRS reserve amount
+        src:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: SRC reserve amount
+        usd:
+          type: number
+          minimum: 0.00000000
+          description: USD value of reserve amount
+        dailyUsdPercentChange:
+          type: number
+          minimum: -100.00
+          description: Percentage change of USD value from the previous day
+    volumeSummary:
+      type: object
+      properties:
+        dailyUsd:
+          type: number
+          minimum: 0.00000000
+          description: USD value of total daily volume
+    costSummary:
+      type: object
+      properties:
+        crsPerSrc:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of CRS tokens worth 1 full SRC token
+        srcPerCrs:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of SRC tokens worth 1 full CRS token
+    liquidityPoolStakingSummary:
+      type: object
+      properties:
+        token:
+          $ref: "#/components/schemas/marketTokenResponse"
+        weight:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total number of tokens staking
+        usd:
+          type: number
+          minimum: 0.00000000
+          description: USD value of tokens staking
+        dailyWeightChangePercent:
+          type: number
+          minimum: -100.00
+          description: Percentage change of tokens staking from the previous day
+        nominated:
+          type: boolean
+          description: True if the pool is nominated for mining, otherwise false
+    liquidityPoolSnapshotsResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/liquidityPoolSnapshotResponse"
+        paging:
+          $ref: "#/components/schemas/pagingResponse"
+    liquidityPoolSnapshotResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Start time for the snapshot
+        transactionCount:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Number of transactions within the snapshot time period
+        reserves:
+          $ref: "#/components/schemas/reservesSnapshot"
+        rewards:
+          $ref: "#/components/schemas/rewardsSnapshot"
+        volume:
+          $ref: "#/components/schemas/volumeSnapshot"
+        cost:
+          $ref: "#/components/schemas/costSnapshot"
+        staking:
+          $ref: "#/components/schemas/stakingSnapshot"
+    reservesSnapshot:
+      type: object
+      properties:
+        crs:
+          $ref: "#/components/schemas/ohlcFixedDecimalResponse"
+        src:
+          $ref: "#/components/schemas/ohlcFixedDecimalResponse"
+        usd:
+          $ref: "#/components/schemas/ohlcDecimalResponse"
+    rewardsSnapshot:
+      type: object
+      properties:
+        providerUsd:
+          type: number
+          minimum: 0.00000000
+          description: Total USD value of tokens rewarded to liquidity providers
+        marketUsd:
+          type: number
+          minimum: 0.00000000
+          description: Total USD value of tokens rewarded to the market; either the owner of a standard market or stakers in a staking market
+        totalUsd:
+          type: number
+          minimum: 0.00000000
+          description: Total USD value of all tokens rewarded
+    volumeSnapshot:
+      type: object
+      properties:
+        crs:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of CRS token volume
+        src:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of SRC token volume
+        usd:
+          type: number
+          minimum: 0.00000000
+          description: USD value of all token volume
+    costSnapshot:
+      type: object
+      properties:
+        crsPerSrc:
+          $ref: "#/components/schemas/ohlcFixedDecimalResponse"
+        srcPerCrs:
+          $ref: "#/components/schemas/ohlcFixedDecimalResponse"
+    stakingSnapshot:
+      type: object
+      properties:
+        weight:
+          $ref: "#/components/schemas/ohlcFixedDecimalResponse"
+          description: Total number of tokens staking
+        usd:
+          $ref: "#/components/schemas/ohlcDecimalResponse"
+          description: Total USD value of tokens staking
     marketsResponse:
       type: object
       properties:
@@ -1428,12 +1782,12 @@ components:
           minimum: 0.00000000
           description: Total volume USD amount
         staking:
-          $ref: "#/components/schemas/stakingSummary"
+          $ref: "#/components/schemas/marketStakingSummary"
           description: Staking summary
         rewards:
           $ref: "#/components/schemas/rewardSummary"
           description: Rewards summary
-    stakingSummary:
+    marketStakingSummary:
       type: object
       properties:
         stakingWeight:
@@ -1489,6 +1843,32 @@ components:
             liquidityPool:
               $ref: "#/components/schemas/address"
               description: Address of the liquidity pool
+    miningPoolResponse:
+      type: object
+      properties:
+        address:
+          $ref: "#/components/schemas/address"
+          description: Address of the mining pool
+        liquidityPool:
+          $ref: "#/components/schemas/address"
+          description: Address of the liquidity pool
+        miningPeriodEndBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number which the current mining period ends
+        rewardPerBlock:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of governance tokens rewarded to the pool per block
+        rewardPerLpt:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of governance tokens rewarded per liquidity pool token
+        tokensMining:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of liquidity pool tokens mining in the pool
+        isActive:
+          type: boolean
+          description: True if liquidity mining is active, otherwise false
     tokensResponse:
       type: object
       properties:
@@ -1524,6 +1904,11 @@ components:
         totalSupply:
           $ref: "#/components/schemas/fixedDecimal"
           description: Total supply for the entire token
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/tokenAttribute"
+          description: Attributes applied to the token
         summary:
           $ref: "#/components/schemas/tokenSummaryResponse"
     tokenSummaryResponse:
@@ -1643,6 +2028,22 @@ components:
           type: number
           description: Value at the end of the time interval
           minimum: 0.00
+    ohlcFixedDecimalResponse:
+      type: object
+      description: Open, high, low, close values within a time interval
+      properties:
+        open:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Value at the start of the time interval
+        high:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Highest value during the time interval
+        low:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Lowest value during the time interval
+        close:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Value at the end of the time interval
     pagingResponse:
       type: object
       description: Paging cursors
@@ -1674,6 +2075,13 @@ components:
         request:
           type: string
           description: Encoded transaction request, which can be used to replay or broadcast the transaction
+    liquidityAmountInQuoteResponse:
+      type: object
+      description: Details the estimated token input amount required to add liquidity, given the other paired token amount
+      properties:
+        amountIn:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Estimated token input amount
     swapAmountInQuoteResponse:
       type: object
       description: Details the estimated token input required for a given swap output
@@ -1685,7 +2093,7 @@ components:
       type: object
       description: Details the estimated token output for a given swap input
       properties:
-        amountIn:
+        amountOut:
           $ref: "#/components/schemas/fixedDecimal"
           description: Estimated token output amount
     miningGovernancesResponse:
@@ -1733,6 +2141,33 @@ components:
         minedToken:
           $ref: "#/components/schemas/address"
           description: Address of governance token that is mined
+    indexerStatusResponse:
+      type: object
+      description: Status of the Opdex transaction indexer
+      properties:
+        latestBlock:
+          $ref: "#/components/schemas/blockResponse"
+          description: Details of the latest block indexed
+        available:
+          type: boolean
+          description: True if the indexer process is active, otherwise false
+        locked:
+          type: boolean
+          description: True if the indexer process is currently running, otherwise false
+        instanceId:
+          type: string
+          description: Unique identifier for the API instance that locked the indexer
+        reason:
+          type: string
+          enum:
+            - Deploying
+            - Indexing
+            - Rewinding
+          description: Reason that the indexer process is currently running
+        modifiedDate:
+          type: string
+          format: date-time
+          description: When the indexer status last changed
     statusResponse:
       type: object
       description: Status of the API instance
@@ -1994,6 +2429,1137 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+  /indexer:
+    get:
+      tags:
+        - Indexer
+      summary: Get Indexer Status
+      description: Retrieves status details for the Opdex transaction indexer.
+      operationId: getIndexerStatus
+      responses:
+        200:
+          description: Indexer status retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/indexerStatusResponse"
+              example:
+                latestBlock:
+                  hash: 05179f49edccc26387a1d9200e2525ca64067b294d31966450e111d983ddefc1
+                  height: 2987787
+                  time: 2022-01-13T13:09:04Z
+                  medianTime: 2022-01-13T13:06:56Z
+                available: true
+                locked: true
+                instanceId: bc399269-74cb-4147-a7c3-f2d296fa4a9b
+                reason: Indexing
+                modifiedDate: 2022-01-13T13:09:56Z
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /liquidity-pools:
+    get:
+      tags:
+        - Liquidity Pools
+      summary: Get Liquidity Pools
+      description: Retrieves details for Opdex liquidity pools across one or many markets. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      operationId: getLiquidityPools
+      parameters:
+        - name: keyword
+          in: query
+          description: Keyword search against liquidity pool addresses and names
+          schema:
+            type: string
+          example: BTC
+        - name: markets
+          in: query
+          description: Addresses of markets to search within
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/address"
+              description: Address of a market
+          example:
+            - t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
+        - name: liquidityPools
+          in: query
+          description: Addresses of liquidity pools to fetch
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/address"
+              description: Address of a liquidity pool
+          example:
+            - tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+            - tLrMcU1csbN7RxGjBMEnJeLoae3PxmQ9cr
+        - name: tokens
+          in: query
+          description: Addresses of SRC tokens paired in pools
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/address"
+              description: Address of an SRC token
+          example:
+            - tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+            - tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3
+        - name: stakingStatus
+          in: query
+          description: Staking status filter; default is not to filter
+          schema:
+            $ref: "#/components/schemas/stakingStatus"
+          example: Enabled
+        - name: nominationStatus
+          in: query
+          description: Nomination status filter; default is not to filter
+          schema:
+            $ref: "#/components/schemas/nominationStatus"
+          example: Nominated
+        - name: miningStatus
+          in: query
+          description: Mining status filter; default is not to filter
+          schema:
+            $ref: "#/components/schemas/miningStatus"
+          example: Enabled
+        - name: orderBy
+          in: query
+          description: Property by which to sort results
+          schema:
+            $ref: "#/components/schemas/liquidityPoolOrderByType"
+          example: Volume
+        - name: direction
+          in: query
+          description: Order direction of the results
+          schema:
+            $ref: "#/components/schemas/sortDirection"
+          example: DESC
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 50
+          example: 10
+        - name: cursor
+          in: query
+          description: Reference of the requested page, returned by a previous call
+          schema:
+            type: string
+      responses:
+        200:
+          description: Liqudidity pool results found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/liquidityPoolsResponse"
+              example:
+                results:
+                  - address: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                    name: TBTC-TCRS
+                    transactionFee: 0.3
+                    tokens:
+                      crs:
+                        address: CRS
+                        name: Cirrus
+                        symbol: TCRS
+                        decimals: 8
+                        sats: 100000000
+                        totalSupply: "100000000.00000000"
+                        attributes: []
+                        summmary:
+                          priceUsd: 1.36598319
+                          dailyPriceChangePercent: 0.00000000
+                          modifiedBlock: 2988890
+                      src:
+                        address: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                        name: Bitcoin (Wrapped)
+                        symbol: TBTC
+                        decimals: 8
+                        sats: 100000000
+                        totalSupply: "21000000.00000000"
+                        attributes:
+                          - NonProvisional
+                        summmary:
+                          priceUsd: 42633.71834591
+                          dailyPriceChangePercent: -0.04000000
+                          modifiedBlock: 2991118
+                      lp:
+                        address: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                        name: Opdex Liquidity Pool Token
+                        symbol: OLPT
+                        decimals: 8
+                        sats: 100000000
+                        totalSupply: "94.39473361"
+                        attributes:
+                          - Provisional
+                        summmary:
+                          priceUsd: 482.64677779
+                          dailyPriceChangePercent: -0.02000000
+                          modifiedBlock: 2991118
+                    summary:
+                      reserves:
+                        crs: "16676.38165376"
+                        src: "0.53431082"
+                        usd: 45559.31401812
+                        dailyUsdChangePercent: -0.02000000
+                      rewards:
+                        providerDailyUsd: 0.01000000
+                        marketDailyUsd: 0.00000000
+                        totalDailyUsd: 0.01000000
+                      volume:
+                        dailyUsd: 4.26496572
+                      cost:
+                        crsPerSrc: "31211.01244732"
+                        srcPerCrs: "0.00003203"
+                      staking:
+                        token:
+                          market: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
+                          liquidityPool: tGS4ad4E1eNXcKxoke3t7v5zQtjMpeRQ3U
+                          address: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
+                          name: Testnet Opdex Token
+                          symbol: TODX
+                          decimals: 8
+                          sats: 100000000
+                          totalSupply: "400000000.00000000"
+                          attributes:
+                            - NonProvisional
+                            - Staking
+                          summary:
+                            priceUsd: 0.00000000
+                            dailyPriceChangePercent: 0.00000000
+                            modifiedBlock: 2989456
+                        weight: "0.00000000"
+                        usd: 0.00000000
+                        dailyWeightChangePercent: 0.00000000
+                        nominated: true
+                      miningPool:
+                        address: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+                        liquidityPool: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                        miningPeriodEndBlock: 0
+                        rewardPerBlock: "0.00000000"
+                        rewardPerLpt: "0.00000000"
+                        tokensMining: "4.14831968"
+                        isActive: false
+                paging: {}
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  nominationStatus:
+                    - The value 'Enabled' is not valid for NominationStatus.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      tags:
+        - Liquidity Pools
+      summary: Build Create Liquidity Pool Transaction Quote
+      description: Builds a quote for a transaction to create an Opdex liquidity pool. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildCreateLiquidityPoolQuote
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/quoteCreateLiquidityPoolRequest"
+            example:
+              token: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+              market: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Built create liquidity pool quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                result: tNiP367ETVYReXenrZXz5XQGVXt1FFHQz1
+                gasUsed: 59204
+                events:
+                  - token: tA88mLAYt3gTp5eqFR6srceAPrTNf4tdFy
+                    liquidityPool: tNiP367ETVYReXenrZXz5XQGVXt1FFHQz1
+                    eventType: CreateLiquidityPoolEvent
+                    contract: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
+                    sortOrder: 0
+                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0N1JvckE3eFFDTVZZS1BNMWliUEUxTlNzd2FMYnBxTFFiIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNyZWF0ZVBvb2wiLCJwYXJhbWV0ZXJzIjpbeyJsYWJlbCI6IlRva2VuIEFkZHJlc3MiLCJ2YWx1ZSI6IjkjdEE4OG1MQVl0M2dUcDVlcUZSNnNyY2VBUHJUTmY0dGRGeSJ9XSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  market:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /liquidity-pools/{pool}:
+    get:
+      tags:
+        - Liquidity Pools
+      summary: Get Liquidity Pool
+      description: Retrieve details for an Opdex liquidity pool.
+      operationId: getLiquidityPool
+      parameters:
+        - name: pool
+          in: path
+          description: Address of a liquidity pool
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+      responses:
+        200:
+          description: Liquidity pool found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/liquidityPoolResponse"
+              example:
+                address: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                name: TBTC-TCRS
+                transactionFee: 0.3
+                tokens:
+                  crs:
+                    address: CRS
+                    name: Cirrus
+                    symbol: TCRS
+                    decimals: 8
+                    sats: 100000000
+                    totalSupply: "100000000.00000000"
+                    attributes: []
+                    summmary:
+                      priceUsd: 1.36598319
+                      dailyPriceChangePercent: 0.00000000
+                      modifiedBlock: 2988890
+                  src:
+                    address: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                    name: Bitcoin (Wrapped)
+                    symbol: TBTC
+                    decimals: 8
+                    sats: 100000000
+                    totalSupply: "21000000.00000000"
+                    attributes:
+                      - NonProvisional
+                    summmary:
+                      priceUsd: 42633.71834591
+                      dailyPriceChangePercent: -0.04000000
+                      modifiedBlock: 2991118
+                  lp:
+                    address: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                    name: Opdex Liquidity Pool Token
+                    symbol: OLPT
+                    decimals: 8
+                    sats: 100000000
+                    totalSupply: "94.39473361"
+                    attributes:
+                      - Provisional
+                    summmary:
+                      priceUsd: 482.64677779
+                      dailyPriceChangePercent: -0.02000000
+                      modifiedBlock: 2991118
+                summary:
+                  reserves:
+                    crs: "16676.38165376"
+                    src: "0.53431082"
+                    usd: 45559.31401812
+                    dailyUsdChangePercent: -0.02000000
+                  rewards:
+                    providerDailyUsd: 0.01000000
+                    marketDailyUsd: 0.00000000
+                    totalDailyUsd: 0.01000000
+                  volume:
+                    dailyUsd: 4.26496572
+                  cost:
+                    crsPerSrc: "31211.01244732"
+                    srcPerCrs: "0.00003203"
+                  staking:
+                    token:
+                      market: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
+                      liquidityPool: tGS4ad4E1eNXcKxoke3t7v5zQtjMpeRQ3U
+                      address: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
+                      name: Testnet Opdex Token
+                      symbol: TODX
+                      decimals: 8
+                      sats: 100000000
+                      totalSupply: "400000000.00000000"
+                      attributes:
+                        - NonProvisional
+                        - Staking
+                      summary:
+                        priceUsd: 0.00000000
+                        dailyPriceChangePercent: 0.00000000
+                        modifiedBlock: 2989456
+                    weight: "0.00000000"
+                    usd: 0.00000000
+                    dailyWeightChangePercent: 0.00000000
+                    nominated: true
+                  miningPool:
+                    address: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+                    liquidityPool: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                    miningPeriodEndBlock: 0
+                    rewardPerBlock: "0.00000000"
+                    rewardPerLpt: "0.00000000"
+                    tokensMining: "4.14831968"
+                    isActive: false
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  pool:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          $ref: "#/components/responses/LiquidityPoolNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /liquidity-pools/{pool}/history:
+    get:
+      tags:
+        - Liquidity Pools
+      summary: Get Liquidity Pool History
+      description: Retrieves historical transactions, reserves, rewards, volume, cost and staking data for an Opdex liquidity pool. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      operationId: getLiquidityPoolHistory
+      parameters:
+        - name: pool
+          in: path
+          description: Address of a liquidity pool
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+        - name: interval
+          in: query
+          description: Time range between each snapshot
+          schema:
+            $ref: "#/components/schemas/interval"
+          example: 1D
+        - name: startDateTime
+          in: query
+          description: Start time for which to retrieve snapshots
+          required: true
+          schema:
+            type: string
+            format: date-time
+          example: 2022-01-01T00:00:00Z
+        - name: endDateTime
+          in: query
+          description: End time for which to retrieve snapshots
+          required: true
+          schema:
+            type: string
+            format: date-time
+          example: 2022-12-31T23:59:59
+        - name: direction
+          in: query
+          description: Order direction of the results
+          schema:
+            $ref: "#/components/schemas/sortDirection"
+          example: DESC
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 50
+          example: 10
+        - name: cursor
+          in: query
+          description: Reference of the requested page, returned by a previous call
+          schema:
+            type: string
+      responses:
+        200:
+          description: Liquidity pool snapshots found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/liquidityPoolSnapshotsResponse"
+              example:
+                results:
+                  - timestamp: 2022-01-13T00:00:00Z
+                    tranasctionCount: 5
+                    reserves:
+                      crs:
+                        open: "1000.00000000"
+                        high: "18446.48809942"
+                        low: "1000.00000000"
+                        close: "16679.49397419"
+                      src:
+                        open: "0.03202800"
+                        high: "0.59080410"
+                        low: "0.03202800"
+                        close: "0.53421082"
+                      usd:
+                        open: 2731.96638000
+                        high: 50395.18531668
+                        low: 2731.96638000
+                        close: 45567.81677288
+                    rewards:
+                      providerUsd: 0.00000000
+                      marketUsd: 0.00000000
+                      totalUsd: 0.00000000
+                    volume:
+                      crs: "0.00000000"
+                      src: "0.00000000"
+                      usd: 0.00000000
+                    cost:
+                      crsPerSrc:
+                        open: "31222.68015486"
+                        high: "31222.68125664"
+                        low: "31222.68015486"
+                        close: "31222.68091498"
+                      srcPerCrs:
+                        open: "0.00003202"
+                        high: "0.00003202"
+                        low: "0.00003202"
+                        close: "0.00003202"
+                    staking:
+                      weight:
+                        open: "0.00000000"
+                        high: "0.00000000"
+                        low: "0.00000000"
+                        close: "0.00000000"
+                      usd:
+                        open: 0.00000000
+                        high: 0.00000000
+                        low: 0.00000000
+                        close: 0.00000000
+                  - timestamp: 2022-01-14T00:00:00Z
+                    tranasctionCount: 1
+                    reserves:
+                      crs:
+                        open: "16679.49397419"
+                        high: "16679.49397419"
+                        low: "16676.38165376"
+                        close: "16676.38165376"
+                      src:
+                        open: "0.53421082"
+                        high: "0.53431082"
+                        low: "0.53421082"
+                        close: "0.53431082"
+                      usd:
+                        open: 45567.81677288
+                        high: 45567.81677288
+                        low: 45559.31401812
+                        close: 45559.31401812
+                    rewards:
+                      providerUsd: 0.01000000
+                      marketUsd: 0.00000000
+                      totalUsd: 0.01000000
+                    volume:
+                      crs: "3.11232043"
+                      src: "0.00000000"
+                      usd: 4.26496572
+                    cost:
+                      crsPerSrc:
+                        open: "31222.68091498"
+                        high: "31222.68091498"
+                        low: "31211.01244732"
+                        close: "31211.01244732"
+                      srcPerCrs:
+                        open: "0.00003202"
+                        high: "0.00003203"
+                        low: "0.00003202"
+                        close: "0.00003203"
+                    staking:
+                      weight:
+                        open: "0.00000000"
+                        high: "0.00000000"
+                        low: "0.00000000"
+                        close: "0.00000000"
+                      usd:
+                        open: 0.00000000
+                        high: 0.00000000
+                        low: 0.00000000
+                        close: 0.00000000
+                paging: {}
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  pool:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          $ref: "#/components/responses/LiquidityPoolNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /liquidity-pools/{pool}/add:
+    post:
+      tags:
+        - Liquidity Pools
+      summary: Build Add Liquidity Transaction Quote
+      description: Builds a quote for a transaction to add liquidity to an Opdex liquidity pool. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildAddLiquidityQuote
+      parameters:
+        - name: pool
+          in: path
+          description: Address of a liquidity pool
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/quoteAddLiquidityRequest"
+            example:
+              amountCrs: "500.00000000"
+              amountSrc: "2500.00000000000000000"
+              amountCrsMin: "495.00000000"
+              amountSrcMin: "2490.00000000000000000"
+              receipient: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+              deadline: 3000000
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Built add liquidity quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                result:
+                  - "2500000000"
+                  - "80099"
+                  - "14150796"
+                gasUsed: 61708
+                events:
+                  - from: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    to: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                    amount: "0.00080099"
+                    eventType: TransferEvent
+                    contract: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                    sortOrder: 0
+                  - from: t6vc3nrbAurGs3i17HJUavZuw4ioKTiFCE
+                    to: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    amount: "0.14150796"
+                    eventType: TransferEvent
+                    contract: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                    sortOrder: 1
+                  - amountCrs: "25.50000000"
+                    amountSrc: "0.00080099"
+                    amountLpt: "0.14150796"
+                    tokenSrc: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                    tokenLp: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                    tokenLpTotalSupply: 94.53624157
+                    eventType: AddLiquidityEvent
+                    contract: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                    sortOrder: 2
+                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0QUZ4cHhSZGNWOWZvQURxRDZnSzNjOHNZNU1lQU56RnA1IiwiYW1vdW50IjoiMjUuMDAwMDAwMDAiLCJtZXRob2QiOiJBZGRMaXF1aWRpdHkiLCJwYXJhbWV0ZXJzIjpbeyJsYWJlbCI6IlRva2VuIiwidmFsdWUiOiI5I3RHU2syZFZFTnVxQVEyck5YYnVpMzdYSHV1ckZDVHFhZEQifSx7ImxhYmVsIjoiU1JDIEFtb3VudCIsInZhbHVlIjoiMTIjODAwOTkifSx7ImxhYmVsIjoiTWluaW11bSBDUlMgQW1vdW50IiwidmFsdWUiOiI3IzI0MDAwMDAwMDAifSx7ImxhYmVsIjoiTWluaW11bSBTUkMgQW1vdW50IiwidmFsdWUiOiIxMiM3NTAwMCJ9LHsibGFiZWwiOiJSZWNpcGllbnQiLCJ2YWx1ZSI6IjkjdFE5UnVrWnNCNmJCc2VuSG5HU28xcTY5Q0p6V0dueG9obSJ9LHsibGFiZWwiOiJEZWFkbGluZSIsInZhbHVlIjoiNyMwIn1dLCJjYWxsYmFjayI6Imh0dHBzOi8vdGVzdC1hcGkub3BkZXguY29tL3RyYW5zYWN0aW9ucyJ9
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  pool:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/LiquidityPoolNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /liquidity-pools/{pool}/add/amount-in:
+    post:
+      tags:
+        - Liquidity Pools
+      summary: Add Liquidity Amount In Quote
+      description: Retrieves an estimate for the amount of a token required to be added, give an input amount of the other token in the pair.
+      operationId: getLiquidityAmountInQuote
+      parameters:
+        - name: pool
+          in: path
+          description: Address of a liquidity pool
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/liquidityAmountInQuoteRequest"
+            example:
+              amountIn: "100.00000000"
+              tokenIn: CRS
+      responses:
+        200:
+          description: Add liquidity amount in quote retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/liquidityAmountInQuoteResponse"
+              example:
+                amountIn: "0.00080099"
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  pool:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          $ref: "#/components/responses/LiquidityPoolNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /liquidity-pools/{pool}/remove:
+    post:
+      tags:
+        - Liquidity Pools
+      summary: Build Remove Liquidity Transaction Quote
+      description: Builds a quote for a transaction to remove liquidity from an Opdex liquidity pool. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildRemoveLiquidityQuote
+      parameters:
+        - name: pool
+          in: path
+          description: Address of a liquidity pool
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/quoteRemoveLiquidityRequest"
+            example:
+              liquidity: "0.05000000"
+              amountCrsMin: "5.00000000"
+              amountSrcMin: "0.00005000"
+              receipient: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+              deadline: 3000000
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Built remove liquidity quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                result:
+                  - "883358690"
+                  - "28301"
+                gasUsed: 76032
+                events:
+                  - from: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    to: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                    amount: "0.05000000"
+                    eventType: TransferEvent
+                    contract: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                    sortOrder: 0
+                  - from: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                    to: t6vc3nrbAurGs3i17HJUavZuw4ioKTiFCE
+                    amount: "0.05000000"
+                    eventType: TransferEvent
+                    contract: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                    sortOrder: 1
+                  - from: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                    to: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    amount: "0.00028301"
+                    eventType: TransferEvent
+                    contract: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                    sortOrder: 2
+                  - amountCrs: "8.83358690"
+                    amountSrc: "0.00028301"
+                    amountLpt: "0.05000000"
+                    tokenSrc: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                    tokenLp: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                    tokenLpTotalSupply: 94.34473361
+                    eventType: RemoveLiquidityEvent
+                    contract: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                    sortOrder: 3
+                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0QUZ4cHhSZGNWOWZvQURxRDZnSzNjOHNZNU1lQU56RnA1IiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IlJlbW92ZUxpcXVpZGl0eSIsInBhcmFtZXRlcnMiOlt7ImxhYmVsIjoiVG9rZW4iLCJ2YWx1ZSI6IjkjdEdTazJkVkVOdXFBUTJyTlhidWkzN1hIdXVyRkNUcWFkRCJ9LHsibGFiZWwiOiJPTFBUIEFtb3VudCIsInZhbHVlIjoiMTIjNTAwMDAwMCJ9LHsibGFiZWwiOiJNaW5pbXVtIENSUyBBbW91bnQiLCJ2YWx1ZSI6IjcjMSJ9LHsibGFiZWwiOiJNaW5pbXVtIFNSQyBBbW91bnQiLCJ2YWx1ZSI6IjEyIzEifSx7ImxhYmVsIjoiUmVjaXBpZW50IiwidmFsdWUiOiI5I3RROVJ1a1pzQjZiQnNlbkhuR1NvMXE2OUNKeldHbnhvaG0ifSx7ImxhYmVsIjoiRGVhZGxpbmUiLCJ2YWx1ZSI6IjcjMCJ9XSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  pool:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/LiquidityPoolNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /liquidity-pools/{pool}/sync:
+    post:
+      tags:
+        - Liquidity Pools
+      summary: Build Sync Transaction Quote
+      description: Builds a quote for a transaction to sync an Opdex liquidity pool. This transaction forces the reserves to equal the current token balances. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildSyncQuote
+      parameters:
+        - name: pool
+          in: path
+          description: Address of a liquidity pool
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Built sync quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                gasUsed: 21458
+                events: []
+                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0VkZoWGNTM2dWYjQ5TVNUc2FERm9xa3hMckFVaU5FTjduIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IlN5bmMiLCJwYXJhbWV0ZXJzIjpbXSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  pool:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/LiquidityPoolNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /liquidity-pools/{pool}/skim:
+    post:
+      tags:
+        - Liquidity Pools
+      summary: Build Skim Transaction Quote
+      description: Builds a quote for a transaction to skim an Opdex liquidity pool. This transaction forces the token balances to equal the current reserves. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildSkimQuote
+      parameters:
+        - name: pool
+          in: path
+          description: Address of a liquidity pool
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/quoteSkimRequest"
+            example:
+              receipient: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Built skim quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                gasUsed: 24173
+                events:
+                  - from: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                    to: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    amount: "0.00000000"
+                    eventType: TransferEvent
+                    contract: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                    sortOrder: 0
+                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0VkZoWGNTM2dWYjQ5TVNUc2FERm9xa3hMckFVaU5FTjduIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IlNraW0iLCJwYXJhbWV0ZXJzIjpbeyJsYWJlbCI6IlJlY2lwaWVudCIsInZhbHVlIjoiOSN0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIn1dLCJjYWxsYmFjayI6Imh0dHBzOi8vdGVzdC1hcGkub3BkZXguY29tL3RyYW5zYWN0aW9ucyJ9
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  pool:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/LiquidityPoolNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /liquidity-pools/{pool}/staking/start:
+    post:
+      tags:
+        - Liquidity Pools
+      summary: Build Start Staking Transaction Quote
+      description: Builds a quote for a transaction to begin staking in an Opdex liquidity pool. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildStartStakingQuote
+      parameters:
+        - name: pool
+          in: path
+          description: Address of a liquidity pool
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/quoteStartStakingRequest"
+            example:
+              amount: "1000.00000000"
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Built start staking quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                error:
+                  friendly: "Unable to start staking, staking token transfer failed."
+                  raw: "Stratis.SmartContracts.SmartContractAssertException: OPDEX: INVALID_TRANSFER_FROM\r\n   at Stratis.SmartContracts.SmartContract.Assert(Boolean condition, String message)\r\n   at OpdexLiquidityPool.SafeTransferFrom(Address token, Address from, Address to, UInt256 amount)\r\n   at OpdexStakingPool.StartStaking(UInt256 amount)"
+                gasUsed: 27839
+                events: []
+                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0VkZoWGNTM2dWYjQ5TVNUc2FERm9xa3hMckFVaU5FTjduIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IlN0YXJ0U3Rha2luZyIsInBhcmFtZXRlcnMiOlt7ImxhYmVsIjoiQW1vdW50IiwidmFsdWUiOiIxMiMxMDAwMDAwMDAifV0sImNhbGxiYWNrIjoiaHR0cHM6Ly90ZXN0LWFwaS5vcGRleC5jb20vdHJhbnNhY3Rpb25zIn0=
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  pool:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/LiquidityPoolNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /liquidity-pools/{pool}/staking/stop:
+    post:
+      tags:
+        - Liquidity Pools
+      summary: Build Stop Staking Transaction Quote
+      description: Builds a quote for a transaction to stop staking in an Opdex liquidity pool. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildStopStakingQuote
+      parameters:
+        - name: pool
+          in: path
+          description: Address of a liquidity pool
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/quoteStopStakingRequest"
+            example:
+              liquidate: true
+              amount: "25000.00000000"
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Built stop staking quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                error:
+                  friendly: "Unable to stop staking, invalid amount."
+                  raw: "Stratis.SmartContracts.SmartContractAssertException: OPDEX: INVALID_AMOUNT\r\n   at Stratis.SmartContracts.SmartContract.Assert(Boolean condition, String message)\r\n   at OpdexStakingPool.StopStaking(UInt256 amount, Boolean liquidate)"
+                gasUsed: 15283
+                events: []
+                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0VkZoWGNTM2dWYjQ5TVNUc2FERm9xa3hMckFVaU5FTjduIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IlN0b3BTdGFraW5nIiwicGFyYW1ldGVycyI6W3sibGFiZWwiOiJBbW91bnQiLCJ2YWx1ZSI6IjEyIzEwMDAwMDAwMCJ9LHsibGFiZWwiOiJMaXF1aWRhdGUgUmV3YXJkcyIsInZhbHVlIjoiMSNGYWxzZSJ9XSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  pool:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/LiquidityPoolNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /liquidity-pools/{pool}/staking/collect:
+    post:
+      tags:
+        - Liquidity Pools
+      summary: Build Collect Staking Rewards Transaction Quote
+      description: Builds a quote for a transaction to collect staking rewards from an Opdex liquidity pool. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildCollectStakingRewardsQuote
+      parameters:
+        - name: pool
+          in: path
+          description: Address of a liquidity pool
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+      security:
+        - opdexAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/quoteCollectStakingRewardsRequest"
+            example:
+              liquidate: true
+      responses:
+        200:
+          description: Built collect staking rewards quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                gasUsed: 16755
+                events: []
+                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0VkZoWGNTM2dWYjQ5TVNUc2FERm9xa3hMckFVaU5FTjduIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNvbGxlY3RTdGFraW5nUmV3YXJkcyIsInBhcmFtZXRlcnMiOlt7ImxhYmVsIjoiTGlxdWlkYXRlIFJld2FyZHMiLCJ2YWx1ZSI6IjEjRmFsc2UifV0sImNhbGxiYWNrIjoiaHR0cHM6Ly90ZXN0LWFwaS5vcGRleC5jb20vdHJhbnNhY3Rpb25zIn0=
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  pool:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/LiquidityPoolNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
   /markets:
     get:
       tags:
@@ -2043,7 +3609,7 @@ paths:
                 $ref: "#/components/schemas/marketsResponse"
               example:
                 results:
-                  - address: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
+                  - address: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
                     owner: tHYHem7cLKgoLkeb792yn4WayqKzLrjJak
                     authPoolCreators: false
                     authTraders: false
@@ -2112,7 +3678,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
+          example: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
         - name: tokenType
           in: query
           description: Token type filter
@@ -2167,7 +3733,7 @@ paths:
                 $ref: "#/components/schemas/marketTokensResponse"
               example:
                 results:
-                  - market: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
+                  - market: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
                     liqudityPool: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
                     address: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
                     name: Bitcoin (Wrapped)
@@ -2175,11 +3741,13 @@ paths:
                     decimals: 8
                     sats: 100000000
                     totalSupply: "21000000.00000000"
+                    attributes:
+                      - NonProvisional
                     summary:
                       priceUsd: 54827.48328399
                       dailyPriceChangePercent: 2.42090338
                       modifiedBlock: 2963822
-                  - market: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
+                  - market: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
                     liqudityPool: tLrMcU1csbN7RxGjBMEnJeLoae3PxmQ9cr
                     address: tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3
                     name: ETH (Wrapped)
@@ -2187,6 +3755,8 @@ paths:
                     decimals: 18
                     sats: 1000000000000000000
                     totalSupply: "100000000.000000000000000000"
+                    attributes:
+                      - NonProvisional
                     summary:
                       priceUsd: 3822.23819994
                       dailyPriceChangePercent: 1.98192833
@@ -2229,7 +3799,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
+          example: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
         - name: token
           in: path
           description: Address of the token
@@ -2245,7 +3815,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/marketTokenResponse"
               example:
-                market: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
+                market: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
                 liqudityPool: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
                 address: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
                 name: Bitcoin (Wrapped)
@@ -2253,6 +3823,8 @@ paths:
                 decimals: 8
                 sats: 100000000
                 totalSupply: "21000000.00000000"
+                attributes:
+                  - NonProvisional
                 summary:
                   priceUsd: 54827.48328399
                   dailyPriceChangePercent: 2.42580923
@@ -2292,7 +3864,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
+          example: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
         - name: token
           in: path
           description: Address of the token
@@ -2344,7 +3916,7 @@ paths:
             type: string
       responses:
         200:
-          description: Market token results found
+          description: Market token snapshot results found
           content:
             application/json:
               schema:
@@ -2412,7 +3984,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
+          example: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
         - name: token
           in: path
           description: Address of the input token
@@ -2454,7 +4026,7 @@ paths:
                     eventType: TransferEvent
                     contract: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
                     sortOrder: 0
-                  - sender: t8XpH1pNYDgCnqk91ZQKLgpUVeJ7XmomLT
+                  - sender: tAFxpxRdcV9foADqD6gK3c8sY5MeANzFp5
                     to: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
                     amountCrsIn: "0.00000000"
                     amountSrcIn: "0.00250000"
@@ -2500,7 +4072,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
+          example: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
         - name: token
           in: path
           description: Address of the input token
@@ -2561,7 +4133,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
+          example: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
         - name: token
           in: path
           description: Address of the input token
@@ -2879,6 +4451,8 @@ paths:
                     decimals: 8
                     sats: 100000000
                     totalSupply: "21000000.00000000"
+                    attributes:
+                      - NonProvisional
                     summary:
                       priceUsd: 54911.53361129
                       dailyPriceChangePercent: 2.37290288
@@ -2889,6 +4463,8 @@ paths:
                     decimals: 18
                     sats: 1000000000000000000
                     totalSupply: "100000000.000000000000000000"
+                    attributes:
+                      - NonProvisional
                     summary:
                       priceUsd: 3827.34621953
                       dailyPriceChangePercent: 2.01006408
@@ -2939,12 +4515,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/tokenResponse"
               example:
-                address: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
-                name: Bitcoin (Wrapped)
-                symbol: TBTC
+                address: tA88mLAYt3gTp5eqFR6srceAPrTNf4tdFy
+                name: LTC (Wrapped)
+                symbol: xLTC
                 decimals: 8
                 sats: 100000000
-                totalSupply: "21000000.00000000"
+                totalSupply: "84000000.00000000"
+                attributes: []
           headers:
             Location:
               schema:
@@ -3009,6 +4586,8 @@ paths:
                 decimals: 8
                 sats: 100000000
                 totalSupply: "21000000.00000000"
+                attributes:
+                  - NonProvisional
                 summary:
                   priceUsd: 54911.53361129
                   dailyPriceChangePercent: 2.37290288
@@ -3093,7 +4672,7 @@ paths:
             type: string
       responses:
         200:
-          description: Token results found
+          description: Token snapshot results found
           content:
             application/json:
               schema:
@@ -3176,7 +4755,7 @@ paths:
                 gasUsed: 12923
                 events:
                   - owner: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
-                    spender: t8XpH1pNYDgCnqk91ZQKLgpUVeJ7XmomLT
+                    spender: tAFxpxRdcV9foADqD6gK3c8sY5MeANzFp5
                     amount: "0.020000000000000000"
                     eventType: ApprovalEvent
                     contract: tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3
@@ -3368,7 +4947,7 @@ paths:
                       medianTime: 2022-01-05T11:29:04Z
                     gasUsed: 61380
                     from: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
-                    to: t8XpH1pNYDgCnqk91ZQKLgpUVeJ7XmomLT
+                    to: tAFxpxRdcV9foADqD6gK3c8sY5MeANzFp5
                     events:
                       - from: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
                         to: tLfFeV1C4NLcH6sYGrSgi9ZuHtfvSkn3Xp
@@ -3617,7 +5196,7 @@ paths:
                 $ref: "#/components/schemas/vaultsResponse"
               example:
                 results:
-                  - vault: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                  - vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                     token: tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L
                     tokensUnassigned: "99984399.37597504"
                     tokensProposed: "0.00000000"
@@ -3659,7 +5238,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+          example: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
       responses:
         200:
           description: Vault found
@@ -3668,7 +5247,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/vaultResponse"
               example:
-                vault: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                 token: tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L
                 tokensUnassigned: "99984399.37597504"
                 tokensProposed: "0.00000000"
@@ -3711,7 +5290,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+          example: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
         - name: holder
           in: query
           description: Address of the certificate holder
@@ -3795,7 +5374,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+          example: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
       security:
         - opdexAuth: []
       responses:
@@ -3847,7 +5426,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+          example: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
         - name: proposalId
           in: query
           description: Id of the proposal in the vault
@@ -3897,12 +5476,12 @@ paths:
                 $ref: "#/components/schemas/pledgesResponse"
               example:
                 results:
-                  - vault: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                  - vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                     proposalId: 2
                     pledger: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
                     pledge: "2000.00000000"
                     balance: "2000.00000000"
-                  - vault: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                  - vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                     proposalId: 1
                     pledger: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
                     pledge: "10000.00000000"
@@ -3943,7 +5522,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+          example: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
         - name: status
           in: query
           description: Status of the proposal
@@ -3985,7 +5564,7 @@ paths:
                 $ref: "#/components/schemas/proposalsResponse"
               example:
                 results:
-                  - vault: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                  - vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                     token: tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L
                     proposalId: 2
                     creator: tTJuvSKZ7bMJwKNmC6vGYyVQUPUpiPTW5p
@@ -3999,7 +5578,7 @@ paths:
                     noAmount: "37900.00009881"
                     pledgeAmount: "10200.00540309"
                     approved: false
-                  - vault: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                  - vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                     token: tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L
                     proposalId: 1
                     creator: tJyppxPeKs9rbsidSi3pqCYitkdGYjo57r
@@ -4049,7 +5628,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+          example: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
       security:
         - opdexAuth: []
       responses:
@@ -4071,7 +5650,7 @@ paths:
                     expiration: 959117
                     description: "OVP-1: Request to create certificate. See https://www.example.com for details."
                     eventType: CreateVaultProposalEvent
-                    contract: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                    contract: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                     sortOrder: 0
                 request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0UzFQRUdDNFZzb3ZrRGdpYjFNRDNlWU52NUJMMkZBQzNpIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNyZWF0ZU5ld0NlcnRpZmljYXRlUHJvcG9zYWwiLCJwYXJhbWV0ZXJzIjpbeyJsYWJlbCI6IkFtb3VudCIsInZhbHVlIjoiMTIjMjUwMDAwMDAwMDAwMDAwIn0seyJsYWJlbCI6IlJlY2lwaWVudCIsInZhbHVlIjoiOSN0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIn0seyJsYWJlbCI6IkRlc2NyaXB0aW9uIiwidmFsdWUiOiI0I09WUC0xOiBSZXF1ZXN0IHRvIGNyZWF0ZSBjZXJ0aWZpY2F0ZS4gU2VlIGh0dHBzOi8vd3d3LmV4YW1wbGUuY29tIGZvciBkZXRhaWxzLiJ9XSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
         400:
@@ -4111,7 +5690,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+          example: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
       security:
         - opdexAuth: []
       responses:
@@ -4163,7 +5742,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+          example: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
       security:
         - opdexAuth: []
       responses:
@@ -4185,7 +5764,7 @@ paths:
                     expiration: 959140
                     description: "OVP-1: Request to change minimum pledge amount. See https://www.example.com for details."
                     eventType: CreateVaultProposalEvent
-                    contract: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                    contract: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                     sortOrder: 0
                 request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0UzFQRUdDNFZzb3ZrRGdpYjFNRDNlWU52NUJMMkZBQzNpIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNyZWF0ZVRvdGFsUGxlZGdlTWluaW11bVByb3Bvc2FsIiwicGFyYW1ldGVycyI6W3sibGFiZWwiOiJBbW91bnQiLCJ2YWx1ZSI6IjEyIzUwMDAwMDAwMDAwMDAifSx7ImxhYmVsIjoiRGVzY3JpcHRpb24iLCJ2YWx1ZSI6IjQjT1ZQLTE6IFJlcXVlc3QgdG8gY2hhbmdlIG1pbmltdW0gcGxlZGdlIGFtb3VudC4gU2VlIGh0dHBzOi8vd3d3LmV4YW1wbGUuY29tIGZvciBkZXRhaWxzLiJ9XSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
         400:
@@ -4225,7 +5804,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+          example: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
       security:
         - opdexAuth: []
       responses:
@@ -4247,7 +5826,7 @@ paths:
                     expiration: 959153
                     description: "OVP-1: Request to change minimum vote amount. See https://www.example.com for details."
                     eventType: CreateVaultProposalEvent
-                    contract: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                    contract: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                     sortOrder: 0
                 request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0UzFQRUdDNFZzb3ZrRGdpYjFNRDNlWU52NUJMMkZBQzNpIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNyZWF0ZVRvdGFsVm90ZU1pbmltdW1Qcm9wb3NhbCIsInBhcmFtZXRlcnMiOlt7ImxhYmVsIjoiQW1vdW50IiwidmFsdWUiOiIxMiM1MDAwMDAwMDAwMDAifSx7ImxhYmVsIjoiRGVzY3JpcHRpb24iLCJ2YWx1ZSI6IjQjT1ZQLTE6IFJlcXVlc3QgdG8gY2hhbmdlIG1pbmltdW0gdm90ZSBhbW91bnQuIFNlZSBodHRwczovL3d3dy5leGFtcGxlLmNvbSBmb3IgZGV0YWlscy4ifV0sImNhbGxiYWNrIjoiaHR0cHM6Ly90ZXN0LWFwaS5vcGRleC5jb20vdHJhbnNhY3Rpb25zIn0=
         400:
@@ -4287,7 +5866,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+          example: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
         - name: proposalId
           in: path
           description: Id of the proposal
@@ -4305,7 +5884,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/proposalResponse"
               example:
-                vault: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                 token: tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L
                 proposalId: 1
                 creator: tJyppxPeKs9rbsidSi3pqCYitkdGYjo57r
@@ -4354,7 +5933,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+          example: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
         - name: proposalId
           in: path
           description: Id of the proposal
@@ -4415,7 +5994,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+          example: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
         - name: proposalId
           in: path
           description: Id of the proposal
@@ -4444,7 +6023,7 @@ paths:
                     proposalPledgeAmount: "10000.00000000"
                     "totalPledgeMinimumMet": true,
                     eventType: VaultProposalPledgeEvent
-                    contract: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                    contract: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                     sortOrder: 0
                 request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0UzFQRUdDNFZzb3ZrRGdpYjFNRDNlWU52NUJMMkZBQzNpIiwiYW1vdW50IjoiNTAwMC4wMDAwMDAwMCIsIm1ldGhvZCI6IlBsZWRnZSIsInBhcmFtZXRlcnMiOlt7ImxhYmVsIjoiUHJvcG9zYWwgSWQiLCJ2YWx1ZSI6IjcjNyJ9XSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
         400:
@@ -4484,7 +6063,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+          example: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
         - name: proposalId
           in: path
           description: Id of the proposal
@@ -4545,7 +6124,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+          example: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
         - name: proposalId
           in: path
           description: Id of the proposal
@@ -4570,7 +6149,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/pledgeResponse"
               example:
-                vault: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                 proposalId: 1
                 pledger: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
                 pledge: "10000.00000000"
@@ -4620,7 +6199,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+          example: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
         - name: proposalId
           in: path
           description: Id of the proposal
@@ -4681,7 +6260,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+          example: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
         - name: proposalId
           in: path
           description: Id of the proposal
@@ -4742,7 +6321,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+          example: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
         - name: proposalId
           in: path
           description: Id of the proposal
@@ -4767,7 +6346,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/voteResponse"
               example:
-                vault: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                 proposalId: 1
                 voter: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
                 vote: "30000.00000000"
@@ -4818,7 +6397,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+          example: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
         - name: proposalId
           in: query
           description: Id of the proposal in the vault
@@ -4868,13 +6447,13 @@ paths:
                 $ref: "#/components/schemas/votesResponse"
               example:
                 results:
-                  - vault: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                  - vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                     proposalId: 2
                     voter: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
                     vote: "8000.00000000"
                     balance: "8000.00000000"
                     inFavor: false
-                  - vault: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                  - vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                     proposalId: 1
                     voter: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
                     vote: "30000.00000000"
