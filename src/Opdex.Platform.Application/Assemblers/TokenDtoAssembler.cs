@@ -15,8 +15,6 @@ public class TokenDtoAssembler : IModelAssembler<Token, TokenDto>
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
-    private const ulong MarketId = 0;
-
     public TokenDtoAssembler(IMediator mediator, IMapper mapper)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -31,9 +29,11 @@ public class TokenDtoAssembler : IModelAssembler<Token, TokenDto>
 
         tokenDto.Attributes = attributes.Select(attribute => attribute.AttributeType);
 
-        var summary = await _mediator.Send(new RetrieveTokenSummaryByMarketAndTokenIdQuery(MarketId, token.Id, findOrThrow: false));
-
-        if (summary != null) tokenDto.Summary = _mapper.Map<TokenSummaryDto>(summary);
+        if (tokenDto.Summary is null)
+        {
+            var summary = await _mediator.Send(new RetrieveTokenSummaryByTokenIdQuery(token.Id));
+            if (summary is not null) tokenDto.Summary = _mapper.Map<TokenSummaryDto>(summary);
+        }
 
         return tokenDto;
     }
