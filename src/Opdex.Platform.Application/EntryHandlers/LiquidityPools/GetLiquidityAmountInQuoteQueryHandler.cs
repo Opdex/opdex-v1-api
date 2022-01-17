@@ -3,8 +3,10 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,9 +24,15 @@ public class GetLiquidityAmountInQuoteQueryHandler : IRequestHandler<GetLiquidit
 
     public async Task<FixedDecimal> Handle(GetLiquidityAmountInQuoteQuery request, CancellationToken cancellationToken)
     {
+        var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Pool), cancellationToken);
+        var summary = await _mediator.Send(new RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery(pool.Id), cancellationToken);
+        if (summary.LockedCrs == UInt256.Zero)
+        {
+            throw new InvalidDataException("pool", "Pool has no liquidity, any token amount can be added.");
+        }
+
         var tokenInIsCrs = request.TokenIn == Address.Cirrus;
         var tokenIn = await _mediator.Send(new RetrieveTokenByAddressQuery(request.TokenIn), cancellationToken);
-        var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Pool), cancellationToken);
         var market = await _mediator.Send(new RetrieveMarketByIdQuery(pool.MarketId), cancellationToken);
         var router = await _mediator.Send(new RetrieveActiveMarketRouterByMarketIdQuery(market.Id), cancellationToken);
 
