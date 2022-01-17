@@ -1,6 +1,7 @@
 using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Summary;
+using Opdex.Platform.WebApi.Models.Responses.MiningPools;
 using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools;
@@ -37,6 +38,11 @@ public class LiquidityPoolResponseModel
     /// </summary>
     [NotNull]
     public LiquidityPoolTokenGroupResponseModel Token { get; set; }
+
+    /// <summary>
+    /// The governance mining pool associated with the liquidity pool in a staking market.
+    /// </summary>
+    public MiningPoolResponseModel MiningPool { get; set; }
 
     /// <summary>
     /// Summary for the pool.

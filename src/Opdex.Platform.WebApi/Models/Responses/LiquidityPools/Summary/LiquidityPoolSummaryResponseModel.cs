@@ -1,5 +1,4 @@
 using NJsonSchema.Annotations;
-using Opdex.Platform.WebApi.Models.Responses.MiningPools;
 
 namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Summary;
 
@@ -36,9 +35,4 @@ public class LiquidityPoolSummaryResponseModel
     /// Staking details based on the pool's current status.
     /// </summary>
     public StakingResponseModel Staking { get; set; }
-
-    /// <summary>
-    /// The governance mining pool associated with the liquidity pool in a staking market.
-    /// </summary>
-    public MiningPoolResponseModel MiningPool { get; set; }
 }
