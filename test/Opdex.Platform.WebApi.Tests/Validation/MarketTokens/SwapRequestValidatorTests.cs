@@ -227,6 +227,42 @@ public class SwapRequestValidatorTests
         result.ShouldNotHaveValidationErrorFor(r => r.TokenOutMinimumAmount);
     }
 
+    [Fact]
+    public void TokenOutMinimumAmount_Exact_Invalid()
+    {
+        // Arrange
+        var request = new SwapRequest
+        {
+            TokenOutAmount = FixedDecimal.Parse("510.00000000"),
+            TokenOutMinimumAmount = FixedDecimal.Parse("505.00000000"),
+            TokenInExactAmount = false
+        };
+
+        // Act
+        var result = _validator.TestValidate(request);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(r => r.TokenOutMinimumAmount);
+    }
+
+    [Fact]
+    public void TokenOutMinimumAmount_Exact_Valid()
+    {
+        // Arrange
+        var request = new SwapRequest
+        {
+            TokenOutAmount = FixedDecimal.Parse("505.00000000"),
+            TokenOutMinimumAmount = FixedDecimal.Parse("505.00000000"),
+            TokenInExactAmount = false
+        };
+
+        // Act
+        var result = _validator.TestValidate(request);
+
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(r => r.TokenOutMinimumAmount);
+    }
+
     [Theory]
     [ClassData(typeof(EmptyAddressData))]
     [ClassData(typeof(NonNetworkAddressData))]

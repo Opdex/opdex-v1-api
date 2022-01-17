@@ -21,9 +21,15 @@ public class SwapRequestValidator : AbstractValidator<SwapRequest>
             .GreaterThanOrEqualTo(req => req.TokenInAmount).WithMessage("Token in maximum amount cannot be less than token in amount.");
         When(r => r.TokenInExactAmount, () =>
         {
-            RuleFor(r => r.TokenInMaximumAmount).Must((req, tokenInMaximumAmount) => tokenInMaximumAmount == req.TokenInAmount)
-                                                .WithMessage("Token in maximum amount must equal token in amount, since exact amount is specified.");
-        });
+            RuleFor(r => r.TokenInMaximumAmount)
+                .Must((req, tokenInMaximumAmount) => tokenInMaximumAmount == req.TokenInAmount)
+                .WithMessage("Token in maximum amount must equal token in amount, since exact amount is specified.");
+        }).Otherwise((() =>
+        {
+            RuleFor(r => r.TokenOutMinimumAmount)
+                .Must((req, tokenOutMinimumAmount) => tokenOutMinimumAmount == req.TokenOutAmount)
+                .WithMessage("Token out minimum amount must equal token out amount, since exact amount is specified");
+        }));
         RuleFor(r => r.TokenOutMinimumAmount)
             .MustBeValidSrcValue().WithMessage("Token out minimum amount must contain 18 decimal places or less.")
             .GreaterThan(FixedDecimal.Zero).WithMessage("Token out minimum amount must be greater than zero.")
