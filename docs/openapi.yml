@@ -56,6 +56,18 @@ components:
             status: 404
             extensions:
               traceId: 00-00000000000000000000000000000000-0000000000000000-00
+    MiningPoolNotFound:
+      description: Mining pool not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/problemDetails"
+          example:
+            type: https://httpstatuses.com/404
+            title: Not Found
+            status: 404
+            extensions:
+              traceId: 00-00000000000000000000000000000000-0000000000000000-00
     MiningGovernanceNotFound:
       description: Mining governance not found
       content:
@@ -269,6 +281,11 @@ components:
       enum:
         - Nominated
         - Excluded
+    miningActivityStatus:
+      description: Mining activity status filter
+      enum:
+        - Active
+        - Inactive
     liquidityPoolOrderByType:
       type: string
       description: Property to sort liquidity pools by
@@ -1504,6 +1521,24 @@ components:
         fullDistribution:
           type: boolean
           description: When true, determines all nominated mining pools receive token rewards, otherwise only one receives token rewards
+    quoteStartMiningRequest:
+      type: object
+      description: Request to retrieve a start mining call quote
+      required:
+        - amount
+      properties:
+        amount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of tokens to start mining with
+    quoteStopMiningRequest:
+      type: object
+      description: Request to retrieve a stop mining call quote
+      required:
+        - amount
+      properties:
+        amount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of tokens to stop mining with
     addTokenRequest:
       type: object
       description: Request to add a token to the Opdex indexer so that it can be tracked
@@ -1843,6 +1878,15 @@ components:
             liquidityPool:
               $ref: "#/components/schemas/address"
               description: Address of the liquidity pool
+    miningPoolsResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/miningPoolResponse"
+        paging:
+          $ref: "#/components/schemas/pagingResponse"
     miningPoolResponse:
       type: object
       properties:
@@ -4359,6 +4403,345 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         404:
           $ref: "#/components/responses/MiningGovernanceNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /mining-pools:
+    get:
+      tags:
+        - Mining Pools
+      summary: Get Mining Pools
+      description: Retrieves details of all tracked mining pools across staking markets. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      operationId: getMiningPools
+      parameters:
+        - name: liquidityPools
+          in: query
+          description: Liquidity pools used for mining
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/address"
+        - name: miningStatus
+          in: query
+          description: Mining pool activity status
+          schema:
+            $ref: "#/components/schemas/miningActivityStatus"
+          example: Inactive
+        - name: direction
+          in: query
+          description: Order direction of the results
+          schema:
+            $ref: "#/components/schemas/sortDirection"
+          example: DESC
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 50
+          example: 10
+        - name: cursor
+          in: query
+          description: Reference of the requested page, returned by a previous call
+          schema:
+            type: string
+      responses:
+        200:
+          description: Mining pool results found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/miningPoolsResponse"
+              example:
+                results:
+                  - address: tG7WcPzCQmHMf6mVKiXsDVoQkADLm6Tvm1
+                    liquidityPool: tFzjCy1sXXNuUqFghC9oyxSisyvSmLGkAF
+                    miningPeriodEndBlock: 0
+                    rewardPerBlock: "0.00000000"
+                    rewardPerLpt: "0.00000000"
+                    tokensMining: "0.00000000"
+                    isActive: false
+                  - address: tJL3GQFf2xupWKvgXHuQBuMiAuutLs3Q4j
+                    liquidityPool: tCE8LfkCj9HJUZu3dtgERNFfquMVJVe4sh
+                    miningPeriodEndBlock: 0
+                    rewardPerBlock: "0.00000000"
+                    rewardPerLpt: "0.00000000"
+                    tokensMining: "0.00000000"
+                    isActive: false
+                  - address: t9V19aoUakGooM8hXDCrR52NmTS7ZnmN31
+                    liquidityPool: tCorSgPVt6pF5Q4gzcrZWDZ8f7ERVxhwAd
+                    miningPeriodEndBlock: 0
+                    rewardPerBlock: "0.00000000"
+                    rewardPerLpt: "0.00000000"
+                    tokensMining: "2314.82289849"
+                    isActive: false
+                paging: {}
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  miningStatus:
+                    - The value 'Mining' is invalid.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /mining-pools/{pool}:
+    get:
+      tags:
+        - Mining Pools
+      summary: Get Mining Pool
+      description: Retrieves details of a tracked mining pool by its contract address.
+      operationId: getMiningPool
+      parameters:
+        - name: pool
+          in: path
+          description: Address of a mining pool
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+      responses:
+        200:
+          description: Mining pool details found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/miningPoolResponse"
+              example:
+                address: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+                liquidityPool: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                miningPeriodEndBlock: 0
+                rewardPerBlock: "0.00000000"
+                rewardPerLpt: "0.00000000"
+                tokensMining: "8.80764531"
+                isActive: false
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  pool:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          $ref: "#/components/responses/MiningPoolNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /mining-pools/{pool}/start:
+    post:
+      tags:
+        - Mining Pools
+      summary: Build Start Mining Transaction Quote
+      description: Builds a quote for a start mining transaction. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildStartMiningQuote
+      parameters:
+        - name: pool
+          in: path
+          description: Address of a mining pool
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+      requestBody:
+        description: Details for a start mining transaction request
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/quoteStartMiningRequest"
+            example:
+              amount: "0.10000000"
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Built start mining quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                gasUsed: 33762
+                events:
+                  - from: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    to: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+                    amount: "0.10000000"
+                    eventType: TransferEvent
+                    contract: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                    sortOrder: 0
+                  - miner: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    amount: "0.10000000"
+                    totalSupply: "8.90764531"
+                    minerBalance: "3.24831968"
+                    eventType: StartMiningEvent
+                    contract: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+                    sortOrder: 1
+                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0UnM2clhmSHVMaEtaaFd1V3B5Y0xBU3pBeW40a1hvNmJUIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IlN0YXJ0TWluaW5nIiwicGFyYW1ldGVycyI6W3sibGFiZWwiOiJBbW91bnQiLCJ2YWx1ZSI6IjEyIzEwMDAwMDAwIn1dLCJjYWxsYmFjayI6Imh0dHBzOi8vdGVzdC1hcGkub3BkZXguY29tL3RyYW5zYWN0aW9ucyJ9
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  pool:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/MiningPoolNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /mining-pools/{pool}/stop:
+    post:
+      tags:
+        - Mining Pools
+      summary: Build Stop Mining Transaction Quote
+      description: Builds a quote for a stop mining transaction. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildStopMiningQuote
+      parameters:
+        - name: pool
+          in: path
+          description: Address of a mining pool
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+      requestBody:
+        description: Details for a stop mining transaction request
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/quoteStopMiningRequest"
+            example:
+              amount: "0.10000000"
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Built stop mining quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                gasUsed: 31364
+                events:
+                  - from: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+                    to: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    amount: "0.10000000"
+                    eventType: TransferEvent
+                    contract: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                    sortOrder: 0
+                  - miner: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    amount: "0.10000000"
+                    totalSupply: "8.70764531"
+                    minerBalance: "3.04831968"
+                    eventType: StopMiningEvent
+                    contract: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+                    sortOrder: 1
+                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0UnM2clhmSHVMaEtaaFd1V3B5Y0xBU3pBeW40a1hvNmJUIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IlN0b3BNaW5pbmciLCJwYXJhbWV0ZXJzIjpbeyJsYWJlbCI6IkFtb3VudCIsInZhbHVlIjoiMTIjMTAwMDAwMDAifV0sImNhbGxiYWNrIjoiaHR0cHM6Ly90ZXN0LWFwaS5vcGRleC5jb20vdHJhbnNhY3Rpb25zIn0=
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  pool:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/MiningPoolNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /mining-pools/{pool}/collect:
+    post:
+      tags:
+        - Mining Pools
+      summary: Build Collect Mining Rewards Transaction Quote
+      description: Builds a quote for a collect mining rewards transaction. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildCollectMiningRewardsQuote
+      parameters:
+        - name: pool
+          in: path
+          description: Address of a mining pool
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Built collect mining rewards quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                gasUsed: 15014
+                events: []
+                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0UnM2clhmSHVMaEtaaFd1V3B5Y0xBU3pBeW40a1hvNmJUIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNvbGxlY3RNaW5pbmdSZXdhcmRzIiwicGFyYW1ldGVycyI6W10sImNhbGxiYWNrIjoiaHR0cHM6Ly90ZXN0LWFwaS5vcGRleC5jb20vdHJhbnNhY3Rpb25zIn0=
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  pool:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/MiningPoolNotFound"
         429:
           $ref: "#/components/responses/TooManyRequests"
         500:
