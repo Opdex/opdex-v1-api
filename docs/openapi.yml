@@ -363,6 +363,13 @@ components:
         - NonProvisional
         - Staking
         - Security
+    tokenAttributeFilter:
+      type: string
+      description: Token attribute filter for a request
+      enum:
+        - Provisional
+        - NonProvisional
+        - Staking
     transactionEventType:
       type: string
       description: Opdex event type identifier
@@ -2032,6 +2039,94 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/transactionEvent"
+    approvedAllowanceResponse:
+      type: object
+      description: Details an approved spending allowance
+      properties:
+        allowance:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of token allowance
+        owner:
+          $ref: "#/components/schemas/address"
+          description: Address of the balance holder
+        spender:
+          $ref: "#/components/schemas/address"
+          description: Address of the approved spender
+        token:
+          $ref: "#/components/schemas/address"
+          description: Address of the SRC token
+    addressBalancesResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/addressBalanceResponse"
+        paging:
+          $ref: "#/components/schemas/pagingResponse"
+    addressBalanceResponse:
+      type: object
+      description: Details an approved spending allowance
+      properties:
+        balance:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Token balance amount
+        address:
+          $ref: "#/components/schemas/address"
+          description: Address of the balance holder
+        token:
+          $ref: "#/components/schemas/address"
+          description: Address of the SRC token
+    miningPositionsResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/miningPositionResponse"
+        paging:
+          $ref: "#/components/schemas/pagingResponse"
+    miningPositionResponse:
+      type: object
+      description: Details a mining position
+      properties:
+        address:
+          $ref: "#/components/schemas/address"
+          description: Address of the miner
+        amount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Liquidity pool token amount
+        miningPool:
+          $ref: "#/components/schemas/address"
+          description: Address of the mining pool
+        miningToken:
+          $ref: "#/components/schemas/address"
+          description: Address of the liquidity pool token
+    stakingPositionsResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/stakingPositionResponse"
+        paging:
+          $ref: "#/components/schemas/pagingResponse"
+    stakingPositionResponse:
+      type: object
+      description: Details a staking position
+      properties:
+        address:
+          $ref: "#/components/schemas/address"
+          description: Address of the staker
+        amount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of tokens staked
+        liquidityPool:
+          $ref: "#/components/schemas/address"
+          description: Address of the liquidity being staked in
+        stakingToken:
+          $ref: "#/components/schemas/address"
+          description: Address of the token used for staking
     blockResponse:
       type: object
       description: Details about a block
@@ -6860,6 +6955,575 @@ paths:
                   traceId: 00-00000000000000000000000000000000-0000000000000000-00
         404:
           $ref: "#/components/responses/VaultNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /wallets/{address}/allowance/{token}/approved/{spender}:
+    get:
+      tags:
+        - Wallets
+      summary: Get Approved Allowance
+      description: Retrieves the allowance of a spender for SRC tokens owned by another address.
+      operationId: getApprovedAllowance
+      parameters:
+        - name: address
+          in: path
+          description: Address holding the position
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+        - name: token
+          in: path
+          description: Address of the SRC token
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+        - name: spender
+          in: path
+          description: Address approved to spend the token
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tAFxpxRdcV9foADqD6gK3c8sY5MeANzFp5
+      responses:
+        200:
+          description: Found approved allowance
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/approvedAllowanceResponse"
+              example:
+                allowance: "0.15000000"
+                owner: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                spender: tAFxpxRdcV9foADqD6gK3c8sY5MeANzFp5
+                token: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  address:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          $ref: "#/components/responses/TokenNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /wallets/{address}/balance:
+    get:
+      tags:
+        - Wallets
+      summary: Get Balances
+      description: Retrieves details of all indexed token balances for an address. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      operationId: getBalances
+      parameters:
+        - name: address
+          in: path
+          description: Address holding the position
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+        - name: tokens
+          in: query
+          description: Tokens to retrieve balances for
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/address"
+        - name: tokenAttributes
+          in: query
+          description: Types of tokens to retrieve balances for
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/tokenAttributeFilter"
+          example:
+            - Provisional
+            - Staking
+        - name: includeZeroBalances
+          in: query
+          description: Include zero balances if true, otherwise zero balances are excluded
+          schema:
+            type: boolean
+          example: true
+        - name: direction
+          in: query
+          description: Order direction of the results
+          schema:
+            $ref: "#/components/schemas/sortDirection"
+          example: DESC
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 50
+          example: 10
+        - name: cursor
+          in: query
+          description: Reference of the requested page, returned by a previous call
+          schema:
+            type: string
+      responses:
+        200:
+          description: Address balance results found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/addressBalancesResponse"
+              example:
+                results:
+                  - balance: "238.83796109"
+                    address: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    token: tCE8LfkCj9HJUZu3dtgERNFfquMVJVe4sh
+                  - balance: "4666893.11259768"
+                    address: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    token: tFCyMPURX9pVWXuXQqYY2hJmRcCrhmBPfY
+                  - balance: "1.00000000"
+                    address: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    token: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                  - balance: "3626.28729020"
+                    address: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    token: tCorSgPVt6pF5Q4gzcrZWDZ8f7ERVxhwAd
+                paging: {}
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  address:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /wallets/{address}/balance/{token}:
+    get:
+      tags:
+        - Wallets
+      summary: Get Balance
+      description: Retrieves the indexed balance of a tracked SRC token for an address. If you are retrieving the balance of an SRC token for a new address, or want to forcefully reload a balance, use `POST /wallets/{address}/balance/{token}` instead.
+      operationId: getBalance
+      parameters:
+        - name: address
+          in: path
+          description: Address holding the position
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+        - name: token
+          in: path
+          description: Address of the SRC token
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+      responses:
+        200:
+          description: Address balance details found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/addressBalanceResponse"
+              example:
+                balance: "0.19703287"
+                address: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                token: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  address:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          $ref: "#/components/responses/TokenNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      tags:
+        - Wallets
+      summary: Refresh Balance
+      description: Retrieves and indexes the latest balance of a tracked SRC token for an address.
+      operationId: refreshBalance
+      parameters:
+        - name: address
+          in: path
+          description: Address holding the position
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+        - name: token
+          in: path
+          description: Address of the SRC token
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+      responses:
+        200:
+          description: Address balance refreshed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/addressBalanceResponse"
+              example:
+                balance: "0.19703287"
+                address: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                token: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  address:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          $ref: "#/components/responses/TokenNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /wallets/{address}/mining:
+    get:
+      tags:
+        - Wallets
+      summary: Get Mining Positions
+      description: Retrieves details of all indexed Opdex mining positions for an address. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      operationId: getMiningPositions
+      parameters:
+        - name: address
+          in: path
+          description: Address holding the position
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+        - name: miningPools
+          in: query
+          description: Mining pools to retrieve positions for
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/address"
+        - name: liquidityPools
+          in: query
+          description: Related liquidity pools to retrieve positions for
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/address"
+        - name: includeZeroAmount
+          in: query
+          description: Include zero amounts if true, otherwise zero amounts are excluded
+          schema:
+            type: boolean
+          example: true
+        - name: direction
+          in: query
+          description: Order direction of the results
+          schema:
+            $ref: "#/components/schemas/sortDirection"
+          example: DESC
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 50
+          example: 10
+        - name: cursor
+          in: query
+          description: Reference of the requested page, returned by a previous call
+          schema:
+            type: string
+      responses:
+        200:
+          description: Mining position results retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/miningPositionsResponse"
+              example:
+                results:
+                  - address: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    amount: "3.14831968"
+                    miningPool: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+                    miningToken: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                paging: {}
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  address:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /wallets/{address}/mining/{pool}:
+    get:
+      tags:
+        - Wallets
+      summary: Get Mining Position
+      description: Retrieves details of an Opdex mining position that has been indexed.
+      operationId: getMiningPosition
+      parameters:
+        - name: address
+          in: path
+          description: Address holding the position
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+        - name: pool
+          in: path
+          description: Address of the mining pool
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+      responses:
+        200:
+          description: Mining position details retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/miningPositionsResponse"
+              example:
+                address: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                amount: "3.14831968"
+                miningPool: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+                miningToken: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  address:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          description: Mining pool or mining position not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/problemDetails"
+              example:
+                type: https://httpstatuses.com/404
+                title: Not Found
+                detail: Mining pool not found.
+                status: 404
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /wallets/{address}/staking:
+    get:
+      tags:
+        - Wallets
+      summary: Get Staking Positions
+      description: Retrieves details of all indexed Opdex staking positions for an address. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      operationId: getStakingPositions
+      parameters:
+        - name: address
+          in: path
+          description: Address holding the position
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+        - name: liquidityPools
+          in: query
+          description: Liquidity pools to retrieve positions for
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/address"
+        - name: includeZeroAmount
+          in: query
+          description: Include zero amounts if true, otherwise zero amounts are excluded
+          schema:
+            type: boolean
+          example: true
+        - name: direction
+          in: query
+          description: Order direction of the results
+          schema:
+            $ref: "#/components/schemas/sortDirection"
+          example: DESC
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 50
+          example: 10
+        - name: cursor
+          in: query
+          description: Reference of the requested page, returned by a previous call
+          schema:
+            type: string
+      responses:
+        200:
+          description: Staking position results retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/miningPositionsResponse"
+              example:
+                results:
+                  - address: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    amount: "555.94827358"
+                    liquidityPool: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                    stakingToken: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
+                paging: {}
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  address:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /wallets/{address}/staking/{pool}:
+    get:
+      tags:
+        - Wallets
+      summary: Get Staking Position
+      description: Retrieves details of an Opdex staking position that has been indexed.
+      operationId: getStakingPosition
+      parameters:
+        - name: address
+          in: path
+          description: Address holding the position
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+        - name: pool
+          in: path
+          description: Address of the liquidity pool
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+      responses:
+        200:
+          description: Staking position details retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/miningPositionsResponse"
+              example:
+                address: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                amount: "555.94827358"
+                liquidityPool: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                stakingToken: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  address:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          description: Liquidity pool or staking position not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/problemDetails"
+              example:
+                type: https://httpstatuses.com/404
+                title: Not Found
+                detail: Liquidity pool not found.
+                status: 404
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
         429:
           $ref: "#/components/responses/TooManyRequests"
         500:

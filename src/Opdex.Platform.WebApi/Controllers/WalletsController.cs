@@ -121,15 +121,15 @@ public class WalletsController : ControllerBase
     /// <summary>Get Mining Position</summary>
     /// <remarks>Retrieves the mining position of an address in a particular pool.</remarks>
     /// <param name="address">Address of the wallet.</param>
-    /// <param name="miningPool">The address of the mining pool.</param>
+    /// <param name="pool">The address of the mining pool.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Mining position summary</returns>
-    [HttpGet("{address}/mining/{miningPool}")]
+    [HttpGet("{address}/mining/{pool}")]
     public async Task<ActionResult<MiningPositionResponseModel>> GetMiningPositionByPool([FromRoute] Address address,
-                                                                                         [FromRoute] Address miningPool,
+                                                                                         [FromRoute] Address pool,
                                                                                          CancellationToken cancellationToken)
     {
-        var position = await _mediator.Send(new GetMiningPositionByPoolQuery(address, miningPool), cancellationToken);
+        var position = await _mediator.Send(new GetMiningPositionByPoolQuery(address, pool), cancellationToken);
         var response = _mapper.Map<MiningPositionResponseModel>(position);
         return Ok(response);
     }
@@ -153,15 +153,15 @@ public class WalletsController : ControllerBase
     /// <summary>Get Staking Position</summary>
     /// <remarks>Retrieves the staking position of an address in a particular pool.</remarks>
     /// <param name="address">Address to lookup</param>
-    /// <param name="liquidityPool">Liquidity pool to search</param>
+    /// <param name="pool">Liquidity pool to search</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Staking position summary</returns>
-    [HttpGet("{address}/staking/{liquidityPool}")]
+    [HttpGet("{address}/staking/{pool}")]
     public async Task<ActionResult<StakingPositionResponseModel>> GetStakingPositionByPool([FromRoute] Address address,
-                                                                                           [FromRoute] Address liquidityPool,
+                                                                                           [FromRoute] Address pool,
                                                                                            CancellationToken cancellationToken)
     {
-        var position = await _mediator.Send(new GetStakingPositionByPoolQuery(address, liquidityPool), cancellationToken);
+        var position = await _mediator.Send(new GetStakingPositionByPoolQuery(address, pool), cancellationToken);
         var response = _mapper.Map<StakingPositionResponseModel>(position);
         return Ok(response);
     }
