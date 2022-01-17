@@ -465,6 +465,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery, LiquidityPool>, RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveLiquidityPoolByAddressQuery, LiquidityPool>, RetrieveLiquidityPoolByAddressQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery, LiquidityPoolSummary>, RetrieveLiquidityPoolSummaryByLiquidityPoolIdQueryHandler>();
+        services.AddTransient<IRequestHandler<RetrieveStaleLiquidityPoolSnapshotsQuery, IEnumerable<LiquidityPoolSnapshot>>, RetrieveStaleLiquidityPoolSnapshotsQueryHandler>();
 
         // Routers
         services.AddTransient<IRequestHandler<RetrieveSwapAmountInQuery, UInt256>, RetrieveSwapAmountInQueryHandler>();

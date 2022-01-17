@@ -263,6 +263,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<SelectLiquidityPoolSummaryByLiquidityPoolIdQuery, LiquidityPoolSummary>, SelectLiquidityPoolSummaryByLiquidityPoolIdQueryHandler>();
         services.AddTransient<IRequestHandler<SelectLiquidityPoolByIdQuery, LiquidityPool>, SelectLiquidityPoolByIdQueryHandler>();
         services.AddTransient<IRequestHandler<SelectLiquidityPoolSnapshotWithFilterQuery, LiquidityPoolSnapshot>, SelectLiquidityPoolSnapshotWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectStaleLiquidityPoolSnapshotsQuery, IEnumerable<LiquidityPoolSnapshot>>, SelectStaleLiquidityPoolSnapshotsQueryHandler>();
 
         // Mining Pools
         services.AddTransient<IRequestHandler<SelectMiningPoolsWithFilterQuery, IEnumerable<MiningPool>>, SelectMiningPoolsWithFilterQueryHandler>();
