@@ -75,7 +75,7 @@ public class AddressAllowanceDtoAssemblerTests
             Owner = "PXRNXAEYkCjMJpqdgdRG4FzbguG4GcdZuN",
             Spender = "PRpStaZSj3T5zYkU4Dw9WiyB73KAHi5tRY"
         };
-        var token = new Token(5, "PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
+        var token = new Token(5, "PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
         var source = new AddressAllowance(5, 5, "PXRNXAEYkCjMJpqdgdRG4FzbguG4GcdZuN", "PRpStaZSj3T5zYkU4Dw9WiyB73KAHi5tRY", new UInt256("500000000"), 5, 50);
 
         _mapperMock.Setup(callTo => callTo.Map<AddressAllowanceDto>(It.IsAny<AddressAllowance>())).Returns(dto);

@@ -94,7 +94,6 @@ public class CreateCrsTokenSnapshotsCommandHandlerTests
 
         // Assert
         _mediator.Verify(callTo => callTo.Send(It.Is<MakeTokenCommand>(q => q.Token.Address == Address.Cirrus &&
-                                                                            q.Token.IsLpt == false &&
                                                                             q.Token.Symbol == TokenConstants.Cirrus.Symbol &&
                                                                             q.Token.Name == TokenConstants.Cirrus.Name &&
                                                                             q.Token.Decimals == TokenConstants.Cirrus.Decimals &&
@@ -124,7 +123,7 @@ public class CreateCrsTokenSnapshotsCommandHandlerTests
         // Arrange
         DateTime blockTime = DateTime.UtcNow;
         const ulong blockHeight = 10;
-        var token = new Token(1, Address.Cirrus, false, TokenConstants.Cirrus.Name, TokenConstants.Cirrus.Symbol, TokenConstants.Cirrus.Decimals,
+        var token = new Token(1, Address.Cirrus, TokenConstants.Cirrus.Name, TokenConstants.Cirrus.Symbol, TokenConstants.Cirrus.Decimals,
                               TokenConstants.Cirrus.Sats, TokenConstants.Cirrus.TotalSupply, blockHeight, blockHeight);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), CancellationToken.None))
@@ -150,7 +149,7 @@ public class CreateCrsTokenSnapshotsCommandHandlerTests
         // Arrange
         DateTime blockTime = DateTime.UtcNow;
         const ulong blockHeight = 10;
-        var token = new Token(1, Address.Cirrus, false, TokenConstants.Cirrus.Name, TokenConstants.Cirrus.Symbol, TokenConstants.Cirrus.Decimals,
+        var token = new Token(1, Address.Cirrus, TokenConstants.Cirrus.Name, TokenConstants.Cirrus.Symbol, TokenConstants.Cirrus.Decimals,
                               TokenConstants.Cirrus.Sats, TokenConstants.Cirrus.TotalSupply, blockHeight, blockHeight);
         var latestSnapshot = new TokenSnapshot(1, 2, 3, new Ohlc<decimal>(), SnapshotType.Daily, DateTime.UtcNow, DateTime.UtcNow, DateTime.UtcNow);
 
@@ -175,7 +174,7 @@ public class CreateCrsTokenSnapshotsCommandHandlerTests
         DateTime blockTime = DateTime.UtcNow;
         DateTime latestSnapshotTime = blockTime.AddMinutes(-5);
         const ulong blockHeight = 10;
-        var token = new Token(1, Address.Cirrus, false, TokenConstants.Cirrus.Name, TokenConstants.Cirrus.Symbol, TokenConstants.Cirrus.Decimals,
+        var token = new Token(1, Address.Cirrus, TokenConstants.Cirrus.Name, TokenConstants.Cirrus.Symbol, TokenConstants.Cirrus.Decimals,
                               TokenConstants.Cirrus.Sats, TokenConstants.Cirrus.TotalSupply, blockHeight, blockHeight);
         var latestSnapshot = new TokenSnapshot(2, 3, SnapshotType.Daily, latestSnapshotTime);
 
@@ -203,7 +202,7 @@ public class CreateCrsTokenSnapshotsCommandHandlerTests
         DateTime blockTime = DateTime.UtcNow;
         DateTime latestSnapshotTime = blockTime.AddMinutes(-5);
         const ulong blockHeight = 10;
-        var token = new Token(1, Address.Cirrus, false, TokenConstants.Cirrus.Name, TokenConstants.Cirrus.Symbol, TokenConstants.Cirrus.Decimals,
+        var token = new Token(1, Address.Cirrus, TokenConstants.Cirrus.Name, TokenConstants.Cirrus.Symbol, TokenConstants.Cirrus.Decimals,
                               TokenConstants.Cirrus.Sats, TokenConstants.Cirrus.TotalSupply, blockHeight, blockHeight);
         var latestSnapshot = new TokenSnapshot(2, 3,SnapshotType.Daily, latestSnapshotTime);
 
@@ -228,7 +227,7 @@ public class CreateCrsTokenSnapshotsCommandHandlerTests
         DateTime blockTime = DateTime.UtcNow;
         DateTime latestSnapshotTime = blockTime.AddMinutes(-5);
         const ulong blockHeight = 10;
-        var token = new Token(1, Address.Cirrus, false, TokenConstants.Cirrus.Name, TokenConstants.Cirrus.Symbol, TokenConstants.Cirrus.Decimals,
+        var token = new Token(1, Address.Cirrus, TokenConstants.Cirrus.Name, TokenConstants.Cirrus.Symbol, TokenConstants.Cirrus.Decimals,
                               TokenConstants.Cirrus.Sats, TokenConstants.Cirrus.TotalSupply, blockHeight, blockHeight);
         var latestSnapshot = new TokenSnapshot(2, 3, SnapshotType.Minute, latestSnapshotTime);
         const decimal price = 1.1m;
@@ -269,7 +268,7 @@ public class CreateCrsTokenSnapshotsCommandHandlerTests
         DateTime blockTime = DateTime.UtcNow;
         DateTime latestSnapshotTime = blockTime.AddMinutes(-5);
         const ulong blockHeight = 10;
-        var token = new Token(1, Address.Cirrus, false, TokenConstants.Cirrus.Name, TokenConstants.Cirrus.Symbol, TokenConstants.Cirrus.Decimals,
+        var token = new Token(1, Address.Cirrus, TokenConstants.Cirrus.Name, TokenConstants.Cirrus.Symbol, TokenConstants.Cirrus.Decimals,
                                  TokenConstants.Cirrus.Sats, TokenConstants.Cirrus.TotalSupply, blockHeight, blockHeight);
         var latestSnapshot = new TokenSnapshot(2, 3, SnapshotType.Daily, latestSnapshotTime);
         const decimal price = 1.1m;

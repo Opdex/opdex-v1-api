@@ -17,7 +17,6 @@ public class SelectTokenByIdQueryHandler: IRequestHandler<SelectTokenByIdQuery, 
         @$"Select
                 {nameof(TokenEntity.Id)},
                 {nameof(TokenEntity.Address)},
-                {nameof(TokenEntity.IsLpt)},
                 {nameof(TokenEntity.Name)},
                 {nameof(TokenEntity.Symbol)},
                 {nameof(TokenEntity.Decimals)},

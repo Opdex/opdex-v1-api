@@ -17,13 +17,13 @@ public class CallCirrusLocalCallSmartContractMethodCommandHandler : IRequestHand
 {
     private readonly ISmartContractsModule _smartContractsModule;
     private readonly IMapper _mapper;
-    private readonly ILoggerFactory _loggerFactory;
+    private readonly ILogger<CallCirrusLocalCallSmartContractMethodCommandHandler> _logger;
 
-    public CallCirrusLocalCallSmartContractMethodCommandHandler(ISmartContractsModule smartContractsModule, IMapper mapper, ILoggerFactory loggerFactory)
+    public CallCirrusLocalCallSmartContractMethodCommandHandler(ISmartContractsModule smartContractsModule, IMapper mapper, ILogger<CallCirrusLocalCallSmartContractMethodCommandHandler> logger)
     {
         _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+        _logger = logger;
     }
 
     public async Task<TransactionQuote> Handle(CallCirrusLocalCallSmartContractMethodCommand request, CancellationToken cancellationToken)
@@ -32,13 +32,6 @@ public class CallCirrusLocalCallSmartContractMethodCommandHandler : IRequestHand
                                                 request.QuoteRequest.MethodParameters, amount: request.QuoteRequest.Amount);
 
         var response = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
-
-        string error = null;
-        if (!(response.ErrorMessage?.Value is null))
-        {
-            var errorProcessor = new TransactionErrorProcessor(_loggerFactory.CreateLogger<TransactionErrorProcessor>());
-            error = errorProcessor.ProcessOpdexTransactionError(response.ErrorMessage.Value);
-        }
 
         var transactionLogs = new List<TransactionLog>();
         for (var i = 0; i < response.Logs.Count; i++)
@@ -52,11 +45,10 @@ public class CallCirrusLocalCallSmartContractMethodCommandHandler : IRequestHand
             catch (Exception ex)
             {
                 // Ignored, a transaction log's name may have matched but not the schema
-                var logger = _loggerFactory.CreateLogger<TransactionErrorProcessor>();
-                logger.LogDebug(ex, "Incorrect transaction log schema in transaction quote");
+                _logger.LogDebug(ex, "Incorrect transaction log schema in transaction quote");
             }
         }
 
-        return new TransactionQuote(response.Return, error, response.GasConsumed.Value, transactionLogs, request.QuoteRequest);
+        return new TransactionQuote(response.Return, response.ErrorMessage?.Value, response.GasConsumed.Value, transactionLogs, request.QuoteRequest);
     }
 }

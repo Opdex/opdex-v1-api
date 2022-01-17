@@ -18,15 +18,16 @@ public class CallCirrusGetTransactionByHashQueryHandler
     private readonly ISmartContractsModule _smartContractsModule;
     private readonly IBlockStoreModule _blockStoreModule;
     private readonly IMapper _mapper;
-    private readonly ILoggerFactory _loggerFactory;
+    private readonly ILogger<CallCirrusGetTransactionByHashQueryHandler> _logger;
+
 
     public CallCirrusGetTransactionByHashQueryHandler(ISmartContractsModule smartContractsModule,
-                                                      IBlockStoreModule blockStoreModule, IMapper mapper, ILoggerFactory loggerFactory)
+                                                      IBlockStoreModule blockStoreModule, IMapper mapper, ILogger<CallCirrusGetTransactionByHashQueryHandler> logger)
     {
         _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
         _blockStoreModule = blockStoreModule ?? throw new ArgumentNullException(nameof(blockStoreModule));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<Transaction> Handle(CallCirrusGetTransactionByHashQuery request, CancellationToken cancellationToken)
@@ -48,22 +49,14 @@ public class CallCirrusGetTransactionByHashQueryHandler
             catch (Exception ex)
             {
                 // Ignored, a transaction log's name may have matched but not the schema
-                var logger = _loggerFactory.CreateLogger<TransactionErrorProcessor>();
-                using (logger.BeginScope(new Dictionary<string, object> { ["TxHash"] = request.TxHash }))
+                using (_logger.BeginScope(new Dictionary<string, object> { ["TxHash"] = request.TxHash }))
                 {
-                    logger.LogDebug(ex, "Incorrect transaction log schema in transaction receipt");
+                    _logger.LogDebug(ex, "Incorrect transaction log schema in transaction receipt");
                 }
             }
         }
 
-        if (!string.IsNullOrEmpty(transaction.Error))
-        {
-            var errorProcessor = new TransactionErrorProcessor(_loggerFactory.CreateLogger<TransactionErrorProcessor>());
-            // Todo: Capture and store errors
-            _ = errorProcessor.ProcessOpdexTransactionError(transaction.Error);
-        }
-
         return new Transaction(transaction.TransactionHash, transaction.BlockHeight, transaction.GasUsed, transaction.From,
-                               transaction.To, transaction.Success, transaction.NewContractAddress, transactionLogs);
+                               transaction.To, transaction.Success, transaction.Error, transaction.NewContractAddress, transactionLogs);
     }
 }

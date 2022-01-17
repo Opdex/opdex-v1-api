@@ -35,6 +35,7 @@ public class SelectTransactionsWithFilterQueryHandler : IRequestHandler<SelectTr
                 t.`{nameof(TransactionEntity.To)}`,
                 t.`{nameof(TransactionEntity.From)}`,
                 t.{nameof(TransactionEntity.Success)},
+                t.{nameof(TransactionEntity.Error)},
                 t.{nameof(TransactionEntity.NewContractAddress)}
             FROM transaction t
             {TableJoins}

@@ -202,7 +202,7 @@ public class LiquidityPoolFilterParametersValidatorTests
 
     [Theory]
     [InlineData((LiquidityPoolStakingStatusFilter)1000)]
-    public void ProvisionalFilter_StakingFilter_Invalid(LiquidityPoolStakingStatusFilter filter)
+    public void AttributeFilter_StakingFilter_Invalid(LiquidityPoolStakingStatusFilter filter)
     {
         // Arrange
         var request = new LiquidityPoolFilterParameters
@@ -221,7 +221,7 @@ public class LiquidityPoolFilterParametersValidatorTests
     [InlineData(LiquidityPoolStakingStatusFilter.Any)]
     [InlineData(LiquidityPoolStakingStatusFilter.Enabled)]
     [InlineData(LiquidityPoolStakingStatusFilter.Disabled)]
-    public void ProvisionalFilter_StakingFilterValid(LiquidityPoolStakingStatusFilter filter)
+    public void AttributeFilter_StakingFilterValid(LiquidityPoolStakingStatusFilter filter)
     {
         // Arrange
         var request = new LiquidityPoolFilterParameters
@@ -238,7 +238,7 @@ public class LiquidityPoolFilterParametersValidatorTests
 
     [Theory]
     [InlineData((LiquidityPoolNominationStatusFilter)1000)]
-    public void ProvisionalFilter_NominationFilter_Invalid(LiquidityPoolNominationStatusFilter filter)
+    public void AttributeFilter_NominationFilter_Invalid(LiquidityPoolNominationStatusFilter filter)
     {
         // Arrange
         var request = new LiquidityPoolFilterParameters
@@ -257,7 +257,7 @@ public class LiquidityPoolFilterParametersValidatorTests
     [InlineData(LiquidityPoolNominationStatusFilter.Any)]
     [InlineData(LiquidityPoolNominationStatusFilter.Nominated)]
     [InlineData(LiquidityPoolNominationStatusFilter.Excluded)]
-    public void ProvisionalFilter_NominationFilterValid(LiquidityPoolNominationStatusFilter filter)
+    public void AttributeFilter_NominationFilterValid(LiquidityPoolNominationStatusFilter filter)
     {
         // Arrange
         var request = new LiquidityPoolFilterParameters
@@ -274,7 +274,7 @@ public class LiquidityPoolFilterParametersValidatorTests
 
     [Theory]
     [InlineData((LiquidityPoolMiningStatusFilter)1000)]
-    public void ProvisionalFilter_MiningFilter_Invalid(LiquidityPoolMiningStatusFilter filter)
+    public void AttributeFilter_MiningFilter_Invalid(LiquidityPoolMiningStatusFilter filter)
     {
         // Arrange
         var request = new LiquidityPoolFilterParameters
@@ -293,7 +293,7 @@ public class LiquidityPoolFilterParametersValidatorTests
     [InlineData(LiquidityPoolMiningStatusFilter.Any)]
     [InlineData(LiquidityPoolMiningStatusFilter.Enabled)]
     [InlineData(LiquidityPoolMiningStatusFilter.Disabled)]
-    public void ProvisionalFilter_MiningFilterValid(LiquidityPoolMiningStatusFilter filter)
+    public void AttributeFilter_MiningFilterValid(LiquidityPoolMiningStatusFilter filter)
     {
         // Arrange
         var request = new LiquidityPoolFilterParameters

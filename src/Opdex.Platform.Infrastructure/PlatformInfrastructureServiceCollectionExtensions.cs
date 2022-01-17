@@ -1,3 +1,5 @@
+using CoinGecko.Clients;
+using CoinGecko.Interfaces;
 using Dapper;
 using System.Collections.Generic;
 using MediatR;
@@ -116,7 +118,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Attributes;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Attributes;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Auth;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Transactions;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Vaults;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinGeckoApi.Queries;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Auth;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Summaries;
@@ -128,6 +130,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Proposals;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Votes;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Transactions;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Vaults;
+using Opdex.Platform.Infrastructure.Clients.CoinGeckoApi.Handlers;
 using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Summaries;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates;
@@ -156,6 +159,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
 
         // Client Services
         AddCirrusServices(services, cirrusConfiguration);
+        AddCoinGeckoServices(services);
         AddCmcServices(services, cmcConfiguration);
         AddSignalRServices(services);
 
@@ -274,6 +278,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<SelectTokenSnapshotsWithFilterQuery, IEnumerable<TokenSnapshot>>, SelectTokenSnapshotsWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<SelectTokenSnapshotWithFilterQuery, TokenSnapshot>, SelectTokenSnapshotWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<SelectLatestTokenDistributionByTokenIdQuery, TokenDistribution>, SelectLatestTokenDistributionByTokenIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectTokenSummaryByTokenIdQuery, TokenSummary>, SelectTokenSummaryByTokenIdQueryHandler>();
         services.AddTransient<IRequestHandler<SelectTokenSummaryByMarketAndTokenIdQuery, TokenSummary>, SelectTokenSummaryByMarketAndTokenIdQueryHandler>();
         services.AddTransient<IRequestHandler<SelectTokenAttributesByTokenIdQuery, IEnumerable<TokenAttribute>>, SelectTokenAttributesByTokenIdQueryHandler>();
 
@@ -382,6 +387,15 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         // Commands
         services.AddTransient<IRequestHandler<CallCirrusCallSmartContractMethodCommand, Sha256>, CallCirrusCallSmartContractMethodCommandHandler>();
         services.AddTransient<IRequestHandler<CallCirrusCreateSmartContractCommand, Sha256>, CallCirrusCreateSmartContractCommandHandler>();
+    }
+
+    private static void AddCoinGeckoServices(IServiceCollection services)
+    {
+        services.AddTransient<ICoinGeckoClient, CoinGeckoClient>(_ => CoinGeckoClient.Instance);
+
+        // Queries
+        services.AddTransient<IRequestHandler<CallCoinGeckoGetStraxLatestPriceQuery, decimal>, CallCoinGeckoGetStraxLatestPriceQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCoinGeckoGetStraxHistoricalPriceQuery, decimal>, CallCoinGeckoGetStraxHistoricalPriceQueryHandler>();
     }
 
     private static void AddCmcServices(IServiceCollection services, CoinMarketCapConfiguration cmcConfiguration)

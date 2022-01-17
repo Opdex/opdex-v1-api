@@ -38,7 +38,7 @@ public class CreateCrsTokenSnapshotsCommandHandler : IRequestHandler<CreateCrsTo
         // If CRS doesn't exist, create it
         if (crsId == 0)
         {
-            crs = new Token(Address.Cirrus, false, TokenConstants.Cirrus.Name, TokenConstants.Cirrus.Symbol, TokenConstants.Cirrus.Decimals,
+            crs = new Token(Address.Cirrus, TokenConstants.Cirrus.Name, TokenConstants.Cirrus.Symbol, TokenConstants.Cirrus.Decimals,
                             TokenConstants.Cirrus.Sats, TokenConstants.Cirrus.TotalSupply, request.BlockHeight);
 
             crsId = await _mediator.Send(new MakeTokenCommand(crs, request.BlockHeight), CancellationToken.None);
@@ -48,7 +48,9 @@ public class CreateCrsTokenSnapshotsCommandHandler : IRequestHandler<CreateCrsTo
 
         var latestSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crsId, CrsMarketId, request.BlockTime, SnapshotType.Minute));
 
-        if (latestSnapshot.Id > 0) return true;
+        // We expected to find a latest snapshot for the minute, if the end date is greater than our block time and it has an Id,
+        // then we've already snapshot this minute, return successfully
+        if (latestSnapshot.EndDate > request.BlockTime && latestSnapshot.Id > 0) return true;
 
         var price = await _mediator.Send(new RetrieveCmcStraxPriceQuery(request.BlockTime));
 

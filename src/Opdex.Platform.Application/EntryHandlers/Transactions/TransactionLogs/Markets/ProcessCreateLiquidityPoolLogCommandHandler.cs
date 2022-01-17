@@ -11,9 +11,11 @@ using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Configurations;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
+using System.Linq;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Markets;
 
@@ -38,13 +40,19 @@ public class ProcessCreateLiquidityPoolLogCommandHandler : IRequestHandler<Proce
             var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Log.Contract, findOrThrow: false));
             if (market == null) return false;
 
-            var srcTokenId = await _mediator.Send(new CreateTokenCommand(request.Log.Token, request.BlockHeight));
+            var srcAttributes = new[] { TokenAttributeType.NonProvisional };
+            var srcTokenId = await _mediator.Send(new CreateTokenCommand(request.Log.Token, srcAttributes, request.BlockHeight), CancellationToken.None);
 
             // Validate the SRC token in the pool is not an OLPT token, Opdex does not support these liquidity pools
             var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(srcTokenId));
-            if (srcToken.IsLpt) return false;
 
-            var lpTokenId = await _mediator.Send(new CreateTokenCommand(request.Log.Pool, request.BlockHeight));
+            var tokenAttributes = await _mediator.Send(new RetrieveTokenAttributesByTokenIdQuery(srcToken.Id), CancellationToken.None);
+            var isLpt = tokenAttributes.Select(attr => attr.AttributeType).Contains(TokenAttributeType.Provisional);
+
+            if (isLpt) return false;
+
+            var lpAttributes = new[] { TokenAttributeType.Provisional };
+            var lpTokenId = await _mediator.Send(new CreateTokenCommand(request.Log.Pool, lpAttributes, request.BlockHeight), CancellationToken.None);
 
             var networkPrefix = _config.Network.NetworkTokenPrefix();
             var name = $"{srcToken.Symbol}-{networkPrefix}CRS";

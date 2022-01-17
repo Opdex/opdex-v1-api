@@ -12,7 +12,7 @@ public sealed class AddressBalanceFilterParameters : FilterParameters<AddressBal
     public AddressBalanceFilterParameters()
     {
         Tokens = new List<Address>();
-        TokenType = TokenProvisionalFilter.All;
+        TokenAttributes = new List<TokenAttributeFilter>();
     }
 
     /// <summary>
@@ -22,10 +22,10 @@ public sealed class AddressBalanceFilterParameters : FilterParameters<AddressBal
     public IEnumerable<Address> Tokens { get; set; }
 
     /// <summary>
-    /// The type of token to filter by, either provisional or non-provisional.
+    /// The types of token to filter balances by.
     /// </summary>
     /// <example>Provisional</example>
-    public TokenProvisionalFilter TokenType { get; set; }
+    public IEnumerable<TokenAttributeFilter> TokenAttributes { get; set; }
 
     /// <summary>
     /// Includes zero balances if true, otherwise filters out zero balances if false. Default false.
@@ -36,7 +36,7 @@ public sealed class AddressBalanceFilterParameters : FilterParameters<AddressBal
     /// <inheritdoc />
     protected override AddressBalancesCursor InternalBuildCursor()
     {
-        if (EncodedCursor is null) return new AddressBalancesCursor(Tokens, TokenType, IncludeZeroBalances, Direction, Limit, PagingDirection.Forward, default);
+        if (EncodedCursor is null) return new AddressBalancesCursor(Tokens, TokenAttributes, IncludeZeroBalances, Direction, Limit, PagingDirection.Forward, default);
         Base64Extensions.TryBase64Decode(EncodedCursor, out var decodedCursor);
         AddressBalancesCursor.TryParse(decodedCursor, out var cursor);
         return cursor;

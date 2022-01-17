@@ -23,11 +23,11 @@ public class MakeTokenCommandHandler : IRequestHandler<MakeTokenCommand, ulong>
         {
             var summary = await _mediator.Send(new CallCirrusGetStandardTokenContractSummaryQuery(request.Token.Address,
                                                                                                   request.BlockHeight,
-                                                                                                  includeTotalSupply: request.RefreshTotalSupply));
+                                                                                                  includeTotalSupply: request.RefreshTotalSupply), CancellationToken.None);
 
             request.Token.Update(summary);
         }
 
-        return await _mediator.Send(new PersistTokenCommand(request.Token));
+        return await _mediator.Send(new PersistTokenCommand(request.Token), CancellationToken.None);
     }
 }

@@ -35,7 +35,7 @@ public class CallCmcGetStraxHistoricalQuoteQueryHandlerTests
         void Act() => new CallCmcGetStraxHistoricalQuoteQuery(default);
 
         // Assert
-        Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("CMC quote datetime must be set.");
+        Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Datetime must be set and in the past");
     }
 
     [Fact]

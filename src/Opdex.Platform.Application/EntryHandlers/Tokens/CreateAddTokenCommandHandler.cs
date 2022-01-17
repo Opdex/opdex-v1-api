@@ -49,7 +49,7 @@ public class CreateAddTokenCommandHandler : IRequestHandler<CreateAddTokenComman
             throw new InvalidDataException("tokenAddress", "Unable to validate SRC token.");
         }
 
-        token = new Token(request.Token, summary.IsLpt.Value, summary.Name, summary.Symbol, (int)summary.Decimals.Value, summary.Sats.Value,
+        token = new Token(request.Token, summary.Name, summary.Symbol, (int)summary.Decimals.Value, summary.Sats.Value,
                           summary.TotalSupply.Value, latestBlock.Height);
 
         var tokenId = await _mediator.Send(new MakeTokenCommand(token, latestBlock.Height));

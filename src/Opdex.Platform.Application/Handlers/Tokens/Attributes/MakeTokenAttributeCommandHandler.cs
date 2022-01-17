@@ -22,7 +22,7 @@ public class MakeTokenAttributeCommandHandler : IRequestHandler<MakeTokenAttribu
     {
         var attributes = await _mediator.Send(new SelectTokenAttributesByTokenIdQuery(request.TokenAttribute.TokenId));
 
-        if (attributes.All(a => a.AttributeType != (request.TokenAttribute.AttributeType)))
+        if (attributes.All(a => a.AttributeType != request.TokenAttribute.AttributeType))
         {
             return await _mediator.Send(new PersistTokenAttributeCommand(request.TokenAttribute));
         }

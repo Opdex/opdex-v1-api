@@ -40,7 +40,7 @@ public class CreateAddTokenCommandHandlerTests
     {
         // Arrange
         Address tokenAddress = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV";
-        var token = new Token(1, tokenAddress, false, "Bitcoin", "BTC", 8, 100_000_000, 10000000, 2, 3);
+        var token = new Token(1, tokenAddress, "Bitcoin", "BTC", 8, 100_000_000, 10000000, 2, 3);
         _mockMediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
 
         // Act

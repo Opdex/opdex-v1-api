@@ -54,10 +54,10 @@ public class CreateTransactionCommandHandler : IRequestHandler<CreateTransaction
         if (tx == null) return false;
 
         // No logs w/ success and empty newContractAddress is Ineligible
-        if (!tx.Logs.Any() && tx.Success && tx.NewContractAddress == Address.Empty) return false;
+        if (tx.Logs.Count == 0 && tx.Success && tx.NewContractAddress == Address.Empty) return false;
 
         // If all logs are transfer logs, process balance updates of tokens we know about and exit
-        if (tx.Logs.All(log => log.LogType == TransactionLogType.TransferLog))
+        if (tx.Logs.Count > 0 && tx.Logs.All(log => log.LogType == TransactionLogType.TransferLog))
         {
             await Task.WhenAll(tx.Logs.Select(log => _mediator.Send(new ProcessTransferLogCommand(log, tx.From, tx.BlockHeight))));
             return false;

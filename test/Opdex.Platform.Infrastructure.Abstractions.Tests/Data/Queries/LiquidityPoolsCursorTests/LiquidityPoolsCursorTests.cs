@@ -17,18 +17,18 @@ public class LiquidityPoolsCursorTests
     {
         // Arrange
         // Act
-        static void Act() => new LiquidityPoolsCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
-                                                      Enumerable.Empty<Address>(),
-                                                      Enumerable.Empty<Address>(),
-                                                      Enumerable.Empty<Address>(),
-                                                      LiquidityPoolStakingStatusFilter.Any,
-                                                      LiquidityPoolNominationStatusFilter.Any,
-                                                      LiquidityPoolMiningStatusFilter.Any,
-                                                      LiquidityPoolOrderByType.Any,
-                                                      SortDirectionType.ASC,
-                                                      50 + 1,
-                                                      PagingDirection.Forward,
-                                                      ("0", 0));
+        static void Act() => _ = new LiquidityPoolsCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
+                                                          Enumerable.Empty<Address>(),
+                                                          Enumerable.Empty<Address>(),
+                                                          Enumerable.Empty<Address>(),
+                                                          LiquidityPoolStakingStatusFilter.Any,
+                                                          LiquidityPoolNominationStatusFilter.Any,
+                                                          LiquidityPoolMiningStatusFilter.Any,
+                                                          LiquidityPoolOrderByType.Any,
+                                                          SortDirectionType.ASC,
+                                                          50 + 1,
+                                                          PagingDirection.Forward,
+                                                          ("0", 0));
 
         // Assert
         Assert.Throws<ArgumentOutOfRangeException>("limit", Act);
@@ -40,18 +40,18 @@ public class LiquidityPoolsCursorTests
     {
         // Arrange
         // Act
-        void Act() => new LiquidityPoolsCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
-                                               Enumerable.Empty<Address>(),
-                                               Enumerable.Empty<Address>(),
-                                               Enumerable.Empty<Address>(),
-                                               LiquidityPoolStakingStatusFilter.Any,
-                                               LiquidityPoolNominationStatusFilter.Any,
-                                               LiquidityPoolMiningStatusFilter.Any,
-                                               LiquidityPoolOrderByType.Any,
-                                               SortDirectionType.ASC,
-                                               25,
-                                               pagingDirection,
-                                               (orderByPointer, pointer));
+        void Act() => _ = new LiquidityPoolsCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
+                                                   Enumerable.Empty<Address>(),
+                                                   Enumerable.Empty<Address>(),
+                                                   Enumerable.Empty<Address>(),
+                                                   LiquidityPoolStakingStatusFilter.Any,
+                                                   LiquidityPoolNominationStatusFilter.Any,
+                                                   LiquidityPoolMiningStatusFilter.Any,
+                                                   LiquidityPoolOrderByType.Any,
+                                                   SortDirectionType.ASC,
+                                                   25,
+                                                   pagingDirection,
+                                                   (orderByPointer, pointer));
 
         // Assert
         Assert.Throws<ArgumentException>("pointer", Act);
@@ -236,7 +236,7 @@ public class LiquidityPoolsCursorTests
     public void TryParse_ValidCursor_ReturnTrue()
     {
         // Arrange
-        var stringified = "keyword:PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5;orderBy:Name;stakingFilter:Enabled;miningFilter:Any;nominationFilter:NonNominated;markets:PL3XhYPefjjc9U4kSqkCUMpPykkfqdrc4L;liquidityPools:PqkCUMpPykkfqdrc4LL3XhYPefjjc9U4kS;tokens:PXKprGLzzUCPT9Wqu5AmvCGQNeVVDMbgUk;direction:ASC;limit:50;paging:Forward;pointer:KDUwLjAwLCAxMCk=;"; // pointer: 10;
+        var stringified = "keyword:PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5;orderBy:Name;stakingFilter:Enabled;miningFilter:Any;nominationFilter:Excluded;markets:PL3XhYPefjjc9U4kSqkCUMpPykkfqdrc4L;liquidityPools:PqkCUMpPykkfqdrc4LL3XhYPefjjc9U4kS;tokens:PXKprGLzzUCPT9Wqu5AmvCGQNeVVDMbgUk;direction:ASC;limit:50;paging:Forward;pointer:KDUwLjAwLCAxMCk=;"; // pointer: 10;
 
         // Act
         var canParse = LiquidityPoolsCursor.TryParse(stringified, out var cursor);

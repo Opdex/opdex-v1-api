@@ -48,7 +48,8 @@ public class ProcessCreateMarketLogCommandHandler : IRequestHandler<ProcessCreat
             Token stakingToken = null;
             if (!request.Log.StakingToken.IsZero)
             {
-                var tokenId = await _mediator.Send(new CreateTokenCommand(request.Log.StakingToken, request.BlockHeight));
+                var stakingAttributes = new[] { TokenAttributeType.Staking };
+                var tokenId = await _mediator.Send(new CreateTokenCommand(request.Log.StakingToken, stakingAttributes, request.BlockHeight));
                 if (tokenId == 0)
                 {
                     _logger.LogError("Unable to create market staking token");

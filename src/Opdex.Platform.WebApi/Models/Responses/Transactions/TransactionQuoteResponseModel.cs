@@ -7,7 +7,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions;
 /// <summary>
 /// Quote for submitting a smart contract transaction.
 /// </summary>
-public class TransactionQuoteResponseModel
+public class TransactionQuoteResponseModel : ITransactionResponseModel
 {
     public TransactionQuoteResponseModel()
     {
@@ -21,10 +21,9 @@ public class TransactionQuoteResponseModel
     public object Result { get; set; }
 
     /// <summary>
-    /// Error that occured as part of the quoted transaction.
+    /// Any error that occured as part of the quoted transaction.
     /// </summary>
-    /// <example>Value overflow.</example>
-    public string Error { get; set; }
+    public TransactionErrorResponseModel Error { get; set; }
 
     /// <summary>
     /// Total amount of gas consumed.

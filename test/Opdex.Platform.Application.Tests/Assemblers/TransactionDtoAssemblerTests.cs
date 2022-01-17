@@ -40,7 +40,7 @@ public class TransactionDtoAssemblerTests
     public async Task AssembleTransactionDto_Sends_RetrieveTransactionLogsByTransactionIdQuery()
     {
         // Arrange
-        var transaction = new Transaction(1, new Sha256(5340958239), 2, 3, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM");
+        var transaction = new Transaction(1, new Sha256(5340958239), 2, 3, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, null, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM");
 
         // Act
         await _handler.Assemble(transaction);
@@ -54,7 +54,7 @@ public class TransactionDtoAssemblerTests
     public async Task AssembleTransactionDto_Sends_RetrieveBlockByHeightQuery()
     {
         // Arrange
-        var transaction = new Transaction(1, new Sha256(5340958239), 2, 3, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM");
+        var transaction = new Transaction(1, new Sha256(5340958239), 2, 3, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, null, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM");
 
         // Act
         await _handler.Assemble(transaction);
@@ -91,7 +91,7 @@ public class TransactionDtoAssemblerTests
         swap.totalSupply = "100";
         var swapLog = new SwapLog(swap, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
-        var transaction = new Transaction(1, new Sha256(5340958239), 2, 3, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM");
+        var transaction = new Transaction(1, new Sha256(5340958239), 2, 3, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, null, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM");
         var transactionLogs = new List<TransactionLog> { approvalLog, transferLog, swapLog };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionLogsByTransactionIdQuery>(), It.IsAny<CancellationToken>()))

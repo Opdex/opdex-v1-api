@@ -35,6 +35,19 @@ public class ZeroCRSAmountData : IEnumerable<object[]>
 }
 
 /// <summary>
+/// Data for a 500 CRS amount.
+/// </summary>
+public class FiveHundredCRSAmountData : IEnumerable<object[]>
+{
+    public IEnumerator<object[]> GetEnumerator()
+    {
+        yield return new object[] { FixedDecimal.Parse("500.00000000") };
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+}
+
+/// <summary>
 /// Data for a 0 SRC amount.
 /// </summary>
 public class ZeroSRCAmountData : ZeroCRSAmountData { }

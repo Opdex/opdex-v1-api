@@ -5,14 +5,14 @@ namespace Opdex.Platform.Domain.Models.Tokens;
 
 public class Token : TokenBase
 {
-    public Token(Address address, bool isLpt, string name, string symbol, int decimals, ulong sats, UInt256 totalSupply, ulong createdBlock)
-        : base(address, isLpt, name, symbol, decimals, sats, totalSupply, createdBlock)
+    public Token(Address address, string name, string symbol, int decimals, ulong sats, UInt256 totalSupply, ulong createdBlock)
+        : base(address, name, symbol, decimals, sats, totalSupply, createdBlock)
     {
     }
 
-    public Token(ulong id, Address address, bool isLpt, string name, string symbol, int decimals, ulong sats, UInt256 totalSupply,
+    public Token(ulong id, Address address, string name, string symbol, int decimals, ulong sats, UInt256 totalSupply,
                  ulong createdBlock, ulong modifiedBlock)
-        : base(id, address, isLpt, name, symbol, decimals, sats, totalSupply, createdBlock, modifiedBlock)
+        : base(id, address, name, symbol, decimals, sats, totalSupply, createdBlock, modifiedBlock)
     {
     }
 

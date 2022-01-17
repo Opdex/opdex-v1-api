@@ -3,8 +3,11 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.Tokens;
 using System;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Assemblers;
@@ -30,7 +33,13 @@ public class MarketTokenDtoAssembler : IModelAssembler<MarketToken, MarketTokenD
             if (summary is not null) marketTokenDto.Summary = _mapper.Map<TokenSummaryDto>(summary);
         }
 
-        var liquidityPool = token.IsLpt
+        var tokenAttributes = await _mediator.Send(new RetrieveTokenAttributesByTokenIdQuery(token.Id), CancellationToken.None);
+
+        marketTokenDto.Attributes = tokenAttributes.Select(attr => attr.AttributeType);
+
+        var isLpt = marketTokenDto.Attributes.Contains(TokenAttributeType.Provisional);
+
+        var liquidityPool = isLpt
             ? await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(token.Address))
             : await _mediator.Send(new RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery(token.Id, token.Market.Id));
 

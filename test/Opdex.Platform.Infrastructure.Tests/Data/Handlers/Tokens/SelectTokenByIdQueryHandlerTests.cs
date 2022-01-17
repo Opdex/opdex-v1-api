@@ -35,7 +35,6 @@ public class SelectTokenByIdQueryHandlerTests
         {
             Id = id,
             Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
-            IsLpt = true,
             Name = "SomeName",
             Symbol = "SomeSymbol",
             Sats = 987689076,
@@ -54,7 +53,6 @@ public class SelectTokenByIdQueryHandlerTests
 
         result.Id.Should().Be(expectedEntity.Id);
         result.Address.Should().Be(expectedEntity.Address);
-        result.IsLpt.Should().Be(expectedEntity.IsLpt);
         result.Name.Should().Be(expectedEntity.Name);
         result.Symbol.Should().Be(expectedEntity.Symbol);
         result.Sats.Should().Be(expectedEntity.Sats);

@@ -13,6 +13,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
+using Opdex.Platform.Common.Enums;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions;
 
@@ -62,7 +63,8 @@ public class ProcessGovernanceDeploymentTransactionCommandHandler : IRequestHand
             await _mediator.Send(new CreateCrsTokenSnapshotsCommand(blockTime, transaction.BlockHeight), CancellationToken.None);
 
             // Insert Staking Token
-            var stakingTokenId = await _mediator.Send(new CreateTokenCommand(transaction.NewContractAddress, transaction.BlockHeight));
+            var stakingAttributes = new[] { TokenAttributeType.Staking };
+            var stakingTokenId = await _mediator.Send(new CreateTokenCommand(transaction.NewContractAddress, stakingAttributes, transaction.BlockHeight));
 
             // Get token summary
             var stakingTokenSummary = await _mediator.Send(new RetrieveStakingTokenContractSummaryQuery(transaction.NewContractAddress,

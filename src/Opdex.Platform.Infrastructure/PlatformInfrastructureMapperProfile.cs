@@ -49,11 +49,11 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<TransactionEntity, Transaction>()
-            .ConstructUsing(src => new Transaction(src.Id, src.Hash, src.Block, src.GasUsed, src.From, src.To, src.Success, src.NewContractAddress))
+            .ConstructUsing(src => new Transaction(src.Id, src.Hash, src.Block, src.GasUsed, src.From, src.To, src.Success, src.Error, src.NewContractAddress))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<TokenEntity, Token>()
-            .ConstructUsing((src, ctx) => new Token(src.Id, src.Address, src.IsLpt, src.Name, src.Symbol, src.Decimals, src.Sats, src.TotalSupply, src.CreatedBlock, src.ModifiedBlock))
+            .ConstructUsing((src, ctx) => new Token(src.Id, src.Address, src.Name, src.Symbol, src.Decimals, src.Sats, src.TotalSupply, src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<TokenSummaryEntity, TokenSummary>()
@@ -435,7 +435,6 @@ public class PlatformInfrastructureMapperProfile : Profile
         CreateMap<Token, TokenEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
-            .ForMember(dest => dest.IsLpt, opt => opt.MapFrom(src => src.IsLpt))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.Symbol, opt => opt.MapFrom(src => src.Symbol))
             .ForMember(dest => dest.Decimals, opt => opt.MapFrom(src => src.Decimals))
@@ -596,6 +595,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.GasUsed, opt => opt.MapFrom(src => src.GasUsed))
             .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
             .ForMember(dest => dest.Success, opt => opt.MapFrom(src => src.Success))
+            .ForMember(dest => dest.Error, opt => opt.MapFrom(src => src.Error))
             .ForMember(dest => dest.NewContractAddress, opt => opt.MapFrom(src => src.NewContractAddress))
             .ForAllOtherMembers(opt => opt.Ignore());
 

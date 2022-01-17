@@ -5,7 +5,6 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
@@ -24,7 +23,8 @@ public class SelectTransactionByHashQueryHandler : IRequestHandler<SelectTransac
                 {nameof(TransactionEntity.Block)},
                 {nameof(TransactionEntity.GasUsed)},
                 {nameof(TransactionEntity.NewContractAddress)},
-                {nameof(TransactionEntity.Success)}
+                {nameof(TransactionEntity.Success)},
+                {nameof(TransactionEntity.Error)}
             FROM transaction
             WHERE {nameof(TransactionEntity.Hash)} = @{nameof(SqlParams.Hash)};";
 

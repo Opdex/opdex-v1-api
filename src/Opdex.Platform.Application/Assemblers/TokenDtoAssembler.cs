@@ -4,6 +4,8 @@ using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Domain.Models.Tokens;
 using System;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Assemblers;
@@ -12,8 +14,6 @@ public class TokenDtoAssembler : IModelAssembler<Token, TokenDto>
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
-
-    private const ulong MarketId = 0;
 
     public TokenDtoAssembler(IMediator mediator, IMapper mapper)
     {
@@ -25,11 +25,14 @@ public class TokenDtoAssembler : IModelAssembler<Token, TokenDto>
     {
         var tokenDto = _mapper.Map<TokenDto>(token);
 
-        var summary = await _mediator.Send(new RetrieveTokenSummaryByMarketAndTokenIdQuery(MarketId, token.Id, findOrThrow: false));
+        var attributes = await _mediator.Send(new RetrieveTokenAttributesByTokenIdQuery(token.Id), CancellationToken.None);
 
-        if (summary != null)
+        tokenDto.Attributes = attributes.Select(attribute => attribute.AttributeType);
+
+        if (tokenDto.Summary is null)
         {
-            tokenDto.Summary = _mapper.Map<TokenSummaryDto>(summary);
+            var summary = await _mediator.Send(new RetrieveTokenSummaryByTokenIdQuery(token.Id));
+            if (summary is not null) tokenDto.Summary = _mapper.Map<TokenSummaryDto>(summary);
         }
 
         return tokenDto;

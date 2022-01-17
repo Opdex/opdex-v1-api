@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Opdex.Platform.Application.Abstractions.Models.Transactions;
 
-public class TransactionQuoteDto
+public class TransactionQuoteDto : ITransactionDto
 {
     public object Result { get; set; }
     public string Error { get; set; }
