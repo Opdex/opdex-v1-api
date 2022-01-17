@@ -29,7 +29,7 @@ public class TokenDtoAssemblerTests
     }
 
     [Fact]
-    public async Task Assemble_RetrieveTokenSummaryByMarketAndTokenIdQuery_Send()
+    public async Task Assemble_RetrieveTokenSummaryByTokenIdQuery_Send()
     {
         // Arrange
         var token = new Token(1, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), 9, 10);
@@ -38,8 +38,7 @@ public class TokenDtoAssemblerTests
         await _assembler.Assemble(token);
 
         // Assert
-        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveTokenSummaryByMarketAndTokenIdQuery>(query => query.MarketId == UInt256.Zero &&
-                                                                                                               query.TokenId == token.Id),
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveTokenSummaryByTokenIdQuery>(query => query.TokenId == token.Id),
                                                    It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -68,7 +67,7 @@ public class TokenDtoAssemblerTests
         var token = new Token(1, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), 9, 10);
         var tokenSummary = new TokenSummary(1, 0, token.Id, 1.12m, 3.45m, 9, 10);
 
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenSummaryByMarketAndTokenIdQuery>(), It.IsAny<CancellationToken>()))
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenSummaryByTokenIdQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(tokenSummary);
 
         _mediatorMock.Setup(callTo => callTo.Send(It.Is<RetrieveTokenAttributesByTokenIdQuery>(query => query.TokenId == token.Id), It.IsAny<CancellationToken>()))

@@ -94,7 +94,7 @@ public class LiquidityPoolDtoAssembler : IModelAssembler<LiquidityPool, Liquidit
         var nominations = await _mediator.Send(new RetrieveActiveMiningGovernanceNominationsByMiningGovernanceIdQuery(governance.Id));
         var miningPool = await _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id));
 
-        poolDto.Summary.MiningPool = await _miningPoolAssembler.Assemble(miningPool);
+        poolDto.MiningPool = await _miningPoolAssembler.Assemble(miningPool);
         poolDto.Summary.Staking = new StakingDto
         {
             Token = stakingToken,
