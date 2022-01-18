@@ -1,3 +1,4 @@
+using Opdex.Platform.Application.Abstractions.Models.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Common.Models;
 
@@ -12,5 +13,6 @@ public class LiquidityPoolDto
     public MarketTokenDto SrcToken { get; set; }
     public MarketTokenDto LpToken { get; set; }
     public TokenDto CrsToken { get; set; }
+    public MiningPoolDto MiningPool { get; set; }
     public LiquidityPoolSummaryDto Summary { get; set; }
 }

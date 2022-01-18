@@ -115,6 +115,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee))
             .ForMember(dest => dest.Tokens, opt => opt.MapFrom(src => src))
+            .ForMember(dest => dest.MiningPool, opt => opt.MapFrom(src => src.MiningPool))
             .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
             .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -135,7 +136,6 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => src.Staking))
             .ForMember(dest => dest.Volume, opt => opt.MapFrom(src => src.Volume))
             .ForMember(dest => dest.Cost, opt => opt.MapFrom(src => src.Cost))
-            .ForMember(dest => dest.MiningPool, opt => opt.MapFrom(src => src.MiningPool))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<LiquidityPoolSnapshotDto, LiquidityPoolSnapshotResponseModel>()
