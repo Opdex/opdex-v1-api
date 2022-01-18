@@ -59,7 +59,7 @@ public class GetMarketTokenSnapshotsWithFilterQueryHandlerTests
 
         // Assert
         var exception = await Assert.ThrowsAsync<InvalidDataException>(Act);
-        exception.PropertyName.Should().Be("tokenAddress");
+        exception.PropertyName.Should().Be("token");
         exception.Message.Should().Be("Market snapshot history is not collected for the base token.");
     }
 

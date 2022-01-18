@@ -64,7 +64,7 @@ public class GetMarketPermissionsForAddressQueryHandlerTests
 
         // Assert
         var exception = await Assert.ThrowsAsync<InvalidDataException>(Act);
-        exception.PropertyName.Should().Be("marketAddress");
+        exception.PropertyName.Should().Be("market");
         exception.Message.Should().Be("Market address must represent a standard market.");
     }
 
