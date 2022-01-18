@@ -24,10 +24,10 @@ public class GetMarketPermissionsForAddressQueryHandler : IRequestHandler<GetMar
     public async Task<IEnumerable<MarketPermissionType>> Handle(GetMarketPermissionsForAddressQuery request, CancellationToken cancellationToken)
     {
         var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market, findOrThrow: true), cancellationToken);
-        if (market.IsStakingMarket) throw new InvalidDataException("marketAddress", "Market address must represent a standard market.");
+        if (market.IsStakingMarket) throw new InvalidDataException("market", "Market address must represent a standard market.");
 
         var assignedPermissions = await _mediator.Send(new RetrieveMarketPermissionsByUserQuery(market.Id, request.Wallet), cancellationToken);
-            
+
         var permissions = assignedPermissions.ToHashSet();
 
         var isWalletMarketOwner = request.Wallet == market.Owner;

@@ -10,7 +10,7 @@ public sealed class VaultCertificateFilterParameters : FilterParameters<VaultCer
     /// <summary>
     /// Address of the certificate holder.
     /// </summary>
-    /// <example>tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L</example>
+    /// <example>tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c</example>
     public Address Holder { get; set; }
 
     /// <summary>
