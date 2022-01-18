@@ -328,6 +328,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         // Liquidity Pools
         services.AddTransient<IRequestHandler<ProcessLiquidityPoolSnapshotsByTransactionCommand, Unit>, ProcessLiquidityPoolSnapshotsByTransactionCommandHandler>();
         services.AddTransient<IRequestHandler<ProcessDailyLiquidityPoolSnapshotRefreshCommand, Unit>, ProcessDailyLiquidityPoolSnapshotRefreshCommandHandler>();
+        services.AddTransient<IRequestHandler<ProcessStaleLiquidityPoolSnapshotsCommand, Unit>, ProcessStaleLiquidityPoolSnapshotsCommandHandler>();
         services.AddTransient<IRequestHandler<CreateCreateLiquidityPoolTransactionQuoteCommand, TransactionQuoteDto>, CreateCreateLiquidityPoolTransactionQuoteCommandHandler>();
         services.AddTransient<IRequestHandler<CreateAddLiquidityTransactionQuoteCommand, TransactionQuoteDto>, CreateAddLiquidityTransactionQuoteCommandHandler>();
         services.AddTransient<IRequestHandler<CreateRemoveLiquidityTransactionQuoteCommand, TransactionQuoteDto>, CreateRemoveLiquidityTransactionQuoteCommandHandler>();
@@ -465,7 +466,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery, LiquidityPool>, RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveLiquidityPoolByAddressQuery, LiquidityPool>, RetrieveLiquidityPoolByAddressQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery, LiquidityPoolSummary>, RetrieveLiquidityPoolSummaryByLiquidityPoolIdQueryHandler>();
-        services.AddTransient<IRequestHandler<RetrieveStaleLiquidityPoolSnapshotsQuery, IEnumerable<LiquidityPoolSnapshot>>, RetrieveStaleLiquidityPoolSnapshotsQueryHandler>();
+        services.AddTransient<IRequestHandler<RetrieveLiquidityPoolsBySummaryModifiedBlockThresholdQuery, IEnumerable<LiquidityPool>>, RetrieveLiquidityPoolsBySummaryModifiedBlockThresholdQueryHandler>();
 
         // Routers
         services.AddTransient<IRequestHandler<RetrieveSwapAmountInQuery, UInt256>, RetrieveSwapAmountInQueryHandler>();
