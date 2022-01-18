@@ -1596,6 +1596,8 @@ components:
           minimum: 0.0
           maximum: 1.0
           description: Percentage fee for a trade
+        miningPool:
+          $ref: "#/components/schemas/miningPoolResponse"
         tokens:
           $ref: "#/components/schemas/liquidityPoolTokenBreakdown"
           description: Breakdown of tokens tied to the pool
@@ -1623,8 +1625,6 @@ components:
           $ref: "#/components/schemas/costSummary"
         staking:
           $ref: "#/components/schemas/liquidityPoolStakingSummary"
-        miningPool:
-          $ref: "#/components/schemas/miningPoolResponse"
     reservesSummary:
       type: object
       properties:
@@ -2699,6 +2699,14 @@ paths:
                   - address: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
                     name: TBTC-TCRS
                     transactionFee: 0.3
+                    miningPool:
+                      address: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+                      liquidityPool: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                      miningPeriodEndBlock: 0
+                      rewardPerBlock: "0.00000000"
+                      rewardPerLpt: "0.00000000"
+                      tokensMining: "4.14831968"
+                      isActive: false
                     tokens:
                       crs:
                         address: CRS
@@ -2774,14 +2782,6 @@ paths:
                         usd: 0.00000000
                         dailyWeightChangePercent: 0.00000000
                         nominated: true
-                      miningPool:
-                        address: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
-                        liquidityPool: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
-                        miningPeriodEndBlock: 0
-                        rewardPerBlock: "0.00000000"
-                        rewardPerLpt: "0.00000000"
-                        tokensMining: "4.14831968"
-                        isActive: false
                 paging: {}
         400:
           description: The request is not valid
@@ -2882,6 +2882,14 @@ paths:
                 address: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
                 name: TBTC-TCRS
                 transactionFee: 0.3
+                miningPool:
+                  address: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+                  liquidityPool: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                  miningPeriodEndBlock: 0
+                  rewardPerBlock: "0.00000000"
+                  rewardPerLpt: "0.00000000"
+                  tokensMining: "4.14831968"
+                  isActive: false
                 tokens:
                   crs:
                     address: CRS
@@ -2957,14 +2965,6 @@ paths:
                     usd: 0.00000000
                     dailyWeightChangePercent: 0.00000000
                     nominated: true
-                  miningPool:
-                    address: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
-                    liquidityPool: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
-                    miningPeriodEndBlock: 0
-                    rewardPerBlock: "0.00000000"
-                    rewardPerLpt: "0.00000000"
-                    tokensMining: "4.14831968"
-                    isActive: false
         400:
           description: The request is not valid
           content:
