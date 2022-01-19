@@ -100,7 +100,7 @@ stages:
           - task: k6-load-test@0
             inputs:
               filename: "test/k6/ci/status/get-status.js"
-              args: "-e api_base_url=https://app-opdex-test-api-staging.azurewebsites.net"
+              args: "-e api_base_url=https://app-opdex-test-api-staging.azurewebsites.net/v1"
             displayName: "GET /status"
         dependsOn: "test" # template deployment name == parameters.environment
 
