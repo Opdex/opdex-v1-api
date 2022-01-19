@@ -15,10 +15,5 @@ public class CirrusConfiguration : IValidatable
         {
             throw new Exception($"{nameof(CirrusConfiguration)}.{nameof(ApiUrl)} must not be null or empty.");
         }
-
-        if (ApiPort < 1)
-        {
-            throw new Exception($"{nameof(CirrusConfiguration)}.{nameof(ApiPort)} must be greater than 0.");
-        }
     }
 }
