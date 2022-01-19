@@ -45,7 +45,10 @@ public class VaultProposalDtoAssembler : IModelAssembler<VaultProposal, VaultPro
 
         if (!isApprovedCreation && !isRevocation) return dto;
 
-        var proposalCertificate = await _mediator.Send(new RetrieveVaultProposalCertificateByProposalIdQuery(proposal.Id));
+        var proposalCertificate = await _mediator.Send(new RetrieveVaultProposalCertificateByProposalIdQuery(proposal.Id, findOrThrow: false));
+
+        if (proposalCertificate == null) return dto;
+
         var certificate = await _mediator.Send(new RetrieveVaultCertificateByIdQuery(proposalCertificate.CertificateId));
         dto.Certificate = await _certificateAssembler.Assemble(certificate);
 
