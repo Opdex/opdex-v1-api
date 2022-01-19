@@ -32,7 +32,8 @@ using System.Threading.Tasks;
 namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
-[Route("deploy")]
+[Route("v{version:apiVersion}/deploy")]
+[ApiVersion("1")]
 public class DeployController : ControllerBase
 {
     private readonly IMediator _mediator;

@@ -41,8 +41,9 @@ using FluentValidation.AspNetCore;
 using AspNetCoreRateLimit;
 using Opdex.Platform.WebApi.Exceptions;
 using Opdex.Platform.Common.Encryption;
+using Microsoft.AspNetCore.Mvc;
+using Opdex.Platform.WebApi.Conventions;
 using Microsoft.Extensions.FileProviders;
-using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.StaticFiles;
 
@@ -218,6 +219,13 @@ public class Startup
                 };
             });
 
+        services.AddApiVersioning(options =>
+        {
+            options.ReportApiVersions = true;
+            options.ErrorResponses = new ProblemDetailsApiVersionErrorProvider();
+            options.DefaultApiVersion = new ApiVersion(1, 0);
+        });
+
         services.AddSignalR(o => { o.EnableDetailedErrors = true; }).AddAzureSignalR();
 
         services.AddAuthorization(options =>
@@ -270,7 +278,7 @@ public class Startup
         });
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapHub<PlatformHub>("/socket");
+            endpoints.MapHub<PlatformHub>("/v1/socket");
             endpoints.MapControllers();
         });
     }

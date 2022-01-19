@@ -22,7 +22,8 @@ namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("markets/{market}/tokens")]
+[Route("v{version:apiVersion}/markets/{market}/tokens")]
+[ApiVersion("1")]
 public class MarketTokensController : ControllerBase
 {
     private readonly IMediator _mediator;

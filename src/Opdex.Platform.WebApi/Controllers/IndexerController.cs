@@ -24,7 +24,8 @@ using Opdex.Platform.WebApi.Models.Responses.Index;
 namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
-[Route("indexer")]
+[Route("v{version:apiVersion}/indexer")]
+[ApiVersion("1")]
 public class IndexerController : ControllerBase
 {
     private readonly IMapper _mapper;

@@ -21,7 +21,8 @@ namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("liquidity-pools")]
+[Route("v{version:apiVersion}/liquidity-pools")]
+[ApiVersion("1")]
 public class LiquidityPoolsController : ControllerBase
 {
     private readonly IMediator _mediator;
