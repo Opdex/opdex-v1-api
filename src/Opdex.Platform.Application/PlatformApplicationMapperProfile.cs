@@ -264,7 +264,7 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.AuthPoolCreators, opt => opt.MapFrom(src => src.AuthPoolCreators))
             .ForMember(dest => dest.AuthProviders, opt => opt.MapFrom(src => src.AuthProviders))
             .ForMember(dest => dest.AuthTraders, opt => opt.MapFrom(src => src.AuthTraders))
-            .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee == 0 ? 0 : Math.Round((decimal)src.TransactionFee / 10, 1)))
+            .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee))
             .ForMember(dest => dest.StakingToken, opt => opt.MapFrom(src => src.StakingToken))
             .ForMember(dest => dest.EnableMarketFee, opt => opt.MapFrom(src => src.EnableMarketFee));
 
