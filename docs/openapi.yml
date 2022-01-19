@@ -319,12 +319,14 @@ components:
       enum:
         - 1H
         - 1D
+      default: 1H
     sortDirection:
       type: string
       description: Sort order
       enum:
         - ASC
         - DESC
+      default: DESC
     marketPermission:
       type: string
       description: Market permission type
@@ -2931,6 +2933,7 @@ paths:
             format: int32
             minimum: 1
             maximum: 50
+            default: 10
           example: 10
         - name: cursor
           in: query
@@ -3281,13 +3284,14 @@ paths:
           example: DESC
         - name: limit
           in: query
-          description: Number of results per page
+          description: Number of results per page; defaults to 168 for hourly snapshots (1 week), or 28 for daily snapshots (4 weeks)
           schema:
             type: integer
             format: int32
             minimum: 1
-            maximum: 50
-          example: 10
+            maximum: 750
+            default: 168
+          example: 100
         - name: cursor
           in: query
           description: Reference of the requested page, returned by a previous call
@@ -3990,6 +3994,7 @@ paths:
             format: int32
             minimum: 1
             maximum: 50
+            default: 10
           example: 10
         - name: cursor
           in: query
@@ -4177,12 +4182,13 @@ paths:
           example: DESC
         - name: limit
           in: query
-          description: Number of results per page
+          description: Number of results per page; defaults to 28 (4 weeks)
           schema:
             type: integer
             format: int32
             minimum: 1
-            maximum: 50
+            maximum: 750
+            default: 28
           example: 10
         - name: cursor
           in: query
@@ -4759,6 +4765,7 @@ paths:
             format: int32
             minimum: 1
             maximum: 50
+            default: 10
           example: 10
         - name: cursor
           in: query
@@ -4943,12 +4950,13 @@ paths:
           example: DESC
         - name: limit
           in: query
-          description: Number of results per page
+          description: Number of results per page; defaults to 168 for hourly snapshots (1 week), or 28 for daily snapshots (4 weeks)
           schema:
             type: integer
             format: int32
             minimum: 1
             maximum: 750
+            default: 168
           example: 100
         - name: cursor
           in: query
@@ -5249,6 +5257,7 @@ paths:
             format: int32
             minimum: 1
             maximum: 50
+            default: 10
           example: 10
         - name: cursor
           in: query
@@ -5440,6 +5449,7 @@ paths:
             format: int32
             minimum: 1
             maximum: 50
+            default: 10
           example: 10
         - name: cursor
           in: query
@@ -5811,6 +5821,7 @@ paths:
             format: int32
             minimum: 1
             maximum: 50
+            default: 10
           example: 10
         - name: cursor
           in: query
@@ -6039,12 +6050,13 @@ paths:
           example: DESC
         - name: limit
           in: query
-          description: Number of results per page
+          description: Number of results per page; defaults to 168 for hourly snapshots (1 week), or 28 for daily snapshots (4 weeks)
           schema:
             type: integer
             format: int32
             minimum: 1
             maximum: 750
+            default: 168
           example: 100
         - name: cursor
           in: query
@@ -6284,6 +6296,7 @@ paths:
             format: int32
             minimum: 1
             maximum: 50
+            default: 10
           example: 10
         - name: cursor
           in: query
@@ -6572,6 +6585,7 @@ paths:
             format: int32
             minimum: 1
             maximum: 50
+            default: 10
           example: 10
         - name: cursor
           in: query
@@ -6708,6 +6722,7 @@ paths:
             format: int32
             minimum: 1
             maximum: 50
+            default: 10
           example: 10
         - name: cursor
           in: query
@@ -6839,6 +6854,7 @@ paths:
           description: Includes zero balances if true, otherwise filters out zero balances if false
           schema:
             type: boolean
+            default: false
           example: true
         - name: direction
           in: query
@@ -6854,6 +6870,7 @@ paths:
             format: int32
             minimum: 1
             maximum: 50
+            default: 10
           example: 10
         - name: cursor
           in: query
@@ -6942,6 +6959,7 @@ paths:
             format: int32
             minimum: 1
             maximum: 50
+            default: 10
           example: 10
         - name: cursor
           in: query
@@ -7897,6 +7915,7 @@ paths:
           description: Includes zero balances if true, otherwise filters out zero balances if false
           schema:
             type: boolean
+            default: false
           example: true
         - name: direction
           in: query
@@ -7912,6 +7931,7 @@ paths:
             format: int32
             minimum: 1
             maximum: 50
+            default: 10
           example: 10
         - name: cursor
           in: query
@@ -8057,9 +8077,10 @@ paths:
             - Staking
         - name: includeZeroBalances
           in: query
-          description: Include zero balances if true, otherwise zero balances are excluded
+          description: Include zero balances if true, otherwise zero balances are excluded if false
           schema:
             type: boolean
+            default: false
           example: true
         - name: direction
           in: query
@@ -8075,6 +8096,7 @@ paths:
             format: int32
             minimum: 1
             maximum: 50
+            default: 10
           example: 10
         - name: cursor
           in: query
@@ -8258,11 +8280,12 @@ paths:
             type: array
             items:
               $ref: "#/components/schemas/address"
-        - name: includeZeroAmount
+        - name: includeZeroAmounts
           in: query
           description: Include zero amounts if true, otherwise zero amounts are excluded
           schema:
             type: boolean
+            default: false
           example: true
         - name: direction
           in: query
@@ -8278,6 +8301,7 @@ paths:
             format: int32
             minimum: 1
             maximum: 50
+            default: 10
           example: 10
         - name: cursor
           in: query
@@ -8405,11 +8429,12 @@ paths:
             type: array
             items:
               $ref: "#/components/schemas/address"
-        - name: includeZeroAmount
+        - name: includeZeroAmounts
           in: query
-          description: Include zero amounts if true, otherwise zero amounts are excluded
+          description: Include zero amounts if true, otherwise zero amounts are excluded if false
           schema:
             type: boolean
+            default: false
           example: true
         - name: direction
           in: query
@@ -8425,6 +8450,7 @@ paths:
             format: int32
             minimum: 1
             maximum: 50
+            default: 10
           example: 10
         - name: cursor
           in: query
