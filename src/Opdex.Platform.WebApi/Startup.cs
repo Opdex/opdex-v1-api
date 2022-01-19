@@ -278,7 +278,7 @@ public class Startup
         });
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapHub<PlatformHub>("/socket");
+            endpoints.MapHub<PlatformHub>("/v1/socket");
             endpoints.MapControllers();
         });
     }
