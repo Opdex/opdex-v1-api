@@ -1,7 +1,6 @@
 using FluentValidation;
 using FluentValidation.Validators;
 using Opdex.Platform.Common.Extensions;
-using ZymLabs.NSwag.FluentValidation;
 
 namespace Opdex.Platform.WebApi.Validation;
 
@@ -16,20 +15,6 @@ public class Base64StringValidator<T> : PropertyValidator<T, string>, IBase64Str
 
 public interface IBase64StringValidator : IPropertyValidator
 {
-}
-
-public class Base64StringValidationRule : FluentValidationRule
-{
-    public Base64StringValidationRule() : base("Base64")
-    {
-        Matches = validator => validator is IBase64StringValidator;
-        Apply = context =>
-        {
-            var schema = context.SchemaProcessorContext.Schema;
-            var property = schema.Properties[context.PropertyKey];
-            property.Format = "byte";
-        };
-    }
 }
 
 public static class Base64StringValidatorExtensions

@@ -39,18 +39,16 @@ public class MarketTokensController : ControllerBase
 
     /// <summary>Get Market Tokens</summary>
     /// <remarks>Search and filter tokens in a market with pagination.</remarks>
-    /// <param name="marketAddress">The market contract address to search within.</param>
+    /// <param name="market">The market contract address to search within.</param>
     /// <param name="filters">Token search filters.</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="MarketTokensResponseModel"/> results response with pagination.</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(MarketTokensResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<MarketTokensResponseModel>> GetMarketTokens([FromRoute] Address marketAddress,
+    public async Task<ActionResult<MarketTokensResponseModel>> GetMarketTokens([FromRoute] Address market,
                                                                                [FromQuery] TokenFilterParameters filters,
                                                                                CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new GetMarketTokensWithFilterQuery(marketAddress, filters.BuildCursor()), cancellationToken);
+        var result = await _mediator.Send(new GetMarketTokensWithFilterQuery(market, filters.BuildCursor()), cancellationToken);
 
         var response = _mapper.Map<MarketTokensResponseModel>(result);
 
@@ -59,18 +57,15 @@ public class MarketTokensController : ControllerBase
 
     /// <summary>Get Market Token</summary>
     /// <remarks>Returns the market token that matches the provided address.</remarks>
-    /// <param name="marketAddress">The address of the market smart contract.</param>
-    /// <param name="tokenAddress">The token's smart contract address.</param>
+    /// <param name="market">The address of the market smart contract.</param>
+    /// <param name="token">The token's smart contract address.</param>
     /// <param name="cancellationToken">cancellation token.</param>
     /// <returns>A market token response.</returns>
-    [HttpGet("{tokenAddress}")]
-    [ProducesResponseType(typeof(MarketTokenResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<MarketTokenResponseModel>> GetMarketToken([FromRoute] Address marketAddress, [FromRoute] Address tokenAddress,
+    [HttpGet("{token}")]
+    public async Task<ActionResult<MarketTokenResponseModel>> GetMarketToken([FromRoute] Address market, [FromRoute] Address token,
                                                                              CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new GetMarketTokenByMarketAndTokenAddressQuery(marketAddress, tokenAddress), cancellationToken);
+        var result = await _mediator.Send(new GetMarketTokenByMarketAndTokenAddressQuery(market, token), cancellationToken);
 
         var response = _mapper.Map<MarketTokenResponseModel>(result);
 
@@ -80,22 +75,18 @@ public class MarketTokensController : ControllerBase
     /// <summary>
     /// Get Market Token History
     /// </summary>
-    /// <param name="marketAddress">The address of the market contract.</param>
-    /// <param name="tokenAddress">The address of the token contract.</param>
+    /// <param name="market">The address of the market contract.</param>
+    /// <param name="token">The address of the token contract.</param>
     /// <param name="filters">Filter parameters.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Paged market snapshot data for the given token.</returns>
-    [HttpGet("{tokenAddress}/history")]
-    [ProducesResponseType(typeof(MarketTokenSnapshotsResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<MarketTokenSnapshotsResponseModel>> GetMarketTokenHistory([FromRoute] Address marketAddress,
-                                                                                             [FromRoute] Address tokenAddress,
+    [HttpGet("{token}/history")]
+    public async Task<ActionResult<MarketTokenSnapshotsResponseModel>> GetMarketTokenHistory([FromRoute] Address market,
+                                                                                             [FromRoute] Address token,
                                                                                              [FromQuery] SnapshotFilterParameters filters,
                                                                                              CancellationToken cancellationToken)
     {
-        var marketTokenSnapshotsDto = await _mediator.Send(new GetMarketTokenSnapshotsWithFilterQuery(marketAddress, tokenAddress,
+        var marketTokenSnapshotsDto = await _mediator.Send(new GetMarketTokenSnapshotsWithFilterQuery(market, token,
                                                                                                       filters.BuildCursor()), cancellationToken);
 
         var response = _mapper.Map<MarketTokenSnapshotsResponseModel>(marketTokenSnapshotsDto);
@@ -105,22 +96,19 @@ public class MarketTokensController : ControllerBase
 
     /// <summary>Swap Tokens Quote</summary>
     /// <remarks>Quotes token swap transactions.</remarks>
-    /// <param name="marketAddress">The address of the market where the token is being sold..</param>
-    /// <param name="tokenAddress">The address of the token being sold, may require allowance.</param>
+    /// <param name="market">The address of the market where the token is being sold..</param>
+    /// <param name="token">The address of the token being sold, may require allowance.</param>
     /// <param name="request">The token swap request object.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A token swap transaction quote.</returns>
-    [HttpPost("{tokenAddress}/swap")]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<TransactionQuoteResponseModel>> Swap([FromRoute] Address marketAddress, [FromRoute] Address tokenAddress,
+    [HttpPost("{token}/swap")]
+    public async Task<ActionResult<TransactionQuoteResponseModel>> Swap([FromRoute] Address market, [FromRoute] Address token,
                                                                         [FromBody] SwapRequest request, CancellationToken cancellationToken)
     {
-        var response = await _mediator.Send(new CreateSwapTransactionQuoteCommand(tokenAddress, _context.Wallet, request.TokenOut, request.TokenInAmount,
+        var response = await _mediator.Send(new CreateSwapTransactionQuoteCommand(token, _context.Wallet, request.TokenOut, request.TokenInAmount,
                                                                                   request.TokenOutAmount, request.TokenInMaximumAmount,
                                                                                   request.TokenOutMinimumAmount, request.TokenInExactAmount,
-                                                                                  request.Recipient, marketAddress, request.Deadline), cancellationToken);
+                                                                                  request.Recipient, market, request.Deadline), cancellationToken);
 
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
 
@@ -129,21 +117,18 @@ public class MarketTokensController : ControllerBase
 
     /// <summary>Swap Amount In Quote</summary>
     /// <remarks>Retrieve the amount of tokens to be input given an expected output amount of tokens.</remarks>
-    /// <param name="marketAddress">The address of the market contract.</param>
-    /// <param name="tokenIn">The input token's contract address.</param>
+    /// <param name="market">The address of the market contract.</param>
+    /// <param name="token">The input token's contract address.</param>
     /// <param name="request">The amount in swap request containing details of the expected output token and amount.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The amount of tokens to be input.</returns>
-    [HttpPost("{tokenIn}/swap/amount-in")]
-    [ProducesResponseType(typeof(SwapAmountInQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<SwapAmountInQuoteResponseModel>> SwapAmountIn([FromRoute] Address marketAddress,
-                                                                                 [FromRoute] Address tokenIn,
+    [HttpPost("{token}/swap/amount-in")]
+    public async Task<ActionResult<SwapAmountInQuoteResponseModel>> SwapAmountIn([FromRoute] Address market,
+                                                                                 [FromRoute] Address token,
                                                                                  [FromBody] SwapAmountInQuoteRequestModel request,
                                                                                  CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new GetSwapAmountInQuery(marketAddress, tokenIn, request.TokenOut, request.TokenOutAmount), cancellationToken);
+        var result = await _mediator.Send(new GetSwapAmountInQuery(market, token, request.TokenOut, request.TokenOutAmount), cancellationToken);
 
         var response = new SwapAmountInQuoteResponseModel { AmountIn = result };
 
@@ -152,21 +137,18 @@ public class MarketTokensController : ControllerBase
 
     /// <summary>Swap Amount Out Quote</summary>
     /// <remarks>Retrieve the amount of output tokens given an expected input amount of tokens.</remarks>
-    /// <param name="marketAddress">The address of the market contract.</param>
-    /// <param name="tokenOut">The output token's contract address.</param>
+    /// <param name="market">The address of the market contract.</param>
+    /// <param name="token">The output token's contract address.</param>
     /// <param name="request">The amount out swap request containing details of the expected input token and amount.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The amount of tokens to be output.</returns>
-    [HttpPost("{tokenOut}/swap/amount-out")]
-    [ProducesResponseType(typeof(SwapAmountOutQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<SwapAmountOutQuoteResponseModel>> SwapAmountOut([FromRoute] Address marketAddress,
-                                                                                   [FromRoute] Address tokenOut,
+    [HttpPost("{token}/swap/amount-out")]
+    public async Task<ActionResult<SwapAmountOutQuoteResponseModel>> SwapAmountOut([FromRoute] Address market,
+                                                                                   [FromRoute] Address token,
                                                                                    [FromBody] SwapAmountOutQuoteRequestModel request,
                                                                                    CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new GetSwapAmountOutQuery(marketAddress, request.TokenIn, request.TokenInAmount, tokenOut), cancellationToken);
+        var result = await _mediator.Send(new GetSwapAmountOutQuery(market, request.TokenIn, request.TokenInAmount, token), cancellationToken);
 
         var response = new SwapAmountOutQuoteResponseModel { AmountOut = result };
 

@@ -1,4 +1,3 @@
-using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
@@ -18,7 +17,6 @@ public sealed class MiningPoolFilterParameters : FilterParameters<MiningPoolsCur
     /// The liquidity pools used for mining.
     /// </summary>
     /// <example>[ "tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L", "t8WntmWKiLs1BdzoqPGXmPAYzUTpPb3DBw" ]</example>
-    [NotNull]
     public IEnumerable<Address> LiquidityPools { get; set; }
 
     /// <summary>

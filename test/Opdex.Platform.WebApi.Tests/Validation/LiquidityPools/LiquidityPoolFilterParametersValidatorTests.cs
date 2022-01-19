@@ -207,14 +207,14 @@ public class LiquidityPoolFilterParametersValidatorTests
         // Arrange
         var request = new LiquidityPoolFilterParameters
         {
-            StakingFilter = filter
+            StakingStatus = filter
         };
 
         // Act
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(r => r.StakingFilter);
+        result.ShouldHaveValidationErrorFor(r => r.StakingStatus);
     }
 
     [Theory]
@@ -226,14 +226,14 @@ public class LiquidityPoolFilterParametersValidatorTests
         // Arrange
         var request = new LiquidityPoolFilterParameters
         {
-            StakingFilter = filter
+            StakingStatus = filter
         };
 
         // Act
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldNotHaveValidationErrorFor(r => r.StakingFilter);
+        result.ShouldNotHaveValidationErrorFor(r => r.StakingStatus);
     }
 
     [Theory]
@@ -243,33 +243,33 @@ public class LiquidityPoolFilterParametersValidatorTests
         // Arrange
         var request = new LiquidityPoolFilterParameters
         {
-            NominationFilter = filter
+            NominationStatus = filter
         };
 
         // Act
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(r => r.NominationFilter);
+        result.ShouldHaveValidationErrorFor(r => r.NominationStatus);
     }
 
     [Theory]
     [InlineData(LiquidityPoolNominationStatusFilter.Any)]
     [InlineData(LiquidityPoolNominationStatusFilter.Nominated)]
-    [InlineData(LiquidityPoolNominationStatusFilter.NonNominated)]
+    [InlineData(LiquidityPoolNominationStatusFilter.Excluded)]
     public void AttributeFilter_NominationFilterValid(LiquidityPoolNominationStatusFilter filter)
     {
         // Arrange
         var request = new LiquidityPoolFilterParameters
         {
-            NominationFilter = filter
+            NominationStatus = filter
         };
 
         // Act
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldNotHaveValidationErrorFor(r => r.NominationFilter);
+        result.ShouldNotHaveValidationErrorFor(r => r.NominationStatus);
     }
 
     [Theory]
@@ -279,14 +279,14 @@ public class LiquidityPoolFilterParametersValidatorTests
         // Arrange
         var request = new LiquidityPoolFilterParameters
         {
-            MiningFilter = filter
+            MiningStatus = filter
         };
 
         // Act
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(r => r.MiningFilter);
+        result.ShouldHaveValidationErrorFor(r => r.MiningStatus);
     }
 
     [Theory]
@@ -298,14 +298,14 @@ public class LiquidityPoolFilterParametersValidatorTests
         // Arrange
         var request = new LiquidityPoolFilterParameters
         {
-            MiningFilter = filter
+            MiningStatus = filter
         };
 
         // Act
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldNotHaveValidationErrorFor(r => r.MiningFilter);
+        result.ShouldNotHaveValidationErrorFor(r => r.MiningStatus);
     }
 
     [Fact]

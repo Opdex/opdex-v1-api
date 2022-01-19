@@ -216,7 +216,7 @@ public class VaultsControllerTests
     public async Task GetVaultProposalPledges_GetVaultProposalPledgesWithFilterQuery_Send()
     {
         // Arrange
-        var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
+        var vaultAddress = new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G");
         var cancellationToken = new CancellationTokenSource().Token;
 
         // Act
@@ -237,7 +237,7 @@ public class VaultsControllerTests
         _mapperMock.Setup(callTo => callTo.Map<VaultProposalPledgesResponseModel>(It.IsAny<VaultProposalPledgesDto>())).Returns(pledges);
 
         // Act
-        var response = await _controller.GetVaultProposalPledges(new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"),  new VaultProposalPledgeFilterParameters(), CancellationToken.None);
+        var response = await _controller.GetVaultProposalPledges(new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), new VaultProposalPledgeFilterParameters(), CancellationToken.None);
 
         // Assert
         response.Result.Should().BeOfType<OkObjectResult>();
@@ -248,7 +248,7 @@ public class VaultsControllerTests
     public async Task GetVaultProposals_GetVaultProposalsWithFilterQuery_Send()
     {
         // Arrange
-        var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
+        var vaultAddress = new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G");
         var cancellationToken = new CancellationTokenSource().Token;
 
         // Act
@@ -269,7 +269,7 @@ public class VaultsControllerTests
         _mapperMock.Setup(callTo => callTo.Map<VaultProposalsResponseModel>(It.IsAny<VaultProposalsDto>())).Returns(proposals);
 
         // Act
-        var response = await _controller.GetVaultProposals(new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), new VaultProposalFilterParameters(), CancellationToken.None);
+        var response = await _controller.GetVaultProposals(new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), new VaultProposalFilterParameters(), CancellationToken.None);
 
         // Assert
         response.Result.Should().BeOfType<OkObjectResult>();
@@ -1137,7 +1137,7 @@ public class VaultsControllerTests
     public async Task GetVaultProposalVotes_GetVaultProposalVotesWithFilterQuery_Send()
     {
         // Arrange
-        var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
+        var vaultAddress = new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G");
         var cancellationToken = new CancellationTokenSource().Token;
 
         // Act
@@ -1158,7 +1158,7 @@ public class VaultsControllerTests
         _mapperMock.Setup(callTo => callTo.Map<VaultProposalVotesResponseModel>(It.IsAny<VaultProposalVotesDto>())).Returns(votes);
 
         // Act
-        var response = await _controller.GetVaultProposalVotes(new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), new VaultProposalVoteFilterParameters(), CancellationToken.None);
+        var response = await _controller.GetVaultProposalVotes(new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), new VaultProposalVoteFilterParameters(), CancellationToken.None);
 
         // Assert
         response.Result.Should().BeOfType<OkObjectResult>();

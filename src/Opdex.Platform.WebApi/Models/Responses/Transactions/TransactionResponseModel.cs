@@ -1,7 +1,6 @@
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace Opdex.Platform.WebApi.Models.Responses.Transactions;
@@ -48,7 +47,6 @@ public class TransactionResponseModel : ITransactionResponseModel
     /// Total gas consumed.
     /// </summary>
     /// <example>15000</example>
-    [Range(0, double.MaxValue)]
     public int GasUsed { get; set; }
 
     /// <summary>

@@ -2,7 +2,6 @@ using FluentValidation;
 using FluentValidation.Validators;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
-using ZymLabs.NSwag.FluentValidation;
 
 namespace Opdex.Platform.WebApi.Validation;
 
@@ -17,21 +16,6 @@ public class CrsAmountValidator<T> : PropertyValidator<T, FixedDecimal>, ICrsAmo
 
 public interface ICrsAmountValidator : IPropertyValidator
 {
-}
-
-public class CrsAmountValidationRule : FluentValidationRule
-{
-    public CrsAmountValidationRule() : base("CrsAmount")
-    {
-        Matches = validator => validator is ICrsAmountValidator;
-        Apply = context =>
-        {
-            var schema = context.SchemaProcessorContext.Schema;
-            if (!schema.RequiredProperties.Contains(context.PropertyKey)) schema.RequiredProperties.Add(context.PropertyKey);
-            var property = schema.Properties[context.PropertyKey];
-            property.Pattern = @"^\d*\.\d{8}$";
-        };
-    }
 }
 
 public static class CrsAmountValidatorExtensions

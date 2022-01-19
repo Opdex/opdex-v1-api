@@ -10,7 +10,7 @@ public class CreateMarketEvent : TransactionEvent
     /// <summary>
     /// Address of the market.
     /// </summary>
-    /// <example>t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH</example>
+    /// <example>t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb</example>
     public Address Market { get; set; }
 
     /// <summary>
@@ -22,7 +22,7 @@ public class CreateMarketEvent : TransactionEvent
     /// <summary>
     /// Address of the market router.
     /// </summary>
-    /// <example>t8XpH1pNYDgCnqk91ZQKLgpUVeJ7XmomLT</example>
+    /// <example>tAFxpxRdcV9foADqD6gK3c8sY5MeANzFp5</example>
     public Address Router { get; set; }
 
     /// <summary>
@@ -52,7 +52,7 @@ public class CreateMarketEvent : TransactionEvent
     /// <summary>
     /// Address of the staking token.
     /// </summary>
-    /// <example>tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L</example>
+    /// <example>tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c</example>
     public Address StakingToken { get; set; }
 
     /// <summary>

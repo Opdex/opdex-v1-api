@@ -391,7 +391,9 @@ public static class PlatformInfrastructureServiceCollectionExtensions
 
     private static void AddCoinGeckoServices(IServiceCollection services)
     {
-        services.AddTransient<ICoinGeckoClient, CoinGeckoClient>(_ => CoinGeckoClient.Instance);
+        services.AddHttpClient<ICoinGeckoClient, CoinGeckoClient>()
+            .AddPolicyHandler(CmcHttpClientBuilder.GetRetryPolicy())
+            .AddPolicyHandler(CmcHttpClientBuilder.GetCircuitBreakerPolicy());
 
         // Queries
         services.AddTransient<IRequestHandler<CallCoinGeckoGetStraxLatestPriceQuery, decimal>, CallCoinGeckoGetStraxLatestPriceQueryHandler>();

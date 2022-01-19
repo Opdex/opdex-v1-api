@@ -19,8 +19,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Opdex.Platform.WebApi.Auth;
 using Microsoft.IdentityModel.Logging;
-using NSwag;
-using NSwag.Generation.Processors.Security;
 using System.Text;
 using CcAcca.ApplicationInsights.ProblemDetails;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -29,14 +27,9 @@ using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Microsoft.AspNetCore.Authorization;
 using Opdex.Platform.Common.Configurations;
-using Opdex.Platform.Common.Converters;
 using Opdex.Platform.WebApi.Extensions;
 using Opdex.Platform.WebApi.Middleware;
 using Opdex.Platform.WebApi.Models;
-using System.ComponentModel;
-using Opdex.Platform.Common.Models;
-using NJsonSchema.Generation.TypeMappers;
-using NJsonSchema;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.WebApi.Models.Binders;
 using Opdex.Platform.Common;
@@ -45,13 +38,14 @@ using Opdex.Platform.Infrastructure.Clients.SignalR;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using FluentValidation.AspNetCore;
-using Opdex.Platform.WebApi.Validation;
 using AspNetCoreRateLimit;
 using Opdex.Platform.WebApi.Exceptions;
 using Opdex.Platform.Common.Encryption;
-using Opdex.Platform.WebApi.OpenApi;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.WebApi.Conventions;
+using Microsoft.Extensions.FileProviders;
+using System.Reflection;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace Opdex.Platform.WebApi;
 
@@ -79,7 +73,7 @@ public class Startup
             // Serilog.AspNetCore.RequestLoggingMiddleware does this better although exception is lost
             // See https://github.com/serilog/serilog-aspnetcore/issues/270
             options.ShouldLogUnhandledException = (context, exception, problem) => problem.Status == 500;
-            options.Map<InvalidDataException>(e => ProblemDetailsTemplates.CreateValidationProblemDetails(e.PropertyName, e.Message));
+            options.Map<Common.Exceptions.InvalidDataException>(e => ProblemDetailsTemplates.CreateValidationProblemDetails(e.PropertyName, e.Message));
             options.Map<AlreadyIndexedException>(e => new StatusCodeProblemDetails(StatusCodes.Status400BadRequest) { Detail = e.Message });
             options.Map<NotFoundException>(e => new StatusCodeProblemDetails(StatusCodes.Status404NotFound) { Detail = e.Message });
             options.Map<TooManyRequestsException>((context, exception) =>
@@ -232,44 +226,6 @@ public class Startup
             options.DefaultApiVersion = new ApiVersion(1, 0);
         });
 
-        services.AddOpenApiDocument((settings, provider) =>
-        {
-            // must add type converter attribute to pass NSwag check for IsPrimitiveType
-            TypeDescriptor.AddAttributes(typeof(Address), new TypeConverterAttribute(typeof(AddressConverter)));
-            TypeDescriptor.AddAttributes(typeof(FixedDecimal), new TypeConverterAttribute(typeof(FixedDecimalConverter)));
-            TypeDescriptor.AddAttributes(typeof(Sha256), new TypeConverterAttribute(typeof(Sha256)));
-
-            // processes fluent validation rules as OpenAPI type rules
-            settings.AddFluentValidationSchemaProcessor(provider, config =>
-            {
-                config.RegisterRulesFromAssemblyContaining<Startup>();
-            });
-
-            settings.Title = "Opdex Platform API";
-            settings.Version = "v1";
-            settings.AddSecurity(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
-            {
-                Description = "Enter your JWT.",
-                Type = OpenApiSecuritySchemeType.Http,
-                Scheme = "bearer",
-                BearerFormat = "JWT"
-            });
-            settings.DocumentProcessors.Add(new SingleAllOfToRefDocumentProcessor());
-            settings.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor());
-            settings.OperationProcessors.Add(new TooManyRequestErrorOperationProcessor());
-            settings.OperationProcessors.Add(new InternalServerErrorOperationProcessor());
-            settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(Address), schema => schema.Type = JsonObjectType.String));
-            settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(FixedDecimal), schema =>
-            {
-                schema.Type = JsonObjectType.String;
-            }));
-            settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(Sha256), schema =>
-            {
-                schema.Type = JsonObjectType.String;
-                schema.Pattern = @"^[0-9a-fA-F]{64}$";
-            }));
-        });
-
         services.AddSignalR(o => { o.EnableDetailedErrors = true; }).AddAzureSignalR();
 
         services.AddAuthorization(options =>
@@ -304,8 +260,22 @@ public class Startup
         app.UseIpRateLimiting();
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseOpenApi();
-        app.UseSwaggerUi3();
+
+        // yaml mapping not supported by default, must explicitly map
+        var fileExtensionContentTypeProvider = new FileExtensionContentTypeProvider();
+        fileExtensionContentTypeProvider.Mappings.Add(".yml", "text/yaml");
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            ContentTypeProvider = fileExtensionContentTypeProvider,
+            FileProvider = new ManifestEmbeddedFileProvider(Assembly.GetExecutingAssembly()),
+            RequestPath = "/swagger/v1"
+        });
+
+        app.UseSwaggerUI(options =>
+        {
+            options.RoutePrefix = "swagger";
+            options.SwaggerEndpoint("v1/openapi.yml", "Opdex Platform API V1");
+        });
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapHub<PlatformHub>("/socket");

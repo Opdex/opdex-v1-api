@@ -4,9 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NSwag.Annotations;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Allowances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Balances;
@@ -16,7 +14,6 @@ using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models.Requests.Wallets;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
-using Opdex.Platform.WebApi.OpenApi.Wallets;
 
 namespace Opdex.Platform.WebApi.Controllers;
 
@@ -43,11 +40,6 @@ public class WalletsController : ControllerBase
     /// <param name="cancellationToken">Cancellation Token</param>
     /// <returns>Approved allowance summary</returns>
     [HttpGet("{address}/allowance/{token}/approved/{spender}")]
-    [OpenApiOperationProcessor(typeof(GetAllowanceOperationProcessor))]
-    [ProducesResponseType(typeof(ApprovedAllowanceResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ApprovedAllowanceResponseModel>> GetAllowance([FromRoute] Address address,
                                                                                  [FromRoute] Address token,
                                                                                  [FromRoute] Address spender,
@@ -66,10 +58,6 @@ public class WalletsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A collection of address balance summaries by token.</returns>
     [HttpGet("{address}/balance")]
-    [OpenApiOperationProcessor(typeof(GetAddressBalancesOperationProcessor))]
-    [ProducesResponseType(typeof(AddressBalancesResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<AddressBalancesResponseModel>> GetAddressBalances([FromRoute] Address address,
                                                                                      [FromQuery] AddressBalanceFilterParameters filters,
                                                                                      CancellationToken cancellationToken)
@@ -88,11 +76,6 @@ public class WalletsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Address balance summary.</returns>
     [HttpGet("{address}/balance/{token}")]
-    [OpenApiOperationProcessor(typeof(GetAddressBalanceByTokenOperationProcessor))]
-    [ProducesResponseType(typeof(AddressBalanceResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<AddressBalanceResponseModel>> GetAddressBalanceByToken([FromRoute] Address address,
                                                                                           [FromRoute] Address token,
                                                                                           CancellationToken cancellationToken)
@@ -109,11 +92,6 @@ public class WalletsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Address balance summary.</returns>
     [HttpPost("{address}/balance/{token}")]
-    [OpenApiOperationProcessor(typeof(RefreshAddressBalanceOperationProcessor))]
-    [ProducesResponseType(typeof(AddressBalanceResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<AddressBalanceResponseModel>> RefreshAddressBalance([FromRoute] Address address,
                                                                                        [FromRoute] Address token,
                                                                                        CancellationToken cancellationToken)
@@ -132,10 +110,6 @@ public class WalletsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Mining position summaries</returns>
     [HttpGet("{address}/mining")]
-    [OpenApiOperationProcessor(typeof(GetMiningPositionsOperationProcessor))]
-    [ProducesResponseType(typeof(MiningPositionsResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<MiningPositionsResponseModel>> GetMiningPositions([FromRoute] Address address,
                                                                                      [FromQuery] MiningPositionFilterParameters filters,
                                                                                      CancellationToken cancellationToken)
@@ -148,19 +122,15 @@ public class WalletsController : ControllerBase
     /// <summary>Get Mining Position</summary>
     /// <remarks>Retrieves the mining position of an address in a particular pool.</remarks>
     /// <param name="address">Address of the wallet.</param>
-    /// <param name="miningPool">The address of the mining pool.</param>
+    /// <param name="pool">The address of the mining pool.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Mining position summary</returns>
-    [HttpGet("{address}/mining/{miningPool}")]
-    [OpenApiOperationProcessor(typeof(GetMiningPositionByPoolOperationProcessor))]
-    [ProducesResponseType(typeof(MiningPositionResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [HttpGet("{address}/mining/{pool}")]
     public async Task<ActionResult<MiningPositionResponseModel>> GetMiningPositionByPool([FromRoute] Address address,
-                                                                                         [FromRoute] Address miningPool,
+                                                                                         [FromRoute] Address pool,
                                                                                          CancellationToken cancellationToken)
     {
-        var position = await _mediator.Send(new GetMiningPositionByPoolQuery(address, miningPool), cancellationToken);
+        var position = await _mediator.Send(new GetMiningPositionByPoolQuery(address, pool), cancellationToken);
         var response = _mapper.Map<MiningPositionResponseModel>(position);
         return Ok(response);
     }
@@ -172,10 +142,6 @@ public class WalletsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Staking position summaries</returns>
     [HttpGet("{address}/staking")]
-    [OpenApiOperationProcessor(typeof(GetStakingPositionsOperationProcessor))]
-    [ProducesResponseType(typeof(StakingPositionsResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<StakingPositionsResponseModel>> GetStakingPositions([FromRoute] Address address,
                                                                                        [FromQuery] StakingPositionFilterParameters filters,
                                                                                        CancellationToken cancellationToken)
@@ -188,19 +154,15 @@ public class WalletsController : ControllerBase
     /// <summary>Get Staking Position</summary>
     /// <remarks>Retrieves the staking position of an address in a particular pool.</remarks>
     /// <param name="address">Address to lookup</param>
-    /// <param name="liquidityPool">Liquidity pool to search</param>
+    /// <param name="pool">Liquidity pool to search</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Staking position summary</returns>
-    [HttpGet("{address}/staking/{liquidityPool}")]
-    [OpenApiOperationProcessor(typeof(GetStakingPositionByPoolOperationProcessor))]
-    [ProducesResponseType(typeof(StakingPositionResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [HttpGet("{address}/staking/{pool}")]
     public async Task<ActionResult<StakingPositionResponseModel>> GetStakingPositionByPool([FromRoute] Address address,
-                                                                                           [FromRoute] Address liquidityPool,
+                                                                                           [FromRoute] Address pool,
                                                                                            CancellationToken cancellationToken)
     {
-        var position = await _mediator.Send(new GetStakingPositionByPoolQuery(address, liquidityPool), cancellationToken);
+        var position = await _mediator.Send(new GetStakingPositionByPoolQuery(address, pool), cancellationToken);
         var response = _mapper.Map<StakingPositionResponseModel>(position);
         return Ok(response);
     }

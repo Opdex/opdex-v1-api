@@ -46,7 +46,7 @@ public class CreateAddTokenCommandHandler : IRequestHandler<CreateAddTokenComman
         }
         catch (Exception)
         {
-            throw new InvalidDataException("tokenAddress", "Unable to validate SRC token.");
+            throw new InvalidDataException("token", "Unable to validate SRC token.");
         }
 
         token = new Token(request.Token, summary.Name, summary.Symbol, (int)summary.Decimals.Value, summary.Sats.Value,

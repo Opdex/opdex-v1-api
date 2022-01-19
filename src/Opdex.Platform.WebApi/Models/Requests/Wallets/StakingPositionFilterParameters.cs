@@ -1,4 +1,3 @@
-using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
@@ -18,7 +17,6 @@ public sealed class StakingPositionFilterParameters : FilterParameters<StakingPo
     /// The specific liquidity pools to include.
     /// </summary>
     /// <example>[ "t8WntmWKiLs1BdzoqPGXmPAYzUTpPb3DBw", "tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L" ]</example>
-    [NotNull]
     public IEnumerable<Address> LiquidityPools { get; set; }
 
     /// <summary>

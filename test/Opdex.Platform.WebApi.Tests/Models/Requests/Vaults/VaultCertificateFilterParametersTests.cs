@@ -17,7 +17,7 @@ public class VaultCertificatesFilterParametersTests
         var filters = new VaultCertificateFilterParameters();
 
         // Assert
-        filters.Holder.Should().Be(Address.Empty);
+        filters.Owner.Should().Be(Address.Empty);
         filters.Direction.Should().Be(default);
         filters.Limit.Should().Be(default);
     }
@@ -28,7 +28,7 @@ public class VaultCertificatesFilterParametersTests
         // Arrange
         var filters = new VaultCertificateFilterParameters
         {
-            Holder = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm"),
+            Owner = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm"),
             Limit = 20,
             Direction = SortDirectionType.DESC
         };
@@ -37,7 +37,7 @@ public class VaultCertificatesFilterParametersTests
         var cursor = filters.BuildCursor();
 
         // Assert
-        cursor.Holder.Should().Be(filters.Holder);
+        cursor.Holder.Should().Be(filters.Owner);
         cursor.SortDirection.Should().Be(filters.Direction);
         cursor.Limit.Should().Be(filters.Limit);
         cursor.PagingDirection.Should().Be(PagingDirection.Forward);

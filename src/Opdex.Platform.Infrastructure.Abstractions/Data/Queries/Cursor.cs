@@ -23,14 +23,14 @@ public abstract class Cursor<TPointer> : Cursor where TPointer : IEquatable<TPoi
     protected Cursor(SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, TPointer pointer,
                      uint defaultLimit = DefaultLimit, uint maxLimit = DefaultMaxLimit, SortDirectionType defaultSortDirection = DefaultSortDirectionType)
     {
-        if (defaultLimit == 0) throw new ArgumentOutOfRangeException("Default limit must be greater than 0.");
-        if (maxLimit == 0) throw new ArgumentOutOfRangeException("Max limit must be greater than 0.");
-        if (defaultLimit > maxLimit) throw new ArgumentOutOfRangeException("Default limit cannot be greater than max limit.");
-        if (!defaultSortDirection.IsValid()) throw new ArgumentOutOfRangeException("Invalid default sort direction.");
+        if (defaultLimit == 0) throw new ArgumentOutOfRangeException(nameof(defaultLimit), "Default limit must be greater than 0.");
+        if (maxLimit == 0) throw new ArgumentOutOfRangeException(nameof(maxLimit), "Max limit must be greater than 0.");
+        if (defaultLimit > maxLimit) throw new ArgumentOutOfRangeException(nameof(defaultLimit), "Default limit cannot be greater than max limit.");
+        if (!defaultSortDirection.IsValid()) throw new ArgumentOutOfRangeException(nameof(defaultSortDirection), "Invalid default sort direction.");
 
         // default is invalid enum hence if else
         if (sortDirection == default) SortDirection = defaultSortDirection;
-        else SortDirection = sortDirection.IsValid() ? sortDirection : throw new ArgumentOutOfRangeException("Invalid sort direction.");
+        else SortDirection = sortDirection.IsValid() ? sortDirection : throw new ArgumentOutOfRangeException(nameof(sortDirection), "Invalid sort direction.");
 
         if (limit == default) Limit = defaultLimit;
         else Limit = limit <= maxLimit ? limit : throw new ArgumentOutOfRangeException(nameof(limit), $"Limit cannot be greater than {maxLimit}.");
