@@ -1,4 +1,3 @@
-using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
@@ -32,14 +31,12 @@ public sealed class TokenFilterParameters : FilterParameters<TokensCursor>
     /// Tokens to filter specifically for.
     /// </summary>
     /// <example>[ "tFPedNjm3q8N9HD7wSVTNK5Kvw96332P1o", "tHb7w3dpzq9d8uBVYRrYrqHfBdoMZXqTzG" ]</example>
-    [NotNull]
     public IEnumerable<Address> Tokens { get; set; }
 
     /// <summary>
     /// A generic keyword search against token addresses, names and ticker symbols.
     /// </summary>
     /// <example>BTC</example>
-    [NotNull]
     public string Keyword { get; set; }
 
     /// <summary>

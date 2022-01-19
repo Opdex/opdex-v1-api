@@ -75,10 +75,10 @@ public class GetMarketsWithFilterQueryHandlerTests
     {
         // Arrange
         var cursor = new MarketsCursor(default, default, SortDirectionType.ASC, 25, PagingDirection.Forward, (FixedDecimal.Parse("50.00"), 10));
-        var market = new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25);
+        var market = new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 20, 25);
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new [] { market });
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new[] { market });
 
         // Act
         try
@@ -99,11 +99,11 @@ public class GetMarketsWithFilterQueryHandlerTests
     {
         // Arrange
         var cursor = new MarketsCursor(default, default, SortDirectionType.ASC, 4, PagingDirection.Forward, (FixedDecimal.Parse("50.00"), 10));
-        var markets = new []
+        var markets = new[]
         {
-            new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25),
-            new Market(15, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 30, 35),
-            new Market(20, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 40, 45)
+            new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 20, 25),
+            new Market(15, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 30, 35),
+            new Market(20, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 40, 45)
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(markets);
@@ -127,11 +127,11 @@ public class GetMarketsWithFilterQueryHandlerTests
     {
         // Arrange
         var cursor = new MarketsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Backward, (FixedDecimal.Parse("50.00"), 10));
-        var markets = new []
+        var markets = new[]
         {
-            new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25),
-            new Market(15, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 30, 35),
-            new Market(20, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 40, 45)
+            new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 20, 25),
+            new Market(15, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 30, 35),
+            new Market(20, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 40, 45)
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(markets);
@@ -155,11 +155,11 @@ public class GetMarketsWithFilterQueryHandlerTests
     {
         // Arrange
         var cursor = new MarketsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Forward, (FixedDecimal.Parse("50.00"), 10));
-        var markets = new []
+        var markets = new[]
         {
-            new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25),
-            new Market(15, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 30, 35),
-            new Market(20, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 40, 45)
+            new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 20, 25),
+            new Market(15, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 30, 35),
+            new Market(20, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 40, 45)
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(markets);
@@ -184,11 +184,11 @@ public class GetMarketsWithFilterQueryHandlerTests
         // Arrange
         var cursor = new MarketsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Forward, default);
 
-        var markets = new []
+        var markets = new[]
         {
-            new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25),
-            new Market(15, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 30, 35),
-            new Market(20, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 40, 45)
+            new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 20, 25),
+            new Market(15, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 30, 35),
+            new Market(20, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 40, 45)
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(markets);
@@ -214,11 +214,11 @@ public class GetMarketsWithFilterQueryHandlerTests
         // Arrange
         var cursor = new MarketsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Forward, (FixedDecimal.Parse("10.12"), 2));
 
-        var markets = new []
+        var markets = new[]
         {
-            new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25),
-            new Market(15, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 30, 35),
-            new Market(20, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 40, 45)
+            new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 20, 25),
+            new Market(15, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 30, 35),
+            new Market(20, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 40, 45)
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(markets);
@@ -244,11 +244,11 @@ public class GetMarketsWithFilterQueryHandlerTests
         // Arrange
         var cursor = new MarketsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Backward, (FixedDecimal.Parse("10.12"), 2));
 
-        var markets = new []
+        var markets = new[]
         {
-            new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25),
-            new Market(15, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 30, 35),
-            new Market(20, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 40, 45)
+            new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 20, 25),
+            new Market(15, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 30, 35),
+            new Market(20, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 40, 45)
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(markets);
@@ -273,10 +273,10 @@ public class GetMarketsWithFilterQueryHandlerTests
     {
         // Arrange
         var cursor = new MarketsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Forward, (FixedDecimal.Parse("10.12"), 2));
-        var markets = new []
+        var markets = new[]
         {
-            new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25),
-            new Market(15, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 30, 35),
+            new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 20, 25),
+            new Market(15, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 30, 35),
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(markets);
@@ -301,10 +301,10 @@ public class GetMarketsWithFilterQueryHandlerTests
     {
         // Arrange
         var cursor = new MarketsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Backward, (FixedDecimal.Parse("10.12"), 2));
-        var markets = new []
+        var markets = new[]
         {
-            new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25),
-            new Market(15, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 30, 35),
+            new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 20, 25),
+            new Market(15, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 30, 35),
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(markets);

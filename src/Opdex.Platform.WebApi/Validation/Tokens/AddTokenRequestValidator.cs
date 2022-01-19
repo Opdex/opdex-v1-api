@@ -7,7 +7,7 @@ public class AddTokenRequestValidator : AbstractValidator<AddTokenRequest>
 {
     public AddTokenRequestValidator()
     {
-        RuleFor(request => request.TokenAddress)
+        RuleFor(request => request.Token)
             .MustBeNetworkAddress().WithMessage("Token must be valid address.");
     }
 }

@@ -11,5 +11,5 @@ public class AddTokenRequest
     /// <summary>Address of the SRC token.</summary>
     /// <example>tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3</example>
     [Required]
-    public Address TokenAddress { get; set; }
+    public Address Token { get; set; }
 }

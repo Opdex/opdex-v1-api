@@ -1,4 +1,3 @@
-using NJsonSchema.Annotations;
 using Opdex.Platform.Domain.Models;
 using System;
 
@@ -30,7 +29,6 @@ public class IndexerStatusResponseModel
     /// Unique identifier for the application that is currently indexing
     /// </summary>
     /// <example>bc399269-74cb-4147-a7c3-f2d296fa4a9b</example>
-    [NotNull]
     public string InstanceId { get; set; }
 
     /// <summary>

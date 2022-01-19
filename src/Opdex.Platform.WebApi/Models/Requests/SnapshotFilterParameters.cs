@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Requests;
 
@@ -32,7 +31,6 @@ public sealed class SnapshotFilterParameters : FilterParameters<SnapshotCursor>
     /// Number of results to return per page.
     /// </summary>
     /// <example>100</example>
-    [Range(1, SnapshotCursor.MaxLimit)]
     public override uint Limit { get => base.Limit; set => base.Limit = value; }
 
     /// <inheritdoc />

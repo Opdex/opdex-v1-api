@@ -36,7 +36,7 @@ public class CreateRefreshAddressBalanceCommandHandlerTests
     public async Task Handle_RetrieveLatestBlock_Send()
     {
         // Arrange
-        var command = new CreateRefreshAddressBalanceCommand(new Address("t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH"), new Address("tCVeVYnfcTjtT6UbUFF9SsUYgfT5QUYtGr"));
+        var command = new CreateRefreshAddressBalanceCommand(new Address("t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb"), new Address("tCVeVYnfcTjtT6UbUFF9SsUYgfT5QUYtGr"));
         var cancellationToken = new CancellationTokenSource().Token;
 
         // Act
@@ -54,7 +54,7 @@ public class CreateRefreshAddressBalanceCommandHandlerTests
     public async Task Handle_UpdateAddressBalance_Send()
     {
         // Arrange
-        var command = new CreateRefreshAddressBalanceCommand(new Address("t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH"), new Address("tCVeVYnfcTjtT6UbUFF9SsUYgfT5QUYtGr"));
+        var command = new CreateRefreshAddressBalanceCommand(new Address("t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb"), new Address("tCVeVYnfcTjtT6UbUFF9SsUYgfT5QUYtGr"));
         var cancellationToken = new CancellationTokenSource().Token;
 
         var block = new Block(500, Sha256.Parse("21aaa0f833c4a7f81bd9e8862388733a3a67a1b532c077f0d23503abe0b2f3d8"), DateTime.UtcNow, DateTime.UtcNow);
@@ -73,7 +73,7 @@ public class CreateRefreshAddressBalanceCommandHandlerTests
     public async Task Handle_RetrieveUpdatedAddressBalance_Send()
     {
         // Arrange
-        var command = new CreateRefreshAddressBalanceCommand(new Address("t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH"), new Address("tCVeVYnfcTjtT6UbUFF9SsUYgfT5QUYtGr"));
+        var command = new CreateRefreshAddressBalanceCommand(new Address("t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb"), new Address("tCVeVYnfcTjtT6UbUFF9SsUYgfT5QUYtGr"));
         var cancellationToken = new CancellationTokenSource().Token;
 
         var block = new Block(500, Sha256.Parse("21aaa0f833c4a7f81bd9e8862388733a3a67a1b532c077f0d23503abe0b2f3d8"), DateTime.UtcNow, DateTime.UtcNow);
@@ -91,12 +91,12 @@ public class CreateRefreshAddressBalanceCommandHandlerTests
     public async Task Handle_AssembleDto_Send()
     {
         // Arrange
-        var command = new CreateRefreshAddressBalanceCommand(new Address("t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH"), new Address("tCVeVYnfcTjtT6UbUFF9SsUYgfT5QUYtGr"));
+        var command = new CreateRefreshAddressBalanceCommand(new Address("t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb"), new Address("tCVeVYnfcTjtT6UbUFF9SsUYgfT5QUYtGr"));
         var cancellationToken = new CancellationTokenSource().Token;
 
         var block = new Block(500, Sha256.Parse("21aaa0f833c4a7f81bd9e8862388733a3a67a1b532c077f0d23503abe0b2f3d8"), DateTime.UtcNow, DateTime.UtcNow);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(block);
-        var addressBalance = new AddressBalance(10, 10, "t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH", 10000000000, 500, 505);
+        var addressBalance = new AddressBalance(10, 10, "t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb", 10000000000, 500, 505);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalanceByOwnerAndTokenQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(addressBalance);
 
@@ -111,13 +111,13 @@ public class CreateRefreshAddressBalanceCommandHandlerTests
     public async Task Handle_AssembleDto_Return()
     {
         // Arrange
-        var command = new CreateRefreshAddressBalanceCommand(new Address("t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH"), new Address("tCVeVYnfcTjtT6UbUFF9SsUYgfT5QUYtGr"));
+        var command = new CreateRefreshAddressBalanceCommand(new Address("t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb"), new Address("tCVeVYnfcTjtT6UbUFF9SsUYgfT5QUYtGr"));
         var cancellationToken = new CancellationTokenSource().Token;
 
         var block = new Block(500, Sha256.Parse("21aaa0f833c4a7f81bd9e8862388733a3a67a1b532c077f0d23503abe0b2f3d8"), DateTime.UtcNow, DateTime.UtcNow);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(block);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalanceByOwnerAndTokenQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new AddressBalance(10, 10, "t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH", 10000000000, 500, 505));
+            .ReturnsAsync(new AddressBalance(10, 10, "t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb", 10000000000, 500, 505));
         var addressBalanceDto = new AddressBalanceDto();
         _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<AddressBalance>())).ReturnsAsync(addressBalanceDto);
 

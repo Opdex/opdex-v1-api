@@ -16,7 +16,7 @@ public class ApprovalEvent : TransactionEvent
     /// <summary>
     /// Address approved to spend the tokens.
     /// </summary>
-    /// <example>t8XpH1pNYDgCnqk91ZQKLgpUVeJ7XmomLT</example>
+    /// <example>tAFxpxRdcV9foADqD6gK3c8sY5MeANzFp5</example>
     public Address Spender { get; set; }
 
     /// <summary>

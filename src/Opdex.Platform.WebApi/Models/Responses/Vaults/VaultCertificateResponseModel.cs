@@ -1,6 +1,5 @@
 using Opdex.Platform.Common.Models;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Responses.Vaults;
 
@@ -25,14 +24,12 @@ public class VaultCertificateResponseModel
     /// Block that the vesting period starts.
     /// </summary>
     /// <example>500000</example>
-    [Range(1, double.MaxValue)]
     public ulong VestingStartBlock { get; set; }
 
     /// <summary>
     /// Block that the vesting period ends.
     /// </summary>
     /// <example>750000</example>
-    [Range(1, double.MaxValue)]
     public ulong VestingEndBlock { get; set; }
 
     /// <summary>

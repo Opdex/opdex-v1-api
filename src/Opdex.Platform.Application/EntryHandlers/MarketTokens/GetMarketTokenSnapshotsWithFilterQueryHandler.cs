@@ -30,7 +30,7 @@ public class GetMarketTokenSnapshotsWithFilterQueryHandler : EntryFilterQueryHan
 
     public override async Task<MarketTokenSnapshotsDto> Handle(GetMarketTokenSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
     {
-        if (request.Token == Address.Cirrus) throw new InvalidDataException("tokenAddress", "Market snapshot history is not collected for the base token.");
+        if (request.Token == Address.Cirrus) throw new InvalidDataException("token", "Market snapshot history is not collected for the base token.");
 
         var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token, findOrThrow: true), cancellationToken);
         var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market, findOrThrow: true), cancellationToken);

@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Indexer;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Admins;
-using Opdex.Platform.Application.Abstractions.Models.Admins;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
@@ -26,7 +24,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.IndexControllerTests;
 public class RewindTests
 {
     private readonly Mock<IMediator> _mediator;
-    private readonly IndexController _controller;
+    private readonly IndexerController _controller;
     private readonly NetworkType _network = NetworkType.DEVNET;
 
     public RewindTests()
@@ -35,7 +33,7 @@ public class RewindTests
 
         var opdexConfiguration = new OpdexConfiguration { Network = _network };
 
-        _controller = new IndexController(Mock.Of<IMapper>(), _mediator.Object, opdexConfiguration);
+        _controller = new IndexerController(Mock.Of<IMapper>(), _mediator.Object, opdexConfiguration);
     }
 
     [Fact]
@@ -77,7 +75,7 @@ public class RewindTests
 
         // Assert
         await Assert.ThrowsAsync<IndexingAlreadyRunningException>(Act);
-   }
+    }
 
     [Fact]
     public async Task Rewind_CreateRewindToBlockCommand_Send()

@@ -24,14 +24,14 @@ using Opdex.Platform.WebApi.Models.Responses.Index;
 namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
-[Route("index")]
-public class IndexController : ControllerBase
+[Route("indexer")]
+public class IndexerController : ControllerBase
 {
     private readonly IMapper _mapper;
     private readonly IMediator _mediator;
     private readonly NetworkType _network;
 
-    public IndexController(IMapper mapper, IMediator mediator, OpdexConfiguration opdexConfiguration)
+    public IndexerController(IMapper mapper, IMediator mediator, OpdexConfiguration opdexConfiguration)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -59,15 +59,8 @@ public class IndexController : ControllerBase
     /// </remarks>
     /// <param name="request">The mined token and market deployer transaction hashes to look up.</param>
     /// <param name="cancellationToken">Cancellation token</param>
-    /// <response code="204">Indexer resynced.</response>
-    /// <response code="400">Markets already indexed.</response>
-    /// <response code="403">You don't have permission to carry out this request.</response>
     [HttpPost("resync-from-deployment")]
     [Authorize(Policy = "AdminOnly")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> ResyncFromDeployment(ResyncFromDeploymentRequest request, CancellationToken cancellationToken)
     {
         var markets = await _mediator.Send(new RetrieveAllMarketsQuery(), cancellationToken);
@@ -94,12 +87,8 @@ public class IndexController : ControllerBase
     /// <summary>Rewind to Block</summary>
     /// <param name="request">Request to rewind back to specific block.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <response code="204">Indexer rewound.</response>
     [HttpPost("rewind")]
     [Authorize(Policy = "AdminOnly")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> Rewind(RewindRequest request, CancellationToken cancellationToken)
     {
         var tryLock = await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Rewinding), CancellationToken.None);

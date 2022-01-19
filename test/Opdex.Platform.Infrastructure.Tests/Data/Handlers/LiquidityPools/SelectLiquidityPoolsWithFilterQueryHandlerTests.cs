@@ -211,7 +211,7 @@ public class SelectLiquidityPoolsWithFilterQueryHandlerTests
 
     [Theory]
     [InlineData(LiquidityPoolNominationStatusFilter.Nominated)]
-    [InlineData(LiquidityPoolNominationStatusFilter.NonNominated)]
+    [InlineData(LiquidityPoolNominationStatusFilter.Excluded)]
     public async Task Handle_Filter_NominationFilter(LiquidityPoolNominationStatusFilter filter)
     {
         // Arrange
