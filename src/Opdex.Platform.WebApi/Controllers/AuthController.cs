@@ -24,7 +24,8 @@ using SSAS.NET;
 namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
-[Route("auth")]
+[Route("v{version:apiVersion}/auth")]
+[ApiVersion("1")]
 public class AuthController : ControllerBase
 {
     private readonly OpdexConfiguration _opdexConfiguration;

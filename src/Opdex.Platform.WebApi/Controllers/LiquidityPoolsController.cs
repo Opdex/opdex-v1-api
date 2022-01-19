@@ -21,7 +21,8 @@ namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("liquidity-pools")]
+[Route("v{version:apiVersion}/liquidity-pools")]
+[ApiVersion("1")]
 [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
 public class LiquidityPoolsController : ControllerBase
 {

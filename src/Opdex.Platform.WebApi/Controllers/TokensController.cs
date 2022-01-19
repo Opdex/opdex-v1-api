@@ -24,7 +24,8 @@ namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("tokens")]
+[Route("v{version:apiVersion}/tokens")]
+[ApiVersion("1")]
 public class TokensController : ControllerBase
 {
     private readonly IMediator _mediator;

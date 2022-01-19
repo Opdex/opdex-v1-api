@@ -20,7 +20,8 @@ namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("markets")]
+[Route("v{version:apiVersion}/markets")]
+[ApiVersion("1")]
 [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
 public class MarketsController : ControllerBase
 {

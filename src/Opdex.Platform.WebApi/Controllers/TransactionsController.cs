@@ -21,7 +21,8 @@ using Opdex.Platform.WebApi.OpenApi.Transactions;
 namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
-[Route("transactions")]
+[Route("v{version:apiVersion}/transactions")]
+[ApiVersion("1")]
 public class TransactionsController : ControllerBase
 {
     private readonly IMediator _mediator;

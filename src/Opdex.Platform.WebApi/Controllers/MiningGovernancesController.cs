@@ -18,7 +18,8 @@ namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("mining-governances")]
+[Route("v{version:apiVersion}/mining-governances")]
+[ApiVersion("1")]
 public class MiningGovernancesController : ControllerBase
 {
     private readonly IMediator _mediator;

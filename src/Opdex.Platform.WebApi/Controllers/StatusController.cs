@@ -7,7 +7,8 @@ using Opdex.Platform.WebApi.Models.Responses.Status;
 namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
-[Route("status")]
+[Route("v{version:apiVersion}/status")]
+[ApiVersion("1")]
 public class StatusController : ControllerBase
 {
     private readonly OpdexConfiguration _opdexConfiguration;

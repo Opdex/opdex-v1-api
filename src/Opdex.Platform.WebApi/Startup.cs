@@ -50,6 +50,8 @@ using AspNetCoreRateLimit;
 using Opdex.Platform.WebApi.Exceptions;
 using Opdex.Platform.Common.Encryption;
 using Opdex.Platform.WebApi.OpenApi;
+using Microsoft.AspNetCore.Mvc;
+using Opdex.Platform.WebApi.Conventions;
 
 namespace Opdex.Platform.WebApi;
 
@@ -222,6 +224,13 @@ public class Startup
                     }
                 };
             });
+
+        services.AddApiVersioning(options =>
+        {
+            options.ReportApiVersions = true;
+            options.ErrorResponses = new ProblemDetailsApiVersionErrorProvider();
+            options.DefaultApiVersion = new ApiVersion(1, 0);
+        });
 
         services.AddOpenApiDocument((settings, provider) =>
         {
