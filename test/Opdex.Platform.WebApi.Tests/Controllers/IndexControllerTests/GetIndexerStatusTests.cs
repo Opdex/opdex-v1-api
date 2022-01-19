@@ -3,15 +3,11 @@ using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Indexer;
-using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Index;
-using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Controllers;
-using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.WebApi.Models.Responses.Index;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,7 +19,7 @@ public class GetIndexerStatusTests
 {
     private readonly Mock<IMapper> _mapperMock;
     private readonly Mock<IMediator> _mediatorMock;
-    private readonly IndexController _controller;
+    private readonly IndexerController _controller;
 
     public GetIndexerStatusTests()
     {
@@ -32,7 +28,7 @@ public class GetIndexerStatusTests
 
         var opdexConfiguration = new OpdexConfiguration { Network = NetworkType.DEVNET };
 
-        _controller = new IndexController(_mapperMock.Object, _mediatorMock.Object, opdexConfiguration);
+        _controller = new IndexerController(_mapperMock.Object, _mediatorMock.Object, opdexConfiguration);
     }
 
     [Fact]

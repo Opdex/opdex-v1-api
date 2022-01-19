@@ -19,38 +19,38 @@ public class VaultCertificateFilterParametersValidatorTests
 
     [Theory]
     [ClassData(typeof(NonNetworkAddressData))]
-    public void Holder_Invalid(Address holder)
+    public void Owner_Invalid(Address owner)
     {
         // Arrange
         var request = new VaultCertificateFilterParameters
         {
-            Holder = holder
+            Owner = owner
         };
 
         // Act
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(r => r.Holder);
+        result.ShouldHaveValidationErrorFor(r => r.Owner);
     }
 
     [Theory]
     [ClassData(typeof(NullAddressData))]
     [ClassData(typeof(EmptyAddressData))]
     [ClassData(typeof(ValidNetworkAddressData))]
-    public void Holder_Valid(Address holder)
+    public void Owner_Valid(Address owner)
     {
         // Arrange
         var request = new VaultCertificateFilterParameters
         {
-            Holder = holder
+            Owner = owner
         };
 
         // Act
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldNotHaveValidationErrorFor(r => r.Holder);
+        result.ShouldNotHaveValidationErrorFor(r => r.Owner);
     }
 
     [Fact]

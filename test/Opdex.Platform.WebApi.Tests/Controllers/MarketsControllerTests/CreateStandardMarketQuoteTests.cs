@@ -41,7 +41,7 @@ public class CreateStandardMarketQuoteTests
 
         var request = new CreateStandardMarketQuoteRequest
         {
-            MarketOwner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm",
+            Owner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm",
             TransactionFee = 5,
             AuthLiquidityProviders = true,
             AuthTraders = false,
@@ -56,7 +56,7 @@ public class CreateStandardMarketQuoteTests
         // Assert
         _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateCreateStandardMarketTransactionQuoteCommand>(command
                                                                                                                 => command.WalletAddress == walletAddress
-                                                                                                                   && command.Owner == request.MarketOwner
+                                                                                                                   && command.Owner == request.Owner
                                                                                                                    && command.TransactionFee == request.TransactionFee
                                                                                                                    && command.AuthLiquidityProviders == request.AuthLiquidityProviders
                                                                                                                    && command.AuthTraders == request.AuthTraders
@@ -78,7 +78,7 @@ public class CreateStandardMarketQuoteTests
 
         var request = new CreateStandardMarketQuoteRequest
         {
-            MarketOwner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm",
+            Owner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm",
             TransactionFee = 5,
             AuthLiquidityProviders = true,
             AuthTraders = false,
@@ -111,7 +111,7 @@ public class CreateStandardMarketQuoteTests
 
         var request = new CreateStandardMarketQuoteRequest
         {
-            MarketOwner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm",
+            Owner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm",
             TransactionFee = 5,
             AuthLiquidityProviders = true,
             AuthTraders = false,

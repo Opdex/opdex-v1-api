@@ -1,6 +1,5 @@
 using FluentValidation;
 using FluentValidation.Validators;
-using ZymLabs.NSwag.FluentValidation;
 
 namespace Opdex.Platform.WebApi.Validation;
 
@@ -15,22 +14,6 @@ public class UnixTimestampValidator<T> : PropertyValidator<T, long>, IUnixTimest
 
 public interface IUnixTimestampValidator : IPropertyValidator
 {
-}
-
-public class UnixTimestampValidationRule : FluentValidationRule
-{
-    public UnixTimestampValidationRule() : base("UnixTimestamp")
-    {
-        Matches = validator => validator is IUnixTimestampValidator;
-        Apply = context =>
-        {
-            var schema = context.SchemaProcessorContext.Schema;
-            if (!schema.RequiredProperties.Contains(context.PropertyKey)) schema.RequiredProperties.Add(context.PropertyKey);
-            var property = schema.Properties[context.PropertyKey];
-            property.Minimum = 0;
-            property.Maximum = 273402300800;
-        };
-    }
 }
 
 public static class UnixTimestampValidatorExtensions

@@ -9,7 +9,7 @@ public class TransactionFilterParametersValidator : AbstractCursorValidator<Tran
 {
     public TransactionFilterParametersValidator()
     {
-        RuleFor(filter => filter.Wallet).MustBeNetworkAddressOrEmpty().WithMessage("Wallet must be valid address.");
+        RuleFor(filter => filter.Sender).MustBeNetworkAddressOrEmpty().WithMessage("Wallet must be valid address.");
         RuleForEach(filter => filter.Contracts).MustBeNetworkAddress().WithMessage("Contract must be valid address.");
         RuleForEach(filter => filter.EventTypes).MustBeValidEnumValue().WithMessage("Event type must be valid for the enumeration values.");
         RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit).WithMessage($"Limit must be between 1 and {Cursor.DefaultMaxLimit}.");

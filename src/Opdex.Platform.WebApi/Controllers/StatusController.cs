@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NSwag.Annotations;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.WebApi.Models.Responses.Status;
 
@@ -23,7 +21,6 @@ public class StatusController : ControllerBase
     /// <remarks>Retrieves status details for the running instance of the application.</remarks>
     /// <returns>Status details.</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(StatusResponseModel), StatusCodes.Status200OK)]
     public ActionResult<StatusResponseModel> GetStatus()
     {
         return new StatusResponseModel

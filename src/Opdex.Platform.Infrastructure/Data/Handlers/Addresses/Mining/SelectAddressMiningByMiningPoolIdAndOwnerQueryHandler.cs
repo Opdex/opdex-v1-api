@@ -47,7 +47,7 @@ public class SelectAddressMiningByMiningPoolIdAndOwnerQueryHandler
 
         if (request.FindOrThrow && result == null)
         {
-            throw new NotFoundException($"{nameof(AddressMining)} not found.");
+            throw new NotFoundException($"Mining position not found.");
         }
 
         return result == null ? null : _mapper.Map<AddressMining>(result);

@@ -9,10 +9,9 @@ namespace Opdex.Platform.WebApi.Models.Requests.Markets;
 public class CreateStandardMarketQuoteRequest
 {
     [Required]
-    public Address MarketOwner { get; set; }
+    public Address Owner { get; set; }
 
     [Required]
-    [Range(0, 10)]
     public uint TransactionFee { get; set; }
 
     [Required]

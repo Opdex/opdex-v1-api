@@ -4,9 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NSwag.Annotations;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
@@ -18,7 +16,6 @@ using Opdex.Platform.WebApi.Models.Requests;
 using Opdex.Platform.WebApi.Models.Requests.Tokens;
 using Opdex.Platform.WebApi.Models.Responses.Tokens;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
-using Opdex.Platform.WebApi.OpenApi.Tokens;
 
 namespace Opdex.Platform.WebApi.Controllers;
 
@@ -43,13 +40,7 @@ public class TokensController : ControllerBase
     /// <param name="filters">Token search filters.</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Filtered tokens with paging.</returns>
-    /// <response code="200">Token results returned.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
     [HttpGet]
-    [ProducesResponseType(typeof(TokensResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<TokensResponseModel>> GetTokens([FromQuery] TokenFilterParameters filters, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetTokensWithFilterQuery(filters.BuildCursor()), cancellationToken);
@@ -66,42 +57,25 @@ public class TokensController : ControllerBase
     /// <param name="request">Token details.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Token details.</returns>
-    /// <response code="201">The token was added to indexed tokens.</response>
-    /// <response code="303">Token is already indexed. Redirects to `GET /tokens/{address}`.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
     [HttpPost]
-    [ProducesResponseType(typeof(TokenResponseModel), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status303SeeOther)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> AddToken([FromBody] AddTokenRequest request, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new CreateAddTokenCommand(request.TokenAddress), cancellationToken);
+        var result = await _mediator.Send(new CreateAddTokenCommand(request.Token), cancellationToken);
 
         var response = _mapper.Map<TokenResponseModel>(result);
 
-        return Created($"/tokens/{request.TokenAddress}", response);
+        return Created($"/tokens/{request.Token}", response);
     }
 
     /// <summary>Get Token</summary>
     /// <remarks>Returns the token that matches the provided address.</remarks>
-    /// <param name="address">Address of the token.</param>
+    /// <param name="token">Address of the token.</param>
     /// <param name="cancellationToken">cancellation token.</param>
     /// <returns>Token details.</returns>
-    /// <response code="200">Token details found.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Token not found.</response>
-    [HttpGet("{address}")]
-    [OpenApiOperationProcessor(typeof(GetTokenOperationProcessor))]
-    [ProducesResponseType(typeof(TokenResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<TokenResponseModel>> GetToken([FromRoute] Address address, CancellationToken cancellationToken)
+    [HttpGet("{token}")]
+    public async Task<ActionResult<TokenResponseModel>> GetToken([FromRoute] Address token, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new GetTokenByAddressQuery(address), cancellationToken);
+        var result = await _mediator.Send(new GetTokenByAddressQuery(token), cancellationToken);
 
         var response = _mapper.Map<TokenResponseModel>(result);
 
@@ -110,24 +84,15 @@ public class TokensController : ControllerBase
 
     ///<summary>Get Token History</summary>
     /// <remarks>Retrieve historical data points for a token tracking open, high, low, and close of USD prices.</remarks>
-    /// <param name="address">The address of the token.</param>
+    /// <param name="token">The address of the token.</param>
     /// <param name="filters">Filter parameters.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Paged token snapshot data.</returns>
-    /// <response code="200">Returned token snapshots.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Token not found.</response>
-    [HttpGet("{address}/history")]
-    [OpenApiOperationProcessor(typeof(GetTokenHistoryOperationProcessor))]
-    [ProducesResponseType(typeof(TokenSnapshotsResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<TokenSnapshotsResponseModel>> GetTokenHistory([FromRoute] Address address, [FromQuery] SnapshotFilterParameters filters,
+    [HttpGet("{token}/history")]
+    public async Task<ActionResult<TokenSnapshotsResponseModel>> GetTokenHistory([FromRoute] Address token, [FromQuery] SnapshotFilterParameters filters,
                                                                                  CancellationToken cancellationToken)
     {
-        var tokenSnapshotDtos = await _mediator.Send(new GetTokenSnapshotsWithFilterQuery(address, filters.BuildCursor()), cancellationToken);
+        var tokenSnapshotDtos = await _mediator.Send(new GetTokenSnapshotsWithFilterQuery(token, filters.BuildCursor()), cancellationToken);
 
         var response = _mapper.Map<TokenSnapshotsResponseModel>(tokenSnapshotDtos);
 
@@ -136,25 +101,16 @@ public class TokensController : ControllerBase
 
     /// <summary>Approve Allowance Quote</summary>
     /// <remarks>Quotes a transaction to approve an SRC token allowance for a spender.</remarks>
-    /// <param name="address">The token address to approve an allowance of.</param>
+    /// <param name="token">The token address to approve an allowance of.</param>
     /// <param name="request">The allowance approval request.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Transaction quote of an approve allowance transaction.</returns>
-    /// <response code="200">Approve allowance quote created.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Token not found.</response>
-    [HttpPost("{address}/approve")]
-    [OpenApiOperationProcessor(typeof(ApproveAllowanceOperationProcessor))]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ApproveAllowance([FromRoute] Address address, [FromBody] ApproveAllowanceQuoteRequest request, CancellationToken cancellationToken)
+    [HttpPost("{token}/approve")]
+    public async Task<IActionResult> ApproveAllowance([FromRoute] Address token, [FromBody] ApproveAllowanceQuoteRequest request, CancellationToken cancellationToken)
     {
-        if (address == Address.Cirrus) throw new InvalidDataException(nameof(address), "Address must be SRC token address.");
+        if (token == Address.Cirrus) throw new InvalidDataException(nameof(token), "Address must be SRC token address.");
 
-        var response = await _mediator.Send(new CreateApproveAllowanceTransactionQuoteCommand(address, _context.Wallet, request.Spender, request.Amount),
+        var response = await _mediator.Send(new CreateApproveAllowanceTransactionQuoteCommand(token, _context.Wallet, request.Spender, request.Amount),
                                             cancellationToken);
 
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
@@ -164,24 +120,15 @@ public class TokensController : ControllerBase
 
     /// <summary>Distribute Tokens Quote</summary>
     /// <remarks>Quotes a transaction to distribute SRC tokens on eligible token types.</remarks>
-    /// <param name="address">The address of the token smart contract.</param>
+    /// <param name="token">The address of the token smart contract.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Token distribute transaction quote.</returns>
-    /// <response code="200">Distribute quote created.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Token not found.</response>
-    [HttpPost("{address}/distribute")]
-    [OpenApiOperationProcessor(typeof(DistributeOperationProcessor))]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Distribute([FromRoute] Address address, CancellationToken cancellationToken)
+    [HttpPost("{token}/distribute")]
+    public async Task<IActionResult> Distribute([FromRoute] Address token, CancellationToken cancellationToken)
     {
-        if (address == Address.Cirrus) throw new InvalidDataException(nameof(address), "Address must be SRC token address.");
+        if (token == Address.Cirrus) throw new InvalidDataException(nameof(token), "Address must be SRC token address.");
 
-        var response = await _mediator.Send(new CreateDistributeTokensTransactionQuoteCommand(address, _context.Wallet), cancellationToken);
+        var response = await _mediator.Send(new CreateDistributeTokensTransactionQuoteCommand(token, _context.Wallet), cancellationToken);
 
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
 

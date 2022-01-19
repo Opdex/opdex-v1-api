@@ -10,7 +10,7 @@ public sealed class MiningGovernanceFilterParameters : FilterParameters<MiningGo
     /// <summary>
     /// Address of the mined token.
     /// </summary>
-    /// <example>tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L</example>
+    /// <example>tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c</example>
     public Address MinedToken { get; set; }
 
     /// <inheritdoc />
