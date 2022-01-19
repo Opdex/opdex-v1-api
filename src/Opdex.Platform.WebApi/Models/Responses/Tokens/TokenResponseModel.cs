@@ -32,14 +32,12 @@ public class TokenResponseModel
     /// The total number of decimal places the token has.
     /// </summary>
     /// <example>8</example>
-    [Range(0, double.MaxValue)]
     public int Decimals { get; set; }
 
     /// <summary>
     /// The total number of satoshis per full token.
     /// </summary>
     /// <example>100000000</example>
-    [Range(0, double.MaxValue)]
     public ulong Sats { get; set; }
 
     /// <summary>

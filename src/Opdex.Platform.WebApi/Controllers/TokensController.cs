@@ -40,9 +40,6 @@ public class TokensController : ControllerBase
     /// <param name="filters">Token search filters.</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Filtered tokens with paging.</returns>
-    /// <response code="200">Token results returned.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
     [HttpGet]
     public async Task<ActionResult<TokensResponseModel>> GetTokens([FromQuery] TokenFilterParameters filters, CancellationToken cancellationToken)
     {
@@ -60,10 +57,6 @@ public class TokensController : ControllerBase
     /// <param name="request">Token details.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Token details.</returns>
-    /// <response code="201">The token was added to indexed tokens.</response>
-    /// <response code="303">Token is already indexed. Redirects to `GET /tokens/{token}`.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
     [HttpPost]
     public async Task<IActionResult> AddToken([FromBody] AddTokenRequest request, CancellationToken cancellationToken)
     {
@@ -79,10 +72,6 @@ public class TokensController : ControllerBase
     /// <param name="token">Address of the token.</param>
     /// <param name="cancellationToken">cancellation token.</param>
     /// <returns>Token details.</returns>
-    /// <response code="200">Token details found.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Token not found.</response>
     [HttpGet("{token}")]
     public async Task<ActionResult<TokenResponseModel>> GetToken([FromRoute] Address token, CancellationToken cancellationToken)
     {
@@ -99,10 +88,6 @@ public class TokensController : ControllerBase
     /// <param name="filters">Filter parameters.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Paged token snapshot data.</returns>
-    /// <response code="200">Returned token snapshots.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Token not found.</response>
     [HttpGet("{token}/history")]
     public async Task<ActionResult<TokenSnapshotsResponseModel>> GetTokenHistory([FromRoute] Address token, [FromQuery] SnapshotFilterParameters filters,
                                                                                  CancellationToken cancellationToken)
@@ -120,10 +105,6 @@ public class TokensController : ControllerBase
     /// <param name="request">The allowance approval request.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Transaction quote of an approve allowance transaction.</returns>
-    /// <response code="200">Approve allowance quote created.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Token not found.</response>
     [HttpPost("{token}/approve")]
     public async Task<IActionResult> ApproveAllowance([FromRoute] Address token, [FromBody] ApproveAllowanceQuoteRequest request, CancellationToken cancellationToken)
     {
@@ -142,10 +123,6 @@ public class TokensController : ControllerBase
     /// <param name="token">The address of the token smart contract.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Token distribute transaction quote.</returns>
-    /// <response code="200">Distribute quote created.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Token not found.</response>
     [HttpPost("{token}/distribute")]
     public async Task<IActionResult> Distribute([FromRoute] Address token, CancellationToken cancellationToken)
     {

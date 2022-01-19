@@ -20,7 +20,6 @@ public class MarketSnapshotFilterParameters : FilterParameters<SnapshotCursor>
     [BindRequired]
     public DateTime EndDateTime { get; set; }
 
-    [Range(1, SnapshotCursor.MaxLimit)]
     public override uint Limit { get => base.Limit; set => base.Limit = value; }
 
     /// <inheritdoc />

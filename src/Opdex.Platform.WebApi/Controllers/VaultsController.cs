@@ -39,8 +39,6 @@ public class VaultsController : ControllerBase
     /// <param name="filters">Filter parameters.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault paging results.</returns>
-    /// <response code="200">Vault results returned.</response>
-    /// <response code="400">The request is not valid.</response>
     [HttpGet]
     public async Task<ActionResult<VaultsResponseModel>> GetVaults([FromQuery] VaultFilterParameters filters, CancellationToken cancellationToken)
     {
@@ -53,10 +51,6 @@ public class VaultsController : ControllerBase
     /// <param name="vault">Address of the vault.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault details.</returns>
-    /// <response code="200">Vault details found.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Vault not found.</response>
     [HttpGet("{vault}")]
     public async Task<ActionResult<VaultResponseModel>> GetVault([FromRoute] Address vault, CancellationToken cancellationToken)
     {
@@ -71,10 +65,6 @@ public class VaultsController : ControllerBase
     /// <param name="filters">Filter parameters.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault certificate paging results.</returns>
-    /// <response code="200">Vault certificate results returned.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Vault not found.</response>
     [HttpGet("{vault}/certificates")]
     public async Task<ActionResult<VaultCertificatesResponseModel>> GetCertificates([FromRoute] Address vault, [FromQuery] VaultCertificateFilterParameters filters, CancellationToken cancellationToken)
     {
@@ -87,10 +77,6 @@ public class VaultsController : ControllerBase
     /// <param name="vault">Address of the vault.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Redeem vault certificate quote.</returns>
-    /// <response code="200">Redeem vault certificate quote created.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Vault not found.</response>
     [HttpPost("{vault}/certificates/redeem")]
     [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteRedeemCertificate([FromRoute] Address vault, CancellationToken cancellationToken)
@@ -106,10 +92,6 @@ public class VaultsController : ControllerBase
     /// <param name="filters">Filter parameters.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault proposal pledge paging results.</returns>
-    /// <response code="200">Vault proposal pledge results returned.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Vault not found.</response>
     [HttpGet("{vault}/pledges")]
     public async Task<ActionResult<VaultProposalPledgesResponseModel>> GetVaultProposalPledges([FromRoute] Address vault,
         [FromQuery] VaultProposalPledgeFilterParameters filters, CancellationToken cancellationToken)
@@ -124,10 +106,6 @@ public class VaultsController : ControllerBase
     /// <param name="filters">Filter parameters.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault proposal paging results.</returns>
-    /// <response code="200">Vault proposal results returned.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Vault not found.</response>
     [HttpGet("{vault}/proposals")]
     public async Task<ActionResult<VaultProposalsResponseModel>> GetVaultProposals([FromRoute] Address vault, [FromQuery] VaultProposalFilterParameters filters,
                                                                                    CancellationToken cancellationToken)
@@ -142,10 +120,6 @@ public class VaultsController : ControllerBase
     /// <param name="request">Vault proposal details.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault proposal quote.</returns>
-    /// <response code="200">Vault proposal quote created.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Vault not found.</response>
     [HttpPost("{vault}/proposals/create-certificate")]
     [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteProposeCreateCertificate([FromRoute] Address vault,
@@ -163,10 +137,6 @@ public class VaultsController : ControllerBase
     /// <param name="request">Vault proposal details.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault proposal quote.</returns>
-    /// <response code="200">Vault proposal quote created.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Vault not found.</response>
     [HttpPost("{vault}/proposals/revoke-certificate")]
     [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteProposeRevokeCertificate([FromRoute] Address vault,
@@ -184,10 +154,6 @@ public class VaultsController : ControllerBase
     /// <param name="request">Vault proposal details.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault proposal quote.</returns>
-    /// <response code="200">Vault proposal quote created.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Vault not found.</response>
     [HttpPost("{vault}/proposals/minimum-pledge")]
     [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteProposeMinimumPledge([FromRoute] Address vault,
@@ -205,10 +171,6 @@ public class VaultsController : ControllerBase
     /// <param name="request">Vault proposal details.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault proposal quote.</returns>
-    /// <response code="200">Vault proposal quote created.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Vault not found.</response>
     [HttpPost("{vault}/proposals/minimum-vote")]
     [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteProposeMinimumVote([FromRoute] Address vault, [FromBody] MinimumVoteVaultProposalQuoteRequest request,
@@ -225,10 +187,6 @@ public class VaultsController : ControllerBase
     /// <param name="proposalId">Id of the proposal in the vault.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault proposal details.</returns>
-    /// <response code="200">Vault proposal details found.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Either vault or proposal not found.</response>
     [HttpGet("{vault}/proposals/{proposalId}")]
     public async Task<ActionResult<VaultProposalResponseModel>> GetProposal([FromRoute] Address vault, [FromRoute] ulong proposalId, CancellationToken cancellationToken)
     {
@@ -243,10 +201,6 @@ public class VaultsController : ControllerBase
     /// <param name="proposalId">Id of the proposal in the vault.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault proposal completion quote.</returns>
-    /// <response code="200">Vault proposal completion quote created.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Either vault or proposal not found.</response>
     [HttpPost("{vault}/proposals/{proposalId}/complete")]
     [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteCompleteProposal([FromRoute] Address vault, [FromRoute] ulong proposalId, CancellationToken cancellationToken)
@@ -263,10 +217,6 @@ public class VaultsController : ControllerBase
     /// <param name="request">Vault proposal pledge request details.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault proposal pledge quote.</returns>
-    /// <response code="200">Vault proposal pledge quote created.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Either vault or proposal not found.</response>
     [HttpPost("{vault}/proposals/{proposalId}/pledges")]
     [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuotePledge([FromRoute] Address vault, [FromRoute] ulong proposalId,
@@ -284,10 +234,6 @@ public class VaultsController : ControllerBase
     /// <param name="request">Vault proposal withdraw pledge request details.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault proposal withdraw pledge quote.</returns>
-    /// <response code="200">Vault proposal withdraw pledge quote created.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Either vault or proposal not found.</response>
     [HttpPost("{vault}/proposals/{proposalId}/pledges/withdraw")]
     [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteWithdrawPledge([FromRoute] Address vault, [FromRoute] ulong proposalId,
@@ -305,10 +251,6 @@ public class VaultsController : ControllerBase
     /// <param name="pledger">Address of the pledger.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault proposal pledge details.</returns>
-    /// <response code="200">Vault proposal pledge details found.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Either vault, proposal or pledger not found.</response>
     [HttpGet("{vault}/proposals/{proposalId}/pledges/{pledger}")]
     public async Task<ActionResult<VaultProposalPledgeResponseModel>> GetPledge([FromRoute] Address vault, [FromRoute] ulong proposalId, [FromRoute] Address pledger,
                                                                                 CancellationToken cancellationToken)
@@ -325,10 +267,6 @@ public class VaultsController : ControllerBase
     /// <param name="request">Vault proposal vote request details.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault proposal vote quote.</returns>
-    /// <response code="200">Vault proposal vote quote created.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Either vault or proposal not found.</response>
     [HttpPost("{vault}/proposals/{proposalId}/votes")]
     [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteVote([FromRoute] Address vault, [FromRoute] ulong proposalId,
@@ -346,10 +284,6 @@ public class VaultsController : ControllerBase
     /// <param name="request">Vault proposal withdraw vote request details.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault proposal withdraw vote quote.</returns>
-    /// <response code="200">Vault proposal withdraw vote quote created.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Either vault or proposal not found.</response>
     [HttpPost("{vault}/proposals/{proposalId}/votes/withdraw")]
     [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteWithdrawVote([FromRoute] Address vault, [FromRoute] ulong proposalId,
@@ -367,10 +301,6 @@ public class VaultsController : ControllerBase
     /// <param name="voter">Address of the voter.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault proposal vote details.</returns>
-    /// <response code="200">Vault proposal vote details found.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Either vault, proposal or voter not found.</response>
     [HttpGet("{vault}/proposals/{proposalId}/votes/{voter}")]
     public async Task<ActionResult<VaultProposalVoteResponseModel>> GetVote([FromRoute] Address vault, [FromRoute] ulong proposalId, [FromRoute] Address voter,
                                                                             CancellationToken cancellationToken)
@@ -386,10 +316,6 @@ public class VaultsController : ControllerBase
     /// <param name="filters">Filter parameters.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault proposal vote paging results.</returns>
-    /// <response code="200">Vault proposal vote results returned.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Vault not found.</response>
     [HttpGet("{vault}/votes")]
     public async Task<ActionResult<VaultProposalVotesResponseModel>> GetVaultProposalVotes([FromRoute] Address vault,
                                                                                            [FromQuery] VaultProposalVoteFilterParameters filters,

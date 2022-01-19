@@ -185,7 +185,6 @@ public class MarketsController : ControllerBase
     /// <param name="address">The address for which to retrieve permissions.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A list of all market permissions for the wallet address.</returns>
-    /// <response code="404">The market could not be found or is not a standard market.</response>
     [HttpGet("{market}/standard/permissions/{address}")]
     public async Task<ActionResult<IEnumerable<MarketPermissionType>>> GetPermissions([FromRoute] Address market, [FromRoute] Address address, CancellationToken cancellationToken)
     {

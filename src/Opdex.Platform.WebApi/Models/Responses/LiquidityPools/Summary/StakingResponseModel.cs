@@ -24,14 +24,12 @@ public class StakingResponseModel
     /// Total USD value of tokens staking.
     /// </summary>
     /// <example>425000.50</example>
-    [Range(0, double.MaxValue)]
     public decimal Usd { get; set; }
 
     /// <summary>
     /// Percentage change in staking weight for the day.
     /// </summary>
     /// <example>-4.69</example>
-    [Range(double.MinValue, double.MaxValue)]
     public decimal DailyWeightChangePercent { get; set; }
 
     /// <summary>

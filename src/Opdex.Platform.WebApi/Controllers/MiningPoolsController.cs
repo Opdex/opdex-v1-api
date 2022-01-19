@@ -49,7 +49,6 @@ public class MiningPoolsController : ControllerBase
     /// <param name="pool">Address of the mining pool.</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Mining pool details.</returns>
-    /// <response code="404">Mining pool not found.</response>
     [HttpGet("{pool}")]
     public async Task<ActionResult<MiningPoolResponseModel>> GetMiningPool([FromRoute] Address pool, CancellationToken cancellationToken)
     {
@@ -64,7 +63,6 @@ public class MiningPoolsController : ControllerBase
     /// <param name="request">A <see cref="MiningQuote"/> of how many tokens to mine with.</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
-    /// <response code="404">Mining pool not found.</response>
     [HttpPost("{pool}/start")]
     public async Task<ActionResult<TransactionQuoteResponseModel>> StartMining([FromRoute] Address pool, [FromBody] MiningQuote request,
                                                                                CancellationToken cancellationToken)
@@ -82,7 +80,6 @@ public class MiningPoolsController : ControllerBase
     /// <param name="request">A <see cref="MiningQuote"/> of how many tokens to stop mining with.</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
-    /// <response code="404">Mining pool not found.</response>
     [HttpPost("{pool}/stop")]
     public async Task<ActionResult<TransactionQuoteResponseModel>> StopMining([FromRoute] Address pool, [FromBody] MiningQuote request,
                                                                               CancellationToken cancellationToken)
@@ -99,7 +96,6 @@ public class MiningPoolsController : ControllerBase
     /// <param name="pool">The address of the mining pool.</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
-    /// <response code="404">Mining pool not found.</response>
     [HttpPost("{pool}/collect")]
     public async Task<ActionResult<TransactionQuoteResponseModel>> CollectMiningRewards([FromRoute] Address pool, CancellationToken cancellationToken)
     {

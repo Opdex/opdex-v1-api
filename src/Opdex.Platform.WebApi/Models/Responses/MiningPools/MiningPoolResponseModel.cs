@@ -1,5 +1,4 @@
 using Opdex.Platform.Common.Models;
-using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Responses.MiningPools;
 
@@ -24,7 +23,6 @@ public class MiningPoolResponseModel
     /// Block number which the current mining period ends.
     /// </summary>
     /// <example>750000</example>
-    [Range(1, double.MaxValue)]
     public ulong MiningPeriodEndBlock { get; set; }
 
     /// <summary>

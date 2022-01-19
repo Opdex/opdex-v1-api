@@ -25,7 +25,6 @@ public class VaultProposalResponseModel
     /// Id of the proposal stored by the vault.
     /// </summary>
     /// <example>5</example>
-    [Range(1, double.MaxValue)]
     public ulong ProposalId { get; set; }
 
     /// <summary>

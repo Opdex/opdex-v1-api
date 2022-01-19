@@ -41,9 +41,6 @@ public class TransactionsController : ControllerBase
     /// <param name="filters">Filter parameters.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Details of transactions with paging.</returns>
-    /// <response code="200">Transaction results returned.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
     [HttpGet]
     [Authorize]
     public async Task<ActionResult<TransactionsResponseModel>> GetTransactions([FromQuery] TransactionFilterParameters filters,
@@ -60,8 +57,6 @@ public class TransactionsController : ControllerBase
     /// <remarks>Sends notifications to a user about broadcast transactions.</remarks>
     /// <param name="request">The broadcasted transaction details.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <response code="204">The broadcast notification was sent.</response>
-    /// <response code="400">The request is not valid.</response>
     [HttpPost]
     public async Task<IActionResult> NotifyBroadcasted([FromBody] TransactionBroadcastNotificationRequest request, CancellationToken cancellationToken)
     {
@@ -75,10 +70,6 @@ public class TransactionsController : ControllerBase
     /// <param name="hash">The SHA256 hash to of the transaction to look up.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Details of the transaction.</returns>
-    /// <response code="200">Transaction details found.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Transaction not found.</response>
     [HttpGet("{hash}")]
     [Authorize]
     public async Task<ActionResult<TransactionResponseModel>> GetTransaction([FromRoute] Sha256 hash, CancellationToken cancellationToken)
@@ -95,9 +86,6 @@ public class TransactionsController : ControllerBase
     /// <param name="request">The quoted transaction to broadcast.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Transaction hash and sender address.</returns>
-    /// <response code="200">Transaction was broadcast.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
     [HttpPost("broadcast-quote")]
     [Authorize]
     [Network(NetworkType.DEVNET)]
@@ -113,9 +101,6 @@ public class TransactionsController : ControllerBase
     /// <param name="request">A previously quoted request.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The replayed transaction quote.</returns>
-    /// <response code="200">Transaction quote replayed.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
     [HttpPost("replay-quote")]
     [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> ReplayTransactionQuote([FromBody] QuoteReplayRequest request, CancellationToken cancellationToken)

@@ -1,7 +1,6 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MiningGovernances;
@@ -50,7 +49,6 @@ public class MiningGovernancesController : ControllerBase
     /// <param name="address">The address of the mining governance smart contract.</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="MiningGovernanceResponseModel"/> summary</returns>
-    /// <response code="404">Mining governance contract not found.</response>
     [HttpGet("{address}")]
     public async Task<ActionResult<MiningGovernanceResponseModel>> GetMiningGovernance([FromRoute] Address address, CancellationToken cancellationToken)
     {
@@ -67,7 +65,6 @@ public class MiningGovernancesController : ControllerBase
     /// <param name="request">The reward mining pool transaction quote request body.</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Quote a stop staking transaction.</returns>
-    /// <response code="404">Mining governance contract not found.</response>
     [HttpPost("{address}/reward-mining-pools")]
     public async Task<IActionResult> RewardMiningPools([FromRoute] Address address,
                                                        [FromBody] RewardMiningPoolsRequest request,

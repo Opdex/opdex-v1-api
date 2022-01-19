@@ -59,9 +59,6 @@ public class IndexerController : ControllerBase
     /// </remarks>
     /// <param name="request">The mined token and market deployer transaction hashes to look up.</param>
     /// <param name="cancellationToken">Cancellation token</param>
-    /// <response code="204">Indexer resynced.</response>
-    /// <response code="400">Markets already indexed.</response>
-    /// <response code="403">You don't have permission to carry out this request.</response>
     [HttpPost("resync-from-deployment")]
     [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> ResyncFromDeployment(ResyncFromDeploymentRequest request, CancellationToken cancellationToken)
@@ -90,7 +87,6 @@ public class IndexerController : ControllerBase
     /// <summary>Rewind to Block</summary>
     /// <param name="request">Request to rewind back to specific block.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <response code="204">Indexer rewound.</response>
     [HttpPost("rewind")]
     [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> Rewind(RewindRequest request, CancellationToken cancellationToken)

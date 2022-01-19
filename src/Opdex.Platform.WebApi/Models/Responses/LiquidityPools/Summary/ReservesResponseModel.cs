@@ -24,13 +24,11 @@ public class ReservesResponseModel
     /// Total USD value of locked reserves.
     /// </summary>
     /// <example>"50000000000000.00000000"</example>
-    [Range(0, double.MaxValue)]
     public decimal Usd { get; set; }
 
     /// <summary>
     /// Percentage change of liquidity for the day.
     /// </summary>
     /// <example>4.69</example>
-    [Range(double.MinValue, double.MaxValue)]
     public decimal DailyUsdChangePercent { get; set; }
 }

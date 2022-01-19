@@ -12,7 +12,6 @@ public class CreateStandardMarketQuoteRequest
     public Address MarketOwner { get; set; }
 
     [Required]
-    [Range(0, 10)]
     public uint TransactionFee { get; set; }
 
     [Required]

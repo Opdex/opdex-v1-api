@@ -11,6 +11,5 @@ public class VolumeResponseModel
     /// USD value of the daily volume.
     /// </summary>
     /// <example>50000000.50</example>
-    [Range(double.MinValue, double.MaxValue)]
     public decimal DailyUsd { get; set; }
 }

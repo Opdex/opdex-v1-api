@@ -40,9 +40,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <param name="filters">Liquidity pool filter options.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns><see cref="LiquidityPoolsResponseModel"/> of matching results and paging details.</returns>
-    /// <response code="200">Liquidity pool results returned.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
     [HttpGet]
     public async Task<ActionResult<LiquidityPoolsResponseModel>> LiquidityPools([FromQuery] LiquidityPoolFilterParameters filters,
                                                                                 CancellationToken cancellationToken)
@@ -59,9 +56,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <param name="request">A create liquidity pool request.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A create liquidity pool transaction quote.</returns>
-    /// <response code="200">Create liquidity pool quote created.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
     [HttpPost]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -82,10 +76,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <param name="pool">Contract address to get pools of</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The requested pool</returns>
-    /// <response code="200">Liquidity pool details found.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Liquidity pool not found.</response>
     [HttpGet("{pool}")]
     public async Task<ActionResult<LiquidityPoolResponseModel>> LiquidityPool([FromRoute] Address pool, CancellationToken cancellationToken)
     {
@@ -104,10 +94,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <param name="filters">Filter parameters.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Paged liquidity pool snapshot data.</returns>
-    /// <response code="200">Liquidity pool snapshot results returned.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Liquidity pool not found.</response>
     [HttpGet("{pool}/history")]
     public async Task<ActionResult<LiquidityPoolSnapshotsResponseModel>> GetLiquidityPoolHistory([FromRoute] Address pool,
                                                                                                  [FromQuery] SnapshotFilterParameters filters,
@@ -126,10 +112,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <param name="request">An add liquidity request.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Quote an add liquidity transaction.</returns>
-    /// <response code="200">Add liquidity quote created.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Liquidity pool not found.</response>
     [HttpPost("{pool}/add")]
     public async Task<ActionResult<TransactionQuoteResponseModel>> AddLiquidityQuote([FromRoute] Address pool, [FromBody] AddLiquidityQuoteRequest request, CancellationToken cancellationToken)
     {
@@ -148,10 +130,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <param name="request">Request model detailing how many of which tokens are desired to be deposited.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The quoted number of tokens to be deposited.</returns>
-    /// <response code="200">Calculated required amount.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Liquidity pool not found.</response>
     [HttpPost("{pool}/add/amount-in")]
     public async Task<ActionResult<AddLiquidityAmountInQuoteResponseModel>> LiquidityAmountInQuote([FromRoute] Address pool,
                                                                                                    [FromBody] CalculateAddLiquidityAmountsRequestModel request,
@@ -172,10 +150,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <param name="request">A remove liquidity request.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Quote a remove liquidity transaction.</returns>
-    /// <response code="200">Remove liquidity quote created.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Liquidity pool not found.</response>
     [HttpPost("{pool}/remove")]
     public async Task<ActionResult<TransactionQuoteResponseModel>> RemoveLiquidityQuote([FromRoute] Address pool, [FromBody] RemoveLiquidityQuoteRequest request, CancellationToken cancellationToken)
     {
@@ -192,10 +166,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <param name="pool">The liquidity pool address.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Quote a sync transaction.</returns>
-    /// <response code="200">Sync quote created.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Liquidity pool not found.</response>
     [HttpPost("{pool}/sync")]
     public async Task<ActionResult<TransactionQuoteResponseModel>> SyncQuote([FromRoute] Address pool, CancellationToken cancellationToken)
     {
@@ -212,10 +182,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <param name="request">A skim request.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Quote a skim transaction.</returns>
-    /// <response code="200">Skim quote created.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Liquidity pool not found.</response>
     [HttpPost("{pool}/skim")]
     public async Task<ActionResult<TransactionQuoteResponseModel>> SkimQuote([FromRoute] Address pool, [FromBody] SkimQuoteRequest request, CancellationToken cancellationToken)
     {
@@ -232,10 +198,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <param name="request">A start staking request.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Quote a start staking transaction.</returns>
-    /// <response code="200">Start staking quote created.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Liquidity pool not found.</response>
     [HttpPost("{pool}/staking/start")]
     public async Task<ActionResult<TransactionQuoteResponseModel>> StartStakingQuote([FromRoute] Address pool, [FromBody] StartStakingQuoteRequest request, CancellationToken cancellationToken)
     {
@@ -252,10 +214,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <param name="request">A stop staking request.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Quote a stop staking transaction.</returns>
-    /// <response code="200">Stop staking quote created.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Liquidity pool not found.</response>
     [HttpPost("{pool}/staking/stop")]
     public async Task<ActionResult<TransactionQuoteResponseModel>> StopStakingQuote([FromRoute] Address pool, [FromBody] StopStakingQuoteRequest request, CancellationToken cancellationToken)
     {
@@ -272,10 +230,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <param name="request">A collect staking rewards request.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Quote a collect staking rewards transaction.</returns>
-    /// <response code="200">Collect staking rewards quote created.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Liquidity pool not found.</response>
     [HttpPost("{pool}/staking/collect")]
     public async Task<ActionResult<TransactionQuoteResponseModel>> CollectStakingRewardsQuote([FromRoute] Address pool, [FromBody] CollectStakingRewardsQuoteRequest request, CancellationToken cancellationToken)
     {

@@ -18,28 +18,24 @@ public class MiningGovernanceResponseModel
     /// Block number at the end of the current nomination period.
     /// </summary>
     /// <example>500000</example>
-    [Range(1, double.MaxValue)]
     public ulong PeriodEndBlock { get; set; }
 
     /// <summary>
     /// Remaining blocks for the current nomination period.
     /// </summary>
     /// <example>10000</example>
-    [Range(0, double.MaxValue)]
     public ulong PeriodRemainingBlocks { get; set; }
 
     /// <summary>
     /// The number of blocks for each nomination period.
     /// </summary>
     /// <example>10000</example>
-    [Range(1, double.MaxValue)]
     public ulong PeriodBlockDuration { get; set; }
 
     /// <summary>
     /// Number of nomination periods before mining governance rewards are reset. Rewards reset upon distribution to 48 nominations.
     /// </summary>
     /// <example>3</example>
-    [Range(0, double.MaxValue)]
     public uint PeriodsUntilRewardReset { get; set; }
 
     /// <summary>

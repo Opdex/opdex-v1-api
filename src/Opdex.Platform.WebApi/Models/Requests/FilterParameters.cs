@@ -23,7 +23,6 @@ public abstract class FilterParameters<TCursor> where TCursor : Cursor
     /// </summary>
     /// <example>10</example>
     // virtual is used to be able to override the attribute
-    [Range(1, Cursor.DefaultMaxLimit)]
     public virtual uint Limit { get; set; }
 
     /// <summary>

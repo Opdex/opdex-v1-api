@@ -1,5 +1,4 @@
 using Opdex.Platform.Common.Models;
-using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Responses.Vaults;
 
@@ -18,7 +17,6 @@ public class VaultProposalVoteResponseModel
     /// Id of the proposal stored by the vault.
     /// </summary>
     /// <example>5</example>
-    [Range(1, double.MaxValue)]
     public ulong ProposalId { get; set; }
 
     /// <summary>

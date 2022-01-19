@@ -53,8 +53,6 @@ public class DeployController : ControllerBase
     /// </remarks>
     /// <param name="request">The wallet parameters needed for local env smart contract transactions.</param>
     /// <param name="cancellationToken">cancellation token.</param>
-    /// <response code="204">Deployment successful.</response>
-    /// <response code="403">You don't have permission to carry out this request.</response>
     [HttpPost("dev-contracts")]
     [Authorize(Policy = "AdminOnly")]
     [Network(NetworkType.DEVNET)]
