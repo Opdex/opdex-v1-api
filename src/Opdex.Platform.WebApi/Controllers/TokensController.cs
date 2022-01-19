@@ -60,11 +60,11 @@ public class TokensController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AddToken([FromBody] AddTokenRequest request, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new CreateAddTokenCommand(request.TokenAddress), cancellationToken);
+        var result = await _mediator.Send(new CreateAddTokenCommand(request.Token), cancellationToken);
 
         var response = _mapper.Map<TokenResponseModel>(result);
 
-        return Created($"/tokens/{request.TokenAddress}", response);
+        return Created($"/tokens/{request.Token}", response);
     }
 
     /// <summary>Get Token</summary>

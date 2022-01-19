@@ -16,10 +16,10 @@ public sealed class TransactionFilterParameters : FilterParameters<TransactionsC
     }
 
     /// <summary>
-    /// Optionally filter transactions by wallet address.
+    /// Optionally filter transactions by sender address.
     /// </summary>
     /// <example>tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm</example>
-    public Address Wallet { get; set; }
+    public Address Sender { get; set; }
 
     /// <summary>
     /// Optional list of smart contract addresses to filter transactions by.
@@ -35,7 +35,7 @@ public sealed class TransactionFilterParameters : FilterParameters<TransactionsC
 
     protected override TransactionsCursor InternalBuildCursor()
     {
-        if (EncodedCursor is null) return new TransactionsCursor(Wallet, EventTypes, Contracts, Direction, Limit, PagingDirection.Forward, default);
+        if (EncodedCursor is null) return new TransactionsCursor(Sender, EventTypes, Contracts, Direction, Limit, PagingDirection.Forward, default);
         Base64Extensions.TryBase64Decode(EncodedCursor, out var decodedCursor);
         TransactionsCursor.TryParse(decodedCursor, out var cursor);
         return cursor;

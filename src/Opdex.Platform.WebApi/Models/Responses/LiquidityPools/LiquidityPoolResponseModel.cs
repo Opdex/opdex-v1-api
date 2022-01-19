@@ -26,7 +26,7 @@ public class LiquidityPoolResponseModel
     /// Transaction fee percentage for swaps.
     /// </summary>
     /// <example>0.3</example>
-    public decimal TransactionFee { get; set; }
+    public decimal TransactionFeePercent { get; set; }
 
     /// <summary>
     /// Tokens involved in the pool.

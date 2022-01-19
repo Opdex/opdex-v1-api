@@ -23,14 +23,14 @@ public class AddTokenRequestValidatorTests
         // Arrange
         var request = new AddTokenRequest
         {
-            TokenAddress = token
+            Token = token
         };
 
         // Act
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(request => request.TokenAddress);
+        result.ShouldHaveValidationErrorFor(request => request.Token);
     }
 
     [Fact]
@@ -39,13 +39,13 @@ public class AddTokenRequestValidatorTests
         // Arrange
         var request = new AddTokenRequest
         {
-            TokenAddress = new Address("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh")
+            Token = new Address("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh")
         };
 
         // Act
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldNotHaveValidationErrorFor(request => request.TokenAddress);
+        result.ShouldNotHaveValidationErrorFor(request => request.Token);
     }
 }

@@ -65,7 +65,7 @@ public class MarketResponseModel
     /// The transaction fee of the market for swap transaction.
     /// </summary>
     /// <example>true</example>
-    public decimal TransactionFee { get; set; }
+    public decimal TransactionFeePercent { get; set; }
 
     /// <summary>
     /// Summary of market statistics include liquidity, volume, rewards etc.

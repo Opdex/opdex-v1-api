@@ -745,10 +745,10 @@ components:
       properties:
         vaultAmount:
           $ref: "#/components/schemas/fixedDecimal"
-          description: Address approved to spend the tokens
+          description: Amount of tokens distributed to the vault
         miningGovernanceAmount:
           $ref: "#/components/schemas/fixedDecimal"
-          description: Address of the token holder
+          description: Amount of tokens distributed to the mining governance
         periodIndex:
           type: integer
           format: int32
@@ -1565,9 +1565,9 @@ components:
       type: object
       description: Request to add a token to the Opdex indexer so that it can be tracked
       required:
-        - tokenAddress
+        - token
       properties:
-        tokenAddress:
+        token:
           $ref: "#/components/schemas/address"
           description: Address of the token to add
     notifyBroadcastRequest:
@@ -1601,14 +1601,14 @@ components:
       type: object
       description: Request to retrieve a create standard market call quote
       required:
-        - marketOwner
+        - owner
         - transactionFee
         - authPoolCreators
         - authLiquidityProviders
         - authTraders
         - enableMarketFee
       properties:
-        marketOwner:
+        owner:
           $ref: "#/components/schemas/address"
           description: Address to assign as owner of the market
         transactionFee:
@@ -1786,7 +1786,7 @@ components:
         name:
           type: string
           description: Name of the liquidity pool
-        transactionFee:
+        transactionFeePercent:
           type: number
           minimum: 0.0
           maximum: 1.0
@@ -1995,7 +1995,7 @@ components:
         marketFeeEnabled:
           type: boolean
           description: Whether the market fee is enabled
-        transactionFee:
+        transactionFeePercent:
           type: number
           minimum: 0.0
           maximum: 1.0
@@ -2951,7 +2951,7 @@ paths:
                 results:
                   - address: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
                     name: TBTC-TCRS
-                    transactionFee: 0.3
+                    transactionFeePercent: 0.3
                     miningPool:
                       address: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
                       liquidityPool: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
@@ -3134,7 +3134,7 @@ paths:
               example:
                 address: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
                 name: TBTC-TCRS
-                transactionFee: 0.3
+                transactionFeePercent: 0.3
                 miningPool:
                   address: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
                   liquidityPool: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
@@ -4016,7 +4016,7 @@ paths:
                     authTraders: false
                     authProviders: false
                     marketFeeEnabled: true
-                    transactionFee: 0.3
+                    transactionFeePercent: 0.3
                     crsToken:
                       address: CRS
                       name: Cirrus
@@ -4094,7 +4094,7 @@ paths:
                 authTraders: false
                 authProviders: false
                 marketFeeEnabled: true
-                transactionFee: 0.3
+                transactionFeePercent: 0.3
                 crsToken:
                   address: CRS
                   name: Cirrus
@@ -4329,7 +4329,7 @@ paths:
             schema:
               $ref: "#/components/schemas/quoteCreateStandardMarketRequest"
             example:
-              marketOwner: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+              owner: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
               transactionFee: 5
               authPoolCreators: true
               authLiquidityProviders: false
@@ -5896,7 +5896,7 @@ paths:
             schema:
               $ref: "#/components/schemas/addTokenRequest"
             example:
-              tokenAddress: tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3
+              token: tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3
       security:
         - opdexAuth: []
       responses:
@@ -5939,7 +5939,7 @@ paths:
                 title: One or more validation errors occurred.
                 status: 400
                 errors:
-                  tokenAddress:
+                  token:
                     - Invalid address.
                 extensions:
                   traceId: 00-00000000000000000000000000000000-0000000000000000-00
@@ -6254,9 +6254,9 @@ paths:
       description: Retrieves details for tracked Opdex transactions. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
       operationId: getTransactions
       parameters:
-        - name: wallet
+        - name: sender
           in: query
-          description: Filter transactions by wallet address
+          description: Filter transactions by sender address
           schema:
             $ref: "#/components/schemas/address"
           example: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
@@ -6387,7 +6387,7 @@ paths:
                 title: One or more validation errors occurred.
                 status: 400
                 errors:
-                  wallet:
+                  sender:
                     - Invalid address.
                     - Filters cannot be provided alongside cursor.
                   eventTypes:
@@ -6696,9 +6696,9 @@ paths:
           schema:
             $ref: "#/components/schemas/address"
           example: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
-        - name: holder
+        - name: owner
           in: query
-          description: Address of the certificate holder
+          description: Address of the certificate owner
           schema:
             $ref: "#/components/schemas/address"
           example: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm

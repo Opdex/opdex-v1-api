@@ -59,7 +59,7 @@ public class MarketsController : ControllerBase
                                                                                              CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateCreateStandardMarketTransactionQuoteCommand(_context.Wallet,
-                                                                                                  request.MarketOwner,
+                                                                                                  request.Owner,
                                                                                                   request.TransactionFee,
                                                                                                   request.AuthPoolCreators,
                                                                                                   request.AuthLiquidityProviders,
