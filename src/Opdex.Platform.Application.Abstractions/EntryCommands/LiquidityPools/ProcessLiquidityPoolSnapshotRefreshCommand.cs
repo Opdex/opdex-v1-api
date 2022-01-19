@@ -6,9 +6,9 @@ using System;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools;
 
-public class ProcessDailyLiquidityPoolSnapshotRefreshCommand : IRequest<Unit>
+public class ProcessLiquidityPoolSnapshotRefreshCommand : IRequest<Unit>
 {
-    public ProcessDailyLiquidityPoolSnapshotRefreshCommand(ulong liquidityPoolId, ulong marketId, Token srcToken, Token lpToken, decimal crsUsd,
+    public ProcessLiquidityPoolSnapshotRefreshCommand(ulong liquidityPoolId, ulong marketId, Token srcToken, Token lpToken, decimal crsUsd,
                                                            SnapshotType snapshotType, DateTime blockTime, ulong blockHeight, decimal? stakingTokenUsd = null)
     {
         if (liquidityPoolId == 0)

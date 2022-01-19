@@ -327,7 +327,7 @@ public static class PlatformApplicationServiceCollectionExtensions
 
         // Liquidity Pools
         services.AddTransient<IRequestHandler<ProcessLiquidityPoolSnapshotsByTransactionCommand, Unit>, ProcessLiquidityPoolSnapshotsByTransactionCommandHandler>();
-        services.AddTransient<IRequestHandler<ProcessDailyLiquidityPoolSnapshotRefreshCommand, Unit>, ProcessDailyLiquidityPoolSnapshotRefreshCommandHandler>();
+        services.AddTransient<IRequestHandler<ProcessLiquidityPoolSnapshotRefreshCommand, Unit>, ProcessLiquidityPoolSnapshotRefreshCommandHandler>();
         services.AddTransient<IRequestHandler<ProcessStaleLiquidityPoolSnapshotsCommand, Unit>, ProcessStaleLiquidityPoolSnapshotsCommandHandler>();
         services.AddTransient<IRequestHandler<CreateCreateLiquidityPoolTransactionQuoteCommand, TransactionQuoteDto>, CreateCreateLiquidityPoolTransactionQuoteCommandHandler>();
         services.AddTransient<IRequestHandler<CreateAddLiquidityTransactionQuoteCommand, TransactionQuoteDto>, CreateAddLiquidityTransactionQuoteCommandHandler>();

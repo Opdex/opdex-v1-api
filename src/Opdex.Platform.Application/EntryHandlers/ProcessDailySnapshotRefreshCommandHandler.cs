@@ -55,7 +55,7 @@ public class ProcessDailySnapshotRefreshCommandHandler : IRequestHandler<Process
 
                 foreach (var snapshotType in snapshotTypes)
                 {
-                    await _mediator.Send(new ProcessDailyLiquidityPoolSnapshotRefreshCommand(liquidityPool.Id, market.Id, stakingToken, lpToken,
+                    await _mediator.Send(new ProcessLiquidityPoolSnapshotRefreshCommand(liquidityPool.Id, market.Id, stakingToken, lpToken,
                                                                                              request.CrsUsd, snapshotType, blockTime,
                                                                                              request.BlockHeight));
                 }
@@ -75,7 +75,7 @@ public class ProcessDailySnapshotRefreshCommandHandler : IRequestHandler<Process
 
                 foreach (var snapshotType in snapshotTypes)
                 {
-                    await _mediator.Send(new ProcessDailyLiquidityPoolSnapshotRefreshCommand(liquidityPool.Id, market.Id, srcToken, lpToken,
+                    await _mediator.Send(new ProcessLiquidityPoolSnapshotRefreshCommand(liquidityPool.Id, market.Id, srcToken, lpToken,
                                                                                              request.CrsUsd, snapshotType, blockTime,
                                                                                              request.BlockHeight, stakingTokenUsd));
                 }

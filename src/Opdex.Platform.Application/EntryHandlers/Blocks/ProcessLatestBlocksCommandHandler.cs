@@ -54,6 +54,7 @@ public class ProcessLatestBlocksCommandHandler : IRequestHandler<ProcessLatestBl
                     }
                 }
 
+                // Use Snapshots rather than summary in case it is a rewind to select price at specific point in time
                 var crs = await _mediator.Send(new RetrieveTokenByAddressQuery(Address.Cirrus), CancellationToken.None);
                 var crsSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crs.Id, 0, currentBlock.MedianTime, SnapshotType.Minute), CancellationToken.None);
 
@@ -70,7 +71,7 @@ public class ProcessLatestBlocksCommandHandler : IRequestHandler<ProcessLatestBl
                     await _mediator.Send(new CreateTransactionCommand(tx), CancellationToken.None);
                 }
 
-                // Todo: Consider running once per minute or every 5 blocks instead, finding records where
+                // Todo: Consider running once per minute or every 5 blocks instead
                 // Update stale snapshots by block threshold (50 blocks)
                 await _mediator.Send(new ProcessStaleLiquidityPoolSnapshotsCommand(currentBlock.Height, currentBlock.Time, crsSnapshot.Price.Close), CancellationToken.None);
 
