@@ -40,7 +40,7 @@ public class CreateCreateStandardMarketTransactionQuoteCommandHandlerTests
     {
         // Arrange
         var command = new CreateCreateStandardMarketTransactionQuoteCommand("PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy",
-                                                                            5, false, false, false, false);
+                                                                            0.5m, false, false, false, false);
         var cancellationToken = new CancellationTokenSource().Token;
 
         // Act
@@ -48,7 +48,10 @@ public class CreateCreateStandardMarketTransactionQuoteCommandHandlerTests
         {
             await _handler.Handle(command, cancellationToken);
         }
-        catch (Exception) { }
+        catch (Exception)
+        {
+            // ignored
+        }
 
         // Assert
         _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<RetrieveActiveDeployerQuery>(), cancellationToken), Times.Once);
@@ -67,17 +70,17 @@ public class CreateCreateStandardMarketTransactionQuoteCommandHandlerTests
         bool enableMarketFee = true;
         FixedDecimal crsToSend = FixedDecimal.Zero;
 
-        var command = new CreateCreateStandardMarketTransactionQuoteCommand(deployerOwner, marketOwner, fee, authPoolCreators, authProviders, authTraders, enableMarketFee);
+        var command = new CreateCreateStandardMarketTransactionQuoteCommand(deployerOwner, marketOwner, fee / 10m, authPoolCreators, authProviders, authTraders, enableMarketFee);
         var cancellationToken = new CancellationTokenSource().Token;
 
         var expectedParameters = new List<TransactionQuoteRequestParameter>
         {
-            new TransactionQuoteRequestParameter("Market Owner", new SmartContractMethodParameter(command.Owner)),
-            new TransactionQuoteRequestParameter("Transaction Fee", new SmartContractMethodParameter(command.TransactionFee)),
-            new TransactionQuoteRequestParameter("Authorize Providers", new SmartContractMethodParameter(command.AuthLiquidityProviders)),
-            new TransactionQuoteRequestParameter("Authorize Pool Creators", new SmartContractMethodParameter(command.AuthPoolCreators)),
-            new TransactionQuoteRequestParameter("Authorize Traders", new SmartContractMethodParameter(command.AuthTraders)),
-            new TransactionQuoteRequestParameter("Enable Fee", new SmartContractMethodParameter(command.EnableMarketFee))
+            new("Market Owner", new SmartContractMethodParameter(command.Owner)),
+            new("Transaction Fee", new SmartContractMethodParameter(fee)),
+            new("Authorize Providers", new SmartContractMethodParameter(command.AuthLiquidityProviders)),
+            new("Authorize Pool Creators", new SmartContractMethodParameter(command.AuthPoolCreators)),
+            new("Authorize Traders", new SmartContractMethodParameter(command.AuthTraders)),
+            new("Enable Fee", new SmartContractMethodParameter(command.EnableMarketFee))
         };
 
         var deployer = new Deployer(5, "PTotLfm9w7A4KBVq7sJgyP8Hd2MAU8vaRw", Address.Empty, "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy", true, 500, 505);
@@ -88,7 +91,10 @@ public class CreateCreateStandardMarketTransactionQuoteCommandHandlerTests
         {
             await _handler.Handle(command, cancellationToken);
         }
-        catch { }
+        catch
+        {
+            // ignored
+        }
 
         // Assert
         _mediatorMock.Verify(callTo => callTo.Send(It.Is<MakeTransactionQuoteCommand>(c => c.QuoteRequest.Sender == deployerOwner
@@ -107,8 +113,7 @@ public class CreateCreateStandardMarketTransactionQuoteCommandHandlerTests
         Address deployerOwner = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
         Address marketOwner = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
 
-        var command = new CreateCreateStandardMarketTransactionQuoteCommand(deployerOwner, marketOwner, 5, false, false, false, false);
-        var cancellationToken = new CancellationTokenSource().Token;
+        var command = new CreateCreateStandardMarketTransactionQuoteCommand(deployerOwner, marketOwner, 0.5m, false, false, false, false);
 
         var expectedRequest = new TransactionQuoteRequest(deployerOwner, marketOwner, FixedDecimal.Zero, MarketDeployerConstants.Methods.CreateStandardMarket, _config.WalletTransactionCallback);
 
@@ -123,7 +128,10 @@ public class CreateCreateStandardMarketTransactionQuoteCommandHandlerTests
         {
             await _handler.Handle(command, CancellationToken.None);
         }
-        catch { }
+        catch
+        {
+            // ignored
+        }
 
         // Assert
         _assemblerMock.Verify(callTo => callTo.Assemble(expectedQuote), Times.Once);

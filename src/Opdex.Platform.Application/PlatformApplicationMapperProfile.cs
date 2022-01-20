@@ -77,7 +77,7 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.AuthProviders, opt => opt.MapFrom(src => src.AuthProviders))
             .ForMember(dest => dest.AuthTraders, opt => opt.MapFrom(src => src.AuthTraders))
             .ForMember(dest => dest.MarketFeeEnabled, opt => opt.MapFrom(src => src.MarketFeeEnabled))
-            .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee == 0 ? 0 : Math.Round((decimal)src.TransactionFee / 10, 1)))
+            .ForMember(dest => dest.TransactionFeePercent, opt => opt.MapFrom(src => src.TransactionFee == 0 ? 0 : Math.Round((decimal)src.TransactionFee / 10, 1)))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<MarketSummary, MarketSummaryDto>()
@@ -264,7 +264,7 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.AuthPoolCreators, opt => opt.MapFrom(src => src.AuthPoolCreators))
             .ForMember(dest => dest.AuthProviders, opt => opt.MapFrom(src => src.AuthProviders))
             .ForMember(dest => dest.AuthTraders, opt => opt.MapFrom(src => src.AuthTraders))
-            .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee == 0 ? 0 : Math.Round((decimal)src.TransactionFee / 10, 1)))
+            .ForMember(dest => dest.TransactionFeePercent, opt => opt.MapFrom(src => (decimal)src.TransactionFee / 10))
             .ForMember(dest => dest.StakingToken, opt => opt.MapFrom(src => src.StakingToken))
             .ForMember(dest => dest.EnableMarketFee, opt => opt.MapFrom(src => src.EnableMarketFee));
 

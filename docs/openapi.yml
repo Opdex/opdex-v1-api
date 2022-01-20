@@ -497,12 +497,11 @@ components:
         authTraders:
           type: boolean
           description: Whether the market requires authorization to swap
-        transactionFee:
-          type: integer
-          format: int32
-          minimum: 0
-          maximum: 10
-          description: Swap fee amount equivalent to the percentage fee multiplied by 10
+        transactionFeePercent:
+          type: number
+          minimum: 0.0
+          maximum: 0.1
+          description: Swap fee percentage amount
         stakingToken:
           $ref: "#/components/schemas/address"
           description: Address of the staking token
@@ -1602,7 +1601,7 @@ components:
       description: Request to retrieve a create standard market call quote
       required:
         - owner
-        - transactionFee
+        - transactionFeePercent
         - authPoolCreators
         - authLiquidityProviders
         - authTraders
@@ -1611,12 +1610,11 @@ components:
         owner:
           $ref: "#/components/schemas/address"
           description: Address to assign as owner of the market
-        transactionFee:
-          type: integer
-          format: int32
-          minimum: 0
-          maximum: 10
-          description: Swap fee amount equivalent to the percentage fee multiplied by 10
+        transactionFeePercent:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+          description: Swap fee percentage amount
         authPoolCreators:
           type: boolean
           description: If true, requires permissions to be assigned to create liquidity pools; or if false anyone can create a liquidity pool
@@ -4284,7 +4282,7 @@ paths:
                     authPoolCreators: false
                     authProviders: false
                     authTraders: false
-                    transactionFee: 3
+                    transactionFeePercent: 0.3
                     stakingToken: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
                     enableMarketFee: true
                     eventType: CreateMarketEvent
@@ -4330,7 +4328,7 @@ paths:
               $ref: "#/components/schemas/quoteCreateStandardMarketRequest"
             example:
               owner: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
-              transactionFee: 5
+              transactionFeePercent: 0.5
               authPoolCreators: true
               authLiquidityProviders: false
               authTraders: false
@@ -4354,7 +4352,7 @@ paths:
                     authPoolCreators: false
                     authProviders: true
                     authTraders: false
-                    transactionFee: 5
+                    transactionFeePercent: 0.5
                     stakingToken: t6vc3nrbAurGs3i17HJUavZuw4ioKTiFCE
                     enableMarketFee: true
                     eventType: CreateMarketEvent

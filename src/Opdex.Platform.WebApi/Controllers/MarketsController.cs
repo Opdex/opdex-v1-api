@@ -61,7 +61,7 @@ public class MarketsController : ControllerBase
     {
         var response = await _mediator.Send(new CreateCreateStandardMarketTransactionQuoteCommand(_context.Wallet,
                                                                                                   request.Owner,
-                                                                                                  request.TransactionFee,
+                                                                                                  request.TransactionFeePercent,
                                                                                                   request.AuthPoolCreators,
                                                                                                   request.AuthLiquidityProviders,
                                                                                                   request.AuthTraders,

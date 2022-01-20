@@ -42,7 +42,7 @@ public class CreateStandardMarketQuoteTests
         var request = new CreateStandardMarketQuoteRequest
         {
             Owner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm",
-            TransactionFee = 5,
+            TransactionFeePercent = 0.5M,
             AuthLiquidityProviders = true,
             AuthTraders = false,
             AuthPoolCreators = false,
@@ -57,7 +57,7 @@ public class CreateStandardMarketQuoteTests
         _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateCreateStandardMarketTransactionQuoteCommand>(command
                                                                                                                 => command.WalletAddress == walletAddress
                                                                                                                    && command.Owner == request.Owner
-                                                                                                                   && command.TransactionFee == request.TransactionFee
+                                                                                                                   && command.TransactionFeePercent == request.TransactionFeePercent
                                                                                                                    && command.AuthLiquidityProviders == request.AuthLiquidityProviders
                                                                                                                    && command.AuthTraders == request.AuthTraders
                                                                                                                    && command.AuthPoolCreators == request.AuthPoolCreators
@@ -79,7 +79,7 @@ public class CreateStandardMarketQuoteTests
         var request = new CreateStandardMarketQuoteRequest
         {
             Owner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm",
-            TransactionFee = 5,
+            TransactionFeePercent = 0.5M,
             AuthLiquidityProviders = true,
             AuthTraders = false,
             AuthPoolCreators = false,
@@ -112,7 +112,7 @@ public class CreateStandardMarketQuoteTests
         var request = new CreateStandardMarketQuoteRequest
         {
             Owner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm",
-            TransactionFee = 5,
+            TransactionFeePercent = 0.5M,
             AuthLiquidityProviders = true,
             AuthTraders = false,
             AuthPoolCreators = false,

@@ -349,7 +349,7 @@ public class GetMarketsWithFilterQueryHandlerTests
             AuthProviders = market.AuthProviders,
             AuthTraders = market.AuthTraders,
             AuthPoolCreators = market.AuthPoolCreators,
-            TransactionFee = market.TransactionFee,
+            TransactionFeePercent = market.TransactionFee,
             MarketFeeEnabled = market.MarketFeeEnabled,
             Summary = new MarketSummaryDto(),
             CrsToken = new TokenDto(),
