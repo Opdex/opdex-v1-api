@@ -39,7 +39,8 @@ public class ProcessLatestBlocksCommandHandler : IRequestHandler<ProcessLatestBl
             while (bestBlock.NextBlockHash != null && !cancellationToken.IsCancellationRequested)
             {
                 // Retrieve and create the block
-                var currentBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(bestBlock.NextBlockHash.Value, findOrThrow: true), CancellationToken.None);
+                var currentBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(bestBlock.NextBlockHash.Value,
+                                                                                                  findOrThrow: true), CancellationToken.None);
                 var blockCreated = await _mediator.Send(new CreateBlockCommand(currentBlock), CancellationToken.None);
 
                 if (!blockCreated) break;
@@ -49,31 +50,37 @@ public class ProcessLatestBlocksCommandHandler : IRequestHandler<ProcessLatestBl
                     // Dev Environment = 15 minutes, otherwise 1 minute
                     if (request.NetworkType != NetworkType.DEVNET || currentBlock.MedianTime.Minute % 15 == 0)
                     {
-                        var snapshotsCreated = await _mediator.Send(new CreateCrsTokenSnapshotsCommand(currentBlock.MedianTime, currentBlock.Height), CancellationToken.None);
+                        var snapshotsCreated = await _mediator.Send(new CreateCrsTokenSnapshotsCommand(currentBlock.MedianTime,
+                                                                                                       currentBlock.Height), CancellationToken.None);
                         if (!snapshotsCreated) break;
                     }
                 }
 
-                // Use Snapshots rather than summary in case it is a rewind to select price at specific point in time
-                var crs = await _mediator.Send(new RetrieveTokenByAddressQuery(Address.Cirrus), CancellationToken.None);
-                var crsSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crs.Id, 0, currentBlock.MedianTime, SnapshotType.Minute), CancellationToken.None);
+                decimal? crsUsd = null;
 
                 // If it's a new day from the previous block, refresh all daily snapshots. (Tokens, Liquidity Pools, Markets)
                 if (currentBlock.IsNewDayFromPrevious(bestBlock.MedianTime))
                 {
-                    await _mediator.Send(new ProcessDailySnapshotRefreshCommand(currentBlock.Height, currentBlock.MedianTime, crsSnapshot.Price.Close), CancellationToken.None);
+                    crsUsd = await GetCrsUsd(currentBlock.MedianTime);
+
+                    await _mediator.Send(new ProcessDailySnapshotRefreshCommand(currentBlock.Height, currentBlock.MedianTime,
+                                                                                crsUsd.Value), CancellationToken.None);
+                }
+
+                // Update stale snapshots (every 5 blocks) by block threshold (50 blocks)
+                if (currentBlock.Height % 5 == 0)
+                {
+                    crsUsd ??= await GetCrsUsd(currentBlock.MedianTime);
+
+                    await _mediator.Send(new ProcessStaleLiquidityPoolSnapshotsCommand(currentBlock.Height, currentBlock.Time,
+                                                                                       crsUsd.Value), CancellationToken.None);
                 }
 
                 // Process all transactions in the block
                 foreach (var tx in currentBlock.TxHashes.Where(tx => tx != currentBlock.MerkleRoot))
                 {
-                    // Todo: Consider processing liquidity pool snapshots after each block rather than during each transaction.
                     await _mediator.Send(new CreateTransactionCommand(tx), CancellationToken.None);
                 }
-
-                // Todo: Consider running once per minute or every 5 blocks instead
-                // Update stale snapshots by block threshold (50 blocks)
-                await _mediator.Send(new ProcessStaleLiquidityPoolSnapshotsCommand(currentBlock.Height, currentBlock.Time, crsSnapshot.Price.Close), CancellationToken.None);
 
                 // Process market snapshots every 2 minutes
                 if (currentBlock.IsNewMinuteFromPrevious(bestBlock.MedianTime) && currentBlock.MedianTime.Minute % 2 == 0)
@@ -95,5 +102,16 @@ public class ProcessLatestBlocksCommandHandler : IRequestHandler<ProcessLatestBl
         }
 
         return Unit.Value;
+    }
+
+    private async Task<decimal> GetCrsUsd(DateTime blockTime)
+    {
+        var crs = await _mediator.Send(new RetrieveTokenByAddressQuery(Address.Cirrus), CancellationToken.None);
+
+        // Use Snapshots rather than summary in case it is a rewind to select price at specific point in time
+        var crsSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crs.Id, 0, blockTime,
+                                                                                        SnapshotType.Minute), CancellationToken.None);
+
+        return crsSnapshot.Price.Close;
     }
 }

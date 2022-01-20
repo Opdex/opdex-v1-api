@@ -45,9 +45,9 @@ public class SelectLiquidityPoolsBySummaryModifiedBlockThresholdQueryHandler
 
         var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
 
-        var result = await _context.ExecuteFindAsync<LiquidityPoolEntity>(query);
+        var results = await _context.ExecuteQueryAsync<LiquidityPoolEntity>(query);
 
-        return _mapper.Map<IEnumerable<LiquidityPool>>(result);
+        return _mapper.Map<IEnumerable<LiquidityPool>>(results);
     }
 
     private sealed class SqlParams

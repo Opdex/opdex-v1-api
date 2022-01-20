@@ -5,6 +5,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Domain.Models.LiquidityPools;
 using System;
 using System.Linq;
 using System.Threading;
@@ -15,6 +16,8 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots;
 public class ProcessStaleLiquidityPoolSnapshotsCommandHandler : IRequestHandler<ProcessStaleLiquidityPoolSnapshotsCommand, Unit>
 {
     private readonly IMediator _mediator;
+    private static readonly SnapshotType[] SnapshotTypes = { SnapshotType.Hourly, SnapshotType.Daily };
+    private static readonly ParallelOptions PoolParallelOptions = new() { MaxDegreeOfParallelism = 3 };
 
     public ProcessStaleLiquidityPoolSnapshotsCommandHandler(IMediator mediator)
     {
@@ -23,11 +26,9 @@ public class ProcessStaleLiquidityPoolSnapshotsCommandHandler : IRequestHandler<
 
     public async Task<Unit> Handle(ProcessStaleLiquidityPoolSnapshotsCommand request, CancellationToken cancellationToken)
     {
-        var snapshotTypes = new[] { SnapshotType.Hourly, SnapshotType.Daily };
+        var staleLiquidityPools = await _mediator.Send(new RetrieveLiquidityPoolsBySummaryModifiedBlockThresholdQuery(50), CancellationToken.None);
 
-        var liquidityPools = await _mediator.Send(new RetrieveLiquidityPoolsBySummaryModifiedBlockThresholdQuery(50), CancellationToken.None);
-
-        var poolsByMarket = liquidityPools.GroupBy(k => k.MarketId);
+        var poolsByMarket = staleLiquidityPools.GroupBy(k => k.MarketId);
 
         foreach (var marketGroup in poolsByMarket)
         {
@@ -36,46 +37,46 @@ public class ProcessStaleLiquidityPoolSnapshotsCommandHandler : IRequestHandler<
 
             if (market.IsStakingMarket)
             {
-                var liquidityPool = marketGroup.SingleOrDefault(pool => pool.SrcTokenId == market.StakingTokenId);
+                // Look to see if the market's staking token is stale
+                var stakingTokenPool = marketGroup.SingleOrDefault(pool => pool.SrcTokenId == market.StakingTokenId);
 
-                // If its not null, then its a stale snapshot, refresh it first
-                if (liquidityPool != null)
+                // Only refresh the staking token's pool if its stale
+                if (stakingTokenPool != null)
                 {
-                    var stakingToken = await _mediator.Send(new RetrieveTokenByIdQuery(market.StakingTokenId), CancellationToken.None);
-                    var lpToken = await _mediator.Send(new RetrieveTokenByAddressQuery(liquidityPool.Address), CancellationToken.None);
-
-                    await Task.WhenAll(snapshotTypes.Select(snapshotType =>
-                    {
-                        return _mediator.Send(new ProcessLiquidityPoolSnapshotRefreshCommand(liquidityPool.Id, liquidityPool.MarketId, stakingToken,
-                                                                                                  lpToken, request.CrsUsd, snapshotType, request.BlockTime,
-                                                                                                  request.BlockHeight), CancellationToken.None);
-                    }));
+                    await ProcessLiquidityPoolSnapshotRefresh(stakingTokenPool, request.CrsUsd, request.BlockTime, request.BlockHeight, stakingTokenUsd);
                 }
 
+                // Retrieve and return the market's staking token USD price
                 var stakingTokenSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(market.StakingTokenId, market.Id, request.BlockTime,
                                                                                                          SnapshotType.Hourly), CancellationToken.None);
                 stakingTokenUsd = stakingTokenSnapshot.Price.Close;
             }
 
-            var poolChunks = marketGroup.Where(pool => pool.SrcTokenId != market.StakingTokenId).Chunk(5);
+            // Filter out the market's staking token's pool, taken care above
+            var liquidityPools = marketGroup.Where(pool => pool.SrcTokenId != market.StakingTokenId);
 
-            foreach (var chunk in poolChunks)
+            // Process all stale liquidity pools in the market, in groups of the amount configured in parallel options.
+            await Parallel.ForEachAsync(liquidityPools, PoolParallelOptions, async (liquidityPool, _) =>
             {
-                await Task.WhenAll(chunk.Select(async liquidityPool =>
-                {
-                    var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(liquidityPool.SrcTokenId), CancellationToken.None);
-                    var lpToken = await _mediator.Send(new RetrieveTokenByAddressQuery(liquidityPool.Address), CancellationToken.None);
-
-                    await Task.WhenAll(snapshotTypes.Select(snapshotType =>
-                    {
-                        return _mediator.Send(new ProcessLiquidityPoolSnapshotRefreshCommand(liquidityPool.Id, liquidityPool.MarketId, srcToken, lpToken,
-                                                                                                 request.CrsUsd, snapshotType, request.BlockTime,
-                                                                                                 request.BlockHeight, stakingTokenUsd), CancellationToken.None);
-                    }));
-                }));
-            }
+                await ProcessLiquidityPoolSnapshotRefresh(liquidityPool, request.CrsUsd, request.BlockTime, request.BlockHeight, stakingTokenUsd);
+            });
         }
 
         return Unit.Value;
+    }
+
+    private async Task ProcessLiquidityPoolSnapshotRefresh(LiquidityPool liquidityPool, decimal crsUsd, DateTime blockTime,
+                                                           ulong blockHeight, decimal stakingTokenUsd)
+    {
+        var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(liquidityPool.SrcTokenId), CancellationToken.None);
+        var lpToken = await _mediator.Send(new RetrieveTokenByAddressQuery(liquidityPool.Address), CancellationToken.None);
+
+        // We may be inside another Parallel.ForEachAsync, probably shouldn't run another
+        await Task.WhenAll(SnapshotTypes.Select(snapshotType =>
+        {
+            return _mediator.Send(new ProcessLiquidityPoolSnapshotRefreshCommand(liquidityPool.Id, liquidityPool.MarketId, srcToken, lpToken,
+                                                                                 crsUsd, snapshotType, blockTime,
+                                                                                 blockHeight, stakingTokenUsd), CancellationToken.None);
+        }));
     }
 }

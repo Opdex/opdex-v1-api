@@ -9,7 +9,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools;
 public class ProcessLiquidityPoolSnapshotRefreshCommand : IRequest<Unit>
 {
     public ProcessLiquidityPoolSnapshotRefreshCommand(ulong liquidityPoolId, ulong marketId, Token srcToken, Token lpToken, decimal crsUsd,
-                                                           SnapshotType snapshotType, DateTime blockTime, ulong blockHeight, decimal? stakingTokenUsd = null)
+                                                      SnapshotType snapshotType, DateTime blockTime, ulong blockHeight, decimal? stakingTokenUsd = null)
     {
         if (liquidityPoolId == 0)
         {
