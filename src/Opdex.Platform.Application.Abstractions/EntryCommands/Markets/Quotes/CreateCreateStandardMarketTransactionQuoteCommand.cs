@@ -23,7 +23,7 @@ public class CreateCreateStandardMarketTransactionQuoteCommand : BaseTransaction
                                                              bool authLiquidityProviders, bool authTraders, bool enableMarketFee) : base(deployerOwner)
     {
         Owner = owner != Address.Empty ? owner : throw new ArgumentNullException(nameof(owner), "Owner address must be set.");
-        TransactionFeePercent = (transactionFee >= 0 && transactionFee <= 1) ? transactionFee : throw new ArgumentOutOfRangeException(nameof(transactionFee), "Transaction fee must be between 0 and 10.");
+        TransactionFeePercent = transactionFee is >= 0 and <= 1 ? transactionFee : throw new ArgumentOutOfRangeException(nameof(transactionFee), "Transaction fee must be between 0 and 1.");
         AuthPoolCreators = authPoolCreators;
         AuthLiquidityProviders = authLiquidityProviders;
         AuthTraders = authTraders;
