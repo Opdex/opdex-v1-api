@@ -28,7 +28,7 @@ public class DbContext : IDbContext
     public async Task<IEnumerable<TEntity>> ExecuteQueryAsync<TEntity>(DatabaseQuery query)
     {
         await using var connection = _databaseSettings.Create();
-        return await ExecuteAndLogQuery(query, async c => await connection.QueryAsync<TEntity>(c));
+        return await Execute(query, async c => await connection.QueryAsync<TEntity>(c));
     }
 
     public async Task<IEnumerable<TReturn>> ExecuteQueryAsync<TFirst, TSecond, TReturn>(DatabaseQuery query,
@@ -36,35 +36,30 @@ public class DbContext : IDbContext
                                                                                         string splitOn)
     {
         await using var connection = _databaseSettings.Create();
-        return await ExecuteAndLogQuery(query, async c => await connection.QueryAsync(c, map, splitOn));
+        return await Execute(query, async c => await connection.QueryAsync(c, map, splitOn));
     }
 
     public async Task<TEntity> ExecuteFindAsync<TEntity>(DatabaseQuery query)
     {
         await using var connection = _databaseSettings.Create();
-        return await ExecuteAndLogQuery(query, async c => await connection.QuerySingleOrDefaultAsync<TEntity>(c));
+        return await Execute(query, async c => await connection.QuerySingleOrDefaultAsync<TEntity>(c));
     }
 
     public async Task<TEntity> ExecuteScalarAsync<TEntity>(DatabaseQuery query)
     {
         await using var connection = _databaseSettings.Create();
-        return await ExecuteAndLogQuery(query, async c => await connection.ExecuteScalarAsync<TEntity>(c));
+        return await Execute(query, async c => await connection.ExecuteScalarAsync<TEntity>(c));
     }
 
     public async Task<int> ExecuteCommandAsync(DatabaseQuery query)
     {
         await using var connection = _databaseSettings.Create();
-        return await ExecuteAndLogQuery(query, async c => await connection.ExecuteAsync(c));
+        return await Execute(query, async c => await connection.ExecuteAsync(c));
     }
 
-    private static CommandDefinition BuildCommandDefinition(DatabaseQuery query)
+    private async Task<TR> Execute<TR>(DatabaseQuery query, Func<CommandDefinition, Task<TR>> action)
     {
-        return new CommandDefinition(query.Sql, query.Parameters, commandType: query.Type, cancellationToken: query.Token);
-    }
-
-    private async Task<TR> ExecuteAndLogQuery<TR>(DatabaseQuery query, Func<CommandDefinition, Task<TR>> action)
-    {
-        var command = BuildCommandDefinition(query);
+        var command = new CommandDefinition(query.Sql, query.Parameters, commandType: query.Type, cancellationToken: query.Token);
 
         var stopwatch = new Stopwatch();
         stopwatch.Start();
