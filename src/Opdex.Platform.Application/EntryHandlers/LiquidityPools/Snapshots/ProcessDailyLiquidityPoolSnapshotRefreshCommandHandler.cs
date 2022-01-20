@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots;
 
-public class ProcessDailyLiquidityPoolSnapshotRefreshCommandHandler : IRequestHandler<ProcessDailyLiquidityPoolSnapshotRefreshCommand, Unit>
+public class ProcessLiquidityPoolSnapshotRefreshCommandHandler : IRequestHandler<ProcessLiquidityPoolSnapshotRefreshCommand, Unit>
 {
     private readonly IMediator _mediator;
 
-    public ProcessDailyLiquidityPoolSnapshotRefreshCommandHandler(IMediator mediator)
+    public ProcessLiquidityPoolSnapshotRefreshCommandHandler(IMediator mediator)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    public async Task<Unit> Handle(ProcessDailyLiquidityPoolSnapshotRefreshCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(ProcessLiquidityPoolSnapshotRefreshCommand request, CancellationToken cancellationToken)
     {
         // Retrieve liquidity pool snapshot
         var lpSnapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(request.LiquidityPoolId,

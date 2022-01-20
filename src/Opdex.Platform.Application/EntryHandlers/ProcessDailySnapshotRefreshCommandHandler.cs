@@ -55,9 +55,9 @@ public class ProcessDailySnapshotRefreshCommandHandler : IRequestHandler<Process
 
                 foreach (var snapshotType in snapshotTypes)
                 {
-                    await _mediator.Send(new ProcessDailyLiquidityPoolSnapshotRefreshCommand(liquidityPool.Id, market.Id, stakingToken, lpToken,
-                                                                                             request.CrsUsd, snapshotType, blockTime,
-                                                                                             request.BlockHeight));
+                    await _mediator.Send(new ProcessLiquidityPoolSnapshotRefreshCommand(liquidityPool.Id, market.Id, stakingToken, lpToken,
+                                                                                        request.CrsUsd, snapshotType, blockTime,
+                                                                                        request.BlockHeight));
                 }
 
                 var stakingTokenSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(stakingToken.Id, market.Id,
@@ -75,9 +75,9 @@ public class ProcessDailySnapshotRefreshCommandHandler : IRequestHandler<Process
 
                 foreach (var snapshotType in snapshotTypes)
                 {
-                    await _mediator.Send(new ProcessDailyLiquidityPoolSnapshotRefreshCommand(liquidityPool.Id, market.Id, srcToken, lpToken,
-                                                                                             request.CrsUsd, snapshotType, blockTime,
-                                                                                             request.BlockHeight, stakingTokenUsd));
+                    await _mediator.Send(new ProcessLiquidityPoolSnapshotRefreshCommand(liquidityPool.Id, market.Id, srcToken, lpToken,
+                                                                                        request.CrsUsd, snapshotType, blockTime,
+                                                                                        request.BlockHeight, stakingTokenUsd));
                 }
             }
 
