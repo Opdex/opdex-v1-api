@@ -28,7 +28,8 @@ public class SelectLiquidityPoolsBySummaryModifiedBlockThresholdQueryHandler
                 pl.{nameof(LiquidityPoolEntity.ModifiedBlock)}
             FROM pool_liquidity pl
                 JOIN pool_liquidity_summary pls ON pls.{nameof(LiquidityPoolSummaryEntity.LiquidityPoolId)} = pl.{nameof(LiquidityPoolEntity.Id)}
-            WHERE (({LatestBlockQuery}) - @{nameof(SqlParams.BlockThreshold)}) > pls.{nameof(LiquidityPoolSummaryEntity.ModifiedBlock)};";
+            WHERE (({LatestBlockQuery}) - @{nameof(SqlParams.BlockThreshold)}) >= pls.{nameof(LiquidityPoolSummaryEntity.ModifiedBlock)}
+                    AND pls.{nameof(LiquidityPoolSummaryEntity.LockedCrs)} > 0;";
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
