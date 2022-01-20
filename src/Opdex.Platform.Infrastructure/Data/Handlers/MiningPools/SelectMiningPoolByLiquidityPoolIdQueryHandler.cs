@@ -3,6 +3,7 @@ using MediatR;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models.MiningPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MiningPools;
 using System;
@@ -24,7 +25,7 @@ public class SelectMiningPoolByLiquidityPoolIdQueryHandler : IRequestHandler<Sel
                 {nameof(MiningPoolEntity.ModifiedBlock)},
                 {nameof(MiningPoolEntity.CreatedBlock)}
             FROM pool_mining
-            WHERE {nameof(MiningPoolEntity.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)};";
+            WHERE {nameof(MiningPoolEntity.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

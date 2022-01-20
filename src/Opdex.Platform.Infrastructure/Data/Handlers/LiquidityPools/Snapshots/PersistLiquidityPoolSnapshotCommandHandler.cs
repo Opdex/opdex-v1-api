@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.LiquidityPools;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools.Snapshots;
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,7 @@ public class PersistLiquidityPoolSnapshotCommandHandler : IRequestHandler<Persis
                 @{nameof(LiquidityPoolSnapshotEntity.EndDate)},
                 @{nameof(LiquidityPoolSnapshotEntity.Details)},
                 UTC_TIMESTAMP()
-              );";
+              );".RemoveExcessWhitespace();
 
     private static readonly string UpdateSqlCommand =
         $@"UPDATE pool_liquidity_snapshot
@@ -38,7 +39,7 @@ public class PersistLiquidityPoolSnapshotCommandHandler : IRequestHandler<Persis
                     {nameof(LiquidityPoolSnapshotEntity.TransactionCount)} = @{nameof(LiquidityPoolSnapshotEntity.TransactionCount)},
                     {nameof(LiquidityPoolSnapshotEntity.Details)} = @{nameof(LiquidityPoolSnapshotEntity.Details)},
                     {nameof(LiquidityPoolSnapshotEntity.ModifiedDate)} = UTC_TIMESTAMP()
-                WHERE {nameof(LiquidityPoolSnapshotEntity.Id)} = @{nameof(LiquidityPoolSnapshotEntity.Id)};";
+                WHERE {nameof(LiquidityPoolSnapshotEntity.Id)} = @{nameof(LiquidityPoolSnapshotEntity.Id)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

@@ -7,6 +7,7 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions.TransactionLogs;
 
@@ -24,7 +25,7 @@ public class SelectTransactionLogsByTransactionIdQueryHandler
                 {nameof(TransactionLogEntity.Contract)},
                 {nameof(TransactionLogEntity.Details)}
             FROM transaction_log
-            WHERE {nameof(TransactionLogEntity.TransactionId)} = @{nameof(SqlParams.TransactionId)};";
+            WHERE {nameof(TransactionLogEntity.TransactionId)} = @{nameof(SqlParams.TransactionId)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

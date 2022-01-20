@@ -6,6 +6,7 @@ using MediatR;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets;
 
@@ -24,7 +25,7 @@ public class SelectActiveMarketRouterByMarketIdQueryHandler : IRequestHandler<Se
             FROM market_router
             WHERE {nameof(MarketRouterEntity.MarketId)} = @{nameof(SqlParams.MarketId)}
                 AND {nameof(MarketRouterEntity.IsActive)} = true
-            LIMIT 1;";
+            LIMIT 1;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
@@ -41,7 +42,7 @@ public class SelectActiveMarketRouterByMarketIdQueryHandler : IRequestHandler<Se
 
         var command = DatabaseQuery.Create(SqlCommand, queryParams, cancellationToken);
 
-        var result =  await _context.ExecuteFindAsync<MarketRouterEntity>(command);
+        var result = await _context.ExecuteFindAsync<MarketRouterEntity>(command);
 
         if (request.FindOrThrow && result == null)
         {

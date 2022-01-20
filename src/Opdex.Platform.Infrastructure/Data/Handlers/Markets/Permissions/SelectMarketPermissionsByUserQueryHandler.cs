@@ -2,6 +2,7 @@ using MediatR;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Permissions;
 using System;
@@ -20,7 +21,7 @@ public class SelectMarketPermissionsByUserQueryHandler : IRequestHandler<SelectM
             WHERE {nameof(MarketPermissionEntity.MarketId)} = @{nameof(SqlParams.MarketId)}
                 AND {nameof(MarketPermissionEntity.User)} = @{nameof(SqlParams.User)}
                 AND {nameof(MarketPermissionEntity.IsAuthorized)} = true
-            LIMIT 4;";
+            LIMIT 4;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
 

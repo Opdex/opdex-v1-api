@@ -1,9 +1,9 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using System;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ public class PersistTokenAttributeCommandHandler : IRequestHandler<PersistTokenA
               ) VALUES (
                 @{nameof(TokenAttributeEntity.TokenId)},
                 @{nameof(TokenAttributeEntity.AttributeTypeId)}
-              );";
+              );".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

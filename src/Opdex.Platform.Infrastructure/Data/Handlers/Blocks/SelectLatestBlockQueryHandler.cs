@@ -4,17 +4,17 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Exceptions;
-using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Blocks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Blocks;
 
-public class SelectLatestBlockQueryHandler: IRequestHandler<SelectLatestBlockQuery, Block>
+public class SelectLatestBlockQueryHandler : IRequestHandler<SelectLatestBlockQuery, Block>
 {
-    private static readonly string SqlQuery = 
+    private static readonly string SqlQuery =
         @$"SELECT 
                 {nameof(BlockEntity.Height)},
                 {nameof(BlockEntity.Hash)},
@@ -22,8 +22,8 @@ public class SelectLatestBlockQueryHandler: IRequestHandler<SelectLatestBlockQue
                 {nameof(BlockEntity.Time)}
             FROM block
             ORDER BY {nameof(BlockEntity.Height)} DESC
-            LIMIT 1;";
-                        
+            LIMIT 1;".RemoveExcessWhitespace();
+
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
 
@@ -36,7 +36,7 @@ public class SelectLatestBlockQueryHandler: IRequestHandler<SelectLatestBlockQue
     public async Task<Block> Handle(SelectLatestBlockQuery request, CancellationToken cancellationToken)
     {
         var query = DatabaseQuery.Create(SqlQuery, token: cancellationToken);
-            
+
         var result = await _context.ExecuteFindAsync<BlockEntity>(query);
 
         if (request.FindOrThrow && result == null)

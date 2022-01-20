@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots;
@@ -30,14 +31,14 @@ public class PersistTokenSnapshotCommandHandler : IRequestHandler<PersistTokenSn
                 @{nameof(TokenSnapshotEntity.StartDate)},
                 @{nameof(TokenSnapshotEntity.EndDate)},
                 UTC_TIMESTAMP()
-              );";
+              );".RemoveExcessWhitespace();
 
     private static readonly string UpdateSqlCommand =
         $@"UPDATE token_snapshot 
                 SET 
                     {nameof(TokenSnapshotEntity.Details)} = @{nameof(TokenSnapshotEntity.Details)},
                     {nameof(TokenSnapshotEntity.ModifiedDate)} = UTC_TIMESTAMP()
-                WHERE {nameof(TokenSnapshotEntity.Id)} = @{nameof(TokenSnapshotEntity.Id)};";
+                WHERE {nameof(TokenSnapshotEntity.Id)} = @{nameof(TokenSnapshotEntity.Id)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

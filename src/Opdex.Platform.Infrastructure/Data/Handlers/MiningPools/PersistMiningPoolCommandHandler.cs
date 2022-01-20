@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.MiningPools;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningPools;
 using System;
 using System.Collections.Generic;
@@ -31,7 +32,7 @@ public class PersistMiningPoolCommandHandler : IRequestHandler<PersistMiningPool
                 @{nameof(MiningPoolEntity.CreatedBlock)},
                 @{nameof(MiningPoolEntity.ModifiedBlock)}
               );
-              SELECT LAST_INSERT_ID();";
+              SELECT LAST_INSERT_ID();".RemoveExcessWhitespace();
 
     private static readonly string UpdateSqlCommand =
         $@"UPDATE pool_mining
@@ -41,7 +42,7 @@ public class PersistMiningPoolCommandHandler : IRequestHandler<PersistMiningPool
                   {nameof(MiningPoolEntity.MiningPeriodEndBlock)} = @{nameof(MiningPoolEntity.MiningPeriodEndBlock)},
                   {nameof(MiningPoolEntity.ModifiedBlock)} = @{nameof(MiningPoolEntity.ModifiedBlock)}
                 WHERE
-                  {nameof(MiningPoolEntity.Id)} = @{nameof(MiningPoolEntity.Id)};";
+                  {nameof(MiningPoolEntity.Id)} = @{nameof(MiningPoolEntity.Id)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

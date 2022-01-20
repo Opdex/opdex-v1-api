@@ -4,6 +4,7 @@ using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools;
 using System;
@@ -25,7 +26,7 @@ public class SelectLiquidityPoolByAddressQueryHandler : IRequestHandler<SelectLi
                 {nameof(LiquidityPoolEntity.CreatedBlock)},
                 {nameof(LiquidityPoolEntity.ModifiedBlock)}
             FROM pool_liquidity
-            WHERE {nameof(LiquidityPoolEntity.Address)} = @{nameof(SqlParams.Address)};";
+            WHERE {nameof(LiquidityPoolEntity.Address)} = @{nameof(SqlParams.Address)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

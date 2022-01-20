@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Addresses;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
 using System;
 using System.Collections.Generic;
@@ -29,14 +30,14 @@ public class PersistAddressStakingCommandHandler : IRequestHandler<PersistAddres
                 @{nameof(AddressStakingEntity.CreatedBlock)},
                 @{nameof(AddressStakingEntity.ModifiedBlock)}
               );
-              SELECT LAST_INSERT_ID()";
+              SELECT LAST_INSERT_ID()".RemoveExcessWhitespace();
 
     private static readonly string UpdateSqlCommand =
         $@"UPDATE address_staking
                 SET
                     {nameof(AddressStakingEntity.Weight)} = @{nameof(AddressStakingEntity.Weight)},
                     {nameof(AddressStakingEntity.ModifiedBlock)} = @{nameof(AddressStakingEntity.ModifiedBlock)}
-                WHERE {nameof(AddressStakingEntity.Id)} = @{nameof(AddressStakingEntity.Id)};";
+                WHERE {nameof(AddressStakingEntity.Id)} = @{nameof(AddressStakingEntity.Id)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
@@ -68,12 +69,12 @@ public class PersistAddressStakingCommandHandler : IRequestHandler<PersistAddres
         catch (Exception ex)
         {
             using (_logger.BeginScope(new Dictionary<string, object>
-                   {
-                       ["LiquidityPoolId"] = request.AddressStaking.LiquidityPoolId,
-                       ["Owner"] = request.AddressStaking.Owner,
-                       ["Weight"] = request.AddressStaking.Weight,
-                       ["BlockHeight"] = request.AddressStaking.ModifiedBlock
-                   }))
+            {
+                ["LiquidityPoolId"] = request.AddressStaking.LiquidityPoolId,
+                ["Owner"] = request.AddressStaking.Owner,
+                ["Weight"] = request.AddressStaking.Weight,
+                ["BlockHeight"] = request.AddressStaking.ModifiedBlock
+            }))
             {
                 _logger.LogError(ex, $"Failure persisting staking position.");
             }

@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Deployers;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers;
@@ -29,7 +30,7 @@ public class PersistDeployerCommandHandler : IRequestHandler<PersistDeployerComm
                 @{nameof(DeployerEntity.CreatedBlock)},
                 @{nameof(DeployerEntity.ModifiedBlock)}
               );
-              SELECT LAST_INSERT_ID();";
+              SELECT LAST_INSERT_ID();".RemoveExcessWhitespace();
 
     private static readonly string UpdateSqlCommand =
         $@"UPDATE market_deployer
@@ -38,7 +39,7 @@ public class PersistDeployerCommandHandler : IRequestHandler<PersistDeployerComm
                     {nameof(DeployerEntity.Owner)} = @{nameof(DeployerEntity.Owner)},
                     {nameof(DeployerEntity.IsActive)} = @{nameof(DeployerEntity.IsActive)},
                     {nameof(DeployerEntity.ModifiedBlock)} = @{nameof(DeployerEntity.ModifiedBlock)}
-                WHERE {nameof(DeployerEntity.Id)} = @{nameof(DeployerEntity.Id)};";
+                WHERE {nameof(DeployerEntity.Id)} = @{nameof(DeployerEntity.Id)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

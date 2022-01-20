@@ -6,6 +6,7 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets;
 
@@ -28,7 +29,7 @@ public class SelectAllMarketsQueryHandler : IRequestHandler<SelectAllMarketsQuer
                 {nameof(MarketEntity.MarketFeeEnabled)},
                 {nameof(MarketEntity.CreatedBlock)},
                 {nameof(MarketEntity.ModifiedBlock)}
-            FROM market;";
+            FROM market;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.MiningGovernances;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningGovernances;
 using System;
 using System.Collections.Generic;
@@ -31,7 +32,7 @@ public class PersistMiningGovernanceNominationCommandHandler : IRequestHandler<P
                 @{nameof(MiningGovernanceNominationEntity.CreatedBlock)},
                 @{nameof(MiningGovernanceNominationEntity.ModifiedBlock)}
               );
-              SELECT LAST_INSERT_ID();";
+              SELECT LAST_INSERT_ID();".RemoveExcessWhitespace();
 
     private static readonly string UpdateSqlCommand =
         $@"UPDATE mining_governance_nomination
@@ -39,7 +40,7 @@ public class PersistMiningGovernanceNominationCommandHandler : IRequestHandler<P
                     {nameof(MiningGovernanceNominationEntity.Weight)} = @{nameof(MiningGovernanceNominationEntity.Weight)},
                     {nameof(MiningGovernanceNominationEntity.IsNominated)} = @{nameof(MiningGovernanceNominationEntity.IsNominated)},
                     {nameof(MiningGovernanceNominationEntity.ModifiedBlock)} = @{nameof(MiningGovernanceNominationEntity.ModifiedBlock)}
-                WHERE {nameof(MiningGovernanceNominationEntity.Id)} = @{nameof(MiningGovernanceNominationEntity.Id)};";
+                WHERE {nameof(MiningGovernanceNominationEntity.Id)} = @{nameof(MiningGovernanceNominationEntity.Id)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

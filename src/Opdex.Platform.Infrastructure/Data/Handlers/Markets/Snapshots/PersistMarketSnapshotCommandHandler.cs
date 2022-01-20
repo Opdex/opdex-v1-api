@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Markets;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
 using System;
 using System.Collections.Generic;
@@ -28,14 +29,14 @@ public class PersistMarketSnapshotCommandHandler : IRequestHandler<PersistMarket
                 @{nameof(MarketSnapshotEntity.StartDate)},
                 @{nameof(MarketSnapshotEntity.EndDate)},
                 UTC_TIMESTAMP()
-              );";
+              );".RemoveExcessWhitespace();
 
     private static readonly string UpdateSqlCommand =
         $@"UPDATE market_snapshot
                 SET
                     {nameof(MarketSnapshotEntity.Details)} = @{nameof(MarketSnapshotEntity.Details)},
                     {nameof(MarketSnapshotEntity.ModifiedDate)} = UTC_TIMESTAMP()
-                WHERE {nameof(MarketSnapshotEntity.Id)} = @{nameof(MarketSnapshotEntity.Id)};";
+                WHERE {nameof(MarketSnapshotEntity.Id)} = @{nameof(MarketSnapshotEntity.Id)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

@@ -5,6 +5,7 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Snapshots;
 
@@ -31,7 +32,7 @@ public class SelectTokenSnapshotWithFilterQueryHandler : IRequestHandler<SelectT
                 )
                 AND {nameof(TokenSnapshotEntity.SnapshotTypeId)} = @{nameof(SqlParams.SnapshotTypeId)}
             ORDER BY {nameof(TokenSnapshotEntity.EndDate)} DESC
-            LIMIT 1;";
+            LIMIT 1;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Markets;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets;
@@ -26,14 +27,14 @@ public class PersistMarketRouterCommandHandler : IRequestHandler<PersistMarketRo
                 @{nameof(MarketRouterEntity.IsActive)},
                 @{nameof(MarketRouterEntity.CreatedBlock)},
                 @{nameof(MarketRouterEntity.ModifiedBlock)}
-              );";
+              );".RemoveExcessWhitespace();
 
     private static readonly string UpdateSqlCommand =
         $@"UPDATE market_router
                 SET 
                     {nameof(MarketRouterEntity.IsActive)} = @{nameof(MarketRouterEntity.IsActive)},
                     {nameof(MarketRouterEntity.ModifiedBlock)} = @{nameof(MarketRouterEntity.ModifiedBlock)}
-                WHERE {nameof(MarketRouterEntity.Id)} = @{nameof(MarketRouterEntity.Id)};";
+                WHERE {nameof(MarketRouterEntity.Id)} = @{nameof(MarketRouterEntity.Id)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

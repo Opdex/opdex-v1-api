@@ -4,6 +4,7 @@ using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Indexer;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ public class PersistIndexerLockCommandHandler : IRequestHandler<PersistIndexerLo
                     {nameof(IndexLockEntity.ModifiedDate)} = UTC_TIMESTAMP(),
                     {nameof(IndexLockEntity.InstanceId)} = @{nameof(SqlParams.InstanceId)},
                     {nameof(IndexLockEntity.Reason)} = @{nameof(SqlParams.Reason)}
-                WHERE {nameof(IndexLockEntity.Locked)} = 0;";
+                WHERE {nameof(IndexLockEntity.Locked)} = 0;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly ILogger<PersistIndexerLockCommandHandler> _logger;

@@ -6,15 +6,16 @@ using MediatR;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens;
 
-public class SelectTokenByIdQueryHandler: IRequestHandler<SelectTokenByIdQuery, Token>
+public class SelectTokenByIdQueryHandler : IRequestHandler<SelectTokenByIdQuery, Token>
 {
     private static readonly string SqlQuery =
-        @$"Select
+        @$"SELECT
                 {nameof(TokenEntity.Id)},
                 {nameof(TokenEntity.Address)},
                 {nameof(TokenEntity.Name)},
@@ -25,7 +26,7 @@ public class SelectTokenByIdQueryHandler: IRequestHandler<SelectTokenByIdQuery, 
                 {nameof(TokenEntity.CreatedBlock)},
                 {nameof(TokenEntity.ModifiedBlock)}
             FROM token
-            WHERE {nameof(TokenEntity.Id)} = @{nameof(SqlParams.Id)};";
+            WHERE {nameof(TokenEntity.Id)} = @{nameof(SqlParams.Id)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

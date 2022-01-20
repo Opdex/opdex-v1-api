@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions;
@@ -33,7 +34,7 @@ public class PersistTransactionCommandHandler : IRequestHandler<PersistTransacti
                 @{nameof(TransactionEntity.Error)},
                 @{nameof(TransactionEntity.Block)}
               );
-              SELECT LAST_INSERT_ID();";
+              SELECT LAST_INSERT_ID();".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

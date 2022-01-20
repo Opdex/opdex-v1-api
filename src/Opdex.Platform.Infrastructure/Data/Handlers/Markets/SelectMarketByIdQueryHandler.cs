@@ -3,10 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
-using Microsoft.Extensions.Logging;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets;
 
@@ -31,7 +31,7 @@ public class SelectMarketByIdQueryHandler : IRequestHandler<SelectMarketByIdQuer
                 {nameof(MarketEntity.ModifiedBlock)}
             FROM market
             WHERE {nameof(MarketEntity.Id)} = @{nameof(SqlParams.MarketId)}
-            LIMIT 1;";
+            LIMIT 1;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

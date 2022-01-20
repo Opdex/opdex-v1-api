@@ -3,6 +3,7 @@ using MediatR;
 using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Domain.Models.MiningGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MiningGovernances.Nominations;
 using System;
@@ -28,7 +29,7 @@ public class SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHan
             FROM mining_governance_nomination
             WHERE {nameof(MiningGovernanceNominationEntity.IsNominated)} = true AND
                   {nameof(MiningGovernanceNominationEntity.MiningGovernanceId)} = @{nameof(SqlParams.MiningGovernanceId)}
-            LIMIT {MiningGovernanceConstants.MaxNominations};";
+            LIMIT {MiningGovernanceConstants.MaxNominations};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
