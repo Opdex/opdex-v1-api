@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution;
@@ -32,7 +33,7 @@ public class PersistTokenDistributionCommandHandler : IRequestHandler<PersistTok
                 @{nameof(TokenDistributionEntity.NextDistributionBlock)},
                 @{nameof(TokenDistributionEntity.CreatedBlock)},
                 @{nameof(TokenDistributionEntity.ModifiedBlock)}
-              );";
+              );".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

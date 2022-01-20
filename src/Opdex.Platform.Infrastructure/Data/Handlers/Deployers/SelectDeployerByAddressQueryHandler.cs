@@ -7,6 +7,7 @@ using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Deployers;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Deployers;
 
@@ -24,7 +25,7 @@ public class SelectDeployerByAddressQueryHandler : IRequestHandler<SelectDeploye
                 {nameof(DeployerEntity.ModifiedBlock)}
             FROM market_deployer
             WHERE {nameof(DeployerEntity.Address)} = @{nameof(SqlParams.Address)}
-            LIMIT 1;";
+            LIMIT 1;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

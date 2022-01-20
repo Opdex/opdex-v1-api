@@ -7,6 +7,7 @@ using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Blocks;
 
@@ -14,7 +15,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Blocks;
 
 public class SelectBlockByHeightQueryHandler : IRequestHandler<SelectBlockByHeightQuery, Block>
 {
-    private static readonly string SqlQuery = 
+    private static readonly string SqlQuery =
         @$"SELECT 
                 {nameof(BlockEntity.Height)},
                 {nameof(BlockEntity.Hash)},
@@ -22,8 +23,8 @@ public class SelectBlockByHeightQueryHandler : IRequestHandler<SelectBlockByHeig
                 {nameof(BlockEntity.Time)}
             FROM block
             WHERE {nameof(BlockEntity.Height)} = @{nameof(SqlParams.Height)}
-            LIMIT 1;";
-                        
+            LIMIT 1;".RemoveExcessWhitespace();
+
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
 
@@ -36,9 +37,9 @@ public class SelectBlockByHeightQueryHandler : IRequestHandler<SelectBlockByHeig
     public async Task<Block> Handle(SelectBlockByHeightQuery request, CancellationToken cancellationToken)
     {
         var sqlParams = new SqlParams(request.Height);
-            
+
         var query = DatabaseQuery.Create(SqlQuery, sqlParams, cancellationToken);
-            
+
         var result = await _context.ExecuteFindAsync<BlockEntity>(query);
 
         if (request.FindOrThrow && result == null)

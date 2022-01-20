@@ -3,6 +3,7 @@ using MediatR;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Summaries;
 using System;
@@ -31,7 +32,7 @@ public class SelectMarketSummaryByMarketIdQueryHandler
                 {nameof(MarketSummaryEntity.ModifiedBlock)}
             FROM market_summary
             WHERE {nameof(MarketSummaryEntity.MarketId)} = @{nameof(SqlParams.MarketId)}
-            LIMIT 1;";
+            LIMIT 1;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

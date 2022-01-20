@@ -3,6 +3,7 @@ using MediatR;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.TransactionLogs;
@@ -43,7 +44,7 @@ public class SelectTransactionsForSnapshotRewindQueryHandler
             LEFT JOIN transaction_log tl
                 ON t.{nameof(TransactionEntity.Id)} = tl.{nameof(TransactionLogEntity.TransactionId)}
             WHERE b.{nameof(BlockEntity.MedianTime)} >= @{nameof(SqlParams.DateTime)}
-            ORDER BY t.{nameof(TransactionEntity.Id)} ASC;";
+            ORDER BY t.{nameof(TransactionEntity.Id)} ASC;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

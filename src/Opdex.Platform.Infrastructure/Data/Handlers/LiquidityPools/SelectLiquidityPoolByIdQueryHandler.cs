@@ -3,6 +3,7 @@ using MediatR;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools;
 using System;
@@ -25,7 +26,7 @@ public class SelectLiquidityPoolByIdQueryHandler : IRequestHandler<SelectLiquidi
                 {nameof(LiquidityPoolEntity.ModifiedBlock)}
             FROM pool_liquidity
             WHERE {nameof(LiquidityPoolEntity.Id)} = @{nameof(SqlParams.LiquidityPoolId)}
-            LIMIT 1;";
+            LIMIT 1;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

@@ -4,6 +4,7 @@ using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Mining;
@@ -27,7 +28,7 @@ public class SelectAddressMiningByMiningPoolIdAndOwnerQueryHandler
             FROM address_mining
             WHERE {nameof(AddressMiningEntity.Owner)} = @{nameof(SqlParams.Owner)}
                 AND {nameof(AddressMiningEntity.MiningPoolId)} = @{nameof(SqlParams.MiningPoolId)}
-            LIMIT 1;";
+            LIMIT 1;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

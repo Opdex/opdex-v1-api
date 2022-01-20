@@ -7,6 +7,7 @@ using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 
@@ -15,7 +16,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens;
 public class SelectTokenByAddressQueryHandler : IRequestHandler<SelectTokenByAddressQuery, Token>
 {
     private static readonly string SqlQuery =
-        @$"Select
+        @$"SELECT
                 {nameof(TokenEntity.Id)},
                 {nameof(TokenEntity.Address)},
                 {nameof(TokenEntity.Name)},
@@ -27,7 +28,7 @@ public class SelectTokenByAddressQueryHandler : IRequestHandler<SelectTokenByAdd
                 {nameof(TokenEntity.ModifiedBlock)}
             FROM token
             WHERE {nameof(TokenEntity.Address)} = @{nameof(SqlParams.Address)}
-            LIMIT 1;";
+            LIMIT 1;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

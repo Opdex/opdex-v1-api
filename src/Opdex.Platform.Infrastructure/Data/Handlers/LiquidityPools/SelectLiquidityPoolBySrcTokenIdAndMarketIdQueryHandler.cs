@@ -3,6 +3,7 @@ using MediatR;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools;
 using System;
@@ -26,7 +27,7 @@ public class SelectLiquidityPoolBySrcTokenIdAndMarketIdQueryHandler : IRequestHa
             FROM pool_liquidity
             WHERE {nameof(LiquidityPoolEntity.SrcTokenId)} = @{nameof(SqlParams.SrcTokenId)}
                 AND {nameof(LiquidityPoolEntity.MarketId)} = @{nameof(SqlParams.MarketId)}
-            LIMIT 1;";
+            LIMIT 1;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

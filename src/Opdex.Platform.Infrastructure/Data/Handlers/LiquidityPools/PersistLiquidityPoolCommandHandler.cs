@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.LiquidityPools;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools;
 using System;
 using System.Collections.Generic;
@@ -31,7 +32,7 @@ public class PersistLiquidityPoolCommandHandler : IRequestHandler<PersistLiquidi
                 @{nameof(LiquidityPoolEntity.CreatedBlock)},
                 @{nameof(LiquidityPoolEntity.ModifiedBlock)}
               );
-              SELECT LAST_INSERT_ID();";
+              SELECT LAST_INSERT_ID();".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

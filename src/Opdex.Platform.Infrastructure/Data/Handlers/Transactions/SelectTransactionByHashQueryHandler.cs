@@ -7,6 +7,7 @@ using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 
@@ -26,7 +27,7 @@ public class SelectTransactionByHashQueryHandler : IRequestHandler<SelectTransac
                 {nameof(TransactionEntity.Success)},
                 {nameof(TransactionEntity.Error)}
             FROM transaction
-            WHERE {nameof(TransactionEntity.Hash)} = @{nameof(SqlParams.Hash)};";
+            WHERE {nameof(TransactionEntity.Hash)} = @{nameof(SqlParams.Hash)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

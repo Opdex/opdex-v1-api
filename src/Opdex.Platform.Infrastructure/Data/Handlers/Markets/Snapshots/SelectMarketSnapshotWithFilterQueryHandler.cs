@@ -7,6 +7,7 @@ using Opdex.Platform.Domain.Models.Markets;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets.Snapshots;
 
@@ -31,7 +32,7 @@ public class SelectMarketSnapshotWithFilterQueryHandler
                     )
                 AND {nameof(MarketSnapshotEntity.SnapshotTypeId)} = @{nameof(SqlParams.SnapshotTypeId)}
             ORDER BY {nameof(MarketSnapshotEntity.EndDate)} DESC
-            LIMIT 1;";
+            LIMIT 1;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

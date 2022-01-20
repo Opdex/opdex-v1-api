@@ -3,6 +3,7 @@ using MediatR;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Blocks;
 using System;
@@ -22,7 +23,7 @@ public class SelectBlockByMedianTimeQueryHandler : IRequestHandler<SelectBlockBy
             FROM block
             WHERE {nameof(BlockEntity.MedianTime)} <= @{nameof(SqlParams.MedianTime)}
             ORDER BY {nameof(BlockEntity.Height)} DESC
-            LIMIT 1;";
+            LIMIT 1;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

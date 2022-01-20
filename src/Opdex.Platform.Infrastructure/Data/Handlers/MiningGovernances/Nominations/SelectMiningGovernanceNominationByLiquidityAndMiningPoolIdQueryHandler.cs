@@ -48,7 +48,7 @@ public class SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQueryHand
 
         if (request.FindOrThrow && result == null)
         {
-            throw new NotFoundException($"{nameof(MiningGovernanceNomination)} not found.");
+            throw new NotFoundException($"Mining governance nomination not found.");
         }
 
         return result == null ? null : _mapper.Map<MiningGovernanceNomination>(result);

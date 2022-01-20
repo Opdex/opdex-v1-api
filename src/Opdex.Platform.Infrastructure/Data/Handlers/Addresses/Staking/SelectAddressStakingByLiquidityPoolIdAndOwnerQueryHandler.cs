@@ -4,6 +4,7 @@ using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Staking;
@@ -27,7 +28,7 @@ public class SelectAddressStakingByLiquidityPoolIdAndOwnerQueryHandler
             FROM address_staking
             WHERE {nameof(AddressStakingEntity.Owner)} = @{nameof(SqlParams.Owner)}
                 AND {nameof(AddressStakingEntity.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)}
-            LIMIT 1;";
+            LIMIT 1;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

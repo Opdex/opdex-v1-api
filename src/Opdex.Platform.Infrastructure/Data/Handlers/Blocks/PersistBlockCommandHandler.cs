@@ -8,6 +8,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Blocks;
 using System.Collections.Generic;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Blocks;
 
@@ -24,7 +25,7 @@ public class PersistBlockCommandHandler : IRequestHandler<PersistBlockCommand, b
                 @{nameof(BlockEntity.Hash)},
                 @{nameof(BlockEntity.Time)},
                 @{nameof(BlockEntity.MedianTime)}
-              );";
+              );".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

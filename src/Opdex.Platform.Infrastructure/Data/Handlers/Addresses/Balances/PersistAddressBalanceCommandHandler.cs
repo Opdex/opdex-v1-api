@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Addresses;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
 using System;
 using System.Collections.Generic;
@@ -29,14 +30,14 @@ public class PersistAddressBalanceCommandHandler : IRequestHandler<PersistAddres
                 @{nameof(AddressBalanceEntity.CreatedBlock)},
                 @{nameof(AddressBalanceEntity.ModifiedBlock)}
               );
-              SELECT LAST_INSERT_ID()";
+              SELECT LAST_INSERT_ID()".RemoveExcessWhitespace();
 
     private static readonly string UpdateSqlCommand =
         $@"UPDATE address_balance
                 SET
                     {nameof(AddressBalanceEntity.Balance)} = @{nameof(AddressBalanceEntity.Balance)},
                     {nameof(AddressBalanceEntity.ModifiedBlock)} = @{nameof(AddressBalanceEntity.ModifiedBlock)}
-                WHERE {nameof(AddressBalanceEntity.Id)} = @{nameof(AddressBalanceEntity.Id)};";
+                WHERE {nameof(AddressBalanceEntity.Id)} = @{nameof(AddressBalanceEntity.Id)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

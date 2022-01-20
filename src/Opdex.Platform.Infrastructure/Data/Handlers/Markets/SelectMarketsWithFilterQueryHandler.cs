@@ -64,7 +64,7 @@ public class SelectMarketsWithFilterQueryHandler : IRequestHandler<SelectMarkets
                 {nameof(MarketEntity.MarketFeeEnabled)},
                 {nameof(MarketEntity.CreatedBlock)},
                 {nameof(MarketEntity.ModifiedBlock)}
-            FROM ({InnerQuery}) r {OrderBySort};";
+            FROM ({InnerQuery}) r {OrderBySort};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

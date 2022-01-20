@@ -2,6 +2,7 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Domain.Models.Deployers;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Deployers;
 using System;
@@ -21,7 +22,7 @@ public class SelectActiveDeployerQueryHandler : IRequestHandler<SelectActiveDepl
                 {nameof(DeployerEntity.CreatedBlock)},
                 {nameof(DeployerEntity.ModifiedBlock)}
             FROM market_deployer
-            LIMIT 1;";
+            LIMIT 1;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

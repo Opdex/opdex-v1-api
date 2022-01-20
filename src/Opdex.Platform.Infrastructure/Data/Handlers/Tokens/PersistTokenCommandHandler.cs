@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens;
@@ -33,7 +34,7 @@ public class PersistTokenCommandHandler : IRequestHandler<PersistTokenCommand, u
                 @{nameof(TokenEntity.CreatedBlock)},
                 @{nameof(TokenEntity.ModifiedBlock)}
               );
-            SELECT LAST_INSERT_ID();";
+            SELECT LAST_INSERT_ID();".RemoveExcessWhitespace();
 
     private static readonly string UpdateSqlCommand =
         $@"UPDATE token
