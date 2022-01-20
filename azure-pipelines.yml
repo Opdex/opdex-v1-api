@@ -1,126 +1,116 @@
 name: Opdex-API
 trigger:
-- main
+  - main
 
 pool:
   vmImage: ubuntu-latest
 
 variables:
-  location: 'Central US'
-  azureSubscription: 'sub-opdex-dev'
+  location: "Central US"
+  azureSubscription: "sub-opdex-dev"
   ARTIFACT_NAME: platform-api
-  releaseTemplate: 'azure-pipelines.release.yml'
+  releaseTemplate: "azure-pipelines.release.yml"
 
 stages:
-- stage: CI
-  displayName: 'Continuous Integration'
+  - stage: CI
+    displayName: "Continuous Integration"
 
-  jobs:
-  - job: Build
-    displayName: Build and Publish
+    jobs:
+      - job: Build
+        displayName: Build and Publish
 
-    variables:
-      SOLUTION: 'Opdex.sln'
-      BUILD_CONFIGURATION: 'Release'
-      IMAGE_REPOSITORY: 'opdex-v1-api'
-      DOCKERFILE_PATH: 'src/Opdex.Platform.WebApi/Dockerfile'
-      TAG: '$(Build.SourceVersion)'
+        variables:
+          SOLUTION: "Opdex.sln"
+          BUILD_CONFIGURATION: "Release"
+          IMAGE_REPOSITORY: "opdex-v1-api"
+          DOCKERFILE_PATH: "src/Opdex.Platform.WebApi/Dockerfile"
+          TAG: "$(Build.SourceVersion)"
 
-    steps:
-      - task: UseDotNet@2 # https://github.com/dotnet/core/issues/6907
-        inputs:
-          packageType: 'sdk'
-          version: '6.0.x'
-        displayName: Use .NET 6.0
+        steps:
+          - task: UseDotNet@2 # https://github.com/dotnet/core/issues/6907
+            inputs:
+              packageType: "sdk"
+              version: "6.0.x"
+            displayName: Use .NET 6.0
 
-      - task: DotNetCoreCLI@2
-        inputs:
-          command: 'restore'
-          projects: $(SOLUTION)
-        displayName: Restore
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: "restore"
+              projects: $(SOLUTION)
+            displayName: Restore
 
-      - task: DotNetCoreCLI@2
-        inputs:
-          command: 'build'
-          projects: $(SOLUTION)
-          arguments: '--configuration $(BUILD_CONFIGURATION) --no-restore'
-        displayName: 'Build'
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: "build"
+              projects: $(SOLUTION)
+              arguments: "--configuration $(BUILD_CONFIGURATION) --no-restore"
+            displayName: "Build"
 
-      - task: DotNetCoreCLI@2
-        inputs:
-          command: 'test'
-          projects: test/**/*.Tests.csproj
-          arguments: '--configuration $(BUILD_CONFIGURATION) --no-build'
-        displayName: 'Unit Test'
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: "test"
+              projects: test/**/*.Tests.csproj
+              arguments: "--configuration $(BUILD_CONFIGURATION) --no-build"
+            displayName: "Unit Test"
 
-      - task: DotNetCoreCLI@2
-        inputs:
-          command: 'publish'
-          projects: $(SOLUTION)
-          publishWebProjects: True
-          arguments: '--configuration $(BUILD_CONFIGURATION) --no-build --output $(Build.ArtifactStagingDirectory)'
-          zipAfterPublish: False
-        displayName: Publish
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: "publish"
+              projects: $(SOLUTION)
+              publishWebProjects: True
+              arguments: "--configuration $(BUILD_CONFIGURATION) --no-build --output $(Build.ArtifactStagingDirectory)"
+              zipAfterPublish: False
+            displayName: Publish
 
-      - task: Docker@2
-        inputs:
-          containerRegistry: 'acr-opdex'
-          repository: '$(IMAGE_REPOSITORY)'
-          command: 'buildAndPush'
-          Dockerfile: '$(DOCKERFILE_PATH)'
-          buildContext: '$(Build.ArtifactStagingDirectory)/Opdex.Platform.WebApi'
-          tags: '$(TAG)'
-        displayName: Docker
+          - task: Docker@2
+            inputs:
+              containerRegistry: "acr-opdex"
+              repository: "$(IMAGE_REPOSITORY)"
+              command: "buildAndPush"
+              Dockerfile: "$(DOCKERFILE_PATH)"
+              buildContext: "$(Build.ArtifactStagingDirectory)/Opdex.Platform.WebApi"
+              tags: "$(TAG)"
+            displayName: Docker
 
-      - task: PublishBuildArtifacts@1
-        inputs:
-          pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-          artifactName: '$(ARTIFACT_NAME)'
-        displayName: Share
+          - task: PublishBuildArtifacts@1
+            inputs:
+              pathtoPublish: "$(Build.ArtifactStagingDirectory)"
+              artifactName: "$(ARTIFACT_NAME)"
+            displayName: Share
 
-- stage: DEV
-  displayName: 'Release to devnet (Azure)'
-  dependsOn: CI
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main')) # Don't run deployment for PRs against the branch.
-  jobs:
-  - template: ${{ variables.releaseTemplate }}
-    parameters:
-      environment: 'dev'
+  - stage: DEV
+    displayName: "Release to devnet (Azure)"
+    dependsOn: CI
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main')) # Don't run deployment for PRs against the branch.
+    jobs:
+      - template: ${{ variables.releaseTemplate }}
+        parameters:
+          environment: "dev"
 
-- stage: TEST
-  displayName: 'Release to testnet (Azure)'
-  dependsOn: DEV
-  jobs:
-  - template: ${{ variables.releaseTemplate }}
-    parameters:
-      environment: 'test'
-  - job:
-    displayName: 'Load Testing'
-    steps:
-      - task: k6-load-test@0
-        inputs:
-          filename: 'test/k6/ci/status/get-status.js'
-          args: '-e api_base_url=https://app-opdex-test-api-staging.azurewebsites.net'
-        displayName: 'GET /status'
-    dependsOn: 'test' # template deployment name == parameters.environment
-  - job:
-    displayName: 'ReadMe Docs'
-    steps:
-    - task: CmdLine@2
-      displayName: Sync OpenAPI doc
-      inputs:
-        script: |
-          curl https://test-api.opdex.com/swagger/v1/swagger.json > swagger.json
-          npm install rdme
-          npx rdme openapi --id=61161540149ab80029bab5ca --key=$(README_API_KEY)
-      env:
-        README_API_KEY: $(README_API_KEY)
-    dependsOn: 'test' # template deployment name == parameters.environment
+  - stage: TEST
+    displayName: "Release to testnet (Azure)"
+    dependsOn: DEV
+    jobs:
+      - template: ${{ variables.releaseTemplate }}
+        parameters:
+          environment: "test"
 
-- stage: MAIN
-  displayName: 'Release to mainnet (Azure)'
-  dependsOn: TEST
-  jobs:
-  - template: ${{ variables.releaseTemplate }}
-    parameters:
-      environment: 'main'
+  - stage: MAIN
+    displayName: "Release to mainnet (Azure)"
+    dependsOn: TEST
+    jobs:
+      - template: ${{ variables.releaseTemplate }}
+        parameters:
+          environment: "main"
+      - job:
+        displayName: "ReadMe Docs"
+        steps:
+          - task: CmdLine@2
+            displayName: Sync OpenAPI doc
+            inputs:
+              script: |
+                npm install rdme
+                npx rdme openapi $(Build.SourcesDirectory)/docs/openapi.yml --id=61161540149ab80029bab5ca --key=$(README_API_KEY)
+            env:
+              README_API_KEY: $(README_API_KEY)
+        dependsOn: "main" # template deployment name == parameters.environment

@@ -229,7 +229,7 @@ public enum LiquidityPoolNominationStatusFilter
     /// <summary>
     /// Not nominated for liquidity mining filter.
     /// </summary>
-    NonNominated = 2
+    Excluded = 2
 }
 
 /// <summary>

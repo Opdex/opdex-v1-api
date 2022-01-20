@@ -8,10 +8,10 @@ namespace Opdex.Platform.WebApi.Models.Requests.Vaults;
 public sealed class VaultCertificateFilterParameters : FilterParameters<VaultCertificatesCursor>
 {
     /// <summary>
-    /// Address of the certificate holder.
+    /// Address of the certificate owner.
     /// </summary>
-    /// <example>tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L</example>
-    public Address Holder { get; set; }
+    /// <example>tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c</example>
+    public Address Owner { get; set; }
 
     /// <summary>
     /// Status of certificates.
@@ -21,7 +21,7 @@ public sealed class VaultCertificateFilterParameters : FilterParameters<VaultCer
 
     protected override VaultCertificatesCursor InternalBuildCursor()
     {
-        if (EncodedCursor is null) return new VaultCertificatesCursor(Holder, Status, Direction, Limit, PagingDirection.Forward, default);
+        if (EncodedCursor is null) return new VaultCertificatesCursor(Owner, Status, Direction, Limit, PagingDirection.Forward, default);
         Base64Extensions.TryBase64Decode(EncodedCursor, out var decodedCursor);
         VaultCertificatesCursor.TryParse(decodedCursor, out var cursor);
         return cursor;

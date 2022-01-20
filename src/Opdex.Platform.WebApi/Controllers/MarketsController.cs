@@ -20,7 +20,8 @@ namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("markets")]
+[Route("v{version:apiVersion}/markets")]
+[ApiVersion("1")]
 [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
 public class MarketsController : ControllerBase
 {
@@ -55,14 +56,11 @@ public class MarketsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("standard")]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> CreateStandardMarketQuote([FromBody] CreateStandardMarketQuoteRequest request,
                                                                                              CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateCreateStandardMarketTransactionQuoteCommand(_context.Wallet,
-                                                                                                  request.MarketOwner,
+                                                                                                  request.Owner,
                                                                                                   request.TransactionFee,
                                                                                                   request.AuthPoolCreators,
                                                                                                   request.AuthLiquidityProviders,
@@ -79,9 +77,6 @@ public class MarketsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("staking")]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> CreateStakingMarketQuote([FromBody] CreateStakingMarketQuoteRequest request,
                                                                                             CancellationToken cancellationToken)
     {
@@ -94,16 +89,13 @@ public class MarketsController : ControllerBase
 
     /// <summary>Get Market</summary>
     /// <remarks>Retrieves a market.</remarks>
-    /// <param name="address">The market address to retrieve.</param>
+    /// <param name="market">The market address to retrieve.</param>
     /// <param name="cancellationToken">Cancellation Token</param>
     /// <returns>Market details with its daily summary</returns>
-    [HttpGet("{address}")]
-    [ProducesResponseType(typeof(MarketResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<MarketResponseModel>> GetMarketDetails([FromRoute] Address address, CancellationToken cancellationToken)
+    [HttpGet("{market}")]
+    public async Task<ActionResult<MarketResponseModel>> GetMarketDetails([FromRoute] Address market, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new GetMarketByAddressQuery(address), cancellationToken);
+        var result = await _mediator.Send(new GetMarketByAddressQuery(market), cancellationToken);
 
         var response = _mapper.Map<MarketResponseModel>(result);
 
@@ -112,20 +104,16 @@ public class MarketsController : ControllerBase
 
     /// <summary>Get Market History</summary>
     /// <remarks>Retrieves the history of a market.</remarks>
-    /// <param name="address">The market address to retrieve history of.</param>
+    /// <param name="market">The market address to retrieve history of.</param>
     /// <param name="filters">Snapshot filters.</param>
     /// <param name="cancellationToken">Cancellation Token</param>
     /// <returns>Market history with pagination.</returns>
-    [HttpGet("{address}/history")]
-    [ProducesResponseType(typeof(MarketSnapshotsResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<MarketSnapshotsResponseModel>> GetMarketHistory([FromRoute] Address address,
+    [HttpGet("{market}/history")]
+    public async Task<ActionResult<MarketSnapshotsResponseModel>> GetMarketHistory([FromRoute] Address market,
                                                                                    [FromQuery] MarketSnapshotFilterParameters filters,
                                                                                    CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new GetMarketSnapshotsWithFilterQuery(address, filters.BuildCursor()), cancellationToken);
+        var result = await _mediator.Send(new GetMarketSnapshotsWithFilterQuery(market, filters.BuildCursor()), cancellationToken);
 
         var response = _mapper.Map<MarketSnapshotsResponseModel>(result);
 
@@ -134,19 +122,16 @@ public class MarketsController : ControllerBase
 
     /// <summary>Set Ownership Quote</summary>
     /// <remarks>Quote a transaction to set the owner of a standard market, pending a transaction to redeem ownership.</remarks>
-    /// <param name="address">The address of the standard market.</param>
+    /// <param name="market">The address of the standard market.</param>
     /// <param name="request">Information about the new owner.</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
-    [HttpPost("{address}/standard/set-ownership")]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<TransactionQuoteResponseModel>> SetOwnershipQuote([FromRoute] Address address,
+    [HttpPost("{market}/standard/set-ownership")]
+    public async Task<ActionResult<TransactionQuoteResponseModel>> SetOwnershipQuote([FromRoute] Address market,
                                                                                      [FromBody] SetMarketOwnerQuoteRequest request,
                                                                                      CancellationToken cancellationToken)
     {
-        var response = await _mediator.Send(new CreateSetStandardMarketOwnershipTransactionQuoteCommand(address, _context.Wallet, request.Owner),
+        var response = await _mediator.Send(new CreateSetStandardMarketOwnershipTransactionQuoteCommand(market, _context.Wallet, request.Owner),
                                             cancellationToken);
 
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
@@ -156,17 +141,14 @@ public class MarketsController : ControllerBase
 
     /// <summary>Claim Ownership Quote</summary>
     /// <remarks>Quote a transaction to claim ownership of a standard market.</remarks>
-    /// <param name="address">The address of the standard market.</param>
+    /// <param name="market">The address of the standard market.</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
-    [HttpPost("{address}/standard/claim-ownership")]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<TransactionQuoteResponseModel>> ClaimOwnershipQuote([FromRoute] Address address,
+    [HttpPost("{market}/standard/claim-ownership")]
+    public async Task<ActionResult<TransactionQuoteResponseModel>> ClaimOwnershipQuote([FromRoute] Address market,
                                                                                        CancellationToken cancellationToken)
     {
-        var response = await _mediator.Send(new CreateClaimStandardMarketOwnershipTransactionQuoteCommand(address, _context.Wallet),
+        var response = await _mediator.Send(new CreateClaimStandardMarketOwnershipTransactionQuoteCommand(market, _context.Wallet),
                                             cancellationToken);
 
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
@@ -176,23 +158,20 @@ public class MarketsController : ControllerBase
 
     /// <summary>Set Market Permissions Quote</summary>
     /// <remarks>Quote a transaction to set permissions within a standard market.</remarks>
-    /// <param name="address">The address of the standard market.</param>
-    /// <param name="walletAddress">The address to assign permissions.</param>
+    /// <param name="market">The address of the standard market.</param>
+    /// <param name="address">The address to assign permissions.</param>
     /// <param name="request">Information about the permissions.</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
-    [HttpPost("{address}/standard/permissions/{walletAddress}")]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<TransactionQuoteResponseModel>> SetPermissionsQuote([FromRoute] Address address,
-                                                                                       [FromRoute] Address walletAddress,
+    [HttpPost("{market}/standard/permissions/{address}")]
+    public async Task<ActionResult<TransactionQuoteResponseModel>> SetPermissionsQuote([FromRoute] Address market,
+                                                                                       [FromRoute] Address address,
                                                                                        [FromBody] SetMarketPermissionsQuoteRequest request,
                                                                                        CancellationToken cancellationToken)
     {
-        var response = await _mediator.Send(new CreateSetStandardMarketPermissionsTransactionQuoteCommand(address,
+        var response = await _mediator.Send(new CreateSetStandardMarketPermissionsTransactionQuoteCommand(market,
                                                                                                           _context.Wallet,
-                                                                                                          walletAddress,
+                                                                                                          address,
                                                                                                           request.Permission,
                                                                                                           request.Authorize), cancellationToken);
 
@@ -203,35 +182,28 @@ public class MarketsController : ControllerBase
 
     /// <summary>Get Market Permissions</summary>
     /// <remarks>Retrieves the permissions for an address within a standard market.</remarks>
-    /// <param name="marketAddress">The address of the standard market.</param>
-    /// <param name="walletAddress">The address for which to retrieve permissions.</param>
+    /// <param name="market">The address of the standard market.</param>
+    /// <param name="address">The address for which to retrieve permissions.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A list of all market permissions for the wallet address.</returns>
-    /// <response code="404">The market could not be found or is not a standard market.</response>
-    [HttpGet("{marketAddress}/standard/permissions/{walletAddress}")]
-    [ProducesResponseType(typeof(IEnumerable<MarketPermissionType>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<IEnumerable<MarketPermissionType>>> GetPermissions([FromRoute] Address marketAddress, [FromRoute] Address walletAddress, CancellationToken cancellationToken)
+    [HttpGet("{market}/standard/permissions/{address}")]
+    public async Task<ActionResult<IEnumerable<MarketPermissionType>>> GetPermissions([FromRoute] Address market, [FromRoute] Address address, CancellationToken cancellationToken)
     {
-        var permissions = await _mediator.Send(new GetMarketPermissionsForAddressQuery(marketAddress, walletAddress), cancellationToken);
+        var permissions = await _mediator.Send(new GetMarketPermissionsForAddressQuery(market, address), cancellationToken);
         return Ok(permissions);
     }
 
     /// <summary>Collect Fees Quote</summary>
-    /// <param name="address">The address of the standard market.</param>
+    /// <param name="market">The address of the standard market.</param>
     /// <param name="request">Information about the fees to collect.</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
-    [HttpPost("{address}/standard/collect-fees")]
-    [ProducesResponseType(typeof(IEnumerable<MarketPermissionType>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<TransactionQuoteResponseModel>> CollectFeesQuote([FromRoute] Address address,
+    [HttpPost("{market}/standard/collect-fees")]
+    public async Task<ActionResult<TransactionQuoteResponseModel>> CollectFeesQuote([FromRoute] Address market,
                                                                                     [FromBody] CollectMarketFeesQuoteRequest request,
                                                                                     CancellationToken cancellationToken)
     {
-        var response = await _mediator.Send(new CreateCollectStandardMarketFeesTransactionQuoteCommand(address, _context.Wallet, request.Token, request.Amount),
+        var response = await _mediator.Send(new CreateCollectStandardMarketFeesTransactionQuoteCommand(market, _context.Wallet, request.Token, request.Amount),
                                             cancellationToken);
 
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);

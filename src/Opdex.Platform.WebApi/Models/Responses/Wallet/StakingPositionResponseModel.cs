@@ -28,6 +28,6 @@ public class StakingPositionResponseModel
     /// <summary>
     /// Address of the token used for staking.
     /// </summary>
-    /// <example>tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L</example>
+    /// <example>tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c</example>
     public Address StakingToken { get; set; }
 }

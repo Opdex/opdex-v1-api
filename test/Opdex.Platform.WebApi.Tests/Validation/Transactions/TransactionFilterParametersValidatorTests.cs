@@ -20,38 +20,38 @@ public class TransactionFilterParametersValidatorTests
 
     [Theory]
     [ClassData(typeof(NonNetworkAddressData))]
-    public void Wallet_Invalid(Address wallet)
+    public void Sender_Invalid(Address sender)
     {
         // Arrange
         var request = new TransactionFilterParameters
         {
-            Wallet = wallet
+            Sender = sender
         };
 
         // Act
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(request => request.Wallet);
+        result.ShouldHaveValidationErrorFor(request => request.Sender);
     }
 
     [Theory]
     [ClassData(typeof(NullAddressData))]
     [ClassData(typeof(EmptyAddressData))]
     [ClassData(typeof(ValidNetworkAddressData))]
-    public void Wallet_Valid(Address wallet)
+    public void Sender_Valid(Address sender)
     {
         // Arrange
         var request = new TransactionFilterParameters
         {
-            Wallet = wallet
+            Sender = sender
         };
 
         // Act
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldNotHaveValidationErrorFor(request => request.Wallet);
+        result.ShouldNotHaveValidationErrorFor(request => request.Sender);
     }
 
     [Theory]

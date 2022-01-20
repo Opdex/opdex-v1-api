@@ -18,7 +18,6 @@ public class BlockResponseModel
     /// Block number.
     /// </summary>
     /// <example>500000</example>
-    [Range(1, double.MaxValue)]
     public ulong Height { get; set; }
 
     /// <summary>

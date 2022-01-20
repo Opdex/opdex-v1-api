@@ -38,7 +38,7 @@ public class AddTokenTests
         // Arrange
         Address token = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDda3";
 
-        var request = new AddTokenRequest { TokenAddress = token };
+        var request = new AddTokenRequest { Token = token };
         var cancellationToken = new CancellationTokenSource().Token;
 
         var responseBody = new TokenResponseModel();

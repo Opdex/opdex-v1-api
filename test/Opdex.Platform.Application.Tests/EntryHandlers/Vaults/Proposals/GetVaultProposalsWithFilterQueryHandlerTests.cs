@@ -42,7 +42,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
     public async Task Handle_RetrieveVaultByAddressQuery_Send()
     {
         // Arrange
-        var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
+        var vaultAddress = new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G");
         var cursor = new VaultProposalsCursor(default, default, default, default, default, default);
         var request = new GetVaultProposalsWithFilterQuery(vaultAddress, cursor);
         var cancellationToken = new CancellationTokenSource().Token;
@@ -66,7 +66,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
     public async Task Handle_RetrieveVaultProposalsWithFilterQuery_Send()
     {
         // Arrange
-        var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
+        var vaultAddress = new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G");
         var cursor = new VaultProposalsCursor(default, default, default, default, default, default);
         var request = new GetVaultProposalsWithFilterQuery(vaultAddress, cursor);
         var cancellationToken = new CancellationTokenSource().Token;
@@ -93,7 +93,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
     public async Task Handle_ProposalsRetrieved_MapResults()
     {
         // Arrange
-        var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
+        var vaultAddress = new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G");
         var cursor = new VaultProposalsCursor(default, default, default, default, default, default);
         var request = new GetVaultProposalsWithFilterQuery(vaultAddress, cursor);
 
@@ -122,7 +122,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
     public async Task Handle_LessThanLimitPlusOneResults_RemoveZero()
     {
         // Arrange
-        var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
+        var vaultAddress = new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G");
         var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 3, PagingDirection.Backward, (300000, 55));
         var request = new GetVaultProposalsWithFilterQuery(vaultAddress, cursor);
 
@@ -152,7 +152,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
     public async Task Handle_LimitPlusOneResultsPagingBackward_RemoveFirst()
     {
         // Arrange
-        var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
+        var vaultAddress = new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G");
         var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Backward, (300000, 55));
         var request = new GetVaultProposalsWithFilterQuery(vaultAddress, cursor);
 
@@ -183,7 +183,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
     public async Task Handle_LimitPlusOneResultsPagingForward_RemoveLast()
     {
         // Arrange
-        var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
+        var vaultAddress = new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G");
         var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Forward, (300000, 55));
         var request = new GetVaultProposalsWithFilterQuery(vaultAddress, cursor);
 
@@ -214,7 +214,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
     public async Task Handle_FirstRequestInPagedResults_ReturnCursor()
     {
         // Arrange
-        var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
+        var vaultAddress = new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G");
         var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Forward, (default, default));
         var request = new GetVaultProposalsWithFilterQuery(vaultAddress, cursor);
 
@@ -245,7 +245,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
     public async Task Handle_PagingForwardWithMoreResults_ReturnCursor()
     {
         // Arrange
-        var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
+        var vaultAddress = new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G");
         var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Forward, (300000, 50));
         var request = new GetVaultProposalsWithFilterQuery(vaultAddress, cursor);
 
@@ -276,7 +276,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
     public async Task Handle_PagingBackwardWithMoreResults_ReturnCursor()
     {
         // Arrange
-        var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
+        var vaultAddress = new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G");
         var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Backward, (300000, 50));
         var request = new GetVaultProposalsWithFilterQuery(vaultAddress, cursor);
 
@@ -307,7 +307,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
     public async Task Handle_PagingForwardLastPage_ReturnCursor()
     {
         // Arrange
-        var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
+        var vaultAddress = new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G");
         var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Forward, (300000, 50));
         var request = new GetVaultProposalsWithFilterQuery(vaultAddress, cursor);
 
@@ -336,7 +336,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
     public async Task Handle_PagingBackwardLastPage_ReturnCursor()
     {
         // Arrange
-        var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
+        var vaultAddress = new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G");
         var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Backward, (300000, 50));
         var request = new GetVaultProposalsWithFilterQuery(vaultAddress, cursor);
 

@@ -18,7 +18,7 @@ public class CreateLiquidityPoolQuoteRequest
     /// <summary>
     /// Address of the market contract to add a liquidity pool to.
     /// </summary>
-    /// <example>t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH</example>
+    /// <example>t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb</example>
     [Required]
     public Address Market { get; set; }
 }

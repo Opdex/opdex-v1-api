@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace Opdex.Platform.WebApi.Models.Responses.Tokens;
 
 /// <summary>
@@ -11,7 +9,6 @@ public class TokenSummaryResponseModel
     /// Calculated token price in USD.
     /// </summary>
     /// <example>"4.25"</example>
-    [Range(0, double.MaxValue)]
     public decimal PriceUsd { get; set; }
 
     /// <summary>
@@ -24,6 +21,5 @@ public class TokenSummaryResponseModel
     /// The block which the token was last updated.
     /// </summary>
     /// <example>500000</example>
-    [Range(1, double.MaxValue)]
     public ulong ModifiedBlock { get; set; }
 }

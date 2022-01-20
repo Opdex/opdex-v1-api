@@ -49,6 +49,5 @@ public class AddLiquidityQuoteRequest
     /// </summary>
     /// <remarks>A 0 deadline is equivalent to no deadline. Anything else must be greater than the current chain height.</remarks>
     /// <example>0</example>
-    [Range(0, double.MaxValue)]
     public ulong Deadline { get; set; }
 }

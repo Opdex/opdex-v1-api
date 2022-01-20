@@ -113,8 +113,8 @@ public class PlatformWebApiMapperProfile : Profile
         CreateMap<LiquidityPoolDto, LiquidityPoolResponseModel>()
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
-            .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee))
-            .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src))
+            .ForMember(dest => dest.TransactionFeePercent, opt => opt.MapFrom(src => src.TransactionFee))
+            .ForMember(dest => dest.Tokens, opt => opt.MapFrom(src => src))
             .ForMember(dest => dest.MiningPool, opt => opt.MapFrom(src => src.MiningPool))
             .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
             .ForAllOtherMembers(opt => opt.Ignore());
@@ -257,7 +257,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.AuthProviders, opt => opt.MapFrom(src => src.AuthProviders))
             .ForMember(dest => dest.AuthTraders, opt => opt.MapFrom(src => src.AuthTraders))
             .ForMember(dest => dest.MarketFeeEnabled, opt => opt.MapFrom(src => src.MarketFeeEnabled))
-            .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee))
+            .ForMember(dest => dest.TransactionFeePercent, opt => opt.MapFrom(src => src.TransactionFee))
             .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
             .ForAllOtherMembers(opt => opt.Ignore());
 

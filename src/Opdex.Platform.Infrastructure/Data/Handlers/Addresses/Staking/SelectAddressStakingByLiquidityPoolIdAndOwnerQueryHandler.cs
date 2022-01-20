@@ -48,7 +48,7 @@ public class SelectAddressStakingByLiquidityPoolIdAndOwnerQueryHandler
 
         if (request.FindOrThrow && result == null)
         {
-            throw new NotFoundException($"{nameof(AddressStaking)} not found.");
+            throw new NotFoundException($"Staking position not found.");
         }
 
         return result == null ? null : _mapper.Map<AddressStaking>(result);

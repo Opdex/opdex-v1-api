@@ -12,6 +12,5 @@ public class RewindRequest
     /// </summary>
     /// <example>500000</example>
     [Required]
-    [Range(1, double.MaxValue)]
     public ulong Block { get; set; }
 }

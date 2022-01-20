@@ -18,7 +18,7 @@ public class TransactionFilterParametersTests
         var filters = new TransactionFilterParameters();
 
         // Assert
-        filters.Wallet.Should().Be(Address.Empty);
+        filters.Sender.Should().Be(Address.Empty);
         filters.Contracts.Should().BeEquivalentTo(Enumerable.Empty<Address>());
         filters.EventTypes.Should().BeEquivalentTo(Enumerable.Empty<TransactionEventType>());
         filters.Direction.Should().Be(default(SortDirectionType));
@@ -31,7 +31,7 @@ public class TransactionFilterParametersTests
         // Arrange
         var filters = new TransactionFilterParameters
         {
-            Wallet = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm"),
+            Sender = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm"),
             Contracts = new Address[] { new Address("tSJ9RArXP9BNJ8dV73owwyQjStr3ZMoHVC") },
             EventTypes = new TransactionEventType[] { TransactionEventType.ChangeMarketPermissionEvent, TransactionEventType.CreateVaultCertificateEvent },
             Limit = 20,
@@ -42,7 +42,7 @@ public class TransactionFilterParametersTests
         var cursor = filters.BuildCursor();
 
         // Assert
-        cursor.Wallet.Should().Be(filters.Wallet);
+        cursor.Wallet.Should().Be(filters.Sender);
         cursor.Contracts.Should().BeEquivalentTo(filters.Contracts);
         cursor.EventTypes.Should().BeEquivalentTo(filters.EventTypes);
         cursor.SortDirection.Should().Be(filters.Direction);

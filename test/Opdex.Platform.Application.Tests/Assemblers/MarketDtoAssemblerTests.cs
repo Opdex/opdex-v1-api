@@ -37,13 +37,14 @@ public class MarketDtoAssemblerTests
     public async Task Assemble_RetrieveMarketSummaryByMarketIdQuery_Send()
     {
         // Arrange
-        var market = new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25);
+        var market = new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 20, 25);
 
         // Act
         try
         {
             await _assembler.Assemble(market);
-        } catch {}
+        }
+        catch { }
 
         // Assert
         _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveMarketSummaryByMarketIdQuery>(query => query.MarketId == market.Id),
@@ -54,7 +55,7 @@ public class MarketDtoAssemblerTests
     public async Task Assemble_RetrieveTokenByAddressQuery_CRS_Send()
     {
         // Arrange
-        var market = new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25);
+        var market = new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 20, 25);
         var summary = new MarketSummary(10, 25);
 
         _mediatorMock.Setup(callTo => callTo.Send(It.Is<RetrieveMarketSummaryByMarketIdQuery>(query => query.MarketId == market.Id),
@@ -63,7 +64,8 @@ public class MarketDtoAssemblerTests
         try
         {
             await _assembler.Assemble(market);
-        } catch {}
+        }
+        catch { }
 
         // Assert
         _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveTokenByAddressQuery>(query => query.Address == Address.Cirrus),
@@ -74,7 +76,7 @@ public class MarketDtoAssemblerTests
     public async Task Assemble_AssembleToken_CRS_Send()
     {
         // Arrange
-        var market = new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25);
+        var market = new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 20, 25);
         var summary = new MarketSummary(10, 25);
         var crs = new Token(1, "CRS", "Cirrus", "CRS", 8, 100_000_000, new UInt256("2100000000000000"), 10, 11);
 
@@ -87,7 +89,8 @@ public class MarketDtoAssemblerTests
         try
         {
             await _assembler.Assemble(market);
-        } catch {}
+        }
+        catch { }
 
         // Assert
         _tokenAssemblerMock.Verify(callTo => callTo.Assemble(crs), Times.Once);
@@ -97,7 +100,7 @@ public class MarketDtoAssemblerTests
     public async Task Assemble_RetrieveTokenByIdQuery_StakingToken_Send()
     {
         // Arrange
-        var market = new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25);
+        var market = new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 1, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 20, 25);
         var summary = new MarketSummary(10, 25);
         var crs = new Token(1, "CRS", "Cirrus", "CRS", 8, 100_000_000, new UInt256("2100000000000000"), 10, 11);
 
@@ -113,7 +116,8 @@ public class MarketDtoAssemblerTests
         try
         {
             await _assembler.Assemble(market);
-        } catch {}
+        }
+        catch { }
 
         // Assert
         _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveTokenByIdQuery>(query => query.TokenId == market.StakingTokenId),
@@ -124,7 +128,7 @@ public class MarketDtoAssemblerTests
     public async Task Assemble_AssembleMarketToken_Send()
     {
         // Arrange
-        var market = new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 2, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25);
+        var market = new Market(10, "t3eYNv5BL2FAC3iS1PEGC4VsovkDgib1MD", 2, 5, Address.Empty, new Address("t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G"), false, false, false, 3, true, 20, 25);
         var summary = new MarketSummary(10, 25);
         var crs = new Token(1, "CRS", "Cirrus", "CRS", 8, 100_000_000, new UInt256("2100000000000000"), 10, 11);
         var stakingToken = new Token(5, "t5BL2FAC3iS1PEGC43eYNvVsovkDgib1MD", "Opdex Token", "ODX", 8, 100_000_000, new UInt256("2100000000000000"), 10, 11);
@@ -144,7 +148,8 @@ public class MarketDtoAssemblerTests
         try
         {
             await _assembler.Assemble(market);
-        } catch {}
+        }
+        catch { }
 
         // Assert
         _marketTokenAssemblerMock.Verify(callTo => callTo.Assemble(It.Is<MarketToken>(t => t.Id == stakingToken.Id)), Times.Once);
