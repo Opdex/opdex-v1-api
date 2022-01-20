@@ -39,11 +39,10 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
                 MAX(t.{nameof(TokenEntity.CreatedBlock)}) AS {nameof(TokenEntity.CreatedBlock)},
                 MAX(t.{nameof(TokenEntity.ModifiedBlock)}) AS {nameof(TokenEntity.ModifiedBlock)},
                 true as {Split},
-                ANY_VALUE(ts.{nameof(TokenSummaryEntity.Id)}) AS Id,
-                ROUND(AVG(ts.{nameof(TokenSummaryEntity.PriceUsd)}), 8) AS {nameof(TokenSummaryEntity.PriceUsd)},
-                ROUND(AVG(ts.{nameof(TokenSummaryEntity.DailyPriceChangePercent)}), 8) AS {nameof(TokenSummaryEntity.DailyPriceChangePercent)},
-                MAX(ts.{nameof(TokenSummaryEntity.CreatedBlock)}) AS {nameof(TokenSummaryEntity.CreatedBlock)},
-                MAX(ts.{nameof(TokenSummaryEntity.ModifiedBlock)}) AS {nameof(TokenSummaryEntity.ModifiedBlock)}
+                ROUND(AVG(ts.{nameof(TokenSummaryEntity.PriceUsd)}), 8) AS Summary{nameof(TokenSummaryEntity.PriceUsd)},
+                ROUND(AVG(ts.{nameof(TokenSummaryEntity.DailyPriceChangePercent)}), 8) AS Summary{nameof(TokenSummaryEntity.DailyPriceChangePercent)},
+                MAX(ts.{nameof(TokenSummaryEntity.CreatedBlock)}) AS Summary{nameof(TokenSummaryEntity.CreatedBlock)},
+                MAX(ts.{nameof(TokenSummaryEntity.ModifiedBlock)}) AS Summary{nameof(TokenSummaryEntity.ModifiedBlock)}
             FROM token t
             LEFT JOIN token_summary ts
                 ON ts.{nameof(TokenSummaryEntity.TokenId)} = t.{nameof(TokenEntity.Id)}
@@ -56,7 +55,24 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
     private const string InnerQuery = "{InnerQuery}";
     private const string OrderBySort = "{OrderBySort}";
 
-    private static readonly string PagingBackwardQuery = @$"SELECT * FROM ({InnerQuery}) r {OrderBySort};";
+    private static readonly string PagingQuery =
+        @$"SELECT
+                {nameof(TokenEntity.Id)},
+                {nameof(TokenEntity.Address)},
+                {nameof(TokenEntity.Name)},
+                {nameof(TokenEntity.Symbol)},
+                {nameof(TokenEntity.Decimals)},
+                {nameof(TokenEntity.Sats)},
+                {nameof(TokenEntity.TotalSupply)},
+                {nameof(TokenEntity.CreatedBlock)},
+                {nameof(TokenEntity.ModifiedBlock)},
+                {Split},
+                Summary{nameof(TokenSummaryEntity.PriceUsd)} AS {nameof(TokenSummaryEntity.PriceUsd)},
+                Summary{nameof(TokenSummaryEntity.DailyPriceChangePercent)} AS {nameof(TokenSummaryEntity.DailyPriceChangePercent)},
+                Summary{nameof(TokenSummaryEntity.CreatedBlock)} AS {nameof(TokenSummaryEntity.CreatedBlock)},
+                Summary{nameof(TokenSummaryEntity.ModifiedBlock)} AS {nameof(TokenSummaryEntity.ModifiedBlock)}
+            FROM ({InnerQuery}) r";
+    private static readonly string PagingBackwardQuery = @$"{PagingQuery} {OrderBySort}";
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
@@ -77,8 +93,8 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
             (tokenEntity, summary) =>
             {
                 var token = _mapper.Map<Token>(tokenEntity);
-                // if there is no summary Id will be 0
-                if (summary.Id > 0) token.SetSummary(_mapper.Map<TokenSummary>(summary));
+                // if there is no summary CreatedBlock will be 0
+                if (summary.CreatedBlock > 0) token.SetSummary(_mapper.Map<TokenSummary>(summary));
                 return token;
             }, splitOn: Split);
 
@@ -170,7 +186,10 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
             .Replace(OrderBy, orderBy)
             .Replace(Limit, limit);
 
-        if (request.Cursor.PagingDirection == PagingDirection.Forward) return $"{query};";
+        if (request.Cursor.PagingDirection == PagingDirection.Forward)
+        {
+            return PagingQuery.Replace(InnerQuery, query);
+        }
 
         // re-sort back into requested order
         return PagingBackwardQuery.Replace(InnerQuery, query)
