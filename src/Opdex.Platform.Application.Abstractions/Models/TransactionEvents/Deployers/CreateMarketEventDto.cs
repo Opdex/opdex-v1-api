@@ -11,7 +11,7 @@ public class CreateMarketEventDto : TransactionEventDto
     public bool AuthPoolCreators { get; set; }
     public bool AuthProviders { get; set; }
     public bool AuthTraders { get; set; }
-    public uint TransactionFee { get; set; }
+    public decimal TransactionFeePercent { get; set; }
     public Address StakingToken { get; set; }
     public bool EnableMarketFee { get; set; }
     public override TransactionEventType EventType => TransactionEventType.CreateMarketEvent;

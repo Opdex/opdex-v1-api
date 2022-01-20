@@ -12,7 +12,7 @@ public class CreateStandardMarketQuoteRequest
     public Address Owner { get; set; }
 
     [Required]
-    public uint TransactionFee { get; set; }
+    public decimal TransactionFeePercent { get; set; }
 
     [Required]
     public bool AuthPoolCreators { get; set; }

@@ -44,10 +44,10 @@ public class CreateMarketEvent : TransactionEvent
     public bool AuthTraders { get; set; }
 
     /// <summary>
-    /// Market transaction fee. This is a value between 0-10 which correlates to a fee of between 0-1%.
+    /// Market transaction fee. This is a value between 0-1%.
     /// </summary>
-    /// <example>3</example>
-    public uint TransactionFee { get; set; }
+    /// <example>0.3</example>
+    public decimal TransactionFeePercent { get; set; }
 
     /// <summary>
     /// Address of the staking token.

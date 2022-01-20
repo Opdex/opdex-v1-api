@@ -28,10 +28,12 @@ public class CreateCreateStandardMarketTransactionQuoteCommandHandler : BaseTran
     {
         var deployer = await _mediator.Send(new RetrieveActiveDeployerQuery(), cancellationToken);
 
+        uint transactionFee = (uint)(request.TransactionFeePercent * 10);
+
         var requestParameters = new List<TransactionQuoteRequestParameter>
         {
             new TransactionQuoteRequestParameter("Market Owner", new SmartContractMethodParameter(request.Owner)),
-            new TransactionQuoteRequestParameter("Transaction Fee", new SmartContractMethodParameter(request.TransactionFee)),
+            new TransactionQuoteRequestParameter("Transaction Fee", new SmartContractMethodParameter(transactionFee)),
             new TransactionQuoteRequestParameter("Authorize Providers", new SmartContractMethodParameter(request.AuthLiquidityProviders)),
             new TransactionQuoteRequestParameter("Authorize Pool Creators", new SmartContractMethodParameter(request.AuthPoolCreators)),
             new TransactionQuoteRequestParameter("Authorize Traders", new SmartContractMethodParameter(request.AuthTraders)),

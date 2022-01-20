@@ -14,7 +14,7 @@ public class MarketDto
     public bool AuthPoolCreators { get; set; }
     public bool AuthProviders { get; set; }
     public bool AuthTraders { get; set; }
-    public decimal TransactionFee { get; set; }
+    public decimal TransactionFeePercent { get; set; }
     public bool MarketFeeEnabled { get; set; }
     public MarketSummaryDto Summary { get; set; }
 }

@@ -257,7 +257,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.AuthProviders, opt => opt.MapFrom(src => src.AuthProviders))
             .ForMember(dest => dest.AuthTraders, opt => opt.MapFrom(src => src.AuthTraders))
             .ForMember(dest => dest.MarketFeeEnabled, opt => opt.MapFrom(src => src.MarketFeeEnabled))
-            .ForMember(dest => dest.TransactionFeePercent, opt => opt.MapFrom(src => src.TransactionFee))
+            .ForMember(dest => dest.TransactionFeePercent, opt => opt.MapFrom(src => src.TransactionFeePercent))
             .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
             .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -473,7 +473,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.AuthPoolCreators, opt => opt.MapFrom(src => src.AuthPoolCreators))
             .ForMember(dest => dest.AuthProviders, opt => opt.MapFrom(src => src.AuthProviders))
             .ForMember(dest => dest.AuthTraders, opt => opt.MapFrom(src => src.AuthTraders))
-            .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee))
+            .ForMember(dest => dest.TransactionFeePercent, opt => opt.MapFrom(src => src.TransactionFeePercent))
             .ForMember(dest => dest.StakingToken, opt => opt.MapFrom(src => src.StakingToken))
             .ForMember(dest => dest.EnableMarketFee, opt => opt.MapFrom(src => src.EnableMarketFee));
 

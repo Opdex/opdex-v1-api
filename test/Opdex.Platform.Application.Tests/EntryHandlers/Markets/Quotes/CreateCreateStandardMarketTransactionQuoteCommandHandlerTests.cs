@@ -67,13 +67,13 @@ public class CreateCreateStandardMarketTransactionQuoteCommandHandlerTests
         bool enableMarketFee = true;
         FixedDecimal crsToSend = FixedDecimal.Zero;
 
-        var command = new CreateCreateStandardMarketTransactionQuoteCommand(deployerOwner, marketOwner, fee, authPoolCreators, authProviders, authTraders, enableMarketFee);
+        var command = new CreateCreateStandardMarketTransactionQuoteCommand(deployerOwner, marketOwner, (decimal)(fee) / 10, authPoolCreators, authProviders, authTraders, enableMarketFee);
         var cancellationToken = new CancellationTokenSource().Token;
 
         var expectedParameters = new List<TransactionQuoteRequestParameter>
         {
             new TransactionQuoteRequestParameter("Market Owner", new SmartContractMethodParameter(command.Owner)),
-            new TransactionQuoteRequestParameter("Transaction Fee", new SmartContractMethodParameter(command.TransactionFee)),
+            new TransactionQuoteRequestParameter("Transaction Fee", new SmartContractMethodParameter(fee)),
             new TransactionQuoteRequestParameter("Authorize Providers", new SmartContractMethodParameter(command.AuthLiquidityProviders)),
             new TransactionQuoteRequestParameter("Authorize Pool Creators", new SmartContractMethodParameter(command.AuthPoolCreators)),
             new TransactionQuoteRequestParameter("Authorize Traders", new SmartContractMethodParameter(command.AuthTraders)),
