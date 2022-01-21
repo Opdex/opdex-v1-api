@@ -26,16 +26,16 @@ public class CreateNotifyUserOfTransactionBroadcastCommandHandler : IRequestHand
         var transaction = await _mediator.Send(new RetrieveTransactionByHashQuery(request.TransactionHash, false), cancellationToken);
         if (transaction is not null) return false;
 
-        // find transaction on node, this isn't _really_ the sender, is the change output address
-        var sender = await _mediator.Send(new RetrieveCirrusUnverifiedTransactionSenderByHashQuery(request.TransactionHash), cancellationToken);
+        // find transaction on node, this isn't _really_ the sender, is the change output address, can throw not found if the transaction is not found
+        var changeAddress = await _mediator.Send(new RetrieveCirrusUnverifiedTransactionSenderByHashQuery(request.TransactionHash), cancellationToken);
 
-        // If there is a found "sender" above, it must match the provided sender through the callback
-        if (sender != Address.Empty && sender != request.Sender) return false;
+        // If a change address is found and it doesn't match the alleged sender, don't notify
+        if (changeAddress != Address.Empty && changeAddress != request.Sender) return false;
 
-        // If a "sender" wasn't found, just return out the sender sent
-        sender = sender == Address.Empty ? request.Sender : sender;
+        // If a change address wasn't found, trust the requests sender, notify anyways
+        var senderToNotify = changeAddress == Address.Empty ? request.Sender : changeAddress;
 
-        await _mediator.Send(new MakeNotifyUserOfTransactionBroadcastCommand(sender, request.TransactionHash), cancellationToken);
+        await _mediator.Send(new MakeNotifyUserOfTransactionBroadcastCommand(senderToNotify, request.TransactionHash), cancellationToken);
         return true;
     }
 }

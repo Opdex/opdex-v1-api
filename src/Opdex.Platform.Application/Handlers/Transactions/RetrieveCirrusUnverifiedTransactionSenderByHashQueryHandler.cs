@@ -11,9 +11,6 @@ namespace Opdex.Platform.Application.Handlers.Transactions;
 
 public class RetrieveCirrusUnverifiedTransactionSenderByHashQueryHandler : IRequestHandler<RetrieveCirrusUnverifiedTransactionSenderByHashQuery, Address>
 {
-    private const int MaxRetries = 3;
-    private const int Backoff = 5;
-
     private readonly IMediator _mediator;
 
     public RetrieveCirrusUnverifiedTransactionSenderByHashQueryHandler(IMediator mediator)
@@ -23,20 +20,8 @@ public class RetrieveCirrusUnverifiedTransactionSenderByHashQueryHandler : IRequ
 
     public async Task<Address> Handle(RetrieveCirrusUnverifiedTransactionSenderByHashQuery request, CancellationToken cancellationToken)
     {
-        int attempt = 0;
+        var rawTransaction = await _mediator.Send(new CallCirrusGetRawTransactionQuery(request.TransactionHash), cancellationToken);
 
-        // Retry up to MaxRetries times with the configured Backoff in seconds in between attempts
-        while (++attempt <= MaxRetries && !cancellationToken.IsCancellationRequested)
-        {
-            if (attempt > 1) await Task.Delay(TimeSpan.FromSeconds(Backoff), cancellationToken);
-            var transaction = await _mediator.Send(new CallCirrusGetRawTransactionQuery(request.TransactionHash), cancellationToken);
-
-            if (transaction is null) continue;
-
-            return transaction.Vout.SelectMany(vOut => vOut?.ScriptPubKey.Addresses).FirstOrDefault();
-        }
-
-        return Address.Empty;
-
+        return rawTransaction.Vout.SelectMany(vOut => vOut?.ScriptPubKey.Addresses).FirstOrDefault();
     }
 }
