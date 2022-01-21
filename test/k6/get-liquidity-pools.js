@@ -27,5 +27,5 @@ export default () => {
     var authRequest = http.post(`${API_BASE_URL}/auth/authorize?wallet=${WALLET}`);
 
     const params = { headers: { 'Authorization': `Bearer ${authRequest.body}` } };
-    http.get(`${API_BASE_URL}/liquidity-pools?markets=${MARKET}&miningFilter=Enabled&orderBy=Liquidity&limit=4&direction=DESC`, params)
+    http.get(`${API_BASE_URL}/liquidity-pools?markets=${MARKET}&miningStatus=Enabled&orderBy=Liquidity&limit=4&direction=DESC`, params)
 }
