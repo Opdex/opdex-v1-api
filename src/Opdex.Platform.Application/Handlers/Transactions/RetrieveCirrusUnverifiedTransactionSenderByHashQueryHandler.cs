@@ -3,6 +3,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Transactions;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,9 +31,9 @@ public class RetrieveCirrusUnverifiedTransactionSenderByHashQueryHandler : IRequ
             if (attempt > 1) await Task.Delay(TimeSpan.FromSeconds(Backoff), cancellationToken);
             var transaction = await _mediator.Send(new CallCirrusGetRawTransactionQuery(request.TransactionHash), cancellationToken);
 
-            if (transaction is null || transaction.Vout?.Length == 0 || transaction.Vout?[0].ScriptPubKey?.Addresses?.Length != 1) continue;
+            if (transaction is null) continue;
 
-            return transaction.Vout[0].ScriptPubKey.Addresses[0];
+            return transaction.Vout.SelectMany(vOut => vOut?.ScriptPubKey.Addresses).FirstOrDefault();
         }
 
         return Address.Empty;
