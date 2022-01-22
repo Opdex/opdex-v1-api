@@ -21,8 +21,6 @@ public class AuthConfiguration : IValidatable
 public class AuthProvider
 {
     public string SigningKey { get; set; }
-    public string CertificateThumbprint { get; set; }
-    public string ApiKey { get; set; }
 }
 
 public class StratisSignatureAuthConfiguration
