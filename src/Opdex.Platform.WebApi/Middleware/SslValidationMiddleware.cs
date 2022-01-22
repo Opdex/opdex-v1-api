@@ -26,7 +26,7 @@ public class SslValidationMiddleware
             // If the request is using the whitelisted certificate, attach the designated API key
             if (isOpdexCertificate)
             {
-                httpContext.Response.Headers.Add("OPDEX-API-KEY", authConfig.Opdex.ApiKey);
+                httpContext.Request.Headers.Add("OPDEX-API-KEY", authConfig.Opdex.ApiKey);
             }
             // Temporary for testing -- Should not return forbidden for any production network
             else
