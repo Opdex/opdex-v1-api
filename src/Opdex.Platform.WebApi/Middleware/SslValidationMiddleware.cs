@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Extensions;
 using System;
-using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace Opdex.Platform.WebApi.Middleware;
@@ -22,7 +22,12 @@ public class SslValidationMiddleware
         {
             // Check if the client connection certificate thumbprint matches ours
             var certificate = await httpContext.Connection.GetClientCertificateAsync();
-            bool isOpdexCertificate = certificate is not null && certificate.Thumbprint == authConfig.Opdex.CertificateThumbprint;
+
+            var header = httpContext.Request.Headers["X-ARR-ClientCert"];
+            var thumbprint = TryGetThumbprint(header);
+
+            bool isOpdexCertificate = thumbprint.HasValue() || (certificate is not null && certificate.Thumbprint == authConfig.Opdex.CertificateThumbprint);
+
 
             // If the request is using the whitelisted certificate, attach the designated API key
             if (isOpdexCertificate)
@@ -42,5 +47,20 @@ public class SslValidationMiddleware
         }
 
         await _next(httpContext);
+    }
+
+    private static string TryGetThumbprint(string header)
+    {
+        if (string.IsNullOrEmpty(header)) return string.Empty;
+        try
+        {
+            byte[] clientCertBytes = Convert.FromBase64String(header);
+            var certificate = new X509Certificate2(clientCertBytes);
+            return certificate.Thumbprint;
+        }
+        catch (Exception)
+        {
+            return string.Empty;
+        }
     }
 }

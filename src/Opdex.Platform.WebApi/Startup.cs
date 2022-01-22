@@ -39,6 +39,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using FluentValidation.AspNetCore;
 using AspNetCoreRateLimit;
+using Microsoft.AspNetCore.Authentication.Certificate;
+using Microsoft.AspNetCore.HttpOverrides;
 using Opdex.Platform.WebApi.Exceptions;
 using Opdex.Platform.Common.Encryption;
 using Microsoft.AspNetCore.Mvc;
@@ -182,6 +184,27 @@ public class Startup
         services.AddScoped<IApplicationContext, ApplicationContext>();
 
 
+        // Start Test Certificate Forwarding //
+
+        // Configure the application to use the protocol and client ip address forwared by the frontend load balancer
+        services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders =
+                ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            // Only loopback proxies are allowed by default. Clear that restriction to enable this explicit configuration.
+            options.KnownNetworks.Clear();
+            options.KnownProxies.Clear();
+        });
+
+        // Configure the application to client certificate forwarded the frontend load balancer
+        services.AddCertificateForwarding(options => { options.CertificateHeader = "X-ARR-ClientCert"; });
+
+        // Add certificate authentication so when authorization is performed the user will be created from the certificate
+        services.AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme).AddCertificate();
+
+        // End Test Certificate Forwarding //
+
+
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -247,6 +270,11 @@ public class Startup
             app.UseDeveloperExceptionPage();
             IdentityModelEventSource.ShowPII = true;
         }
+        else
+        {
+            app.UseHsts();
+            app.UseHttpsRedirection();
+        }
 
         app.UseSerilogRequestLogging();
         app.UseProblemDetails();
@@ -256,6 +284,8 @@ public class Startup
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials());
+        app.UseForwardedHeaders();
+        app.UseCertificateForwarding();
         app.UseRouting();
         app.UseMiddleware<SslValidationMiddleware>();
         app.UseIpRateLimiting();
