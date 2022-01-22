@@ -31,8 +31,13 @@ public class SslValidationMiddleware
             // Temporary for testing -- Should not return forbidden for any production network
             else
             {
-                httpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                return;
+                var path = httpContext.Request.Path.Value ?? string.Empty;
+
+                if (!path.HasValue() || !path.Contains("status"))
+                {
+                    httpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                    return;
+                }
             }
         }
 
