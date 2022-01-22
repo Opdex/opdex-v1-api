@@ -250,7 +250,6 @@ public class Startup
 
         app.UseSerilogRequestLogging();
         app.UseProblemDetails();
-        app.UseMiddleware<SslValidationMiddleware>();
         app.UseMiddleware<RedirectToResourceMiddleware>();
         app.UseCors(options => options
                         .SetIsOriginAllowed(host => true)
@@ -258,6 +257,7 @@ public class Startup
                         .AllowAnyMethod()
                         .AllowCredentials());
         app.UseRouting();
+        app.UseMiddleware<SslValidationMiddleware>();
         app.UseIpRateLimiting();
         app.UseAuthentication();
         app.UseAuthorization();

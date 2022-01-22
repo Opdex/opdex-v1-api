@@ -21,7 +21,8 @@ public class SslValidationMiddleware
         if (authConfig.Opdex.CertificateThumbprint.HasValue())
         {
             // Check if the client connection certificate thumbprint matches ours
-            bool isOpdexCertificate = httpContext.Connection.ClientCertificate?.Thumbprint == authConfig.Opdex.CertificateThumbprint;
+            var certificate = await httpContext.Connection.GetClientCertificateAsync();
+            bool isOpdexCertificate = certificate is not null && certificate.Thumbprint == authConfig.Opdex.CertificateThumbprint;
 
             // If the request is using the whitelisted certificate, attach the designated API key
             if (isOpdexCertificate)
@@ -35,8 +36,7 @@ public class SslValidationMiddleware
 
                 if (!path.HasValue() || !path.Contains("status"))
                 {
-                    httpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                    return;
+                    httpContext.Response.Headers.Add("INVALID-CERTIFICATE", "true");
                 }
             }
         }
