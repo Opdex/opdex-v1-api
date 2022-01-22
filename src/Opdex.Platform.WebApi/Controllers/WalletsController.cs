@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Allowances;
@@ -18,7 +17,6 @@ using Opdex.Platform.WebApi.Models.Responses.Wallet;
 namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("v{version:apiVersion}/wallets")]
 [ApiVersion("1")]
 public class WalletsController : ControllerBase

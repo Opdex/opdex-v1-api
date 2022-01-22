@@ -73,7 +73,7 @@ public class Startup
             // Serilog.AspNetCore.RequestLoggingMiddleware does this better although exception is lost
             // See https://github.com/serilog/serilog-aspnetcore/issues/270
             options.ShouldLogUnhandledException = (context, exception, problem) => problem.Status == 500;
-            options.Map<Common.Exceptions.InvalidDataException>(e => ProblemDetailsTemplates.CreateValidationProblemDetails(e.PropertyName, e.Message));
+            options.Map<InvalidDataException>(e => ProblemDetailsTemplates.CreateValidationProblemDetails(e.PropertyName, e.Message));
             options.Map<AlreadyIndexedException>(e => new StatusCodeProblemDetails(StatusCodes.Status400BadRequest) { Detail = e.Message });
             options.Map<NotFoundException>(e => new StatusCodeProblemDetails(StatusCodes.Status404NotFound) { Detail = e.Message });
             options.Map<TooManyRequestsException>((context, exception) =>
@@ -250,6 +250,7 @@ public class Startup
 
         app.UseSerilogRequestLogging();
         app.UseProblemDetails();
+        app.UseMiddleware<SslValidationMiddleware>();
         app.UseMiddleware<RedirectToResourceMiddleware>();
         app.UseCors(options => options
                         .SetIsOriginAllowed(host => true)
