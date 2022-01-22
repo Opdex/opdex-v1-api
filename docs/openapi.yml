@@ -6432,6 +6432,18 @@ paths:
                     - Invalid transaction state.
                 extensions:
                   traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          description: Raw transaction not found.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/404
+                title: Not Found
+                status: 404
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
         429:
           $ref: "#/components/responses/TooManyRequests"
         500:
