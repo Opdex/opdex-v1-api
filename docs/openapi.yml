@@ -1578,6 +1578,9 @@ components:
         transactionHash:
           $ref: "#/components/schemas/sha256"
           description: SHA-256 hash of the transaction
+        publicKey:
+          $ref: "#/components/schemas/address"
+          description:  The transaction sender's public key
     replayQuoteRequest:
       type: object
       description: Request to replay a previous quote at the current point in time
@@ -6410,6 +6413,7 @@ paths:
               $ref: "#/components/schemas/notifyBroadcastRequest"
             example:
               transactionHash: 402aa2241adb7b04d07d4dbc89f8aae72fa1c11f9bd2bd9013222cd774ed39fe
+              publicKey: tHYHem7cLKgoLkeb792yn4WayqKzLrjJak
       responses:
         204:
           description: The broadcast notification was sent
@@ -6425,7 +6429,7 @@ paths:
                 status: 400
                 errors:
                   transactionHash:
-                    - Transaction already mined.
+                    - Invalid transaction state.
                 extensions:
                   traceId: 00-00000000000000000000000000000000-0000000000000000-00
         429:

@@ -13,5 +13,9 @@ public class TransactionBroadcastNotificationRequest
     /// <example>402aa2241adb7b04d07d4dbc89f8aae72fa1c11f9bd2bd9013222cd774ed39fe</example>
     public Sha256 TransactionHash { get; set; }
 
+    /// <summary>
+    /// The transaction sender's public key
+    /// </summary>
+    /// <example>tHYHem7cLKgoLkeb792yn4WayqKzLrjJak</example>
     public Address PublicKey { get; set; }
 }
