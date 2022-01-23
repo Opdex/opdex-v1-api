@@ -16,25 +16,6 @@ public class TransactionBroadcastNotificationValidatorTests
     }
 
     [Theory]
-    [InlineData(0)]
-    public void TransactionHash_Invalid(ulong sha)
-    {
-        // Arrange
-        var publicKey = new Address("tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc");
-        var request = new TransactionBroadcastNotificationRequest
-        {
-            TransactionHash = new Sha256(sha),
-            PublicKey = publicKey
-        };
-
-        // Act
-        var result = _validator.TestValidate(request);
-
-        // Assert
-        result.ShouldHaveValidationErrorFor(request => request.TransactionHash);
-    }
-
-    [Theory]
     [InlineData("")]
     [InlineData(null)]
     [InlineData("  ")]
