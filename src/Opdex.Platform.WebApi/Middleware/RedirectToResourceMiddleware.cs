@@ -26,7 +26,7 @@ public class RedirectToResourceMiddleware
         }
         catch (TokenAlreadyIndexedException e)
         {
-            httpContext.Response.Headers.Add(HeaderNames.Location, $"/tokens/{e.Token}");
+            httpContext.Response.Headers.Add(HeaderNames.Location, $"tokens/{e.Token}");
             httpContext.Response.StatusCode = StatusCodes.Status303SeeOther;
             await httpContext.Response.CompleteAsync();
         }
