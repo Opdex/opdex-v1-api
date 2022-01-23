@@ -10,6 +10,7 @@ public class LiquidityPoolDto
     public string Name { get; set; }
     public Address Address { get; set; }
     public decimal TransactionFee { get; set; }
+    public Address Market { get; set; }
     public MarketTokenDto SrcToken { get; set; }
     public MarketTokenDto LpToken { get; set; }
     public TokenDto CrsToken { get; set; }
