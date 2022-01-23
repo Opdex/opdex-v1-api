@@ -8217,6 +8217,8 @@ paths:
           schema:
             $ref: "#/components/schemas/address"
           example: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+      security:
+        - opdexAuth: [ ]
       responses:
         200:
           description: Address balance refreshed

@@ -67,7 +67,9 @@ public class VaultsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault certificate paging results.</returns>
     [HttpGet("{vault}/certificates")]
-    public async Task<ActionResult<VaultCertificatesResponseModel>> GetCertificates([FromRoute] Address vault, [FromQuery] VaultCertificateFilterParameters filters, CancellationToken cancellationToken)
+    public async Task<ActionResult<VaultCertificatesResponseModel>> GetCertificates([FromRoute] Address vault,
+                                                                                    [FromQuery] VaultCertificateFilterParameters filters,
+                                                                                    CancellationToken cancellationToken)
     {
         var certificates = await _mediator.Send(new GetVaultCertificatesWithFilterQuery(vault, filters.BuildCursor()), cancellationToken);
         return Ok(_mapper.Map<VaultCertificatesResponseModel>(certificates));
@@ -95,7 +97,8 @@ public class VaultsController : ControllerBase
     /// <returns>Vault proposal pledge paging results.</returns>
     [HttpGet("{vault}/pledges")]
     public async Task<ActionResult<VaultProposalPledgesResponseModel>> GetVaultProposalPledges([FromRoute] Address vault,
-        [FromQuery] VaultProposalPledgeFilterParameters filters, CancellationToken cancellationToken)
+                                                                                               [FromQuery] VaultProposalPledgeFilterParameters filters,
+                                                                                               CancellationToken cancellationToken)
     {
         var vaults = await _mediator.Send(new GetVaultProposalPledgesWithFilterQuery(vault, filters.BuildCursor()), cancellationToken);
         return Ok(_mapper.Map<VaultProposalPledgesResponseModel>(vaults));
@@ -108,7 +111,8 @@ public class VaultsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault proposal paging results.</returns>
     [HttpGet("{vault}/proposals")]
-    public async Task<ActionResult<VaultProposalsResponseModel>> GetVaultProposals([FromRoute] Address vault, [FromQuery] VaultProposalFilterParameters filters,
+    public async Task<ActionResult<VaultProposalsResponseModel>> GetVaultProposals([FromRoute] Address vault,
+                                                                                   [FromQuery] VaultProposalFilterParameters filters,
                                                                                    CancellationToken cancellationToken)
     {
         var vaults = await _mediator.Send(new GetVaultProposalsWithFilterQuery(vault, filters.BuildCursor()), cancellationToken);
@@ -127,7 +131,8 @@ public class VaultsController : ControllerBase
                                                                                                  [FromBody] CreateCertificateVaultProposalQuoteRequest request,
                                                                                                  CancellationToken cancellationToken)
     {
-        var response = await _mediator.Send(new CreateVaultProposalCreateCertificateQuoteCommand(vault, request.Owner, request.Amount, request.Description, _context.Wallet), cancellationToken);
+        var response = await _mediator.Send(new CreateVaultProposalCreateCertificateQuoteCommand(vault, request.Owner, request.Amount,
+                                                                                                 request.Description, _context.Wallet), cancellationToken);
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
         return Ok(quote);
     }
@@ -144,7 +149,8 @@ public class VaultsController : ControllerBase
                                                                                                  [FromBody] RevokeCertificateVaultProposalQuoteRequest request,
                                                                                                  CancellationToken cancellationToken)
     {
-        var response = await _mediator.Send(new CreateVaultProposalRevokeCertificateQuoteCommand(vault, request.Owner, request.Description, _context.Wallet), cancellationToken);
+        var response = await _mediator.Send(new CreateVaultProposalRevokeCertificateQuoteCommand(vault, request.Owner, request.Description,
+                                                                                                 _context.Wallet), cancellationToken);
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
         return Ok(quote);
     }
@@ -161,7 +167,8 @@ public class VaultsController : ControllerBase
                                                                                              [FromBody] MinimumPledgeVaultProposalQuoteRequest request,
                                                                                              CancellationToken cancellationToken)
     {
-        var response = await _mediator.Send(new CreateVaultProposalMinimumPledgeQuoteCommand(vault, request.Amount, request.Description, _context.Wallet), cancellationToken);
+        var response = await _mediator.Send(new CreateVaultProposalMinimumPledgeQuoteCommand(vault, request.Amount, request.Description,
+                                                                                             _context.Wallet), cancellationToken);
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
         return Ok(quote);
     }
@@ -174,10 +181,12 @@ public class VaultsController : ControllerBase
     /// <returns>Vault proposal quote.</returns>
     [HttpPost("{vault}/proposals/minimum-vote")]
     [Authorize]
-    public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteProposeMinimumVote([FromRoute] Address vault, [FromBody] MinimumVoteVaultProposalQuoteRequest request,
+    public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteProposeMinimumVote([FromRoute] Address vault,
+                                                                                           [FromBody] MinimumVoteVaultProposalQuoteRequest request,
                                                                                            CancellationToken cancellationToken)
     {
-        var response = await _mediator.Send(new CreateVaultProposalMinimumVoteQuoteCommand(vault, request.Amount, request.Description, _context.Wallet), cancellationToken);
+        var response = await _mediator.Send(new CreateVaultProposalMinimumVoteQuoteCommand(vault, request.Amount, request.Description,
+                                                                                           _context.Wallet), cancellationToken);
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
         return Ok(quote);
     }

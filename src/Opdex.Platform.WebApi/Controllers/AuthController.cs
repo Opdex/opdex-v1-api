@@ -5,8 +5,6 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using System.Net;
-using Opdex.Platform.Common.Models;
 using System.Threading;
 using System.Threading.Tasks;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Admins;
@@ -69,7 +67,7 @@ public class AuthController : ControllerBase
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(),
-            Expires = DateTime.UtcNow.AddHours(1),
+            Expires = DateTime.UtcNow.AddHours(24),
             IssuedAt = DateTime.UtcNow,
             SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
         };
@@ -95,38 +93,5 @@ public class AuthController : ControllerBase
         await _mediator.Send(new NotifyUserOfSuccessfulAuthenticationCommand(connectionId, bearerToken), cancellationToken);
 
         return NoContent();
-    }
-
-    /// <summary>Authorize</summary>
-    /// <remarks>Authorizes access to a specific market</remarks>
-    /// <param name="wallet">The wallet public key of the user</param>
-    /// <returns>An access token</returns>
-    [HttpPost("authorize")]
-    public IActionResult Authorize([FromQuery] Address wallet)
-    {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authConfiguration.Opdex.SigningKey));
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(),
-            Expires = DateTime.UtcNow.AddHours(1),
-            IssuedAt = DateTime.UtcNow,
-            SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
-        };
-
-        if (wallet != Address.Empty)
-        {
-            tokenDescriptor.Subject.AddClaim(new Claim("wallet", wallet.ToString()));
-        }
-
-        // Validate Admin
-        if (Request.Headers.TryGetValue("OPDEX_ADMIN", out var adminKey))
-        {
-            if (_authConfiguration.AdminKey == adminKey) tokenDescriptor.Subject.AddClaim(new Claim("admin", "true"));
-            else return Unauthorized();
-        }
-
-        var jwt = tokenHandler.CreateToken(tokenDescriptor);
-        return new OkObjectResult(tokenHandler.WriteToken(jwt));
     }
 }

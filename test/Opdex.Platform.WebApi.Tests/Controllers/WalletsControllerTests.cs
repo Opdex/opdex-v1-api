@@ -11,6 +11,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Staking;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Controllers;
+using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Wallets;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
 using System.Threading;
@@ -21,6 +22,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers;
 
 public class WalletsControllerTests
 {
+    private readonly Mock<IApplicationContext> _contextMock;
     private readonly Mock<IMapper> _mapperMock;
     private readonly Mock<IMediator> _mediatorMock;
 
@@ -28,10 +30,11 @@ public class WalletsControllerTests
 
     public WalletsControllerTests()
     {
+        _contextMock = new Mock<IApplicationContext>();
         _mapperMock = new Mock<IMapper>();
         _mediatorMock = new Mock<IMediator>();
 
-        _controller = new WalletsController(_mapperMock.Object, _mediatorMock.Object);
+        _controller = new WalletsController(_contextMock.Object, _mapperMock.Object, _mediatorMock.Object);
     }
 
     [Fact]
@@ -99,11 +102,29 @@ public class WalletsControllerTests
     }
 
     [Fact]
+    public async Task RefreshAddressBalance_InvalidWalletAddress_ReturnUnauthorized()
+    {
+        // Arrange
+        var walletAddress = new Address("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy");
+        var tokenAddress = new Address("PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5");
+
+        var cancellationToken = new CancellationTokenSource().Token;
+
+        // Act
+        var response = await _controller.RefreshAddressBalance(walletAddress, tokenAddress, cancellationToken);
+
+        // Assert
+        response.Result.Should().BeOfType<UnauthorizedResult>();
+    }
+
+    [Fact]
     public async Task RefreshAddressBalance_CreateRefreshAddressBalanceCommand_Send()
     {
         // Arrange
         var walletAddress = new Address("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy");
         var tokenAddress = new Address("PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5");
+
+        _contextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
 
         var cancellationToken = new CancellationTokenSource().Token;
 
@@ -124,6 +145,7 @@ public class WalletsControllerTests
 
         var addressBalanceResponse = new AddressBalanceResponseModel();
         var addressBalanceDto = new AddressBalanceDto();
+        _contextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateRefreshAddressBalanceCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(addressBalanceDto);
         _mapperMock.Setup(callTo => callTo.Map<AddressBalanceResponseModel>(addressBalanceDto)).Returns(addressBalanceResponse);
 

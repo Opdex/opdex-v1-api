@@ -16,7 +16,6 @@ using System.Threading.Tasks;
 namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("v{version:apiVersion}/mining-governances")]
 [ApiVersion("1")]
 public class MiningGovernancesController : ControllerBase
@@ -54,9 +53,7 @@ public class MiningGovernancesController : ControllerBase
     public async Task<ActionResult<MiningGovernanceResponseModel>> GetMiningGovernance([FromRoute] Address address, CancellationToken cancellationToken)
     {
         var miningGovernanceDto = await _mediator.Send(new GetMiningGovernanceByAddressQuery(address), cancellationToken);
-
         var response = _mapper.Map<MiningGovernanceResponseModel>(miningGovernanceDto);
-
         return Ok(response);
     }
 
@@ -67,16 +64,14 @@ public class MiningGovernancesController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Quote a stop staking transaction.</returns>
     [HttpPost("{address}/reward-mining-pools")]
+    [Authorize]
     public async Task<IActionResult> RewardMiningPools([FromRoute] Address address,
                                                        [FromBody] RewardMiningPoolsRequest request,
                                                        CancellationToken cancellationToken)
     {
-        var response = await _mediator.Send(new CreateRewardMiningPoolsTransactionQuoteCommand(address,
-                                                                                               _context.Wallet,
+        var response = await _mediator.Send(new CreateRewardMiningPoolsTransactionQuoteCommand(address,_context.Wallet,
                                                                                                request.FullDistribution), cancellationToken);
-
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
-
         return Ok(quote);
     }
 }

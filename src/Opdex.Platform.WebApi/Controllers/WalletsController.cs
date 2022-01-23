@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Allowances;
@@ -11,6 +12,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Mining;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Staking;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Wallets;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
 
@@ -21,11 +23,13 @@ namespace Opdex.Platform.WebApi.Controllers;
 [ApiVersion("1")]
 public class WalletsController : ControllerBase
 {
+    private readonly IApplicationContext _context;
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
-    public WalletsController(IMapper mapper, IMediator mediator)
+    public WalletsController(IApplicationContext context, IMapper mapper, IMediator mediator)
     {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
@@ -61,9 +65,7 @@ public class WalletsController : ControllerBase
                                                                                      CancellationToken cancellationToken)
     {
         var balances = await _mediator.Send(new GetAddressBalancesWithFilterQuery(address, filters.BuildCursor()), cancellationToken);
-
         var response = _mapper.Map<AddressBalancesResponseModel>(balances);
-
         return Ok(response);
     }
 
@@ -90,10 +92,12 @@ public class WalletsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Address balance summary.</returns>
     [HttpPost("{address}/balance/{token}")]
+    [Authorize]
     public async Task<ActionResult<AddressBalanceResponseModel>> RefreshAddressBalance([FromRoute] Address address,
                                                                                        [FromRoute] Address token,
                                                                                        CancellationToken cancellationToken)
     {
+        if (_context.Wallet != address) return Unauthorized();
         if (token == Address.Cirrus) throw new InvalidDataException(nameof(token), "Address must be SRC token address.");
         var balance = await _mediator.Send(new CreateRefreshAddressBalanceCommand(address, token), cancellationToken);
         var response = _mapper.Map<AddressBalanceResponseModel>(balance);

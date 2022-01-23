@@ -16,7 +16,6 @@ using System.Threading.Tasks;
 namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("v{version:apiVersion}/mining-pools")]
 [ApiVersion("1")]
 public class MiningPoolsController : ControllerBase
@@ -65,13 +64,12 @@ public class MiningPoolsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("{pool}/start")]
+    [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> StartMining([FromRoute] Address pool, [FromBody] MiningQuote request,
                                                                                CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateStartMiningTransactionQuoteCommand(pool, _context.Wallet, request.Amount), cancellationToken);
-
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
-
         return Ok(quote);
     }
 
@@ -82,13 +80,12 @@ public class MiningPoolsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("{pool}/stop")]
+    [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> StopMining([FromRoute] Address pool, [FromBody] MiningQuote request,
                                                                               CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateStopMiningTransactionQuoteCommand(pool, _context.Wallet, request.Amount), cancellationToken);
-
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
-
         return Ok(quote);
     }
 
@@ -98,12 +95,11 @@ public class MiningPoolsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("{pool}/collect")]
+    [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> CollectMiningRewards([FromRoute] Address pool, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateCollectMiningRewardsTransactionQuoteCommand(pool, _context.Wallet), cancellationToken);
-
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
-
         return Ok(quote);
     }
 }

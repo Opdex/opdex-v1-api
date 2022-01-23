@@ -7,12 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
-using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Transactions;
 using Opdex.Platform.Common.Exceptions;
-using Opdex.Platform.WebApi.Middleware;
 using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.WebApi.Controllers;
@@ -43,14 +41,11 @@ public class TransactionsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Details of transactions with paging.</returns>
     [HttpGet]
-    [Authorize]
     public async Task<ActionResult<TransactionsResponseModel>> GetTransactions([FromQuery] TransactionFilterParameters filters,
                                                                                CancellationToken cancellationToken)
     {
         var transactionsDto = await _mediator.Send(new GetTransactionsWithFilterQuery(filters.BuildCursor()), cancellationToken);
-
         var response = _mapper.Map<TransactionsResponseModel>(transactionsDto);
-
         return Ok(response);
     }
 
@@ -72,29 +67,11 @@ public class TransactionsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Details of the transaction.</returns>
     [HttpGet("{hash}")]
-    [Authorize]
     public async Task<ActionResult<TransactionResponseModel>> GetTransaction([FromRoute] Sha256 hash, CancellationToken cancellationToken)
     {
         var transactionsDto = await _mediator.Send(new GetTransactionByHashQuery(hash), cancellationToken);
-
         var response = _mapper.Map<TransactionResponseModel>(transactionsDto);
-
         return Ok(response);
-    }
-
-    /// <summary>Broadcast Transaction Quote - Devnet Only</summary>
-    /// <remarks>Broadcast a previously quoted transaction. Network dependent, for devnet use only.</remarks>
-    /// <param name="request">The quoted transaction to broadcast.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>Transaction hash and sender address.</returns>
-    [HttpPost("broadcast-quote")]
-    [Authorize]
-    [Network(NetworkType.DEVNET)]
-    public async Task<ActionResult<BroadcastTransactionResponseModel>> BroadcastTransactionQuote([FromBody] QuoteReplayRequest request, CancellationToken cancellationToken)
-    {
-        var txHash = await _mediator.Send(new CreateTransactionBroadcastCommand(request.Quote), cancellationToken);
-
-        return Ok(new BroadcastTransactionResponseModel { TxHash = txHash, Sender = _context.Wallet });
     }
 
     /// <summary>Replay Transaction Quote</summary>
@@ -106,10 +83,9 @@ public class TransactionsController : ControllerBase
     [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> ReplayTransactionQuote([FromBody] QuoteReplayRequest request, CancellationToken cancellationToken)
     {
+        // Todo: Probably should validate that the _context.Wallet matches request.Quote.Sender when base64 is removed from request
         var quote = await _mediator.Send(new CreateTransactionQuoteCommand(request.Quote), cancellationToken);
-
         var response = _mapper.Map<TransactionQuoteResponseModel>(quote);
-
         return Ok(response);
     }
 }
