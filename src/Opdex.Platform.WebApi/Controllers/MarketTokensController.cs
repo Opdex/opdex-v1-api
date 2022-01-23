@@ -1,7 +1,6 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MarketTokens;
@@ -21,7 +20,6 @@ using System.Threading.Tasks;
 namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("v{version:apiVersion}/markets/{market}/tokens")]
 [ApiVersion("1")]
 public class MarketTokensController : ControllerBase
@@ -49,9 +47,7 @@ public class MarketTokensController : ControllerBase
                                                                                CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetMarketTokensWithFilterQuery(market, filters.BuildCursor()), cancellationToken);
-
         var response = _mapper.Map<MarketTokensResponseModel>(result);
-
         return Ok(response);
     }
 
@@ -66,9 +62,7 @@ public class MarketTokensController : ControllerBase
                                                                              CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetMarketTokenByMarketAndTokenAddressQuery(market, token), cancellationToken);
-
         var response = _mapper.Map<MarketTokenResponseModel>(result);
-
         return Ok(response);
     }
 
@@ -88,9 +82,7 @@ public class MarketTokensController : ControllerBase
     {
         var marketTokenSnapshotsDto = await _mediator.Send(new GetMarketTokenSnapshotsWithFilterQuery(market, token,
                                                                                                       filters.BuildCursor()), cancellationToken);
-
         var response = _mapper.Map<MarketTokenSnapshotsResponseModel>(marketTokenSnapshotsDto);
-
         return Ok(response);
     }
 
@@ -102,6 +94,7 @@ public class MarketTokensController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A token swap transaction quote.</returns>
     [HttpPost("{token}/swap")]
+    [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> Swap([FromRoute] Address market, [FromRoute] Address token,
                                                                         [FromBody] SwapRequest request, CancellationToken cancellationToken)
     {
@@ -109,9 +102,7 @@ public class MarketTokensController : ControllerBase
                                                                                   request.TokenOutAmount, request.TokenInMaximumAmount,
                                                                                   request.TokenOutMinimumAmount, request.TokenInExactAmount,
                                                                                   request.Recipient, market, request.Deadline), cancellationToken);
-
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
-
         return Ok(quote);
     }
 
@@ -129,9 +120,7 @@ public class MarketTokensController : ControllerBase
                                                                                  CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetSwapAmountInQuery(market, token, request.TokenOut, request.TokenOutAmount), cancellationToken);
-
         var response = new SwapAmountInQuoteResponseModel { AmountIn = result };
-
         return Ok(response);
     }
 
@@ -149,9 +138,7 @@ public class MarketTokensController : ControllerBase
                                                                                    CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetSwapAmountOutQuery(market, request.TokenIn, request.TokenInAmount, token), cancellationToken);
-
         var response = new SwapAmountOutQuoteResponseModel { AmountOut = result };
-
         return Ok(response);
     }
 }

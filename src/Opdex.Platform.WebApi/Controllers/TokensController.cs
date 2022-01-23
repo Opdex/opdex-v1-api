@@ -20,7 +20,6 @@ using Opdex.Platform.WebApi.Models.Responses.Transactions;
 namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("v{version:apiVersion}/tokens")]
 [ApiVersion("1")]
 public class TokensController : ControllerBase
@@ -45,9 +44,7 @@ public class TokensController : ControllerBase
     public async Task<ActionResult<TokensResponseModel>> GetTokens([FromQuery] TokenFilterParameters filters, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetTokensWithFilterQuery(filters.BuildCursor()), cancellationToken);
-
         var response = _mapper.Map<TokensResponseModel>(result);
-
         return Ok(response);
     }
 
@@ -59,12 +56,11 @@ public class TokensController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Token details.</returns>
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> AddToken([FromBody] AddTokenRequest request, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new CreateAddTokenCommand(request.Token), cancellationToken);
-
         var response = _mapper.Map<TokenResponseModel>(result);
-
         return Created($"/tokens/{request.Token}", response);
     }
 
@@ -77,9 +73,7 @@ public class TokensController : ControllerBase
     public async Task<ActionResult<TokenResponseModel>> GetToken([FromRoute] Address token, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetTokenByAddressQuery(token), cancellationToken);
-
         var response = _mapper.Map<TokenResponseModel>(result);
-
         return Ok(response);
     }
 
@@ -94,9 +88,7 @@ public class TokensController : ControllerBase
                                                                                  CancellationToken cancellationToken)
     {
         var tokenSnapshotDtos = await _mediator.Send(new GetTokenSnapshotsWithFilterQuery(token, filters.BuildCursor()), cancellationToken);
-
         var response = _mapper.Map<TokenSnapshotsResponseModel>(tokenSnapshotDtos);
-
         return Ok(response);
     }
 
@@ -107,15 +99,12 @@ public class TokensController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Transaction quote of an approve allowance transaction.</returns>
     [HttpPost("{token}/approve")]
+    [Authorize]
     public async Task<IActionResult> ApproveAllowance([FromRoute] Address token, [FromBody] ApproveAllowanceQuoteRequest request, CancellationToken cancellationToken)
     {
         if (token == Address.Cirrus) throw new InvalidDataException(nameof(token), "Address must be SRC token address.");
-
-        var response = await _mediator.Send(new CreateApproveAllowanceTransactionQuoteCommand(token, _context.Wallet, request.Spender, request.Amount),
-                                            cancellationToken);
-
+        var response = await _mediator.Send(new CreateApproveAllowanceTransactionQuoteCommand(token, _context.Wallet, request.Spender, request.Amount), cancellationToken);
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
-
         return Ok(quote);
     }
 
@@ -125,14 +114,12 @@ public class TokensController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Token distribute transaction quote.</returns>
     [HttpPost("{token}/distribute")]
+    [Authorize]
     public async Task<IActionResult> Distribute([FromRoute] Address token, CancellationToken cancellationToken)
     {
         if (token == Address.Cirrus) throw new InvalidDataException(nameof(token), "Address must be SRC token address.");
-
         var response = await _mediator.Send(new CreateDistributeTokensTransactionQuoteCommand(token, _context.Wallet), cancellationToken);
-
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
-
         return Ok(quote);
     }
 }

@@ -43,14 +43,11 @@ public class TransactionsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Details of transactions with paging.</returns>
     [HttpGet]
-    [Authorize]
     public async Task<ActionResult<TransactionsResponseModel>> GetTransactions([FromQuery] TransactionFilterParameters filters,
                                                                                CancellationToken cancellationToken)
     {
         var transactionsDto = await _mediator.Send(new GetTransactionsWithFilterQuery(filters.BuildCursor()), cancellationToken);
-
         var response = _mapper.Map<TransactionsResponseModel>(transactionsDto);
-
         return Ok(response);
     }
 
@@ -72,13 +69,10 @@ public class TransactionsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Details of the transaction.</returns>
     [HttpGet("{hash}")]
-    [Authorize]
     public async Task<ActionResult<TransactionResponseModel>> GetTransaction([FromRoute] Sha256 hash, CancellationToken cancellationToken)
     {
         var transactionsDto = await _mediator.Send(new GetTransactionByHashQuery(hash), cancellationToken);
-
         var response = _mapper.Map<TransactionResponseModel>(transactionsDto);
-
         return Ok(response);
     }
 
@@ -93,7 +87,6 @@ public class TransactionsController : ControllerBase
     public async Task<ActionResult<BroadcastTransactionResponseModel>> BroadcastTransactionQuote([FromBody] QuoteReplayRequest request, CancellationToken cancellationToken)
     {
         var txHash = await _mediator.Send(new CreateTransactionBroadcastCommand(request.Quote), cancellationToken);
-
         return Ok(new BroadcastTransactionResponseModel { TxHash = txHash, Sender = _context.Wallet });
     }
 
@@ -106,10 +99,9 @@ public class TransactionsController : ControllerBase
     [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> ReplayTransactionQuote([FromBody] QuoteReplayRequest request, CancellationToken cancellationToken)
     {
+        // Todo: Probably should validate that the _context.Wallet matches request.Quote.Sender when base64 is removed from reqeust
         var quote = await _mediator.Send(new CreateTransactionQuoteCommand(request.Quote), cancellationToken);
-
         var response = _mapper.Map<TransactionQuoteResponseModel>(quote);
-
         return Ok(response);
     }
 }

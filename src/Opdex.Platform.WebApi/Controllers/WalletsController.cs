@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Allowances;
@@ -61,9 +62,7 @@ public class WalletsController : ControllerBase
                                                                                      CancellationToken cancellationToken)
     {
         var balances = await _mediator.Send(new GetAddressBalancesWithFilterQuery(address, filters.BuildCursor()), cancellationToken);
-
         var response = _mapper.Map<AddressBalancesResponseModel>(balances);
-
         return Ok(response);
     }
 
@@ -90,10 +89,12 @@ public class WalletsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Address balance summary.</returns>
     [HttpPost("{address}/balance/{token}")]
+    [Authorize]
     public async Task<ActionResult<AddressBalanceResponseModel>> RefreshAddressBalance([FromRoute] Address address,
                                                                                        [FromRoute] Address token,
                                                                                        CancellationToken cancellationToken)
     {
+        // Todo: should probably inject context and verify context.Wallet == address
         if (token == Address.Cirrus) throw new InvalidDataException(nameof(token), "Address must be SRC token address.");
         var balance = await _mediator.Send(new CreateRefreshAddressBalanceCommand(address, token), cancellationToken);
         var response = _mapper.Map<AddressBalanceResponseModel>(balance);

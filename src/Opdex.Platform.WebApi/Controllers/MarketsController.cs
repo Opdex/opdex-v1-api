@@ -19,7 +19,6 @@ using System.Collections.Generic;
 namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("v{version:apiVersion}/markets")]
 [ApiVersion("1")]
 [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -56,6 +55,7 @@ public class MarketsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("standard")]
+    [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> CreateStandardMarketQuote([FromBody] CreateStandardMarketQuoteRequest request,
                                                                                              CancellationToken cancellationToken)
     {
@@ -66,9 +66,7 @@ public class MarketsController : ControllerBase
                                                                                                   request.AuthLiquidityProviders,
                                                                                                   request.AuthTraders,
                                                                                                   request.EnableMarketFee), cancellationToken);
-
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
-
         return Ok(quote);
     }
 
@@ -77,13 +75,12 @@ public class MarketsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("staking")]
+    [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> CreateStakingMarketQuote([FromBody] CreateStakingMarketQuoteRequest request,
                                                                                             CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateCreateStakingMarketTransactionQuoteCommand(_context.Wallet, request.StakingToken), cancellationToken);
-
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
-
         return Ok(quote);
     }
 
@@ -96,9 +93,7 @@ public class MarketsController : ControllerBase
     public async Task<ActionResult<MarketResponseModel>> GetMarketDetails([FromRoute] Address market, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetMarketByAddressQuery(market), cancellationToken);
-
         var response = _mapper.Map<MarketResponseModel>(result);
-
         return Ok(response);
     }
 
@@ -114,9 +109,7 @@ public class MarketsController : ControllerBase
                                                                                    CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetMarketSnapshotsWithFilterQuery(market, filters.BuildCursor()), cancellationToken);
-
         var response = _mapper.Map<MarketSnapshotsResponseModel>(result);
-
         return Ok(response);
     }
 
@@ -127,15 +120,14 @@ public class MarketsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("{market}/standard/set-ownership")]
+    [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> SetOwnershipQuote([FromRoute] Address market,
                                                                                      [FromBody] SetMarketOwnerQuoteRequest request,
                                                                                      CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateSetStandardMarketOwnershipTransactionQuoteCommand(market, _context.Wallet, request.Owner),
                                             cancellationToken);
-
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
-
         return Ok(quote);
     }
 
@@ -145,14 +137,13 @@ public class MarketsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("{market}/standard/claim-ownership")]
+    [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> ClaimOwnershipQuote([FromRoute] Address market,
                                                                                        CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateClaimStandardMarketOwnershipTransactionQuoteCommand(market, _context.Wallet),
                                             cancellationToken);
-
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
-
         return Ok(quote);
     }
 
@@ -164,6 +155,7 @@ public class MarketsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("{market}/standard/permissions/{address}")]
+    [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> SetPermissionsQuote([FromRoute] Address market,
                                                                                        [FromRoute] Address address,
                                                                                        [FromBody] SetMarketPermissionsQuoteRequest request,
@@ -174,9 +166,7 @@ public class MarketsController : ControllerBase
                                                                                                           address,
                                                                                                           request.Permission,
                                                                                                           request.Authorize), cancellationToken);
-
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
-
         return Ok(quote);
     }
 
@@ -187,7 +177,9 @@ public class MarketsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A list of all market permissions for the wallet address.</returns>
     [HttpGet("{market}/standard/permissions/{address}")]
-    public async Task<ActionResult<IEnumerable<MarketPermissionType>>> GetPermissions([FromRoute] Address market, [FromRoute] Address address, CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<MarketPermissionType>>> GetPermissions([FromRoute] Address market,
+                                                                                      [FromRoute] Address address,
+                                                                                      CancellationToken cancellationToken)
     {
         var permissions = await _mediator.Send(new GetMarketPermissionsForAddressQuery(market, address), cancellationToken);
         return Ok(permissions);
@@ -199,15 +191,14 @@ public class MarketsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("{market}/standard/collect-fees")]
+    [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> CollectFeesQuote([FromRoute] Address market,
                                                                                     [FromBody] CollectMarketFeesQuoteRequest request,
                                                                                     CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateCollectStandardMarketFeesTransactionQuoteCommand(market, _context.Wallet, request.Token, request.Amount),
                                             cancellationToken);
-
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
-
         return Ok(quote);
     }
 }
