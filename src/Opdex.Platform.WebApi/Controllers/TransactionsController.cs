@@ -7,12 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
-using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Transactions;
 using Opdex.Platform.Common.Exceptions;
-using Opdex.Platform.WebApi.Middleware;
 using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.WebApi.Controllers;
@@ -76,20 +74,6 @@ public class TransactionsController : ControllerBase
         return Ok(response);
     }
 
-    /// <summary>Broadcast Transaction Quote - Devnet Only</summary>
-    /// <remarks>Broadcast a previously quoted transaction. Network dependent, for devnet use only.</remarks>
-    /// <param name="request">The quoted transaction to broadcast.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>Transaction hash and sender address.</returns>
-    [HttpPost("broadcast-quote")]
-    [Authorize]
-    [Network(NetworkType.DEVNET)]
-    public async Task<ActionResult<BroadcastTransactionResponseModel>> BroadcastTransactionQuote([FromBody] QuoteReplayRequest request, CancellationToken cancellationToken)
-    {
-        var txHash = await _mediator.Send(new CreateTransactionBroadcastCommand(request.Quote), cancellationToken);
-        return Ok(new BroadcastTransactionResponseModel { TxHash = txHash, Sender = _context.Wallet });
-    }
-
     /// <summary>Replay Transaction Quote</summary>
     /// <remarks>Replay a previous transaction quote to see the current value.</remarks>
     /// <param name="request">A previously quoted request.</param>
@@ -99,7 +83,7 @@ public class TransactionsController : ControllerBase
     [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> ReplayTransactionQuote([FromBody] QuoteReplayRequest request, CancellationToken cancellationToken)
     {
-        // Todo: Probably should validate that the _context.Wallet matches request.Quote.Sender when base64 is removed from reqeust
+        // Todo: Probably should validate that the _context.Wallet matches request.Quote.Sender when base64 is removed from request
         var quote = await _mediator.Send(new CreateTransactionQuoteCommand(request.Quote), cancellationToken);
         var response = _mapper.Map<TransactionQuoteResponseModel>(quote);
         return Ok(response);

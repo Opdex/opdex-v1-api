@@ -12,6 +12,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Mining;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Staking;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Wallets;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
 
@@ -22,11 +23,13 @@ namespace Opdex.Platform.WebApi.Controllers;
 [ApiVersion("1")]
 public class WalletsController : ControllerBase
 {
+    private readonly IApplicationContext _context;
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
-    public WalletsController(IMapper mapper, IMediator mediator)
+    public WalletsController(IApplicationContext context, IMapper mapper, IMediator mediator)
     {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
@@ -94,7 +97,7 @@ public class WalletsController : ControllerBase
                                                                                        [FromRoute] Address token,
                                                                                        CancellationToken cancellationToken)
     {
-        // Todo: should probably inject context and verify context.Wallet == address
+        if (_context.Wallet != address) return Unauthorized();
         if (token == Address.Cirrus) throw new InvalidDataException(nameof(token), "Address must be SRC token address.");
         var balance = await _mediator.Send(new CreateRefreshAddressBalanceCommand(address, token), cancellationToken);
         var response = _mapper.Map<AddressBalanceResponseModel>(balance);
