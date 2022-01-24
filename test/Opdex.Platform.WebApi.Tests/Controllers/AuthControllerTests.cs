@@ -145,8 +145,9 @@ public class AuthControllerTests
             Signature = "H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc="
         };
 
+        var connectionId = "CONNECTION_ID";
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusVerifyMessageQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => "CONNECTION_ID");
+        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => $"{connectionId}{query.Exp}");
 
         // Act
         await _controller.StratisSignatureAuthCallback(query, body, CancellationToken.None);
@@ -200,7 +201,7 @@ public class AuthControllerTests
         var connectionId = "CONNECTION_ID";
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusVerifyMessageQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => connectionId);
+        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => $"{connectionId}{query.Exp}");
 
         var cancellationToken = CancellationToken.None;
         using (var cts = new CancellationTokenSource()) { cancellationToken = cts.Token; }
@@ -211,6 +212,32 @@ public class AuthControllerTests
         // Assert
         _mediatorMock.Verify(callTo => callTo.Send(
                                  It.Is<NotifyUserOfSuccessfulAuthenticationCommand>(command => command.ConnectionId == connectionId), cancellationToken), Times.Once);
+    }
+
+    [Fact]
+    public async Task StratisSignatureAuthCallback_InvalidExp_ThrowInvalidDataException()
+    {
+        // Arrange
+        var query = new StratisSignatureAuthCallbackQuery
+        {
+            Uid = Guid.NewGuid().ToString(),
+            Exp = DateTimeOffset.UtcNow.AddDays(1).ToUnixTimeSeconds()
+        };
+        var body = new StratisSignatureAuthCallbackBody
+        {
+            PublicKey = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV",
+            Signature = "H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc="
+        };
+
+        var connectionId = "CONNECTION_ID";
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusVerifyMessageQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => $"{connectionId}{query.Exp + 1}");
+
+        // Act
+        await _controller
+            .Invoking(c => c.StratisSignatureAuthCallback(query, body, CancellationToken.None))
+            .Should().ThrowAsync<InvalidDataException>()
+            .WithMessage("*Invalid expiration.*");
     }
 
     [Fact]
@@ -231,7 +258,7 @@ public class AuthControllerTests
         var connectionId = "CONNECTION_ID";
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusVerifyMessageQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => connectionId);
+        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => $"{connectionId}{query.Exp}");
 
         // Act
         var response = await _controller.StratisSignatureAuthCallback(query, body, CancellationToken.None);
