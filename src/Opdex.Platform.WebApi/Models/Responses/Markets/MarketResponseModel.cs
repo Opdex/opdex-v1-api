@@ -11,7 +11,7 @@ public class MarketResponseModel
     /// <summary>
     /// Address of the market.
     /// </summary>
-    /// <example>tFPedNjm3q8N9HD7wSVTNK5Kvw96332P1o</example>
+    /// <example>t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb</example>
     public Address Address { get; set; }
 
     /// <summary>
