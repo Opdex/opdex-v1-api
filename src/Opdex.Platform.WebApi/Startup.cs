@@ -275,10 +275,14 @@ public class Startup
             RequestPath = "/swagger/v1"
         });
 
+        var url = Configuration["OpdexConfiguration:ApiUrl"];
+        var requestInterceptor = @$"(request) => {{ request.url = request.url.replace('https://v1-test-api.opdex.com/v1', '{url}'); return request; }}";
+
         app.UseSwaggerUI(options =>
         {
             options.RoutePrefix = "swagger";
             options.SwaggerEndpoint("v1/openapi.yml", "Opdex Platform API V1");
+            options.UseRequestInterceptor(requestInterceptor);
         });
         app.UseEndpoints(endpoints =>
         {
