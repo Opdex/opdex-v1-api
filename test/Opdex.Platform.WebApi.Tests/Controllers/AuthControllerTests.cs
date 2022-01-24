@@ -147,7 +147,7 @@ public class AuthControllerTests
 
         var connectionId = "CONNECTION_ID";
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusVerifyMessageQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => $"{connectionId}--{query.Exp}");
+        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => $"{connectionId}{query.Exp}");
 
         // Act
         await _controller.StratisSignatureAuthCallback(query, body, CancellationToken.None);
@@ -201,7 +201,7 @@ public class AuthControllerTests
         var connectionId = "CONNECTION_ID";
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusVerifyMessageQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => $"{connectionId}--{query.Exp}");
+        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => $"{connectionId}{query.Exp}");
 
         var cancellationToken = CancellationToken.None;
         using (var cts = new CancellationTokenSource()) { cancellationToken = cts.Token; }
@@ -231,7 +231,7 @@ public class AuthControllerTests
 
         var connectionId = "CONNECTION_ID";
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusVerifyMessageQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => $"{connectionId}--{query.Exp + 1}");
+        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => $"{connectionId}{query.Exp + 1}");
 
         // Act
         await _controller
@@ -258,7 +258,7 @@ public class AuthControllerTests
         var connectionId = "CONNECTION_ID";
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusVerifyMessageQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => $"{connectionId}--{query.Exp}");
+        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => $"{connectionId}{query.Exp}");
 
         // Act
         var response = await _controller.StratisSignatureAuthCallback(query, body, CancellationToken.None);

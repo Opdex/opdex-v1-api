@@ -27,7 +27,7 @@ public class PlatformHub : Hub<IPlatformClient>
     public string GetStratisId()
     {
         var expiry = DateTimeOffset.UtcNow.AddMinutes(5).ToUnixTimeSeconds();
-        var encryptedConnectionId = _twoWayEncryptionProvider.Encrypt($"{Context.ConnectionId}--{expiry}");
+        var encryptedConnectionId = _twoWayEncryptionProvider.Encrypt($"{Context.ConnectionId}{expiry}");
         var uid = Base64Extensions.UrlSafeBase64Encode(encryptedConnectionId);
         var stratisId = new StratisId(_authCallback, uid, expiry);
         return stratisId.ToString();

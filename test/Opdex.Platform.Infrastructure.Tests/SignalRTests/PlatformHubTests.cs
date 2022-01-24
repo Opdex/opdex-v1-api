@@ -57,9 +57,12 @@ public class PlatformHubTests
 
         // Assert
         _twoWayEncryptionProvider.EncryptCalls.Count.Should().Be(1);
-        var decryptedParts = _twoWayEncryptionProvider.EncryptCalls.Dequeue().Split("--");
-        decryptedParts[0].Should().Be(connectionId);
-        long.Parse(decryptedParts[1]).Should().BeGreaterThan(0);
+        var decrypted = _twoWayEncryptionProvider.EncryptCalls.Dequeue();
+
+        var decryptedConnectionId = decrypted.Substring(0, decrypted.Length - 10);
+        var decryptedExpiration = long.Parse(decrypted.Substring(decrypted.Length - 10));
+        decryptedConnectionId.Should().Be(connectionId);
+        decryptedExpiration.Should().BeGreaterThan(0);
     }
 
     [Fact]

@@ -84,11 +84,11 @@ public class AuthController : ControllerBase
         try
         {
             var uid = _twoWayEncryptionProvider.Decrypt(Base64Extensions.UrlSafeBase64Decode(expectedId.Uid));
-            var uidParts = uid.Split("--");
-            connectionId = uidParts[0];
-            expiration = long.Parse(uidParts[1]);
+            const int unixTimestampLength = 10;
+            connectionId = uid.Substring(0, uid.Length - unixTimestampLength);
+            expiration = long.Parse(uid.Substring(uid.Length - unixTimestampLength));
         }
-        catch (CryptographicException exception)
+        catch (Exception exception)
         {
             _logger.LogWarning(exception, "Invalid UID.");
             throw new InvalidDataException("uid", "Malformed UID.");
