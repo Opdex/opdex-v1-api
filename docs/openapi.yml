@@ -6946,14 +6946,20 @@ paths:
           in: query
           description: Status of the proposal
           schema:
-            $ref: "#/components/schemas/proposalStatus"
-          example: Complete
+            type: array
+            items:
+              $ref: "#/components/schemas/proposalStatus"
+          example:
+            - Complete
         - name: type
           in: query
           description: Type of proposal
           schema:
-            $ref: "#/components/schemas/proposalType"
-          example: Create
+            type: array
+            items:
+              $ref: "#/components/schemas/proposalType"
+          example:
+            - Create
         - name: direction
           in: query
           description: Order direction of the results

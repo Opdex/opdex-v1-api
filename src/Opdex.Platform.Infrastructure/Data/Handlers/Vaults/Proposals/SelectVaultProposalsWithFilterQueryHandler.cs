@@ -61,7 +61,7 @@ public class SelectVaultProposalsWithFilterQueryHandler : IRequestHandler<Select
 
     public async Task<IEnumerable<VaultProposal>> Handle(SelectVaultProposalsWithFilterQuery request, CancellationToken cancellationToken)
     {
-        var queryParams = new SqlParams(request.Cursor.Pointer, request.Cursor.Status, request.Cursor.Type, request.VaultId);
+        var queryParams = new SqlParams(request.Cursor.Pointer, request.Cursor.Statuses, request.Cursor.Types, request.VaultId);
 
         var query = DatabaseQuery.Create(QueryBuilder(request), queryParams, cancellationToken);
 
@@ -95,14 +95,14 @@ public class SelectVaultProposalsWithFilterQueryHandler : IRequestHandler<Select
         whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
         whereFilterBuilder.Append($" {nameof(VaultProposalEntity.VaultId)} = @{nameof(SqlParams.VaultId)}");
 
-        if (request.Cursor.Status != default)
+        if (request.Cursor.Statuses.Count > 0)
         {
-            whereFilterBuilder.Append($" AND {nameof(VaultProposalEntity.ProposalStatusId)} = @{nameof(SqlParams.Status)}");
+            whereFilterBuilder.Append($" AND {nameof(VaultProposalEntity.ProposalStatusId)} IN @{nameof(SqlParams.Statuses)}");
         }
 
-        if (request.Cursor.Type != default)
+        if (request.Cursor.Types.Count > 0)
         {
-            whereFilterBuilder.Append($" AND {nameof(VaultProposalEntity.ProposalTypeId)} = @{nameof(SqlParams.Type)}");
+            whereFilterBuilder.Append($" AND {nameof(VaultProposalEntity.ProposalTypeId)} IN @{nameof(SqlParams.Types)}");
         }
 
         // Set the direction, moving backwards with previous requests, the sort order must be reversed first.
@@ -134,19 +134,19 @@ public class SelectVaultProposalsWithFilterQueryHandler : IRequestHandler<Select
 
     private sealed class SqlParams
     {
-        public SqlParams((ulong, ulong) pointer, VaultProposalStatus status, VaultProposalType type, ulong vaultId)
+        public SqlParams((ulong, ulong) pointer, HashSet<VaultProposalStatus> statuses, HashSet<VaultProposalType> types, ulong vaultId)
         {
             ExpirationPointer = pointer.Item1;
             PublicIdPointer = pointer.Item2;
-            Status = status;
-            Type = type;
+            Statuses = statuses;
+            Types = types;
             VaultId = vaultId;
         }
 
         public ulong ExpirationPointer { get; }
         public ulong PublicIdPointer { get; }
-        public VaultProposalStatus Status { get; }
-        public VaultProposalType Type { get; }
+        public HashSet<VaultProposalStatus> Statuses { get; }
+        public HashSet<VaultProposalType> Types { get; }
         public ulong VaultId { get; }
     }
 }
