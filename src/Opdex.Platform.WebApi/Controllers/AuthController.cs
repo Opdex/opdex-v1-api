@@ -80,15 +80,21 @@ public class AuthController : ControllerBase
         var bearerToken = tokenHandler.WriteToken(jwt);
 
         string connectionId;
+        long expiration;
         try
         {
-            connectionId = _twoWayEncryptionProvider.Decrypt(Base64Extensions.UrlSafeBase64Decode(expectedId.Uid));
+            var uid = _twoWayEncryptionProvider.Decrypt(Base64Extensions.UrlSafeBase64Decode(expectedId.Uid));
+            var uidParts = uid.Split("--");
+            connectionId = uidParts[0];
+            expiration = long.Parse(uidParts[1]);
         }
         catch (CryptographicException exception)
         {
             _logger.LogWarning(exception, "Invalid UID.");
             throw new InvalidDataException("uid", "Malformed UID.");
         }
+
+        if (expiration != query.Exp) throw new InvalidDataException("exp", "Invalid expiration.");
 
         await _mediator.Send(new NotifyUserOfSuccessfulAuthenticationCommand(connectionId, bearerToken), cancellationToken);
 
