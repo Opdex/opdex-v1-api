@@ -5,7 +5,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets;
 /// </summary>
 public enum MarketType
 {
-    All = 0,
+    Any = 0,
     Standard = 1,
     Staking = 2
 }

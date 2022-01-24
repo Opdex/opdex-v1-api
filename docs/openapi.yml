@@ -10,7 +10,7 @@ info:
     name: MIT
     url: https://github.com/Opdex/opdex-v1-api/blob/main/LICENSE
 servers:
-  - url: https://test-api.opdex.com/v1
+  - url: https://v1-test-api.opdex.com/v1
 tags:
   - name: Authentication
     description: Authenticate with the API
@@ -259,33 +259,35 @@ components:
         - Symbol
         - DailyPriceChangePercent
         - PriceUsd
-    tokenType:
-      type: string
-      description: Token type filter
-      enum:
-        - Provisional
-        - NonProvisional
-    stakingStatus:
+    stakingStatusFilter:
       type: string
       description: Staking status filter
       enum:
+        - Any
         - Enabled
         - Disabled
-    miningStatus:
+      default: Any
+    miningStatusFilter:
       description: Mining status filter
       enum:
+        - Any
         - Enabled
         - Disabled
-    nominationStatus:
+      default: Any
+    nominationStatusFilter:
       description: Nomination status filter
       enum:
+        - Any
         - Nominated
         - Excluded
+      default: Any
     miningActivityStatus:
       description: Mining activity status filter
       enum:
+        - Any
         - Active
         - Inactive
+      default: Any
     liquidityPoolOrderByType:
       type: string
       description: Property to sort liquidity pools by
@@ -307,12 +309,14 @@ components:
         - DailyLiquidityUsdChangePercent
         - DailyStakingUsdChangePercent
         - DailyStakingWeightChangePercent
-    marketType:
+    marketTypeFilter:
       type: string
       description: Market type filter
       enum:
+        - Any
         - Staking
         - Standard
+      default: Any
     interval:
       type: string
       description: Snapshot step interval
@@ -2897,19 +2901,19 @@ paths:
           in: query
           description: Staking status filter; default is not to filter
           schema:
-            $ref: "#/components/schemas/stakingStatus"
+            $ref: "#/components/schemas/stakingStatusFilter"
           example: Enabled
         - name: nominationStatus
           in: query
           description: Nomination status filter; default is not to filter
           schema:
-            $ref: "#/components/schemas/nominationStatus"
+            $ref: "#/components/schemas/nominationStatusFilter"
           example: Nominated
         - name: miningStatus
           in: query
           description: Mining status filter; default is not to filter
           schema:
-            $ref: "#/components/schemas/miningStatus"
+            $ref: "#/components/schemas/miningStatusFilter"
           example: Enabled
         - name: orderBy
           in: query
@@ -3970,7 +3974,7 @@ paths:
           in: query
           description: Market type filter
           schema:
-            $ref: "#/components/schemas/marketType"
+            $ref: "#/components/schemas/marketTypeFilter"
           example: Staking
         - name: orderBy
           in: query
@@ -4724,12 +4728,15 @@ paths:
           schema:
             $ref: "#/components/schemas/address"
           example: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
-        - name: tokenType
+        - name: tokenAttributes
           in: query
-          description: Token type filter
+          description: Token attributes filter
           schema:
-            $ref: "#/components/schemas/tokenType"
-          example: Provisional
+            type: array
+            items:
+              $ref: "#/components/schemas/tokenAttributeFilter"
+          example:
+            - Provisional
         - name: tokens
           in: query
           description: Specific tokens to include
@@ -4820,8 +4827,7 @@ paths:
                 title: One or more validation errors occurred.
                 status: 400
                 errors:
-                  tokenType:
-                    - The value 'New' is not valid for TokenType.
+                  tokenAttributes:
                     - Filters cannot be provided alongside cursor.
                 extensions:
                   traceId: 00-00000000000000000000000000000000-0000000000000000-00
@@ -5781,12 +5787,15 @@ paths:
       description: Retrieves details of all tracked tokens across markets. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
       operationId: getTokens
       parameters:
-        - name: tokenType
+        - name: tokenAttributes
           in: query
-          description: Token type filter
+          description: Token attributes filter
           schema:
-            $ref: "#/components/schemas/tokenType"
-          example: Provisional
+            type: array
+            items:
+              $ref: "#/components/schemas/tokenAttributeFilter"
+          example:
+            - Provisional
         - name: tokens
           in: query
           description: Specific tokens to include
@@ -5872,8 +5881,7 @@ paths:
                 title: One or more validation errors occurred.
                 status: 400
                 errors:
-                  tokenType:
-                    - The value 'New' is not valid for TokenType.
+                  tokenAttributes:
                     - Filters cannot be provided alongside cursor.
                 extensions:
                   traceId: 00-00000000000000000000000000000000-0000000000000000-00
@@ -6704,8 +6712,11 @@ paths:
           in: query
           description: Status of the certificates
           schema:
-            $ref: "#/components/schemas/certificateStatus"
-          example: Vesting
+            type: array
+            items:
+              $ref: "#/components/schemas/certificateStatus"
+          example:
+            - Vesting
         - name: direction
           in: query
           description: Order direction of the results
@@ -8218,7 +8229,7 @@ paths:
             $ref: "#/components/schemas/address"
           example: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
       security:
-        - opdexAuth: [ ]
+        - opdexAuth: []
       responses:
         200:
           description: Address balance refreshed
