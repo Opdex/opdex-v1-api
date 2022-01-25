@@ -6620,6 +6620,19 @@ paths:
                   traceId: 00-00000000000000000000000000000000-0000000000000000-00
         401:
           $ref: "#/components/responses/Unauthorized"
+        403:
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/problemDetails"
+              example:
+                type: https://httpstatuses.com/403
+                title: Forbidden
+                detail: Transaction quote is not for authenticated address.
+                status: 403
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
         429:
           $ref: "#/components/responses/TooManyRequests"
         500:

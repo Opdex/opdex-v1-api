@@ -85,7 +85,7 @@ public class TransactionsController : ControllerBase
     [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> ReplayTransactionQuote([FromBody] QuoteReplayRequest request, CancellationToken cancellationToken)
     {
-        if (_context.Wallet != request.Quote.Sender) throw new NotAllowedException("Transaction quote is not for authenticated wallet.");
+        if (_context.Wallet != request.Quote.Sender) throw new NotAllowedException("Transaction quote is not for authenticated address.");
         var quote = await _mediator.Send(new CreateTransactionQuoteCommand(request.Quote.Sender, request.Quote.To,
                                                                             request.Quote.Amount, request.Quote.Method,
                                                                             request.Quote.Parameters.Select(p => (p.Label, p.Value)),
