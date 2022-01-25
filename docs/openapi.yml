@@ -14,6 +14,8 @@ servers:
 tags:
   - name: Authentication
     description: Authenticate with the API
+  - name: Blocks
+    description: Retrieve indexed block data
   - name: Indexer
     description: Interact with the indexer
   - name: Liquidity Pools
@@ -131,6 +133,18 @@ components:
               traceId: 00-00000000000000000000000000000000-0000000000000000-00
     VaultOrProposalNotFound:
       description: Vault or proposal not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/problemDetails"
+          example:
+            type: https://httpstatuses.com/404
+            title: Not Found
+            status: 404
+            extensions:
+              traceId: 00-00000000000000000000000000000000-0000000000000000-00
+    BlockNotFound:
+      description: Block not found
       content:
         application/problem+json:
           schema:
@@ -1584,7 +1598,7 @@ components:
           description: SHA-256 hash of the transaction
         publicKey:
           $ref: "#/components/schemas/address"
-          description:  The transaction sender's public key
+          description: The transaction sender's public key
     replayQuoteRequest:
       type: object
       description: Request to replay a previous quote at the current point in time
@@ -2377,6 +2391,15 @@ components:
         stakingToken:
           $ref: "#/components/schemas/address"
           description: Address of the token used for staking
+    blocksResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/blockResponse"
+        paging:
+          $ref: "#/components/schemas/pagingResponse"
     blockResponse:
       type: object
       description: Details about a block
@@ -2909,6 +2932,119 @@ paths:
                     - Expiration date must be a unix timestamp.
                 extensions:
                   traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /blocks:
+    get:
+      tags:
+        - Blocks
+      summary: Get Blocks
+      description: Retrieves details for blocks that have been indexed by the Opdex indexer. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      operationId: getBlocks
+      parameters:
+        - name: direction
+          in: query
+          description: Order direction of the results
+          schema:
+            $ref: "#/components/schemas/sortDirection"
+          example: DESC
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 50
+            default: 10
+          example: 10
+        - name: cursor
+          in: query
+          description: Reference of the requested page, returned by a previous call
+          schema:
+            type: string
+      responses:
+        200:
+          description: Block results retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/blocksResponse"
+              example:
+                results:
+                  - hash: 07eabb6c1d2aadbfcfc9d690b210a7686d8775acf0deda7d2ad892c3a8c836b7
+                    height: 3009005
+                    time: 2022-01-18T22:02:56Z
+                    medianTime: 2022-01-18T22:01:04Z
+                  - hash: 94596f8f9009d1034ab3ab6fd203580fc27b5a2a222f72b2e7d6ac55ec1a6541
+                    height: 3009004
+                    time: 2022-01-18T22:02:40Z
+                    medianTime: 2022-01-18T22:00:48Z
+                  - hash: c58eb0e79654237722822bdb23b963d40f118e64194a4db2f60fc8c56c829698
+                    height: 3009003
+                    time: 2022-01-18T22:02:08Z
+                    medianTime: 2022-01-18T22:00:32Z
+                  - hash: eb15aa448c542d775a633d338e67095dcf30080945c41e10e6c16ada62e30ea1
+                    height: 3009002
+                    time: 2022-01-18T22:01:52Z
+                    medianTime: 2022-01-18T22:00:00Z
+                  - hash: b880453ffd700b21816ab68e6d74af7d31eb91756135cb456d0096f8639a7f3e
+                    height: 3009001
+                    time: 2022-01-18T22:01:20Z
+                    medianTime: 2022-01-18T21:59:44Z
+                paging:
+                  next:
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /blocks/{height}:
+    get:
+      tags:
+        - Blocks
+      summary: Get Block
+      description: Retrieves details for a block that has been indexed by the Opdex indexer.
+      operationId: getBlock
+      parameters:
+        - name: height
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            minimum: 1
+          example: 3000000
+      responses:
+        200:
+          description: Block details retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/blockResponse"
+              example:
+                hash: 07eabb6c1d2aadbfcfc9d690b210a7686d8775acf0deda7d2ad892c3a8c836b7
+                height: 3009005
+                time: 2022-01-18T22:02:56Z
+                medianTime: 2022-01-18T22:01:04Z
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  height:
+                    - Height must be greater than 0.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          $ref: "#/components/responses/BlockNotFound"
         429:
           $ref: "#/components/responses/TooManyRequests"
         500:
