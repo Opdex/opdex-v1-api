@@ -94,7 +94,18 @@ stages:
       - template: ${{ variables.releaseTemplate }}
         parameters:
           environment: "test"
-
+      - job:
+          displayName: "ReadMe Docs"
+          steps:
+            - task: CmdLine@2
+              displayName: Sync OpenAPI doc
+              inputs:
+                script: |
+                  npm install rdme
+                  npx rdme openapi $(Build.SourcesDirectory)/docs/openapi.yml --id=61161540149ab80029bab5ca --key=$(README_API_KEY)
+              env:
+                README_API_KEY: $(README_API_KEY)
+          dependsOn: "test" # template deployment name == parameters.environment
   - stage: MAIN
     displayName: "Release to mainnet (Azure)"
     dependsOn: TEST
@@ -102,15 +113,3 @@ stages:
       - template: ${{ variables.releaseTemplate }}
         parameters:
           environment: "main"
-      - job:
-        displayName: "ReadMe Docs"
-        steps:
-          - task: CmdLine@2
-            displayName: Sync OpenAPI doc
-            inputs:
-              script: |
-                npm install rdme
-                npx rdme openapi $(Build.SourcesDirectory)/docs/openapi.yml --id=61161540149ab80029bab5ca --key=$(README_API_KEY)
-            env:
-              README_API_KEY: $(README_API_KEY)
-        dependsOn: "main" # template deployment name == parameters.environment
