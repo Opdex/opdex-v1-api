@@ -1580,7 +1580,7 @@ components:
           description: SHA-256 hash of the transaction
         publicKey:
           $ref: "#/components/schemas/address"
-          description:  The transaction sender's public key
+          description: The transaction sender's public key
     replayQuoteRequest:
       type: object
       description: Request to replay a previous quote at the current point in time
@@ -1588,8 +1588,56 @@ components:
         - quote
       properties:
         quote:
+          $ref: "#/components/schemas/quotedTransaction"
+          description: Previously received transaction quote
+    quotedTransaction:
+      type: object
+      description: Quoted transaction that can be handed off to a wallet
+      required:
+        - sender
+        - to
+        - amount
+        - method
+        - callback
+      properties:
+        sender:
+          $ref: "#/components/schemas/address"
+          description: Address of the transaction sender
+        to:
+          $ref: "#/components/schemas/address"
+          description: Address of smart contract
+        amount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of CRS to send
+        method:
           type: string
-          description: Previously received encoded transaction quote
+          description: Name of smart contract method to call
+          minLength: 1
+        parameters:
+          type: array
+          items:
+            $ref: "#/components/schemas/labelledSmartContractParameter"
+          description: An array of labelled parameters to pass to the method
+        callback:
+          type: string
+          description: An endpoint that the broadcaster can call back to
+          minLength: 1
+    labelledSmartContractParameter:
+      type: object
+      description: Labelled serialized smart contract parameter
+      required:
+        - label
+        - value
+      properties:
+        label:
+          type: string
+          description: User friendly smart contract property label
+          minLength: 1
+        value:
+          type: string
+          description: Serialized smart contract parameter
+          pattern: ^[1-9][0-2]?#.+$
+          minLength: 3
     quoteCreateStakingMarketRequest:
       type: object
       description: Request to retrieve a create staking market call quote
@@ -2458,8 +2506,8 @@ components:
           items:
             $ref: "#/components/schemas/transactionEvent"
         request:
-          type: string
-          description: Encoded transaction request, which can be used to replay or broadcast the transaction
+          $ref: "#/components/schemas/quotedTransaction"
+          description: Quoted transaction definition, which can be used to replay or broadcast the transaction
     liquidityAmountInQuoteResponse:
       type: object
       description: Details the estimated token input amount required to add liquidity, given the other paired token amount
@@ -6540,7 +6588,7 @@ paths:
             schema:
               $ref: "#/components/schemas/replayQuoteRequest"
             example:
-              quote: eyJzZW5kZXIiOiJ0SFlIZW03Y0xLZ29Ma2ViNzkyeW40V2F5cUt6THJqSmFrIiwidG8iOiJ0QmVZMlVBVnNiSG9TOWp3RW5UMmtNbVJzSndVSEsxajFMIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkRpc3RyaWJ1dGUiLCJjYWxsYmFjayI6Imh0dHBzOi8vdGVzdC1hcGkub3BkZXguY29tL3RyYW5zYWN0aW9ucyJ9
+              quote: TODO
       security:
         - opdexAuth: []
       responses:
@@ -8239,7 +8287,7 @@ paths:
             $ref: "#/components/schemas/address"
           example: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
       security:
-        - opdexAuth: [ ]
+        - opdexAuth: []
       responses:
         200:
           description: Address balance refreshed

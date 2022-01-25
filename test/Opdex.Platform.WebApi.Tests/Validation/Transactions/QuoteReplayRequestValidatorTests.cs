@@ -1,4 +1,5 @@
 using FluentValidation.TestHelper;
+using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Transactions;
 using Opdex.Platform.WebApi.Validation.Transactions;
 using Xunit;
@@ -14,42 +15,35 @@ public class QuoteReplayRequestValidatorTests
         _validator = new QuoteReplayRequestValidator();
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData(" ")]
-    [InlineData("@%$£$£()*d")]
-    [InlineData("==")]
-    public void Quote_Invalid(string quote)
+    [Fact]
+    public void Quote_Null_Invalid()
     {
         // Arrange
         var request = new QuoteReplayRequest
         {
-            Quote = quote
+            Quote = null
         };
 
         // Act
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(request => request.Quote);
+        result.ShouldHaveValidationErrorFor(r => r.Quote);
     }
 
-    [Theory]
-    [InlineData("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")]
-    [InlineData("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/AB==")]
-    public void Quote_Valid(string quote)
+    [Fact]
+    public void Quote_NotNull_Valid()
     {
         // Arrange
         var request = new QuoteReplayRequest
         {
-            Quote = quote
+            Quote = new QuotedTransactionModel()
         };
 
         // Act
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldNotHaveValidationErrorFor(request => request.Quote);
+        result.ShouldNotHaveValidationErrorFor(r => r.Quote);
     }
 }
