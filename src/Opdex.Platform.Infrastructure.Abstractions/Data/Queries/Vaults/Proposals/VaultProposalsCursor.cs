@@ -2,29 +2,37 @@ using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Vaults;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Proposals;
 
 public class VaultProposalsCursor : Cursor<(ulong, ulong)>
 {
-    public VaultProposalsCursor(VaultProposalStatus status, VaultProposalType type, SortDirectionType sortDirection, uint limit,
+    public VaultProposalsCursor(HashSet<VaultProposalStatus> statuses, HashSet<VaultProposalType> types, SortDirectionType sortDirection, uint limit,
                                 PagingDirection pagingDirection, (ulong, ulong) pointer)
         : base(sortDirection, limit, pagingDirection, pointer)
     {
-        Status = status;
-        Type = type;
+        Statuses = statuses ?? new HashSet<VaultProposalStatus>();
+        Types = types ?? new HashSet<VaultProposalType>();
     }
 
-    public VaultProposalStatus Status { get; }
-    public VaultProposalType Type { get; }
+    public HashSet<VaultProposalStatus> Statuses { get; }
+    public HashSet<VaultProposalType> Types { get; }
 
     /// <inheritdoc />
     public override string ToString()
     {
         var pointerBytes = Encoding.UTF8.GetBytes(Pointer.ToString());
         var encodedPointer = Convert.ToBase64String(pointerBytes);
-        return $"status:{Status};type:{Type};direction:{SortDirection};limit:{Limit};paging:{PagingDirection};pointer:{encodedPointer};";
+
+        var sb = new StringBuilder();
+        sb.AppendFormat("direction:{0};limit:{1};paging:{2};", SortDirection, Limit, PagingDirection);
+        foreach (var status in Statuses) sb.AppendFormat("status:{0};", status);
+        foreach (var type in Types) sb.AppendFormat("type:{0};", type);
+        sb.AppendFormat("pointer:{0};", encodedPointer);
+        return sb.ToString();
     }
 
     /// <inheritdoc />
@@ -33,7 +41,7 @@ public class VaultProposalsCursor : Cursor<(ulong, ulong)>
         if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
         if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical pointer.");
 
-        return new VaultProposalsCursor(Status, Type, SortDirection, Limit, direction, pointer);
+        return new VaultProposalsCursor(Statuses, Types, SortDirection, Limit, direction, pointer);
     }
 
     /// <summary>
@@ -50,9 +58,9 @@ public class VaultProposalsCursor : Cursor<(ulong, ulong)>
 
         var values = ToDictionary(raw);
 
-        TryGetCursorProperty<VaultProposalStatus>(values, "status", out var status);
+        TryGetCursorProperties<VaultProposalStatus>(values, "status", out var statuses);
 
-        TryGetCursorProperty<VaultProposalType>(values, "type", out var type);
+        TryGetCursorProperties<VaultProposalType>(values, "type", out var types);
 
         if (!TryGetCursorProperty<SortDirectionType>(values, "direction", out var direction)) return false;
 
@@ -68,7 +76,7 @@ public class VaultProposalsCursor : Cursor<(ulong, ulong)>
 
         try
         {
-            cursor = new VaultProposalsCursor(status, type, direction, limit, paging, pointer);
+            cursor = new VaultProposalsCursor(statuses.ToHashSet(), types.ToHashSet(), direction, limit, paging, pointer);
         }
         catch (Exception)
         {
