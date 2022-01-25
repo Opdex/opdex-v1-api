@@ -50,10 +50,6 @@ public class MiningPoolsCursor : Cursor<ulong>
         return new MiningPoolsCursor(LiquidityPools, MiningStatus, SortDirection, Limit, direction, pointer);
     }
 
-
-    /// <inheritdoc />
-    protected override bool ValidatePointer(ulong pointer) => pointer >= 0 && base.ValidatePointer(pointer);
-
     /// <summary>
     /// Parses a stringified version of the cursor
     /// </summary>

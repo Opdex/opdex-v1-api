@@ -174,6 +174,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults.Certificates;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults.Pledges;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults.Proposals;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults.Votes;
+using Opdex.Platform.Application.Abstractions.Models.Blocks;
 using Opdex.Platform.Application.Abstractions.Models.Index;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
@@ -220,6 +221,10 @@ public static class PlatformApplicationServiceCollectionExtensions
     {
         // Admins
         services.AddTransient<IRequestHandler<GetAdminByAddressQuery, AdminDto>, GetAdminByAddressQueryHandler>();
+
+        // Blocks
+        services.AddTransient<IRequestHandler<GetBlocksWithFilterQuery, BlocksDto>, GetBlocksWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<GetBlockByHeightQuery, BlockDto>, GetBlockByHeightQueryHandler>();
 
         // Markets
         services.AddTransient<IRequestHandler<GetMarketsWithFilterQuery, MarketsDto>, GetMarketsWithFilterQueryHandler>();
@@ -429,6 +434,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<RetrieveLatestBlockQuery, Block>, RetrieveLatestBlockQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveCirrusBestBlockReceiptQuery, BlockReceipt>, RetrieveCirrusBestBlockReceiptQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveCirrusBlockReceiptByHashQuery, BlockReceipt>, RetrieveCirrusBlockReceiptByHashQueryHandler>();
+        services.AddTransient<IRequestHandler<RetrieveBlocksWithFilterQuery, IEnumerable<Block>>, RetrieveBlocksWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveBlockByHeightQuery, Block>, RetrieveBlockByHeightQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveCirrusBlockHashByHeightQuery, Sha256>, RetrieveCirrusBlockHashByHeightQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveBlockByMedianTimeQuery, Block>, RetrieveBlockByMedianTimeQueryHandler>();

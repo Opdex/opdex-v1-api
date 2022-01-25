@@ -152,6 +152,7 @@ components:
           example:
             type: https://httpstatuses.com/404
             title: Not Found
+            detail: Block not found.
             status: 404
             extensions:
               traceId: 00-00000000000000000000000000000000-0000000000000000-00
@@ -2995,7 +2996,7 @@ paths:
                     time: 2022-01-18T22:01:20Z
                     medianTime: 2022-01-18T21:59:44Z
                 paging:
-                  next:
+                  next: ZGlyZWN0aW9uOkRFU0M7bGltaXQ6NTtwYWdpbmc6Rm9yd2FyZDtwb2ludGVyOk16QXdPVEF3TVE9PTs=
         429:
           $ref: "#/components/responses/TooManyRequests"
         500:
