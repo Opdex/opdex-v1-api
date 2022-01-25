@@ -10,7 +10,7 @@ public class VaultCertificateFilterParametersValidator : AbstractCursorValidator
     public VaultCertificateFilterParametersValidator()
     {
         RuleFor(request => request.Owner).MustBeNetworkAddressOrEmpty().WithMessage("Owner must be valid address.");
-        RuleFor(request => request.Status).MustBeValidEnumValueOrDefault().WithMessage("Status must be valid for the enumeration values.");
+        RuleForEach(request => request.Status).MustBeValidEnumValueOrDefault().WithMessage("Status must be valid for the enumeration values.");
         RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit).WithMessage($"Limit must be between 1 and {Cursor.DefaultMaxLimit}.");
     }
 }

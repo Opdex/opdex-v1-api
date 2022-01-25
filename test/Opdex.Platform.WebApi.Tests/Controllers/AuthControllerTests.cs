@@ -75,6 +75,37 @@ public class AuthControllerTests
     }
 
     [Fact]
+    public async Task StratisSignatureAuth_CallCirrusVerifyMessageQuery_Send()
+    {
+        // Arrange
+        var query = new StratisSignatureAuthCallbackQuery
+        {
+            Uid = Guid.NewGuid().ToString(),
+            Exp = DateTimeOffset.UtcNow.AddDays(1).ToUnixTimeSeconds()
+        };
+        var body = new StratisSignatureAuthCallbackBody
+        {
+            PublicKey = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV",
+            Signature = "H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc="
+        };
+
+        var cancellationToken = CancellationToken.None;
+        using (var cts = new CancellationTokenSource()) { cancellationToken = cts.Token; }
+
+        // Act
+        try
+        {
+            await _controller.StratisSignatureAuth(query, body, cancellationToken);
+        }
+        catch (Exception) { }
+
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<CallCirrusVerifyMessageQuery>(call => call.Message == $"api.opdex.com:44392/auth?uid={query.Uid}&exp={query.Exp}"
+                                                                                               && call.Signer == body.PublicKey
+                                                                                               && call.Signature == body.Signature), cancellationToken), Times.Once);
+    }
+
+    [Fact]
     public async Task StratisSignatureAuthCallback_CallCirrusVerifyMessageQuery_Send()
     {
         // Arrange
@@ -100,9 +131,34 @@ public class AuthControllerTests
         catch (Exception) { }
 
         // Assert
-        _mediatorMock.Verify(callTo => callTo.Send(It.Is<CallCirrusVerifyMessageQuery>(call => call.Message == $"api.opdex.com:44392/auth?uid={query.Uid}&exp={query.Exp}"
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<CallCirrusVerifyMessageQuery>(call => call.Message == $"api.opdex.com:44392/auth/callback?uid={query.Uid}&exp={query.Exp}"
                                                                                                && call.Signer == body.PublicKey
                                                                                                && call.Signature == body.Signature), cancellationToken), Times.Once);
+    }
+
+    [Fact]
+    public async Task StratisSignatureAuth_InvalidSignature_ThrowInvalidDataException()
+    {
+        // Arrange
+        var query = new StratisSignatureAuthCallbackQuery
+        {
+            Uid = Guid.NewGuid().ToString(),
+            Exp = DateTimeOffset.UtcNow.AddDays(1).ToUnixTimeSeconds()
+        };
+        var body = new StratisSignatureAuthCallbackBody
+        {
+            PublicKey = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV",
+            Signature = "H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc="
+        };
+
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusVerifyMessageQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
+
+        // Act
+        Task Act() => _controller.StratisSignatureAuth(query, body, CancellationToken.None);
+
+        // Assert
+        var exception = await Assert.ThrowsAsync<InvalidDataException>(Act);
+        exception.PropertyName.Should().Be("signature");
     }
 
     [Fact]
@@ -131,6 +187,33 @@ public class AuthControllerTests
     }
 
     [Fact]
+    public async Task StratisSignatureAuth_Uid_Decrypt()
+    {
+        // Arrange
+        var query = new StratisSignatureAuthCallbackQuery
+        {
+            Uid = Guid.NewGuid().ToString(),
+            Exp = DateTimeOffset.UtcNow.AddDays(1).ToUnixTimeSeconds()
+        };
+        var body = new StratisSignatureAuthCallbackBody
+        {
+            PublicKey = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV",
+            Signature = "H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc="
+        };
+
+        var connectionId = "CONNECTION_ID";
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusVerifyMessageQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => $"{connectionId}{query.Exp}");
+
+        // Act
+        await _controller.StratisSignatureAuth(query, body, CancellationToken.None);
+
+        // Assert
+        _fakeTwoWayEncryptionProvider.DecryptCalls.Count.Should().Be(1);
+        _fakeTwoWayEncryptionProvider.DecryptCalls.Dequeue().Should().BeEquivalentTo(Base64Extensions.UrlSafeBase64Decode(query.Uid).ToArray());
+    }
+
+    [Fact]
     public async Task StratisSignatureAuthCallback_Uid_Decrypt()
     {
         // Arrange
@@ -145,8 +228,9 @@ public class AuthControllerTests
             Signature = "H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc="
         };
 
+        var connectionId = "CONNECTION_ID";
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusVerifyMessageQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => "CONNECTION_ID");
+        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => $"{connectionId}{query.Exp}");
 
         // Act
         await _controller.StratisSignatureAuthCallback(query, body, CancellationToken.None);
@@ -154,6 +238,32 @@ public class AuthControllerTests
         // Assert
         _fakeTwoWayEncryptionProvider.DecryptCalls.Count.Should().Be(1);
         _fakeTwoWayEncryptionProvider.DecryptCalls.Dequeue().Should().BeEquivalentTo(Base64Extensions.UrlSafeBase64Decode(query.Uid).ToArray());
+    }
+
+    [Fact]
+    public async Task StratisSignatureAuth_DecryptionError_ThrowInvalidDataException()
+    {
+        // Arrange
+        var query = new StratisSignatureAuthCallbackQuery
+        {
+            Uid = Guid.NewGuid().ToString(),
+            Exp = DateTimeOffset.UtcNow.AddDays(1).ToUnixTimeSeconds()
+        };
+        var body = new StratisSignatureAuthCallbackBody
+        {
+            PublicKey = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV",
+            Signature = "H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc="
+        };
+
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusVerifyMessageQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => throw new CryptographicException("Invalid key."));
+
+        // Act
+        Task Act() => _controller.StratisSignatureAuth(query, body, CancellationToken.None);
+
+        // Assert
+        var exception = await Assert.ThrowsAsync<InvalidDataException>(Act);
+        exception.PropertyName.Should().Be("uid");
     }
 
     [Fact]
@@ -200,7 +310,7 @@ public class AuthControllerTests
         var connectionId = "CONNECTION_ID";
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusVerifyMessageQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => connectionId);
+        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => $"{connectionId}{query.Exp}");
 
         var cancellationToken = CancellationToken.None;
         using (var cts = new CancellationTokenSource()) { cancellationToken = cts.Token; }
@@ -211,6 +321,86 @@ public class AuthControllerTests
         // Assert
         _mediatorMock.Verify(callTo => callTo.Send(
                                  It.Is<NotifyUserOfSuccessfulAuthenticationCommand>(command => command.ConnectionId == connectionId), cancellationToken), Times.Once);
+    }
+
+    [Fact]
+    public async Task StratisSignatureAuth_InvalidExp_ThrowInvalidDataException()
+    {
+        // Arrange
+        var query = new StratisSignatureAuthCallbackQuery
+        {
+            Uid = Guid.NewGuid().ToString(),
+            Exp = DateTimeOffset.UtcNow.AddDays(1).ToUnixTimeSeconds()
+        };
+        var body = new StratisSignatureAuthCallbackBody
+        {
+            PublicKey = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV",
+            Signature = "H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc="
+        };
+
+        var connectionId = "CONNECTION_ID";
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusVerifyMessageQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => $"{connectionId}{query.Exp + 1}");
+
+        // Act
+        await _controller
+            .Invoking(c => c.StratisSignatureAuth(query, body, CancellationToken.None))
+            .Should().ThrowAsync<InvalidDataException>()
+            .WithMessage("*Invalid expiration.*");
+    }
+
+    [Fact]
+    public async Task StratisSignatureAuthCallback_InvalidExp_ThrowInvalidDataException()
+    {
+        // Arrange
+        var query = new StratisSignatureAuthCallbackQuery
+        {
+            Uid = Guid.NewGuid().ToString(),
+            Exp = DateTimeOffset.UtcNow.AddDays(1).ToUnixTimeSeconds()
+        };
+        var body = new StratisSignatureAuthCallbackBody
+        {
+            PublicKey = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV",
+            Signature = "H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc="
+        };
+
+        var connectionId = "CONNECTION_ID";
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusVerifyMessageQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => $"{connectionId}{query.Exp + 1}");
+
+        // Act
+        await _controller
+            .Invoking(c => c.StratisSignatureAuthCallback(query, body, CancellationToken.None))
+            .Should().ThrowAsync<InvalidDataException>()
+            .WithMessage("*Invalid expiration.*");
+    }
+
+    [Fact]
+    public async Task StratisSignatureAuth_OnSuccess_ReturnsJwt()
+    {
+        // Arrange
+        var query = new StratisSignatureAuthCallbackQuery
+        {
+            Uid = Guid.NewGuid().ToString(),
+            Exp = DateTimeOffset.UtcNow.AddDays(1).ToUnixTimeSeconds()
+        };
+        var body = new StratisSignatureAuthCallbackBody
+        {
+            PublicKey = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV",
+            Signature = "H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc="
+        };
+
+        var connectionId = "CONNECTION_ID";
+
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusVerifyMessageQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => $"{connectionId}{query.Exp}");
+
+        // Act
+        var response = await _controller.StratisSignatureAuth(query, body, CancellationToken.None);
+
+        // Assert
+        response.Result.Should().BeOfType<OkObjectResult>();
+        ((OkObjectResult)response.Result).Value.Should().NotBeNull();
     }
 
     [Fact]
@@ -231,7 +421,7 @@ public class AuthControllerTests
         var connectionId = "CONNECTION_ID";
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusVerifyMessageQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => connectionId);
+        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => $"{connectionId}{query.Exp}");
 
         // Act
         var response = await _controller.StratisSignatureAuthCallback(query, body, CancellationToken.None);

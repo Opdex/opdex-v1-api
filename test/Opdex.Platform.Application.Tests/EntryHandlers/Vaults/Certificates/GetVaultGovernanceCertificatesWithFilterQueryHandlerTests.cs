@@ -43,7 +43,7 @@ public class GetVaultCertificatesWithFilterQueryHandlerTests
     public async Task Handle_RetrieveVaultByAddressQuery_Send()
     {
         // Arrange
-        var cursor = new VaultCertificatesCursor(Address.Empty, VaultCertificateStatusFilter.All, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+        var cursor = new VaultCertificatesCursor(Address.Empty, null, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
         var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
         var cancellationToken = new CancellationTokenSource().Token;
 
@@ -66,7 +66,7 @@ public class GetVaultCertificatesWithFilterQueryHandlerTests
     public async Task Handle_RetrieveVaultCertificatesWithFilterQuery_Send()
     {
         // Arrange
-        var cursor = new VaultCertificatesCursor(Address.Empty, VaultCertificateStatusFilter.All, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+        var cursor = new VaultCertificatesCursor(Address.Empty, null, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
         var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
         var cancellationToken = new CancellationTokenSource().Token;
 
@@ -92,7 +92,7 @@ public class GetVaultCertificatesWithFilterQueryHandlerTests
     public async Task Handle_CertificatesRetrieved_AssembleResults()
     {
         // Arrange
-        var cursor = new VaultCertificatesCursor(Address.Empty, VaultCertificateStatusFilter.All, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+        var cursor = new VaultCertificatesCursor(Address.Empty, null, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
         var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
         var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
@@ -114,11 +114,11 @@ public class GetVaultCertificatesWithFilterQueryHandlerTests
     public async Task Handle_LessThanLimitPlusOneResults_RemoveZero()
     {
         // Arrange
-        var cursor = new VaultCertificatesCursor(Address.Empty, VaultCertificateStatusFilter.All, SortDirectionType.ASC, 3, PagingDirection.Backward, 55);
+        var cursor = new VaultCertificatesCursor(Address.Empty, null, SortDirectionType.ASC, 3, PagingDirection.Backward, 55);
         var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
         var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        var certificates = new []
+        var certificates = new[]
         {
             new VaultCertificate(5, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
             new VaultCertificate(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
@@ -139,11 +139,11 @@ public class GetVaultCertificatesWithFilterQueryHandlerTests
     public async Task Handle_LimitPlusOneResultsPagingBackward_RemoveFirst()
     {
         // Arrange
-        var cursor = new VaultCertificatesCursor(Address.Empty, VaultCertificateStatusFilter.All, SortDirectionType.ASC, 2, PagingDirection.Backward, 55);
+        var cursor = new VaultCertificatesCursor(Address.Empty, null, SortDirectionType.ASC, 2, PagingDirection.Backward, 55);
         var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
         var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        var certificates = new []
+        var certificates = new[]
         {
             new VaultCertificate(5, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
             new VaultCertificate(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
@@ -164,11 +164,11 @@ public class GetVaultCertificatesWithFilterQueryHandlerTests
     public async Task Handle_LimitPlusOneResultsPagingForward_RemoveLast()
     {
         // Arrange
-        var cursor = new VaultCertificatesCursor(Address.Empty, VaultCertificateStatusFilter.All, SortDirectionType.ASC, 2, PagingDirection.Forward, 55);
+        var cursor = new VaultCertificatesCursor(Address.Empty, null, SortDirectionType.ASC, 2, PagingDirection.Forward, 55);
         var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
         var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        var certificates = new []
+        var certificates = new[]
         {
             new VaultCertificate(5, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
             new VaultCertificate(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
@@ -189,11 +189,11 @@ public class GetVaultCertificatesWithFilterQueryHandlerTests
     public async Task Handle_FirstRequestInPagedResults_ReturnCursor()
     {
         // Arrange
-        var cursor = new VaultCertificatesCursor(Address.Empty, VaultCertificateStatusFilter.All, SortDirectionType.ASC, 2, PagingDirection.Forward, default);
+        var cursor = new VaultCertificatesCursor(Address.Empty, null, SortDirectionType.ASC, 2, PagingDirection.Forward, default);
         var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
         var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        var certificates = new []
+        var certificates = new[]
         {
             new VaultCertificate(5, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
             new VaultCertificate(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
@@ -215,11 +215,11 @@ public class GetVaultCertificatesWithFilterQueryHandlerTests
     public async Task Handle_PagingForwardWithMoreResults_ReturnCursor()
     {
         // Arrange
-        var cursor = new VaultCertificatesCursor(Address.Empty, VaultCertificateStatusFilter.All, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
+        var cursor = new VaultCertificatesCursor(Address.Empty, null, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
         var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
         var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        var certificates = new []
+        var certificates = new[]
         {
             new VaultCertificate(55, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
             new VaultCertificate(60, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
@@ -241,11 +241,11 @@ public class GetVaultCertificatesWithFilterQueryHandlerTests
     public async Task Handle_PagingBackwardWithMoreResults_ReturnCursor()
     {
         // Arrange
-        var cursor = new VaultCertificatesCursor(Address.Empty, VaultCertificateStatusFilter.All, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
+        var cursor = new VaultCertificatesCursor(Address.Empty, null, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
         var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
         var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        var certificates = new []
+        var certificates = new[]
         {
             new VaultCertificate(55, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
             new VaultCertificate(60, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
@@ -267,7 +267,7 @@ public class GetVaultCertificatesWithFilterQueryHandlerTests
     public async Task Handle_PagingForwardLastPage_ReturnCursor()
     {
         // Arrange
-        var cursor = new VaultCertificatesCursor(Address.Empty, VaultCertificateStatusFilter.All, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
+        var cursor = new VaultCertificatesCursor(Address.Empty, null, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
         var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
         var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
@@ -292,7 +292,7 @@ public class GetVaultCertificatesWithFilterQueryHandlerTests
     public async Task Handle_PagingBackwardLastPage_ReturnCursor()
     {
         // Arrange
-        var cursor = new VaultCertificatesCursor(Address.Empty, VaultCertificateStatusFilter.All, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
+        var cursor = new VaultCertificatesCursor(Address.Empty, null, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
         var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
         var vault = new Vault(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);

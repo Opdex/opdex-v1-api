@@ -33,7 +33,7 @@ public class MarketFilterParametersValidatorTests
     }
 
     [Theory]
-    [InlineData(MarketType.All)]
+    [InlineData(MarketType.Any)]
     [InlineData(MarketType.Staking)]
     [InlineData(MarketType.Standard)]
     public void MarketType_Valid(MarketType marketType)

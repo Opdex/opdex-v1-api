@@ -127,7 +127,7 @@ public class SelectMarketsWithFilterQueryHandler : IRequestHandler<SelectMarkets
         }
 
         // market type filter
-        if (request.Cursor.Type != MarketType.All)
+        if (request.Cursor.Type != MarketType.Any)
         {
             var stakingTokenIdOperator = request.Cursor.Type == MarketType.Standard ? '=' : '>';
             whereFilterBuilder.AppendCondition($"m.{nameof(MarketEntity.StakingTokenId)} {stakingTokenIdOperator} 0");

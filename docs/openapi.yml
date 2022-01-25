@@ -10,7 +10,7 @@ info:
     name: MIT
     url: https://github.com/Opdex/opdex-v1-api/blob/main/LICENSE
 servers:
-  - url: https://test-api.opdex.com/v1
+  - url: https://v1-test-api.opdex.com/v1
 tags:
   - name: Authentication
     description: Authenticate with the API
@@ -259,33 +259,35 @@ components:
         - Symbol
         - DailyPriceChangePercent
         - PriceUsd
-    tokenType:
-      type: string
-      description: Token type filter
-      enum:
-        - Provisional
-        - NonProvisional
-    stakingStatus:
+    stakingStatusFilter:
       type: string
       description: Staking status filter
       enum:
+        - Any
         - Enabled
         - Disabled
-    miningStatus:
+      default: Any
+    miningStatusFilter:
       description: Mining status filter
       enum:
+        - Any
         - Enabled
         - Disabled
-    nominationStatus:
+      default: Any
+    nominationStatusFilter:
       description: Nomination status filter
       enum:
+        - Any
         - Nominated
         - Excluded
+      default: Any
     miningActivityStatus:
       description: Mining activity status filter
       enum:
+        - Any
         - Active
         - Inactive
+      default: Any
     liquidityPoolOrderByType:
       type: string
       description: Property to sort liquidity pools by
@@ -307,12 +309,14 @@ components:
         - DailyLiquidityUsdChangePercent
         - DailyStakingUsdChangePercent
         - DailyStakingWeightChangePercent
-    marketType:
+    marketTypeFilter:
       type: string
       description: Market type filter
       enum:
+        - Any
         - Staking
         - Standard
+      default: Any
     interval:
       type: string
       description: Snapshot step interval
@@ -2815,13 +2819,33 @@ components:
           description: Whether the vote is in favor of the proposal
 paths:
   /auth:
+    get:
+      tags:
+        - Authentication
+      summary: Get Stratis Id
+      description: >
+        Returns a new Stratis Id to sign and authenticate.
+        See the [specification](https://github.com/Opdex/SSAS) for further detail.
+      operationId: getStratisId
+      responses:
+        200:
+          description: Stratis Id was created
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: sid:test-app.opdex.com/v1/auth?uid=nd0ZT7yrMpLPa207v1uGk0uu9NNcKILgn0HLJXpLQxGKuI9RKnugLdZPz_05a2tX-rCuN0tHM6z3_Qs1yi0Lyg&exp=1643082000
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
     post:
       tags:
         - Authentication
       summary: Stratis Signature Auth
       description: >
-        Responds to a request from a Stratis Signature Auth Signer.
-        See the [specification](https://github.com/Opdex/SSAS) for futher detail.
+        Responds to a request from a Stratis Signature Auth signer directly.
+        See the [specification](https://github.com/Opdex/SSAS) for further detail.
       operationId: authenticate
       parameters:
         - name: uid
@@ -2834,6 +2858,71 @@ paths:
         - name: exp
           in: query
           description: Unix timestamp indicating when the signature expires
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 0
+            maximum: 273402300799
+          example: 1641220000
+      requestBody:
+        description: The Stratis Signature Auth body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/stratisSignatureAuthRequest"
+            example:
+              signature: H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc=
+              publicKey: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+      responses:
+        200:
+          description: Signature was validated successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ3YWxsZXQiOiJQUFFkZVhkaldEQnpWTFVqZ1d3aTRtRlA0WTFtaHVOY1J1IiwibmJmIjoxNjQzMDgxNzM5LCJleHAiOjE2NDMxNjgxMzcsImlhdCI6MTY0MzA4MTczN30.xjiwjPxzgYbQlP6ON2-Mg3S7m-dWww41FISVXhOGEFY
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  exp:
+                    - Expiration date must be a unix timestamp.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /auth/callback:
+    post:
+      tags:
+        - Authentication
+      summary: Stratis Signature Auth Callback
+      description: >
+        Responds to a request from a Stratis Signature Auth signer's wallet.
+        See the [specification](https://github.com/Opdex/SSAS) for further detail.
+      operationId: authenticate callback
+      parameters:
+        - name: uid
+          in: query
+          description: Unique identifier for the Stratis ID
+          required: true
+          schema:
+            type: string
+          example: Lf5t5J-oAn3CZ9YY27JnK5XtpbjIOD3BxyvHhd80AQ4fsJ7o0J8i5uSjzHZ9jeS3
+        - name: exp
+          in: query
+          description: Unix timestamp indicating when the signature expires
+          required: true
           schema:
             type: integer
             format: int64
@@ -2951,19 +3040,19 @@ paths:
           in: query
           description: Staking status filter; default is not to filter
           schema:
-            $ref: "#/components/schemas/stakingStatus"
+            $ref: "#/components/schemas/stakingStatusFilter"
           example: Enabled
         - name: nominationStatus
           in: query
           description: Nomination status filter; default is not to filter
           schema:
-            $ref: "#/components/schemas/nominationStatus"
+            $ref: "#/components/schemas/nominationStatusFilter"
           example: Nominated
         - name: miningStatus
           in: query
           description: Mining status filter; default is not to filter
           schema:
-            $ref: "#/components/schemas/miningStatus"
+            $ref: "#/components/schemas/miningStatusFilter"
           example: Enabled
         - name: orderBy
           in: query
@@ -4026,7 +4115,7 @@ paths:
           in: query
           description: Market type filter
           schema:
-            $ref: "#/components/schemas/marketType"
+            $ref: "#/components/schemas/marketTypeFilter"
           example: Staking
         - name: orderBy
           in: query
@@ -4780,12 +4869,15 @@ paths:
           schema:
             $ref: "#/components/schemas/address"
           example: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
-        - name: tokenType
+        - name: tokenAttributes
           in: query
-          description: Token type filter
+          description: Token attributes filter
           schema:
-            $ref: "#/components/schemas/tokenType"
-          example: Provisional
+            type: array
+            items:
+              $ref: "#/components/schemas/tokenAttributeFilter"
+          example:
+            - Provisional
         - name: tokens
           in: query
           description: Specific tokens to include
@@ -4876,8 +4968,7 @@ paths:
                 title: One or more validation errors occurred.
                 status: 400
                 errors:
-                  tokenType:
-                    - The value 'New' is not valid for TokenType.
+                  tokenAttributes:
                     - Filters cannot be provided alongside cursor.
                 extensions:
                   traceId: 00-00000000000000000000000000000000-0000000000000000-00
@@ -5837,12 +5928,15 @@ paths:
       description: Retrieves details of all tracked tokens across markets. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
       operationId: getTokens
       parameters:
-        - name: tokenType
+        - name: tokenAttributes
           in: query
-          description: Token type filter
+          description: Token attributes filter
           schema:
-            $ref: "#/components/schemas/tokenType"
-          example: Provisional
+            type: array
+            items:
+              $ref: "#/components/schemas/tokenAttributeFilter"
+          example:
+            - Provisional
         - name: tokens
           in: query
           description: Specific tokens to include
@@ -5928,8 +6022,7 @@ paths:
                 title: One or more validation errors occurred.
                 status: 400
                 errors:
-                  tokenType:
-                    - The value 'New' is not valid for TokenType.
+                  tokenAttributes:
                     - Filters cannot be provided alongside cursor.
                 extensions:
                   traceId: 00-00000000000000000000000000000000-0000000000000000-00
@@ -6786,8 +6879,11 @@ paths:
           in: query
           description: Status of the certificates
           schema:
-            $ref: "#/components/schemas/certificateStatus"
-          example: Vesting
+            type: array
+            items:
+              $ref: "#/components/schemas/certificateStatus"
+          example:
+            - Vesting
         - name: direction
           in: query
           description: Order direction of the results
@@ -7017,14 +7113,20 @@ paths:
           in: query
           description: Status of the proposal
           schema:
-            $ref: "#/components/schemas/proposalStatus"
-          example: Complete
+            type: array
+            items:
+              $ref: "#/components/schemas/proposalStatus"
+          example:
+            - Complete
         - name: type
           in: query
           description: Type of proposal
           schema:
-            $ref: "#/components/schemas/proposalType"
-          example: Create
+            type: array
+            items:
+              $ref: "#/components/schemas/proposalType"
+          example:
+            - Create
         - name: direction
           in: query
           description: Order direction of the results
