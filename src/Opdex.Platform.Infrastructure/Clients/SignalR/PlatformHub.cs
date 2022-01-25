@@ -15,7 +15,7 @@ public class PlatformHub : Hub<IPlatformClient>
     public PlatformHub(ITwoWayEncryptionProvider twoWayEncryptionProvider, AuthConfiguration authConfiguration, OpdexConfiguration opdexConfiguration)
     {
         _twoWayEncryptionProvider = twoWayEncryptionProvider ?? throw new ArgumentNullException(nameof(twoWayEncryptionProvider));
-        var created = Uri.TryCreate($"{opdexConfiguration.ApiUrl}/{authConfiguration.StratisSignatureAuth.CallbackPath}", UriKind.Absolute, out var uri);
+        var created = Uri.TryCreate($"{opdexConfiguration.ApiUrl}/{authConfiguration.StratisSignatureAuth.CallbackPath}/callback", UriKind.Absolute, out var uri);
         if (!created) throw new Exception("Unable to create callback URI");
         _authCallback = $"{uri.Authority}{uri.AbsolutePath}";
     }
