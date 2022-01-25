@@ -2777,7 +2777,7 @@ paths:
       operationId: getStratisId
       responses:
         200:
-          description: Signature was validated successfully
+          description: Stratis Id was created
           content:
             text/plain:
               schema:
