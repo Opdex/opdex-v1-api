@@ -10,7 +10,7 @@ info:
     name: MIT
     url: https://github.com/Opdex/opdex-v1-api/blob/main/LICENSE
 servers:
-  - url: https://test-api.opdex.com/v1
+  - url: https://v1-test-api.opdex.com/v1
 tags:
   - name: Authentication
     description: Authenticate with the API
