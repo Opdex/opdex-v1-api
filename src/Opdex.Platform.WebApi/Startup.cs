@@ -75,6 +75,7 @@ public class Startup
             options.ShouldLogUnhandledException = (context, exception, problem) => problem.Status == 500;
             options.Map<InvalidDataException>(e => ProblemDetailsTemplates.CreateValidationProblemDetails(e.PropertyName, e.Message));
             options.Map<AlreadyIndexedException>(e => new StatusCodeProblemDetails(StatusCodes.Status400BadRequest) { Detail = e.Message });
+            options.Map<NotAllowedException>(e => new StatusCodeProblemDetails(StatusCodes.Status403Forbidden) { Detail = e.Message });
             options.Map<NotFoundException>(e => new StatusCodeProblemDetails(StatusCodes.Status404NotFound) { Detail = e.Message });
             options.Map<TooManyRequestsException>((context, exception) =>
             {
