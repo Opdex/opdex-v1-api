@@ -36,7 +36,7 @@ public class TransactionQuoteResponseModel : ITransactionResponseModel
     public IReadOnlyCollection<TransactionEvent> Events { get; set; }
 
     /// <summary>
-    /// Encoded transaction request, which can be used to replay or broadcast the transaction.
+    /// Transaction request which can be used to replay or broadcast the transaction.
     /// </summary>
     public QuotedTransactionModel Request { get; set; }
 }

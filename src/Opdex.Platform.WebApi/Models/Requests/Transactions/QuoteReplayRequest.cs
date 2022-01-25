@@ -8,5 +8,5 @@ public class QuoteReplayRequest
     /// <summary>
     /// Request for a quoted transaction.
     /// </summary>
-    public QuotedTransactionModel Quote { get; set; }
+    public QuotedTransactionModel Request { get; set; }
 }

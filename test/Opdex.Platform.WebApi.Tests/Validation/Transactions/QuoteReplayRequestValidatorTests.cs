@@ -16,34 +16,34 @@ public class QuoteReplayRequestValidatorTests
     }
 
     [Fact]
-    public void Quote_Null_Invalid()
+    public void Request_Null_Invalid()
     {
         // Arrange
         var request = new QuoteReplayRequest
         {
-            Quote = null
+            Request = null
         };
 
         // Act
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(r => r.Quote);
+        result.ShouldHaveValidationErrorFor(r => r.Request);
     }
 
     [Fact]
-    public void Quote_NotNull_Valid()
+    public void Request_NotNull_Valid()
     {
         // Arrange
         var request = new QuoteReplayRequest
         {
-            Quote = new QuotedTransactionModel()
+            Request = new QuotedTransactionModel()
         };
 
         // Act
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldNotHaveValidationErrorFor(r => r.Quote);
+        result.ShouldNotHaveValidationErrorFor(r => r.Request);
     }
 }

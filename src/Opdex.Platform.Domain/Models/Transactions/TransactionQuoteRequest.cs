@@ -1,3 +1,4 @@
+using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using System;
@@ -33,7 +34,7 @@ public class TransactionQuoteRequest
 
         Sender = sender;
         To = to;
-        Amount = amount;
+        Amount = amount.Resize(TokenConstants.Cirrus.Decimals);
         Method = method;
         Callback = callback;
         Parameters = parameters ?? new List<TransactionQuoteRequestParameter>().AsReadOnly();

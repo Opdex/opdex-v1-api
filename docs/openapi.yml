@@ -3229,7 +3229,15 @@ paths:
                     eventType: CreateLiquidityPoolEvent
                     contract: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
                     sortOrder: 0
-                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0N1JvckE3eFFDTVZZS1BNMWliUEUxTlNzd2FMYnBxTFFiIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNyZWF0ZVBvb2wiLCJwYXJhbWV0ZXJzIjpbeyJsYWJlbCI6IlRva2VuIEFkZHJlc3MiLCJ2YWx1ZSI6IjkjdEE4OG1MQVl0M2dUcDVlcUZSNnNyY2VBUHJUTmY0dGRGeSJ9XSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
+                  amount: "0.00000000"
+                  method: CreatePool
+                  parameters:
+                    - label: Token Address
+                      value: 9#tA88mLAYt3gTp5eqFR6srceAPrTNf4tdFy
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -4830,7 +4838,17 @@ paths:
                     eventType: TransferEvent
                     contract: tLizuHmyCZdibEMRCuiXzNuHuzDcbrFd93
                     sortOrder: 0
-                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0U1B0U3QxZUVubjVTcTlGOXdjY3FwYjVwMW5hbURaVmRmIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNvbGxlY3RNYXJrZXRGZWVzIiwicGFyYW1ldGVycyI6W3sibGFiZWwiOiJUb2tlbiIsInZhbHVlIjoiOSN0R1NrMmRWRU51cUFRMnJOWGJ1aTM3WEh1dXJGQ1RxYWREIn0seyJsYWJlbCI6IkFtb3VudCIsInZhbHVlIjoiMTIjMTAwIn1dLCJjYWxsYmFjayI6Imh0dHBzOi8vdGVzdC1hcGkub3BkZXguY29tL3RyYW5zYWN0aW9ucyJ9
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: tSPtSt1eEnn5Sq9F9wccqpb5p1namDZVdf
+                  amount: "0.00000100"
+                  method: CollectMarketFees
+                  parameters:
+                    - label: Token
+                      value: 9#tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                    - label: Amount
+                      value: 12#100
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -6594,7 +6612,7 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
-  /transaction/{hash}:
+  /transactions/{hash}:
     get:
       tags:
         - Transactions
@@ -6667,7 +6685,7 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
-  /transaction/replay-quote:
+  /transactions/replay-quote:
     post:
       tags:
         - Transactions
@@ -6681,7 +6699,17 @@ paths:
             schema:
               $ref: "#/components/schemas/replayQuoteRequest"
             example:
-              quote: TODO
+              request:
+                sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                to: tSPtSt1eEnn5Sq9F9wccqpb5p1namDZVdf
+                amount: "0.00000000"
+                method: CollectMarketFees
+                parameters:
+                  - label: Token
+                    value: 9#tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                  - label: Amount
+                    value: 12#1000000000
+                callback: https://v1-test-api.opdex.com/v1/transactions
       security:
         - opdexAuth: []
       responses:
@@ -6692,10 +6720,22 @@ paths:
               schema:
                 $ref: "#/components/schemas/transactionQuoteResponse"
               example:
-                error: Unable to distribute, not yet ready.
-                gasUsed: 10118
+                error:
+                  friendly: Could not collect fees, not enough funds.
+                  raw: "Stratis.SmartContracts.SmartContractAssertException: OPDEX: INVALID_TRANSFER_TO\n   at Stratis.SmartContracts.SmartContract.Assert(Boolean condition, String message)\n   at OpdexStandardMarket.SafeTransferTo(Address token, Address to, UInt256 amount)\n   at OpdexStandardMarket.CollectMarketFees(Address token, UInt256 amount)"
+                gasUsed: 20389
                 events: []
-                request: eyJzZW5kZXIiOiJ0SFlIZW03Y0xLZ29Ma2ViNzkyeW40V2F5cUt6THJqSmFrIiwidG8iOiJ0QmVZMlVBVnNiSG9TOWp3RW5UMmtNbVJzSndVSEsxajFMIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkRpc3RyaWJ1dGUiLCJwYXJhbWV0ZXJzIjpbXSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: tSPtSt1eEnn5Sq9F9wccqpb5p1namDZVdf
+                  amount: "0.00000000"
+                  method: CollectMarketFees
+                  parameters:
+                    - label: Token
+                      value: 9#tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                    - label: Amount
+                      value: 12#1000000000
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -6707,8 +6747,8 @@ paths:
                 title: One or more validation errors occurred.
                 status: 400
                 errors:
-                  quote:
-                    - Quote must be base-64 encoded string.
+                  request:
+                    - Quote request must be provided.
                 extensions:
                   traceId: 00-00000000000000000000000000000000-0000000000000000-00
         401:

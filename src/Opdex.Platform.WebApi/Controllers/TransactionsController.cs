@@ -12,7 +12,6 @@ using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Transactions;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Domain.Models.Transactions;
 using System.Linq;
 
 namespace Opdex.Platform.WebApi.Controllers;
@@ -85,11 +84,11 @@ public class TransactionsController : ControllerBase
     [Authorize]
     public async Task<ActionResult<TransactionQuoteResponseModel>> ReplayTransactionQuote([FromBody] QuoteReplayRequest request, CancellationToken cancellationToken)
     {
-        if (_context.Wallet != request.Quote.Sender) throw new NotAllowedException("Transaction quote is not for authenticated address.");
-        var quote = await _mediator.Send(new CreateTransactionQuoteCommand(request.Quote.Sender, request.Quote.To,
-                                                                            request.Quote.Amount, request.Quote.Method,
-                                                                            request.Quote.Parameters.Select(p => (p.Label, p.Value)),
-                                                                            request.Quote.Callback), cancellationToken);
+        if (_context.Wallet != request.Request.Sender) throw new NotAllowedException("Transaction quote is not for authenticated address.");
+        var quote = await _mediator.Send(new CreateTransactionQuoteCommand(request.Request.Sender, request.Request.To,
+                                                                            request.Request.Amount, request.Request.Method,
+                                                                            request.Request.Parameters.Select(p => (p.Label, p.Value)),
+                                                                            request.Request.Callback), cancellationToken);
         var response = _mapper.Map<TransactionQuoteResponseModel>(quote);
         return Ok(response);
     }
