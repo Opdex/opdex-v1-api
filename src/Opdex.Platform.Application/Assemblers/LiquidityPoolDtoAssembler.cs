@@ -49,6 +49,7 @@ public class LiquidityPoolDtoAssembler : IModelAssembler<LiquidityPool, Liquidit
         var poolDto = _mapper.Map<LiquidityPoolDto>(pool);
 
         // Assemble Tokens
+        poolDto.Market = market.Address;
         poolDto.CrsToken = await AssembleToken(Address.Cirrus);
         poolDto.SrcToken = await AssembleMarketToken(pool.SrcTokenId, market);
         poolDto.LpToken = await AssembleMarketToken(pool.LpTokenId, market);

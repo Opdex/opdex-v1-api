@@ -6,6 +6,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certificates;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -29,8 +30,9 @@ public class SelectVaultCertificatesWithFilterQueryHandlerTests
     public async Task Handle_Filter_ByHolder()
     {
         // Arrange
+        var statuses = new HashSet<VaultCertificateStatusFilter> { VaultCertificateStatusFilter.Redeemed };
         var holder = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-        var cursor = new VaultCertificatesCursor(holder, VaultCertificateStatusFilter.Redeemed, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+        var cursor = new VaultCertificatesCursor(holder, statuses, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
 
         // Act
         await _handler.Handle(new SelectVaultCertificatesWithFilterQuery(5, cursor), CancellationToken.None);
@@ -45,9 +47,10 @@ public class SelectVaultCertificatesWithFilterQueryHandlerTests
     public async Task SelectVaultCertificatesWithFilter_ByCursor_NextASC()
     {
         // Arrange
+        var statuses = new HashSet<VaultCertificateStatusFilter> { VaultCertificateStatusFilter.Redeemed };
         var orderBy = SortDirectionType.ASC;
         var limit = 25U;
-        var cursor = new VaultCertificatesCursor("", VaultCertificateStatusFilter.Revoked, orderBy, limit, PagingDirection.Forward, 55);
+        var cursor = new VaultCertificatesCursor("", statuses, orderBy, limit, PagingDirection.Forward, 55);
 
         // Act
         await _handler.Handle(new SelectVaultCertificatesWithFilterQuery(5, cursor), CancellationToken.None);
@@ -64,9 +67,10 @@ public class SelectVaultCertificatesWithFilterQueryHandlerTests
     public async Task SelectVaultCertificatesWithFilter_ByCursor_NextDESC()
     {
         // Arrange
+        var statuses = new HashSet<VaultCertificateStatusFilter> { VaultCertificateStatusFilter.Redeemed };
         var orderBy = SortDirectionType.DESC;
         var limit = 25U;
-        var cursor = new VaultCertificatesCursor("", VaultCertificateStatusFilter.Redeemed, orderBy, limit, PagingDirection.Forward, 55);
+        var cursor = new VaultCertificatesCursor("", statuses, orderBy, limit, PagingDirection.Forward, 55);
 
         // Act
         await _handler.Handle(new SelectVaultCertificatesWithFilterQuery(5, cursor), CancellationToken.None);
@@ -83,9 +87,10 @@ public class SelectVaultCertificatesWithFilterQueryHandlerTests
     public async Task SelectVaultCertificatesWithFilter_ByCursor_PreviousDESC()
     {
         // Arrange
+        var statuses = new HashSet<VaultCertificateStatusFilter> { VaultCertificateStatusFilter.Redeemed };
         var orderBy = SortDirectionType.DESC;
         var limit = 25U;
-        var cursor = new VaultCertificatesCursor("", VaultCertificateStatusFilter.Redeemed, orderBy, limit, PagingDirection.Backward, 55);
+        var cursor = new VaultCertificatesCursor("", statuses, orderBy, limit, PagingDirection.Backward, 55);
 
         // Act
         await _handler.Handle(new SelectVaultCertificatesWithFilterQuery(5, cursor), CancellationToken.None);
@@ -102,9 +107,10 @@ public class SelectVaultCertificatesWithFilterQueryHandlerTests
     public async Task SelectVaultCertificatesWithFilter_ByCursor_PreviousASC()
     {
         // Arrange
+        var statuses = new HashSet<VaultCertificateStatusFilter> { VaultCertificateStatusFilter.Redeemed };
         var orderBy = SortDirectionType.ASC;
         var limit = 25U;
-        var cursor = new VaultCertificatesCursor("", VaultCertificateStatusFilter.Redeemed, orderBy, limit, PagingDirection.Backward, 55);
+        var cursor = new VaultCertificatesCursor("", statuses, orderBy, limit, PagingDirection.Backward, 55);
 
         // Act
         await _handler.Handle(new SelectVaultCertificatesWithFilterQuery(5, cursor), CancellationToken.None);

@@ -2,6 +2,7 @@ using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Proposals;
+using System.Collections.Generic;
 
 namespace Opdex.Platform.WebApi.Models.Requests.Vaults;
 
@@ -11,13 +12,13 @@ public class VaultProposalFilterParameters : FilterParameters<VaultProposalsCurs
     /// Status of the proposal.
     /// </summary>
     /// <example>Vote</example>
-    public VaultProposalStatus Status { get; set; }
+    public HashSet<VaultProposalStatus> Status { get; set; }
 
     /// <summary>
     /// Type of proposal.
     /// </summary>
     /// <example>Create</example>
-    public VaultProposalType Type { get; set; }
+    public HashSet<VaultProposalType> Type { get; set; }
 
     /// <inheritdoc />
     protected override VaultProposalsCursor InternalBuildCursor()

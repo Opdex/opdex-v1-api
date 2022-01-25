@@ -2,28 +2,36 @@ using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certificates;
 
 public class VaultCertificatesCursor : Cursor<ulong>
 {
-    public VaultCertificatesCursor(Address holder, VaultCertificateStatusFilter status, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, ulong pointer)
+    public VaultCertificatesCursor(Address holder, HashSet<VaultCertificateStatusFilter> statuses, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, ulong pointer)
         : base(sortDirection, limit, pagingDirection, pointer)
     {
         Holder = holder;
-        Status = status;
+        Statuses = statuses ?? new HashSet<VaultCertificateStatusFilter>();
     }
 
     public Address Holder { get; }
-    public VaultCertificateStatusFilter Status { get; }
+    public HashSet<VaultCertificateStatusFilter> Statuses { get; }
 
     /// <inheritdoc />
     public override string ToString()
     {
         var pointerBytes = Encoding.UTF8.GetBytes(Pointer.ToString());
         var encodedPointer = Convert.ToBase64String(pointerBytes);
-        return $"holder:{Holder};status:{Status};direction:{SortDirection};limit:{Limit};paging:{PagingDirection};pointer:{encodedPointer};";
+
+        var sb = new StringBuilder();
+        sb.AppendFormat("direction:{0};limit:{1};paging:{2};", SortDirection, Limit, PagingDirection);
+        foreach (var status in Statuses) sb.AppendFormat("status:{0};", status);
+        sb.AppendFormat("holder:{0};", Holder);
+        sb.AppendFormat("pointer:{0};", encodedPointer);
+        return sb.ToString();
     }
 
     /// <inheritdoc />
@@ -32,7 +40,7 @@ public class VaultCertificatesCursor : Cursor<ulong>
         if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
         if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical id.");
 
-        return new VaultCertificatesCursor(Holder, Status, SortDirection, Limit, direction, pointer);
+        return new VaultCertificatesCursor(Holder, Statuses, SortDirection, Limit, direction, pointer);
     }
 
     /// <summary>
@@ -51,7 +59,7 @@ public class VaultCertificatesCursor : Cursor<ulong>
 
         TryGetCursorProperty<Address>(values, "holder", out var holder);
 
-        if (!TryGetCursorProperty<VaultCertificateStatusFilter>(values, "status", out var status)) return false;
+        TryGetCursorProperties<VaultCertificateStatusFilter>(values, "status", out var statuses);
 
         if (!TryGetCursorProperty<SortDirectionType>(values, "direction", out var direction)) return false;
 
@@ -67,7 +75,7 @@ public class VaultCertificatesCursor : Cursor<ulong>
 
         try
         {
-            cursor = new VaultCertificatesCursor(holder, status, direction, limit, paging, pointer);
+            cursor = new VaultCertificatesCursor(holder, statuses.ToHashSet(), direction, limit, paging, pointer);
         }
         catch (Exception)
         {
@@ -90,5 +98,5 @@ public class VaultCertificatesCursor : Cursor<ulong>
 
 public enum VaultCertificateStatusFilter
 {
-    All, Vesting, Redeemed, Revoked
+    Vesting = 1, Redeemed = 2, Revoked = 3
 }

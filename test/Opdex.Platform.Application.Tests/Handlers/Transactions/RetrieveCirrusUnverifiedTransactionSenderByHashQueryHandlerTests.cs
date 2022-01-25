@@ -3,6 +3,7 @@ using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Application.Handlers.Transactions;
+using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Transactions;
@@ -46,24 +47,19 @@ public class RetrieveCirrusUnverifiedTransactionSenderByHashQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_RawTransactionNull_ReturnEmpty()
+    public async Task Handle_RawTransactionNull_ThrowNotFoundException()
     {
         // Arrange
         using var cancellationTokenSource = new CancellationTokenSource();
         var cancellationToken = cancellationTokenSource.Token;
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetRawTransactionQuery>(), It.IsAny<CancellationToken>()))
-                     .ReturnsAsync((RawTransactionDto)null);
+            .Throws<NotFoundException>();
 
         var request = new RetrieveCirrusUnverifiedTransactionSenderByHashQuery(new Sha256(235345245268));
 
         // Act
-        var address = await _handler.Handle(request, cancellationToken);
-
-        // Assert
-        _mediatorMock.Verify(callTo => callTo.Send(It.Is<CallCirrusGetRawTransactionQuery>(
-            q => q.TransactionHash == request.TransactionHash), cancellationToken), Times.Exactly(3));
-        address.Should().Be(Address.Empty);
+        await _handler.Invoking(handler => handler.Handle(request, cancellationToken)).Should().ThrowAsync<NotFoundException>();
     }
 
     [Fact]

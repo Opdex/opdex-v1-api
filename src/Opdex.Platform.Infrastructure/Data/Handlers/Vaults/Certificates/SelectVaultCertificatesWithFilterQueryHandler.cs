@@ -10,6 +10,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certificates;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -100,17 +101,26 @@ public class SelectVaultCertificatesWithFilterQueryHandler : IRequestHandler<Sel
             whereFilterBuilder.Append($" AND c.{nameof(VaultCertificateEntity.Owner)} = @{nameof(SqlParams.Holder)}");
         }
 
-        switch (request.Cursor.Status)
+        if (request.Cursor.Statuses.Count > 0)
         {
-            case VaultCertificateStatusFilter.Vesting:
-                whereFilterBuilder.Append($" AND c.{nameof(VaultCertificateEntity.Redeemed)} = false");
-                break;
-            case VaultCertificateStatusFilter.Redeemed:
-                whereFilterBuilder.Append($" AND c.{nameof(VaultCertificateEntity.Redeemed)} = true");
-                break;
-            case VaultCertificateStatusFilter.Revoked:
-                whereFilterBuilder.Append($" AND c.{nameof(VaultCertificateEntity.Revoked)} = true");
-                break;
+            whereFilterBuilder.Append(" AND (");
+            for (int x = 0; x < request.Cursor.Statuses.Count; x++)
+            {
+                if (x > 0) whereFilterBuilder.Append(" OR ");
+                switch (request.Cursor.Statuses.ElementAt(x))
+                {
+                    case VaultCertificateStatusFilter.Vesting:
+                        whereFilterBuilder.Append($"c.{nameof(VaultCertificateEntity.Redeemed)} = false");
+                        break;
+                    case VaultCertificateStatusFilter.Redeemed:
+                        whereFilterBuilder.Append($"c.{nameof(VaultCertificateEntity.Redeemed)} = true");
+                        break;
+                    case VaultCertificateStatusFilter.Revoked:
+                        whereFilterBuilder.Append($"c.{nameof(VaultCertificateEntity.Revoked)} = true");
+                        break;
+                }
+            }
+            whereFilterBuilder.Append(')');
         }
 
         // Set the direction, moving backwards with previous requests, the sort order must be reversed first.

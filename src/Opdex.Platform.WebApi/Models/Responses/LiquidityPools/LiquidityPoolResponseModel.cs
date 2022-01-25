@@ -29,6 +29,12 @@ public class LiquidityPoolResponseModel
     public decimal TransactionFeePercent { get; set; }
 
     /// <summary>
+    /// The market address the liquidity pool is within.
+    /// </summary>
+    /// <example>t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb</example>
+    public Address Market { get; set; }
+
+    /// <summary>
     /// Tokens involved in the pool.
     /// </summary>
     public LiquidityPoolTokenGroupResponseModel Tokens { get; set; }

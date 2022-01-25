@@ -56,7 +56,7 @@ public class TransactionsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> NotifyBroadcasted([FromBody] TransactionBroadcastNotificationRequest request, CancellationToken cancellationToken)
     {
-        var notified = await _mediator.Send(new CreateNotifyUserOfTransactionBroadcastCommand(request.TransactionHash), cancellationToken);
+        var notified = await _mediator.Send(new CreateNotifyUserOfTransactionBroadcastCommand(request.TransactionHash, request.PublicKey), cancellationToken);
         if (!notified) throw new InvalidDataException(nameof(request.TransactionHash), "Invalid transaction state.");
         return NoContent();
     }

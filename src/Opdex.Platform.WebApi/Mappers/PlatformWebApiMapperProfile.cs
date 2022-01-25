@@ -114,6 +114,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.TransactionFeePercent, opt => opt.MapFrom(src => src.TransactionFee))
+            .ForMember(dest => dest.Market, opt => opt.MapFrom(src => src.Market))
             .ForMember(dest => dest.Tokens, opt => opt.MapFrom(src => src))
             .ForMember(dest => dest.MiningPool, opt => opt.MapFrom(src => src.MiningPool))
             .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))

@@ -4,6 +4,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certificates;
 using Opdex.Platform.WebApi.Models.Requests.Vaults;
 using Opdex.Platform.WebApi.Validation.Vaults;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Opdex.Platform.WebApi.Tests.Validation.Vaults;
@@ -59,7 +60,7 @@ public class VaultCertificateFilterParametersValidatorTests
         // Arrange
         var request = new VaultCertificateFilterParameters
         {
-            Status = (VaultCertificateStatusFilter)255
+            Status = new HashSet<VaultCertificateStatusFilter> { (VaultCertificateStatusFilter)255 }
         };
 
         // Act
@@ -79,7 +80,7 @@ public class VaultCertificateFilterParametersValidatorTests
         // Arrange
         var request = new VaultCertificateFilterParameters
         {
-            Status = type
+            Status = new HashSet<VaultCertificateStatusFilter> { type }
         };
 
         // Act
