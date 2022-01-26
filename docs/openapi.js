@@ -1,41 +1,46 @@
-// (function() {
-//     const checkExists = setInterval(function() {
-//         const servers = document.getElementsByClassName('servers');
-//
-//         if (!!servers && servers.length > 0) {
-//             const server = servers[0];
-//             replaceServerRoutes(server);
-//             clearInterval(checkExists);
-//         }
-//     }, 100);
-// })();
-//
-// // Find and replace server routes from default to the hosted domain of the current swagger instance
-// function replaceServerRoutes(server) {
-//     const domain = new URL(document.location.href);
-//     const domainReplacement = `${domain.origin}/v1`;
-//
-//     // Loop through each server
-//     for(let i = 0; i < server.childNodes.length; i++) {
-//         const serverLabel = server.childNodes[i];
-//
-//         // Loop through each server label
-//         if (serverLabel.childNodes.length) {
-//             for(let j = 0; j < serverLabel.childNodes.length; j++) {
-//                 const serverLabelSelect = serverLabel.childNodes[j];
-//                 serverLabelSelect.value = domainReplacement;
-//
-//                 // Loop through each server label's select dropdown (should only have 1)
-//                 for(let t = 0; t < serverLabelSelect.childNodes.length; t++) {
-//                     const severLabelSelectOption = serverLabelSelect.childNodes[j];
-//
-//                     // Loop through each select option and change to the current host
-//                     if (!severLabelSelectOption.value.includes(domainReplacement)) {
-//                         severLabelSelectOption.value = domainReplacement;
-//                         severLabelSelectOption.text = domainReplacement;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+window.addEventListener('load', () => setTimeout(setSwaggerUI, 100));
+
+function setSwaggerUI() {
+    const domainOrigin = window.location.origin;
+
+    // this is a full override of Swagger UI
+    window.ui = new SwaggerUIBundle({
+        urls: [{ url: `${domainOrigin}/swagger/v1/openapi.yml`, name: 'Opdex Platform API V1' }],
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        requestInterceptor: function (request) {
+            // request interceptor
+            // add custom headers here
+            return request;
+        },
+        onComplete: function () {
+            // on complete callback
+        },
+        presets: [
+            SwaggerUIBundle.presets.apis,
+            SwaggerUIStandalonePreset
+        ],
+        plugins: [
+            SwaggerUIBundle.plugins.DownloadUrl,
+
+            // Custom plugin that replaces the server list with the current url
+            function () {
+                return {
+                    statePlugins: {
+                        spec: {
+                            wrapActions: {
+                                updateJsonSpec: function (oriAction, system) {
+                                    return (spec) => {
+                                        spec.servers = [{url: `${domainOrigin}/v1`}]
+                                        return oriAction(spec)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        layout: "StandaloneLayout",
+    });
+}

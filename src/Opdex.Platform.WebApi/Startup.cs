@@ -275,16 +275,12 @@ public class Startup
             RequestPath = "/swagger/v1"
         });
 
-        // var url = Configuration["OpdexConfiguration:ApiUrl"];
-        // var requestInterceptor = @$"(request) => {{ if (!request.url.includes('swagger')) {{ var parts = request.url.split('/v1/'); request.url = '{url}/' + parts[1]; }} return request; }}";
-
         app.UseSwaggerUI(options =>
         {
             options.RoutePrefix = "swagger";
-            options.SwaggerEndpoint("v1/openapi.yml", "Opdex Platform API V1");
-            // options.UseRequestInterceptor(requestInterceptor);
-            // options.InjectJavascript("v1/openapi.js");
+            options.InjectJavascript("v1/openapi.js");
         });
+
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapHub<PlatformHub>("/v1/socket");
