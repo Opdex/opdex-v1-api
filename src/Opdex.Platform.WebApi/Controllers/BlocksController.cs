@@ -24,6 +24,11 @@ public class BlocksController : ControllerBase
         _mediator = mediator;
     }
 
+    /// <summary>Get Blocks</summary>
+    /// <remarks>Retrieves blocks that are indexed</remarks>
+    /// <param name="filters">Filter parameters</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Block results</returns>
     [HttpGet]
     public async Task<ActionResult<BlocksResponseModel>> GetBlocks(
         [FromQuery] BlockFilterParameters filters,
@@ -34,6 +39,11 @@ public class BlocksController : ControllerBase
         return Ok(results);
     }
 
+    /// <summary>Get Block</summary>
+    /// <remarks>Retrieves a block that is indexed by its height</remarks>
+    /// <param name="height">Height of the block</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Block details</returns>
     [HttpGet("{height}")]
     public async Task<ActionResult<BlockResponseModel>> GetBlock(ulong height, CancellationToken cancellationToken)
     {
