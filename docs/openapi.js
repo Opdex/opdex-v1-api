@@ -4,6 +4,7 @@ function setSwaggerUI() {
     const domainOrigin = window.location.origin;
 
     // this is a full override of Swagger UI
+    // Docs: https://swagger.io/docs/open-source-tools/swagger-ui/usage/configuration/
     window.ui = new SwaggerUIBundle({
         urls: [{ url: `${domainOrigin}/swagger/v1/openapi.yml`, name: 'Opdex Platform API V1' }],
         dom_id: '#swagger-ui',
