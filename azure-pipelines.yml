@@ -98,7 +98,7 @@ stages:
           displayName: "ReadMe Docs"
           steps:
             - task: CmdLine@2
-              displayName: Sync OpenAPI doc
+              displayName: "Sync OpenAPI doc"
               inputs:
                 script: |
                   npm install rdme
@@ -106,6 +106,7 @@ stages:
               env:
                 README_API_KEY: $(README_API_KEY)
           dependsOn: "test" # template deployment name == parameters.environment
+
   - stage: MAIN
     displayName: "Release to mainnet (Azure)"
     dependsOn: TEST
