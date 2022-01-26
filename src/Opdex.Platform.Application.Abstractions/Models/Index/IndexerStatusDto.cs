@@ -1,3 +1,4 @@
+using Opdex.Platform.Application.Abstractions.Models.Blocks;
 using Opdex.Platform.Domain.Models;
 using System;
 

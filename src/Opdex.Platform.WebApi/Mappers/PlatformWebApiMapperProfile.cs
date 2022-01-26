@@ -2,6 +2,7 @@ using AutoMapper;
 using Newtonsoft.Json;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
+using Opdex.Platform.Application.Abstractions.Models.Blocks;
 using Opdex.Platform.Application.Abstractions.Models.Index;
 using Opdex.Platform.Application.Abstractions.Models.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
@@ -27,6 +28,7 @@ using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Responses;
+using Opdex.Platform.WebApi.Models.Responses.Blocks;
 using Opdex.Platform.WebApi.Models.Responses.Index;
 using Opdex.Platform.WebApi.Models.Responses.MiningGovernances;
 using Opdex.Platform.WebApi.Models.Responses.LiquidityPools;
@@ -345,6 +347,10 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.Time))
             .ForMember(dest => dest.MedianTime, opt => opt.MapFrom(src => src.MedianTime))
             .ForAllOtherMembers(opt => opt.Ignore());
+
+        CreateMap<BlocksDto, BlocksResponseModel>()
+            .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Blocks))
+            .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
 
         CreateMap<IndexerStatusDto, IndexerStatusResponseModel>()
             .ForMember(dest => dest.Available, opt => opt.MapFrom(src => src.Available))

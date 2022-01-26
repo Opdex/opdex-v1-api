@@ -279,8 +279,9 @@ public class Startup
         app.UseSwaggerUI(options =>
         {
             options.RoutePrefix = "swagger";
-            options.SwaggerEndpoint("v1/openapi.yml", "Opdex Platform API V1");
+            options.InjectJavascript("v1/openapi.js");
         });
+
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapHub<PlatformHub>("/v1/socket");

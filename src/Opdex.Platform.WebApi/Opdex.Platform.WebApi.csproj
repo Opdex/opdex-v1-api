@@ -45,6 +45,7 @@
 
     <ItemGroup>
       <EmbeddedResource Include="..\..\docs\openapi.yml" />
+      <EmbeddedResource Include="..\..\docs\openapi.js" />
     </ItemGroup>
 
     <ItemGroup>
