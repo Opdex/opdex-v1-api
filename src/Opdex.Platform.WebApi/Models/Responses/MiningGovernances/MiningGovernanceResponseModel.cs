@@ -11,7 +11,7 @@ public class MiningGovernanceResponseModel
     /// <summary>
     /// Address of the mining governance contract.
     /// </summary>
-    /// <example>tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc</example>
+    /// <example>tKFkNiL5KJ3Q4br929i6hHbB4X4mt1MigF</example>
     public Address Address { get; set; }
 
     /// <summary>

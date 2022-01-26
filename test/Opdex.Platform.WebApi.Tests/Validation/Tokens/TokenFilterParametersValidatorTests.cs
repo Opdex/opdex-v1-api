@@ -42,7 +42,7 @@ public class TokenFilterParametersValidatorTests
     [InlineData("asdf")]
     [InlineData("fda")]
     [InlineData("89df7g78eh5qehgn8943hg3")]
-    [InlineData("tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc")]
+    [InlineData("tKFkNiL5KJ3Q4br929i6hHbB4X4mt1MigF")]
     [InlineData("Bitcoin Wrapped")]
     public void Keyword_Valid(string keyword)
     {
@@ -118,7 +118,7 @@ public class TokenFilterParametersValidatorTests
         // Arrange
         var request = new TokenFilterParameters
         {
-            Tokens = new List<Address> { new Address("tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc") }
+            Tokens = new List<Address> { new Address("tKFkNiL5KJ3Q4br929i6hHbB4X4mt1MigF") }
         };
 
         // Act
@@ -135,7 +135,7 @@ public class TokenFilterParametersValidatorTests
         // Arrange
         var request = new TokenFilterParameters
         {
-            TokenAttributes = new List<TokenAttributeFilter> {filter}
+            TokenAttributes = new List<TokenAttributeFilter> { filter }
         };
 
         // Act
@@ -154,7 +154,7 @@ public class TokenFilterParametersValidatorTests
         // Arrange
         var request = new TokenFilterParameters
         {
-            TokenAttributes = new List<TokenAttributeFilter> {first, second}
+            TokenAttributes = new List<TokenAttributeFilter> { first, second }
         };
 
         // Act

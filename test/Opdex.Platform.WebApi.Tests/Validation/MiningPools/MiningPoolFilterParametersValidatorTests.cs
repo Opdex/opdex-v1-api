@@ -43,7 +43,7 @@ public class MiningPoolFilterParametersValidatorTests
         // Arrange
         var request = new MiningPoolFilterParameters
         {
-            LiquidityPools = new List<Address>() { new Address("tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc") }
+            LiquidityPools = new List<Address>() { new Address("tKFkNiL5KJ3Q4br929i6hHbB4X4mt1MigF") }
         };
 
         // Act

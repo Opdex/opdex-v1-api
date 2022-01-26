@@ -82,13 +82,12 @@ public class TransactionsController : ControllerBase
     /// <returns>The replayed transaction quote.</returns>
     [HttpPost("replay-quote")]
     [Authorize]
-    public async Task<ActionResult<TransactionQuoteResponseModel>> ReplayTransactionQuote([FromBody] QuoteReplayRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<TransactionQuoteResponseModel>> ReplayTransactionQuote([FromBody] QuotedTransactionModel request, CancellationToken cancellationToken)
     {
-        if (_context.Wallet != request.Request.Sender) throw new NotAllowedException("Transaction quote is not for authenticated address.");
-        var quote = await _mediator.Send(new CreateTransactionQuoteCommand(request.Request.Sender, request.Request.To,
-                                                                            request.Request.Amount, request.Request.Method,
-                                                                            request.Request.Parameters.Select(p => (p.Label, p.Value)),
-                                                                            request.Request.Callback), cancellationToken);
+        if (_context.Wallet != request.Sender) throw new NotAllowedException("Transaction quote is not for authenticated address.");
+        var quote = await _mediator.Send(new CreateTransactionQuoteCommand(request.Sender, request.To, request.Amount, request.Method,
+                                                                           request.Parameters.Select(p => (p.Label, p.Value)),
+                                                                           request.Callback), cancellationToken);
         var response = _mapper.Map<TransactionQuoteResponseModel>(quote);
         return Ok(response);
     }

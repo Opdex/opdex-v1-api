@@ -1600,15 +1600,6 @@ components:
         publicKey:
           $ref: "#/components/schemas/address"
           description: The transaction sender's public key
-    replayQuoteRequest:
-      type: object
-      description: Request to replay a previous quote at the current point in time
-      required:
-        - quote
-      properties:
-        quote:
-          $ref: "#/components/schemas/quotedTransaction"
-          description: Previously received transaction quote
     quotedTransaction:
       type: object
       description: Quoted transaction that can be handed off to a wallet
@@ -3777,7 +3768,25 @@ paths:
                     eventType: AddLiquidityEvent
                     contract: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
                     sortOrder: 2
-                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0QUZ4cHhSZGNWOWZvQURxRDZnSzNjOHNZNU1lQU56RnA1IiwiYW1vdW50IjoiMjUuMDAwMDAwMDAiLCJtZXRob2QiOiJBZGRMaXF1aWRpdHkiLCJwYXJhbWV0ZXJzIjpbeyJsYWJlbCI6IlRva2VuIiwidmFsdWUiOiI5I3RHU2syZFZFTnVxQVEyck5YYnVpMzdYSHV1ckZDVHFhZEQifSx7ImxhYmVsIjoiU1JDIEFtb3VudCIsInZhbHVlIjoiMTIjODAwOTkifSx7ImxhYmVsIjoiTWluaW11bSBDUlMgQW1vdW50IiwidmFsdWUiOiI3IzI0MDAwMDAwMDAifSx7ImxhYmVsIjoiTWluaW11bSBTUkMgQW1vdW50IiwidmFsdWUiOiIxMiM3NTAwMCJ9LHsibGFiZWwiOiJSZWNpcGllbnQiLCJ2YWx1ZSI6IjkjdFE5UnVrWnNCNmJCc2VuSG5HU28xcTY5Q0p6V0dueG9obSJ9LHsibGFiZWwiOiJEZWFkbGluZSIsInZhbHVlIjoiNyMwIn1dLCJjYWxsYmFjayI6Imh0dHBzOi8vdGVzdC1hcGkub3BkZXguY29tL3RyYW5zYWN0aW9ucyJ9
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: tAFxpxRdcV9foADqD6gK3c8sY5MeANzFp5
+                  amount: "25.00000000"
+                  method: AddLiquidity
+                  parameters:
+                    - label: Token
+                      value: 9#tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                    - label: SRC Amount
+                      value: 12#80099
+                    - label: Minimum CRS Amount
+                      value: 7#2400000000
+                    - label: Minimum SRC Amount
+                      value: 12#75000
+                    - label: Recipient
+                      value: 9#tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    - label: Deadline
+                      value: 7#0
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -3924,7 +3933,25 @@ paths:
                     eventType: RemoveLiquidityEvent
                     contract: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
                     sortOrder: 3
-                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0QUZ4cHhSZGNWOWZvQURxRDZnSzNjOHNZNU1lQU56RnA1IiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IlJlbW92ZUxpcXVpZGl0eSIsInBhcmFtZXRlcnMiOlt7ImxhYmVsIjoiVG9rZW4iLCJ2YWx1ZSI6IjkjdEdTazJkVkVOdXFBUTJyTlhidWkzN1hIdXVyRkNUcWFkRCJ9LHsibGFiZWwiOiJPTFBUIEFtb3VudCIsInZhbHVlIjoiMTIjNTAwMDAwMCJ9LHsibGFiZWwiOiJNaW5pbXVtIENSUyBBbW91bnQiLCJ2YWx1ZSI6IjcjMSJ9LHsibGFiZWwiOiJNaW5pbXVtIFNSQyBBbW91bnQiLCJ2YWx1ZSI6IjEyIzEifSx7ImxhYmVsIjoiUmVjaXBpZW50IiwidmFsdWUiOiI5I3RROVJ1a1pzQjZiQnNlbkhuR1NvMXE2OUNKeldHbnhvaG0ifSx7ImxhYmVsIjoiRGVhZGxpbmUiLCJ2YWx1ZSI6IjcjMCJ9XSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: tAFxpxRdcV9foADqD6gK3c8sY5MeANzFp5
+                  amount: "0.00000000"
+                  method: RemoveLiquidity
+                  parameters:
+                    - label: Token
+                      value: 9#tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                    - label: OLPT Amount
+                      value: 12#5000000
+                    - label: Minimum CRS Amount
+                      value: 7#1
+                    - label: Minimum SRC Amount
+                      value: 12#1
+                    - label: Recipient
+                      value: 9#tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    - label: Deadline
+                      value: 7#0
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -3975,7 +4002,13 @@ paths:
               example:
                 gasUsed: 21458
                 events: []
-                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0VkZoWGNTM2dWYjQ5TVNUc2FERm9xa3hMckFVaU5FTjduIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IlN5bmMiLCJwYXJhbWV0ZXJzIjpbXSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                  amount: "0.00000000"
+                  method: Sync
+                  parameters: []
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -4040,7 +4073,15 @@ paths:
                     eventType: TransferEvent
                     contract: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
                     sortOrder: 0
-                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0VkZoWGNTM2dWYjQ5TVNUc2FERm9xa3hMckFVaU5FTjduIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IlNraW0iLCJwYXJhbWV0ZXJzIjpbeyJsYWJlbCI6IlJlY2lwaWVudCIsInZhbHVlIjoiOSN0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIn1dLCJjYWxsYmFjayI6Imh0dHBzOi8vdGVzdC1hcGkub3BkZXguY29tL3RyYW5zYWN0aW9ucyJ9
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                  amount: "0.00000000"
+                  method: Skim
+                  parameters:
+                    - label: Recipient
+                      value: 9#tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -4102,7 +4143,15 @@ paths:
                   raw: "Stratis.SmartContracts.SmartContractAssertException: OPDEX: INVALID_TRANSFER_FROM\r\n   at Stratis.SmartContracts.SmartContract.Assert(Boolean condition, String message)\r\n   at OpdexLiquidityPool.SafeTransferFrom(Address token, Address from, Address to, UInt256 amount)\r\n   at OpdexStakingPool.StartStaking(UInt256 amount)"
                 gasUsed: 27839
                 events: []
-                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0VkZoWGNTM2dWYjQ5TVNUc2FERm9xa3hMckFVaU5FTjduIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IlN0YXJ0U3Rha2luZyIsInBhcmFtZXRlcnMiOlt7ImxhYmVsIjoiQW1vdW50IiwidmFsdWUiOiIxMiMxMDAwMDAwMDAifV0sImNhbGxiYWNrIjoiaHR0cHM6Ly90ZXN0LWFwaS5vcGRleC5jb20vdHJhbnNhY3Rpb25zIn0=
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                  amount: "0.00000000"
+                  method: StartStaking
+                  parameters:
+                    - label: Amount
+                      value: 12#100000000
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -4165,7 +4214,17 @@ paths:
                   raw: "Stratis.SmartContracts.SmartContractAssertException: OPDEX: INVALID_AMOUNT\r\n   at Stratis.SmartContracts.SmartContract.Assert(Boolean condition, String message)\r\n   at OpdexStakingPool.StopStaking(UInt256 amount, Boolean liquidate)"
                 gasUsed: 15283
                 events: []
-                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0VkZoWGNTM2dWYjQ5TVNUc2FERm9xa3hMckFVaU5FTjduIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IlN0b3BTdGFraW5nIiwicGFyYW1ldGVycyI6W3sibGFiZWwiOiJBbW91bnQiLCJ2YWx1ZSI6IjEyIzEwMDAwMDAwMCJ9LHsibGFiZWwiOiJMaXF1aWRhdGUgUmV3YXJkcyIsInZhbHVlIjoiMSNGYWxzZSJ9XSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                  amount: "0.00000000"
+                  method: StopStaking
+                  parameters:
+                    - label: Amount
+                      value: 12#100000000
+                    - label: Liquidate Rewards
+                      value: 1#False
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -4224,7 +4283,15 @@ paths:
               example:
                 gasUsed: 16755
                 events: []
-                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0VkZoWGNTM2dWYjQ5TVNUc2FERm9xa3hMckFVaU5FTjduIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNvbGxlY3RTdGFraW5nUmV3YXJkcyIsInBhcmFtZXRlcnMiOlt7ImxhYmVsIjoiTGlxdWlkYXRlIFJld2FyZHMiLCJ2YWx1ZSI6IjEjRmFsc2UifV0sImNhbGxiYWNrIjoiaHR0cHM6Ly90ZXN0LWFwaS5vcGRleC5jb20vdHJhbnNhY3Rpb25zIn0=
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                  amount: "0.00000000"
+                  method: CollectStakingRewards
+                  parameters:
+                    - label: Liquidate Rewards
+                      value: 1#False
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -4578,7 +4645,15 @@ paths:
                     eventType: CreateMarketEvent
                     contract: tJi67WDN6uoSRWgqTWr3Gmobc5xQ3AEfnC
                     sortOrder: 0
-                request: eyJzZW5kZXIiOiJ0SFlIZW03Y0xLZ29Ma2ViNzkyeW40V2F5cUt6THJqSmFrIiwidG8iOiJ0Smk2N1dETjZ1b1NSV2dxVFdyM0dtb2JjNXhRM0FFZm5DIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNyZWF0ZVN0YWtpbmdNYXJrZXQiLCJwYXJhbWV0ZXJzIjpbeyJsYWJlbCI6IlN0YWtpbmcgVG9rZW4iLCJ2YWx1ZSI6IjkjdFRUdUtiQ1IyVW5zRUJ5WEJwMXluQno5MUoyeXo2M2gxYyJ9XSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: tJi67WDN6uoSRWgqTWr3Gmobc5xQ3AEfnC
+                  amount: "0.00000000"
+                  method: CreateStakingMarket
+                  parameters:
+                    - label: Staking Token
+                      value: 9#tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -4659,7 +4734,25 @@ paths:
                     eventType: SetPendingMarketOwnershipEvent
                     contract: tNiP367ETVYReXenrZXz5XQGVXt1FFHQz1
                     sortOrder: 2
-                request: eyJzZW5kZXIiOiJ0SFlIZW03Y0xLZ29Ma2ViNzkyeW40V2F5cUt6THJqSmFrIiwidG8iOiJ0Smk2N1dETjZ1b1NSV2dxVFdyM0dtb2JjNXhRM0FFZm5DIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNyZWF0ZVN0YW5kYXJkTWFya2V0IiwicGFyYW1ldGVycyI6W3sibGFiZWwiOiJNYXJrZXQgT3duZXIiLCJ2YWx1ZSI6IjkjdFE5UnVrWnNCNmJCc2VuSG5HU28xcTY5Q0p6V0dueG9obSJ9LHsibGFiZWwiOiJUcmFuc2FjdGlvbiBGZWUiLCJ2YWx1ZSI6IjUjNSJ9LHsibGFiZWwiOiJBdXRob3JpemUgUHJvdmlkZXJzIiwidmFsdWUiOiIxI0ZhbHNlIn0seyJsYWJlbCI6IkF1dGhvcml6ZSBQb29sIENyZWF0b3JzIiwidmFsdWUiOiIxI1RydWUifSx7ImxhYmVsIjoiQXV0aG9yaXplIFRyYWRlcnMiLCJ2YWx1ZSI6IjEjRmFsc2UifSx7ImxhYmVsIjoiRW5hYmxlIEZlZSIsInZhbHVlIjoiMSNUcnVlIn1dLCJjYWxsYmFjayI6Imh0dHBzOi8vdGVzdC1hcGkub3BkZXguY29tL3RyYW5zYWN0aW9ucyJ9
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: tJi67WDN6uoSRWgqTWr3Gmobc5xQ3AEfnC
+                  amount: "0.00000000"
+                  method: CreateStandardMarket
+                  parameters:
+                    - label: Market Owner
+                      value: 9#tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    - label: Transaction Fee
+                      value: 5#5
+                    - label: Authorize Providers
+                      value: 1#False
+                    - label: Authorize Pool Creators
+                      value: 1#True
+                    - label: Authorize Traders
+                      value: 1#False
+                    - label: Enable Fee
+                      value: 1#True
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -4724,7 +4817,15 @@ paths:
                     eventType: SetPendingMarketOwnershipEvent
                     contract: tSPtSt1eEnn5Sq9F9wccqpb5p1namDZVdf
                     sortOrder: 0
-                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0U1B0U3QxZUVubjVTcTlGOXdjY3FwYjVwMW5hbURaVmRmIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IlNldFBlbmRpbmdPd25lcnNoaXAiLCJwYXJhbWV0ZXJzIjpbeyJsYWJlbCI6Ik5ldyBPd25lciIsInZhbHVlIjoiOSN0SFlIZW03Y0xLZ29Ma2ViNzkyeW40V2F5cUt6THJqSmFrIn1dLCJjYWxsYmFjayI6Imh0dHBzOi8vdGVzdC1hcGkub3BkZXguY29tL3RyYW5zYWN0aW9ucyJ9
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: tSPtSt1eEnn5Sq9F9wccqpb5p1namDZVdf
+                  amount: "0.00000000"
+                  method: SetPendingOwnership
+                  parameters:
+                    - label: New Owner
+                      value: 9#tHYHem7cLKgoLkeb792yn4WayqKzLrjJak
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -4780,7 +4881,13 @@ paths:
                     eventType: ClaimPendingMarketOwnershipEvent
                     contract: tSPtSt1eEnn5Sq9F9wccqpb5p1namDZVdf
                     sortOrder: 0
-                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0U1B0U3QxZUVubjVTcTlGOXdjY3FwYjVwMW5hbURaVmRmIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNsYWltUGVuZGluZ093bmVyc2hpcCIsInBhcmFtZXRlcnMiOltdLCJjYWxsYmFjayI6Imh0dHBzOi8vdGVzdC1hcGkub3BkZXguY29tL3RyYW5zYWN0aW9ucyJ9
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: tSPtSt1eEnn5Sq9F9wccqpb5p1namDZVdf
+                  amount: "0.00000000"
+                  method: ClaimPendingOwnership
+                  parameters: []
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -4908,7 +5015,19 @@ paths:
                     eventType: ChangeMarketPermissionEvent
                     contract: tSPtSt1eEnn5Sq9F9wccqpb5p1namDZVdf
                     sortOrder: 0
-                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0U1B0U3QxZUVubjVTcTlGOXdjY3FwYjVwMW5hbURaVmRmIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkF1dGhvcml6ZSIsInBhcmFtZXRlcnMiOlt7ImxhYmVsIjoiVXNlciIsInZhbHVlIjoiOSN0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIn0seyJsYWJlbCI6IlBlcm1pc3Npb24iLCJ2YWx1ZSI6IjIjMyJ9LHsibGFiZWwiOiJBdXRob3JpemUiLCJ2YWx1ZSI6IjEjVHJ1ZSJ9XSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: tSPtSt1eEnn5Sq9F9wccqpb5p1namDZVdf
+                  amount: "0.00000000"
+                  method: Authorize
+                  parameters:
+                    - label: User
+                      value: 9#tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    - label: Permission
+                      value: 2#3
+                    - label: Authorize
+                      value: 1#True
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -5385,7 +5504,23 @@ paths:
                     eventType: SwapEvent
                     contract: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
                     sortOrder: 2
-                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0OFhwSDFwTllEZ0NucWs5MVpRS0xncFVWZUo3WG1vbUxUIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IlN3YXBFeGFjdFNyY0ZvckNycyIsInBhcmFtZXRlcnMiOlt7ImxhYmVsIjoiQW1vdW50IEluIiwidmFsdWUiOiIxMiMyNTAwMDAifSx7ImxhYmVsIjoiTWluaW11bSBBbW91bnQgT3V0IiwidmFsdWUiOiI3IzYxNDY5OTA0MTEifSx7ImxhYmVsIjoiVG9rZW4gSW4iLCJ2YWx1ZSI6IjkjdEdTazJkVkVOdXFBUTJyTlhidWkzN1hIdXVyRkNUcWFkRCJ9LHsibGFiZWwiOiJSZWNpcGllbnQiLCJ2YWx1ZSI6IjkjdFE5UnVrWnNCNmJCc2VuSG5HU28xcTY5Q0p6V0dueG9obSJ9LHsibGFiZWwiOiJEZWFkbGluZSIsInZhbHVlIjoiNyMyOTYwNDY0In1dLCJjYWxsYmFjayI6Imh0dHBzOi8vdGVzdC1hcGkub3BkZXguY29tL3RyYW5zYWN0aW9ucyJ9
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: t8XpH1pNYDgCnqk91ZQKLgpUVeJ7XmomLT
+                  amount: "0.00000000"
+                  method: SwapExactSrcForCrs
+                  parameters:
+                    - label: Amount In
+                      value: 12#250000
+                    - label: Minimum Amount Out
+                      value: 7#6146990411
+                    - label: Token In
+                      value: 9#tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                    - label: Recipient
+                      value: 9#tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    - label: Deadline
+                      value: 7#2960464
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -5573,7 +5708,7 @@ paths:
                 $ref: "#/components/schemas/miningGovernancesResponse"
               example:
                 results:
-                  - address: tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc
+                  - address: tKFkNiL5KJ3Q4br929i6hHbB4X4mt1MigF
                     periodEndBlock: 2987296
                     periodRemainingBlocks: 5918
                     periodBlockDuration: 164250
@@ -5616,7 +5751,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc
+          example: tKFkNiL5KJ3Q4br929i6hHbB4X4mt1MigF
       responses:
         200:
           description: Mining governance details found
@@ -5625,7 +5760,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/miningGovernanceResponse"
               example:
-                address: tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc
+                address: tKFkNiL5KJ3Q4br929i6hHbB4X4mt1MigF
                 periodEndBlock: 2987296
                 periodRemainingBlocks: 5918
                 periodBlockDuration: 164250
@@ -5668,7 +5803,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc
+          example: tKFkNiL5KJ3Q4br929i6hHbB4X4mt1MigF
       requestBody:
         required: true
         content:
@@ -5687,10 +5822,18 @@ paths:
               schema:
                 $ref: "#/components/schemas/transactionQuoteResponse"
               example:
-                error: Unable to reward mining pools, nomination period not yet ended.
+                error:
+                  friendly: Unable to reward mining pools, nomination period not yet ended.
+                  raw: "Stratis.SmartContracts.SmartContractAssertException: OPDEX: NOMINATION_PERIOD_ACTIVE\n   at Stratis.SmartContracts.SmartContract.Assert(Boolean condition, String message)\n   at OpdexMiningGovernance.EnsureNominationPeriodEnded()\n   at OpdexMiningGovernance.RewardMiningPools()"
                 gasUsed: 10070
                 events: []
-                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0VmZHVHFyVG9pVFU5YmZudkQ1VURDNVpRVlk0b2o0anJjIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IlJld2FyZE1pbmluZ1Bvb2xzIiwicGFyYW1ldGVycyI6W10sImNhbGxiYWNrIjoiaHR0cHM6Ly90ZXN0LWFwaS5vcGRleC5jb20vdHJhbnNhY3Rpb25zIn0=
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: tKFkNiL5KJ3Q4br929i6hHbB4X4mt1MigF
+                  amount: "0.00000000"
+                  method: RewardMiningPools
+                  parameters: []
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -5906,7 +6049,15 @@ paths:
                     eventType: StartMiningEvent
                     contract: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
                     sortOrder: 1
-                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0UnM2clhmSHVMaEtaaFd1V3B5Y0xBU3pBeW40a1hvNmJUIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IlN0YXJ0TWluaW5nIiwicGFyYW1ldGVycyI6W3sibGFiZWwiOiJBbW91bnQiLCJ2YWx1ZSI6IjEyIzEwMDAwMDAwIn1dLCJjYWxsYmFjayI6Imh0dHBzOi8vdGVzdC1hcGkub3BkZXguY29tL3RyYW5zYWN0aW9ucyJ9
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+                  amount: "0.00000000"
+                  method: StartMining
+                  parameters:
+                    - label: Amount
+                      value: 12#10000000
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -5979,7 +6130,15 @@ paths:
                     eventType: StopMiningEvent
                     contract: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
                     sortOrder: 1
-                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0UnM2clhmSHVMaEtaaFd1V3B5Y0xBU3pBeW40a1hvNmJUIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IlN0b3BNaW5pbmciLCJwYXJhbWV0ZXJzIjpbeyJsYWJlbCI6IkFtb3VudCIsInZhbHVlIjoiMTIjMTAwMDAwMDAifV0sImNhbGxiYWNrIjoiaHR0cHM6Ly90ZXN0LWFwaS5vcGRleC5jb20vdHJhbnNhY3Rpb25zIn0=
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+                  amount: "0.00000000"
+                  method: StopMining
+                  parameters:
+                    - label: Amount
+                      value: 12#10000000
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -6030,7 +6189,13 @@ paths:
               example:
                 gasUsed: 15014
                 events: []
-                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0UnM2clhmSHVMaEtaaFd1V3B5Y0xBU3pBeW40a1hvNmJUIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNvbGxlY3RNaW5pbmdSZXdhcmRzIiwicGFyYW1ldGVycyI6W10sImNhbGxiYWNrIjoiaHR0cHM6Ly90ZXN0LWFwaS5vcGRleC5jb20vdHJhbnNhY3Rpb25zIn0=
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+                  amount: "0.00000000"
+                  method: CollectMiningRewards
+                  parameters: []
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -6465,7 +6630,19 @@ paths:
                     eventType: ApprovalEvent
                     contract: tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3
                     sortOrder: 0
-                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0Rjgzc2RYWHQyblRrTDdVeUVZRFZGTUs0alR1WU1ibVIzIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkFwcHJvdmUiLCJwYXJhbWV0ZXJzIjpbeyJsYWJlbCI6IlNwZW5kZXIiLCJ2YWx1ZSI6IjkjdDhYcEgxcE5ZRGdDbnFrOTFaUUtMZ3BVVmVKN1htb21MVCJ9LHsibGFiZWwiOiJDdXJyZW50IEFsbG93YW5jZSIsInZhbHVlIjoiMTIjMjAwMDAwMDAwMDAwMDAwMCJ9LHsibGFiZWwiOiJOZXcgQWxsb3dhbmNlIiwidmFsdWUiOiIxMiMyMDAwMDAwMDAwMDAwMDAwMCJ9XSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3
+                  amount: "0.00000000"
+                  method: Approve
+                  parameters:
+                    - label: Spender
+                      value: 9#t8XpH1pNYDgCnqk91ZQKLgpUVeJ7XmomLT
+                    - label: Current Allowance
+                      value: 12#200000000000
+                    - label: New Allowance
+                      value: 12#20000000000000000
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -6524,7 +6701,13 @@ paths:
                     eventType: DistributionEvent
                     contract: "tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c"
                     sortOrder: 0
-                request: eyJzZW5kZXIiOiJ0SFlIZW03Y0xLZ29Ma2ViNzkyeW40V2F5cUt6THJqSmFrIiwidG8iOiJ0QmVZMlVBVnNiSG9TOWp3RW5UMmtNbVJzSndVSEsxajFMIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkRpc3RyaWJ1dGUiLCJjYWxsYmFjayI6Imh0dHBzOi8vdGVzdC1hcGkub3BkZXguY29tL3RyYW5zYWN0aW9ucyJ9
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L
+                  amount: "0.00000000"
+                  method: Distribute
+                  parameters: []
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -6642,7 +6825,7 @@ paths:
                         miningPool: tT9qtdXVvaf9fti7eUttnvaE7aSTrBgWPz
                         weight: "5010000.00000000"
                         eventType: NominationEvent
-                        contract: tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc
+                        contract: tKFkNiL5KJ3Q4br929i6hHbB4X4mt1MigF
                         sortOrder: 2
                   - success: true
                     hash: eb71dc3c295d66b9cf0c2459f0dc1e68a333b4c6637165c288fd364416ec9182
@@ -6831,22 +7014,22 @@ paths:
       operationId: replayQuote
       requestBody:
         required: true
+        description: Contents of the `request` property from a previously quoted transaction.
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/replayQuoteRequest"
+              $ref: "#/components/schemas/quotedTransaction"
             example:
-              request:
-                sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
-                to: tSPtSt1eEnn5Sq9F9wccqpb5p1namDZVdf
-                amount: "0.00000000"
-                method: CollectMarketFees
-                parameters:
-                  - label: Token
-                    value: 9#tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
-                  - label: Amount
-                    value: 12#1000000000
-                callback: https://v1-test-api.opdex.com/v1/transactions
+              sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+              to: tSPtSt1eEnn5Sq9F9wccqpb5p1namDZVdf
+              amount: "0.00000000"
+              method: CollectMarketFees
+              parameters:
+                - label: Token
+                  value: 9#tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                - label: Amount
+                  value: 12#1000000000
+              callback: https://v1-test-api.opdex.com/v1/transactions
       security:
         - opdexAuth: []
       responses:
@@ -7146,10 +7329,18 @@ paths:
               schema:
                 $ref: "#/components/schemas/transactionQuoteResponse"
               example:
-                error: Unable to redeem certificate, not found.
+                error:
+                  friendly: Unable to redeem certificate, not found.
+                  raw:
                 gasUsed: 10218
                 events: []
-                request: eyJzZW5kZXIiOiJQVnd5cWJ3dTVDYXplQUNvQU1Sb25hUVN5UnZUSFp2QVVoIiwidG8iOiJQVkM2RDZkZTZHNEVNdzdjaWJReXR6YjFEWWNZRjRNTEx1IiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IlJlZGVlbUNlcnRpZmljYXRlIiwicGFyYW1ldGVycyI6W10sImNhbGxiYWNrIjoiaHR0cHM6Ly9kZXYtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
+                  amount: "0.00000000"
+                  method: RedeemCertificate
+                  parameters: []
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -7433,7 +7624,19 @@ paths:
                     eventType: CreateVaultProposalEvent
                     contract: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                     sortOrder: 0
-                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0UzFQRUdDNFZzb3ZrRGdpYjFNRDNlWU52NUJMMkZBQzNpIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNyZWF0ZU5ld0NlcnRpZmljYXRlUHJvcG9zYWwiLCJwYXJhbWV0ZXJzIjpbeyJsYWJlbCI6IkFtb3VudCIsInZhbHVlIjoiMTIjMjUwMDAwMDAwMDAwMDAwIn0seyJsYWJlbCI6IlJlY2lwaWVudCIsInZhbHVlIjoiOSN0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIn0seyJsYWJlbCI6IkRlc2NyaXB0aW9uIiwidmFsdWUiOiI0I09WUC0xOiBSZXF1ZXN0IHRvIGNyZWF0ZSBjZXJ0aWZpY2F0ZS4gU2VlIGh0dHBzOi8vd3d3LmV4YW1wbGUuY29tIGZvciBkZXRhaWxzLiJ9XSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
+                  amount: "0.00000000"
+                  method: CreateNewCertificateProposal
+                  parameters:
+                    - label: Amount
+                      value: 12#250000000000000
+                    - label: Recipient
+                      value: 9#tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    - label: Description
+                      value: "4#OVP-1: Request to create certificate. See https://www.example.com for details."
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -7492,10 +7695,22 @@ paths:
               schema:
                 $ref: "#/components/schemas/transactionQuoteResponse"
               example:
-                error: Unable to propose revoking certificate, invalid certificate.
+                error:
+                  friendly: Unable to propose revoking certificate, invalid certificate.
+                  raw:
                 gasUsed: 10164
                 events: []
-                request: eyJzZW5kZXIiOiJQVnd5cWJ3dTVDYXplQUNvQU1Sb25hUVN5UnZUSFp2QVVoIiwidG8iOiJQVkM2RDZkZTZHNEVNdzdjaWJReXR6YjFEWWNZRjRNTEx1IiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNyZWF0ZVJldm9rZUNlcnRpZmljYXRlUHJvcG9zYWwiLCJwYXJhbWV0ZXJzIjpbeyJsYWJlbCI6IlJlY2lwaWVudCIsInZhbHVlIjoiOSNQQVZWMmM5TXVrOUV1NHdpOEZxZG1tNTVmZnpoQUZQZmZWIn0seyJsYWJlbCI6IkRlc2NyaXB0aW9uIiwidmFsdWUiOiI0I09WUC0xOiBSZXF1ZXN0IHRvIHJldm9rZSBjZXJ0aWZpY2F0ZS4gU2VlIGh0dHBzOi8vd3d3LmV4YW1wbGUuY29tIGZvciBkZXRhaWxzLiJ9XSwiY2FsbGJhY2siOiJodHRwczovL2Rldi1hcGkub3BkZXguY29tL3RyYW5zYWN0aW9ucyJ9
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
+                  amount: "0.00000000"
+                  method: CreateRevokeCertificateProposal
+                  parameters:
+                    - label: Recipient
+                      value: 9#tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    - label: Description
+                      value: "4#OVP-2: Request to revoke certificate. See https://www.example.com for details."
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -7567,7 +7782,17 @@ paths:
                     eventType: CreateVaultProposalEvent
                     contract: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                     sortOrder: 0
-                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0UzFQRUdDNFZzb3ZrRGdpYjFNRDNlWU52NUJMMkZBQzNpIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNyZWF0ZVRvdGFsUGxlZGdlTWluaW11bVByb3Bvc2FsIiwicGFyYW1ldGVycyI6W3sibGFiZWwiOiJBbW91bnQiLCJ2YWx1ZSI6IjEyIzUwMDAwMDAwMDAwMDAifSx7ImxhYmVsIjoiRGVzY3JpcHRpb24iLCJ2YWx1ZSI6IjQjT1ZQLTE6IFJlcXVlc3QgdG8gY2hhbmdlIG1pbmltdW0gcGxlZGdlIGFtb3VudC4gU2VlIGh0dHBzOi8vd3d3LmV4YW1wbGUuY29tIGZvciBkZXRhaWxzLiJ9XSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
+                  amount: "0.00000000"
+                  method: CreateTotalPledgeMinimumProposal
+                  parameters:
+                    - label: Amount
+                      value: 12#5000000000000
+                    - label: Description
+                      value: "4#OVP-3: Request to change minimum pledge amount. See https://www.example.com for details."
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -7639,7 +7864,17 @@ paths:
                     eventType: CreateVaultProposalEvent
                     contract: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                     sortOrder: 0
-                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0UzFQRUdDNFZzb3ZrRGdpYjFNRDNlWU52NUJMMkZBQzNpIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNyZWF0ZVRvdGFsVm90ZU1pbmltdW1Qcm9wb3NhbCIsInBhcmFtZXRlcnMiOlt7ImxhYmVsIjoiQW1vdW50IiwidmFsdWUiOiIxMiM1MDAwMDAwMDAwMDAifSx7ImxhYmVsIjoiRGVzY3JpcHRpb24iLCJ2YWx1ZSI6IjQjT1ZQLTE6IFJlcXVlc3QgdG8gY2hhbmdlIG1pbmltdW0gdm90ZSBhbW91bnQuIFNlZSBodHRwczovL3d3dy5leGFtcGxlLmNvbSBmb3IgZGV0YWlscy4ifV0sImNhbGxiYWNrIjoiaHR0cHM6Ly90ZXN0LWFwaS5vcGRleC5jb20vdHJhbnNhY3Rpb25zIn0=
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
+                  amount: "0.00000000"
+                  method: CreateTotalVoteMinimumProposal
+                  parameters:
+                    - label: Amount
+                      value: 12#500000000000
+                    - label: Description
+                      value: "4#OVP-4: Request to change minimum vote amount. See https://www.example.com for details."
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -7773,10 +8008,20 @@ paths:
               schema:
                 $ref: "#/components/schemas/transactionQuoteResponse"
               example:
-                error: Unable to complete proposal, not yet expired.
+                error:
+                  friendly: Unable to complete proposal, not yet expired.
+                  raw:
                 gasUsed: 10213
                 events: []
-                request: eyJzZW5kZXIiOiJQVnd5cWJ3dTVDYXplQUNvQU1Sb25hUVN5UnZUSFp2QVVoIiwidG8iOiJQVkM2RDZkZTZHNEVNdzdjaWJReXR6YjFEWWNZRjRNTEx1IiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNvbXBsZXRlUHJvcG9zYWwiLCJwYXJhbWV0ZXJzIjpbeyJsYWJlbCI6IlByb3Bvc2FsIElkIiwidmFsdWUiOiI3IzcifV0sImNhbGxiYWNrIjoiaHR0cHM6Ly9kZXYtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
+                  amount: "0.00000000"
+                  method: CompleteProposal
+                  parameters:
+                    - label: Proposal Id
+                      value: 7#1
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -7854,7 +8099,15 @@ paths:
                     eventType: VaultProposalPledgeEvent
                     contract: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                     sortOrder: 0
-                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0UzFQRUdDNFZzb3ZrRGdpYjFNRDNlWU52NUJMMkZBQzNpIiwiYW1vdW50IjoiNTAwMC4wMDAwMDAwMCIsIm1ldGhvZCI6IlBsZWRnZSIsInBhcmFtZXRlcnMiOlt7ImxhYmVsIjoiUHJvcG9zYWwgSWQiLCJ2YWx1ZSI6IjcjNyJ9XSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
+                  amount: "5000.00000000"
+                  method: Pledge
+                  parameters:
+                    - label: Proposal Id
+                      value: 7#1
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -7921,10 +8174,22 @@ paths:
               schema:
                 $ref: "#/components/schemas/transactionQuoteResponse"
               example:
-                error: Value overflow.
+                error:
+                  friendly: Value overflow.
+                  raw:
                 gasUsed: 10283
                 events: []
-                request: eyJzZW5kZXIiOiJQVnd5cWJ3dTVDYXplQUNvQU1Sb25hUVN5UnZUSFp2QVVoIiwidG8iOiJQVkM2RDZkZTZHNEVNdzdjaWJReXR6YjFEWWNZRjRNTEx1IiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IldpdGhkcmF3Vm90ZSIsInBhcmFtZXRlcnMiOlt7ImxhYmVsIjoiUHJvcG9zYWwgSWQiLCJ2YWx1ZSI6IjcjNyJ9LHsibGFiZWwiOiJXaXRoZHJhd2FsIEFtb3VudCIsInZhbHVlIjoiNyMxMDAwMDAwMDAwIn1dLCJjYWxsYmFjayI6Imh0dHBzOi8vZGV2LWFwaS5vcGRleC5jb20vdHJhbnNhY3Rpb25zIn0=
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
+                  amount: "0.00000000"
+                  method: WithdrawVote
+                  parameters:
+                    - label: Proposal Id
+                      value: 7#1
+                    - label: Withdrawal Amount
+                      value: 7#1000000000
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -8067,10 +8332,22 @@ paths:
               schema:
                 $ref: "#/components/schemas/transactionQuoteResponse"
               example:
-                error: Unable to vote, invalid status
+                error:
+                  friendly: Unable to vote, invalid status.
+                  raw:
                 gasUsed: 13674
                 events: []
-                request: eyJzZW5kZXIiOiJQVnd5cWJ3dTVDYXplQUNvQU1Sb25hUVN5UnZUSFp2QVVoIiwidG8iOiJQVkM2RDZkZTZHNEVNdzdjaWJReXR6YjFEWWNZRjRNTEx1IiwiYW1vdW50IjoiMTAwMDAuMDAwMDAwMDAiLCJtZXRob2QiOiJWb3RlIiwicGFyYW1ldGVycyI6W3sibGFiZWwiOiJQcm9wb3NhbCBJZCIsInZhbHVlIjoiNyM3In0seyJsYWJlbCI6IkluIEZhdm9yIiwidmFsdWUiOiIxI1RydWUifV0sImNhbGxiYWNrIjoiaHR0cHM6Ly9kZXYtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
+                  amount: "10000.00000000"
+                  method: Vote
+                  parameters:
+                    - label: Proposal Id
+                      value: 7#1
+                    - label: Favor
+                      value: 1#True
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
@@ -8137,10 +8414,22 @@ paths:
               schema:
                 $ref: "#/components/schemas/transactionQuoteResponse"
               example:
-                error: Value overflow.
+                error:
+                  friendly: Value overflow.
+                  raw:
                 gasUsed: 10290
                 events: []
-                request: eyJzZW5kZXIiOiJQVnd5cWJ3dTVDYXplQUNvQU1Sb25hUVN5UnZUSFp2QVVoIiwidG8iOiJQVkM2RDZkZTZHNEVNdzdjaWJReXR6YjFEWWNZRjRNTEx1IiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IldpdGhkcmF3Vm90ZSIsInBhcmFtZXRlcnMiOlt7ImxhYmVsIjoiUHJvcG9zYWwgSWQiLCJ2YWx1ZSI6IjcjNyJ9LHsibGFiZWwiOiJXaXRoZHJhd2FsIEFtb3VudCIsInZhbHVlIjoiNyMxMDAwMDAwMDAwIn1dLCJjYWxsYmFjayI6Imh0dHBzOi8vZGV2LWFwaS5vcGRleC5jb20vdHJhbnNhY3Rpb25zIn0=
+                request:
+                  sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                  to: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
+                  amount: "0.00000000"
+                  method: WithdrawVote
+                  parameters:
+                    - label: Proposal Id
+                      value: 7#1
+                    - label: Withdrawal Amount
+                      value: 7#1000000000
+                  callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
           content:
