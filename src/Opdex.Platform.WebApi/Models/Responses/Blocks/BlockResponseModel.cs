@@ -1,7 +1,7 @@
+using Opdex.Platform.Common.Models;
 using System;
-using System.ComponentModel.DataAnnotations;
 
-namespace Opdex.Platform.WebApi.Models.Responses;
+namespace Opdex.Platform.WebApi.Models.Responses.Blocks;
 
 /// <summary>
 /// Details for a block.
@@ -12,7 +12,7 @@ public class BlockResponseModel
     /// SHA-256 block hash.
     /// </summary>
     /// <example>095b8770671557437ecd2e45b634fca27eced555985e68ff72c5fd3818c07034</example>
-    public string Hash { get; set; }
+    public Sha256 Hash { get; set; }
 
     /// <summary>
     /// Block number.

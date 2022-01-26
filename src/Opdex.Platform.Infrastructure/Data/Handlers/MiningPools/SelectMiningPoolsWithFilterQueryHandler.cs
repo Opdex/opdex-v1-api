@@ -2,7 +2,6 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.MiningPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;

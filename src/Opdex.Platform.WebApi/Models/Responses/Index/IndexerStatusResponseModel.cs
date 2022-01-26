@@ -1,4 +1,5 @@
 using Opdex.Platform.Domain.Models;
+using Opdex.Platform.WebApi.Models.Responses.Blocks;
 using System;
 
 namespace Opdex.Platform.WebApi.Models.Responses.Index;

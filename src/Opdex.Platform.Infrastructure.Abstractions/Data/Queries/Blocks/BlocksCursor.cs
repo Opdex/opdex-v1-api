@@ -1,39 +1,32 @@
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Common.Models;
 using System;
 using System.Text;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MiningGovernances;
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Blocks;
 
-public class MiningGovernancesCursor : Cursor<ulong>
+public class BlocksCursor : Cursor<ulong>
 {
-    public MiningGovernancesCursor(Address minedToken, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, ulong pointer)
+    public BlocksCursor(SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, ulong pointer)
         : base(sortDirection, limit, pagingDirection, pointer)
     {
-        MinedToken = minedToken;
     }
-
-    /// <summary>
-    /// Filter for a particular mined token
-    /// </summary>
-    public Address MinedToken { get; }
 
     /// <inheritdoc />
     public override string ToString()
     {
         var pointerBytes = Encoding.UTF8.GetBytes(Pointer.ToString());
         var encodedPointer = Convert.ToBase64String(pointerBytes);
-        return $"minedToken:{MinedToken};direction:{SortDirection};limit:{Limit};paging:{PagingDirection};pointer:{encodedPointer};";
+        return $"direction:{SortDirection};limit:{Limit};paging:{PagingDirection};pointer:{encodedPointer};";
     }
 
     /// <inheritdoc />
     public override Cursor<ulong> Turn(PagingDirection direction, ulong pointer)
     {
         if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
-        if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical id.");
+        if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical pointer.");
 
-        return new MiningGovernancesCursor(MinedToken, SortDirection, Limit, direction, pointer);
+        return new BlocksCursor(SortDirection, Limit, direction, pointer);
     }
 
     /// <summary>
@@ -42,15 +35,13 @@ public class MiningGovernancesCursor : Cursor<ulong>
     /// <param name="raw">Stringified cursor</param>
     /// <param name="cursor">Parsed cursor</param>
     /// <returns>True if the value could be parsed, otherwise false</returns>
-    public static bool TryParse(string raw, out MiningGovernancesCursor cursor)
+    public static bool TryParse(string raw, out BlocksCursor cursor)
     {
         cursor = null;
 
         if (raw is null) return false;
 
         var values = ToDictionary(raw);
-
-        TryGetCursorProperty<Address>(values, "minedToken", out var minedToken);
 
         if (!TryGetCursorProperty<SortDirectionType>(values, "direction", out var direction)) return false;
 
@@ -66,7 +57,7 @@ public class MiningGovernancesCursor : Cursor<ulong>
 
         try
         {
-            cursor = new MiningGovernancesCursor(minedToken, direction, limit, paging, pointer);
+            cursor = new BlocksCursor(direction, limit, paging, pointer);
         }
         catch (Exception)
         {

@@ -1,3 +1,4 @@
+using Opdex.Platform.Application.Abstractions.Models.Blocks;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.Common.Models;
 using System.Collections.Generic;

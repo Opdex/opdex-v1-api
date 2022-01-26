@@ -252,6 +252,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
 
         // Blocks
         services.AddTransient<IRequestHandler<SelectLatestBlockQuery, Block>, SelectLatestBlockQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectBlocksWithFilterQuery, IEnumerable<Block>>, SelectBlocksWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<SelectBlockByHeightQuery, Block>, SelectBlockByHeightQueryHandler>();
         services.AddTransient<IRequestHandler<SelectBlockByMedianTimeQuery, Block>, SelectBlockByMedianTimeQueryHandler>();
 
