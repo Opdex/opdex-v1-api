@@ -20,6 +20,7 @@ public static class Serialization
             new AddressConverter(),
             new Sha256Converter(),
             new NullableSha256Converter(),
+            new DecimalConverter(),
             new FixedDecimalConverter(),
             new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ssK" }
         }
