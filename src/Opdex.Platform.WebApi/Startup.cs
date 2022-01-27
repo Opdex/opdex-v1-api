@@ -39,6 +39,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using FluentValidation.AspNetCore;
 using AspNetCoreRateLimit;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Opdex.Platform.WebApi.Exceptions;
 using Opdex.Platform.Common.Encryption;
 using Microsoft.AspNetCore.Mvc;
@@ -61,8 +62,11 @@ public class Startup
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddApplicationInsightsTelemetry();
-        services.AddApplicationInsightsTelemetryProcessor<IgnoreRequestPathsTelemetryProcessor>();
+        services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions
+        {
+            // disable default adaptive sampling configuration, instead we customise this in Configure
+            EnableAdaptiveSampling = false
+        });
 
         // gets rid of telemetry spam in the debug console, may prevent visual studio app insights monitoring
         TelemetryDebugWriter.IsTracingDisabled = true;
@@ -240,7 +244,7 @@ public class Startup
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, TelemetryConfiguration configuration)
     {
         if (env.IsDevelopment())
         {
@@ -252,6 +256,11 @@ public class Startup
             app.UseHsts();
             app.UseHttpsRedirection();
         }
+
+        var builder = configuration.DefaultTelemetrySink.TelemetryProcessorChainBuilder;
+        builder.UseAdaptiveSampling(maxTelemetryItemsPerSecond:5, excludedTypes:"Exception");
+        builder.Use(next => new IgnoreRequestPathsTelemetryProcessor(next));
+        builder.Build();
 
         app.UseSerilogRequestLogging();
         app.UseProblemDetails();
