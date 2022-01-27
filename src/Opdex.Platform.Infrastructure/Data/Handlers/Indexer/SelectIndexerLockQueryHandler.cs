@@ -38,7 +38,7 @@ public class SelectIndexerLockQueryHandler : IRequestHandler<SelectIndexerLockQu
 
         if (result == null)
         {
-            throw new NotFoundException($"Index lock not found.");
+            throw new NotFoundException("Index lock not found.");
         }
 
         return new IndexLock(result.Available, result.Locked, result.InstanceId, result.Reason, result.ModifiedDate);

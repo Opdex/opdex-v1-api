@@ -12,4 +12,6 @@ public class MiningGovernanceDto
     public FixedDecimal MiningPoolRewardPerPeriod { get; set; }
     public FixedDecimal TotalRewardsPerPeriod { get; set; }
     public Address MinedToken { get; set; }
+    public ulong CreatedBlock { get; set; }
+    public ulong ModifiedBlock { get; set; }
 }

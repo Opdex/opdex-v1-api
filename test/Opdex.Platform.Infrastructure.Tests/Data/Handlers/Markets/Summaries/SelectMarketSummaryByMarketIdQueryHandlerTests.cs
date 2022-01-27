@@ -15,7 +15,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets.Summaries;
 
 public class SelectMarketSummaryByMarketIdQueryHandlerTests
 {
-     private readonly Mock<IDbContext> _dbContext;
+    private readonly Mock<IDbContext> _dbContext;
     private readonly SelectMarketSummaryByMarketIdQueryHandler _handler;
 
     public SelectMarketSummaryByMarketIdQueryHandlerTests()
@@ -83,7 +83,7 @@ public class SelectMarketSummaryByMarketIdQueryHandlerTests
         _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"{nameof(MarketSummary)} not found.");
+            .WithMessage("Market summary not found.");
     }
 
     [Fact]

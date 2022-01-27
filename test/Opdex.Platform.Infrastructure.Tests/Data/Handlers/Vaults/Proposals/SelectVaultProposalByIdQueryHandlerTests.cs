@@ -89,7 +89,7 @@ public class SelectVaultProposalByIdQueryHandlerTests
         _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"{nameof(VaultProposal)} not found.");
+            .WithMessage("Proposal not found.");
     }
 
     [Fact]

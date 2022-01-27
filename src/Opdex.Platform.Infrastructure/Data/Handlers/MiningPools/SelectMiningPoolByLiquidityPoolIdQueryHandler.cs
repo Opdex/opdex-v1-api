@@ -45,7 +45,7 @@ public class SelectMiningPoolByLiquidityPoolIdQueryHandler : IRequestHandler<Sel
 
         if (request.FindOrThrow && result == null)
         {
-            throw new NotFoundException($"{nameof(MiningPool)} not found.");
+            throw new NotFoundException("Mining pool not found.");
         }
 
         return result == null ? null : _mapper.Map<MiningPool>(result);

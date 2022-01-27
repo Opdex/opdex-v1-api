@@ -78,7 +78,7 @@ public class SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQueryHandl
         _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"{nameof(VaultProposalPledge)} not found.");
+            .WithMessage("Proposal pledge not found.");
     }
 
     [Fact]

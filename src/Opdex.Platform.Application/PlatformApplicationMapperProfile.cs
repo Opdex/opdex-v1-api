@@ -79,6 +79,8 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.AuthTraders, opt => opt.MapFrom(src => src.AuthTraders))
             .ForMember(dest => dest.MarketFeeEnabled, opt => opt.MapFrom(src => src.MarketFeeEnabled))
             .ForMember(dest => dest.TransactionFeePercent, opt => opt.MapFrom(src => src.TransactionFee == 0 ? 0 : Math.Round((decimal)src.TransactionFee / 10, 1)))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<MarketSummary, MarketSummaryDto>()
@@ -89,6 +91,8 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.VolumeUsd, opt => opt.MapFrom(src => src.VolumeUsd))
             .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => src))
             .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => src))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<MarketSummary, MarketStakingDto>()
@@ -106,6 +110,7 @@ public class PlatformApplicationMapperProfile : Profile
         CreateMap<TokenSummary, TokenSummaryDto>()
             .ForMember(dest => dest.PriceUsd, opt => opt.MapFrom(src => src.PriceUsd))
             .ForMember(dest => dest.DailyPriceChangePercent, opt => opt.MapFrom(src => src.DailyPriceChangePercent))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -117,6 +122,8 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.Decimals, opt => opt.MapFrom(src => src.Decimals))
             .ForMember(dest => dest.Sats, opt => opt.MapFrom(src => src.Sats))
             .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply.ToDecimal(src.Decimals)))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
             .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -128,6 +135,8 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.Decimals, opt => opt.MapFrom(src => src.Decimals))
             .ForMember(dest => dest.Sats, opt => opt.MapFrom(src => src.Sats))
             .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply.ToDecimal(src.Decimals)))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForMember(dest => dest.Market, opt => opt.MapFrom(src => src.Market.Address))
             .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
             .ForAllOtherMembers(opt => opt.Ignore());
@@ -136,6 +145,8 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<Block, BlockDto>()
@@ -189,18 +200,21 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.Spender, opt => opt.MapFrom(src => src.Spender))
             .ForAllOtherMembers(opt => opt.Ignore());
 
-        // Todo: Can be wiped when the original Vault is removed, new vault will use assembler
         CreateMap<VaultCertificate, VaultCertificateDto>()
             .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
             .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount.ToDecimal(TokenConstants.Opdex.Decimals)))
             .ForMember(dest => dest.VestingStartBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.VestingEndBlock, opt => opt.MapFrom(src => src.VestedBlock))
             .ForMember(dest => dest.Redeemed, opt => opt.MapFrom(src => src.Redeemed))
-            .ForMember(dest => dest.Revoked, opt => opt.MapFrom(src => src.Revoked));
+            .ForMember(dest => dest.Revoked, opt => opt.MapFrom(src => src.Revoked))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock));
 
         CreateMap<Vault, VaultDto>()
             .ForMember(dest => dest.Vault, opt => opt.MapFrom(src => src.Address))
             .ForMember(dest => dest.VestingDuration, opt => opt.MapFrom(src => src.VestingDuration))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<VaultProposal, VaultProposalDto>()
@@ -212,19 +226,27 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
             .ForMember(dest => dest.Expiration, opt => opt.MapFrom(src => src.Expiration))
             .ForMember(dest => dest.Approved, opt => opt.MapFrom(src => src.Approved))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<VaultProposalPledge, VaultProposalPledgeDto>()
             .ForMember(dest => dest.Pledger, opt => opt.MapFrom(src => src.Pledger))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<VaultProposalVote, VaultProposalVoteDto>()
             .ForMember(dest => dest.Voter, opt => opt.MapFrom(src => src.Voter))
             .ForMember(dest => dest.InFavor, opt => opt.MapFrom(src => src.InFavor))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<AddressBalance, AddressBalanceDto>()
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Owner))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         // Transactions and Transaction Events

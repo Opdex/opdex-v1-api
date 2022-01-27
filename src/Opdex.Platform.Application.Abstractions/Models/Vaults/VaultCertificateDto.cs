@@ -11,5 +11,7 @@ public class VaultCertificateDto
     public ulong VestingEndBlock { get; set; }
     public bool Redeemed { get; set; }
     public bool Revoked { get; set; }
+    public ulong CreatedBlock { get; set; }
+    public ulong ModifiedBlock { get; set; }
     public IEnumerable<ulong> Proposals { get; set; }
 }

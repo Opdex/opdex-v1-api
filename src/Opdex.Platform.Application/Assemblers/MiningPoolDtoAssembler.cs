@@ -34,7 +34,9 @@ public class MiningPoolDtoAssembler : IModelAssembler<MiningPool, MiningPoolDto>
             RewardPerBlock = miningPool.RewardPerBlock,
             RewardPerLpt = miningPool.RewardPerLpt,
             TokensMining = tokensMining?.Balance ?? UInt256.Zero,
-            IsActive = miningPool.MiningPeriodEndBlock > latestBlock.Height
+            IsActive = miningPool.MiningPeriodEndBlock > latestBlock.Height,
+            CreatedBlock = miningPool.CreatedBlock,
+            ModifiedBlock = miningPool.ModifiedBlock
         };
     }
 }

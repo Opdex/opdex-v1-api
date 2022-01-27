@@ -66,6 +66,8 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Sats, opt => opt.MapFrom(src => src.Sats))
             .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
             .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.Attributes))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
             .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -100,6 +102,7 @@ public class PlatformWebApiMapperProfile : Profile
         CreateMap<TokenSummaryDto, TokenSummaryResponseModel>()
             .ForMember(dest => dest.PriceUsd, opt => opt.MapFrom(src => src.PriceUsd))
             .ForMember(dest => dest.DailyPriceChangePercent, opt => opt.MapFrom(src => src.DailyPriceChangePercent))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -117,6 +120,8 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.TransactionFeePercent, opt => opt.MapFrom(src => src.TransactionFee))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForMember(dest => dest.Market, opt => opt.MapFrom(src => src.Market))
             .ForMember(dest => dest.Tokens, opt => opt.MapFrom(src => src))
             .ForMember(dest => dest.MiningPool, opt => opt.MapFrom(src => src.MiningPool))
@@ -140,6 +145,8 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => src.Staking))
             .ForMember(dest => dest.Volume, opt => opt.MapFrom(src => src.Volume))
             .ForMember(dest => dest.Cost, opt => opt.MapFrom(src => src.Cost))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<LiquidityPoolSnapshotDto, LiquidityPoolSnapshotResponseModel>()
@@ -223,6 +230,8 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.RewardPerLpt, opt => opt.MapFrom(src => src.RewardPerLpt.ToDecimal(TokenConstants.Opdex.Decimals)))
             .ForMember(dest => dest.TokensMining, opt => opt.MapFrom(src => src.TokensMining.ToDecimal(TokenConstants.LiquidityPoolToken.Decimals)))
             .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<MiningPoolsDto, MiningPoolsResponseModel>()
@@ -262,6 +271,8 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.AuthTraders, opt => opt.MapFrom(src => src.AuthTraders))
             .ForMember(dest => dest.MarketFeeEnabled, opt => opt.MapFrom(src => src.MarketFeeEnabled))
             .ForMember(dest => dest.TransactionFeePercent, opt => opt.MapFrom(src => src.TransactionFeePercent))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
             .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -276,6 +287,8 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.VolumeUsd, opt => opt.MapFrom(src => src.VolumeUsd))
             .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => src.Staking))
             .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => src.Rewards))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<MarketStakingDto, MarketStakingResponseModel>()
@@ -299,7 +312,9 @@ public class PlatformWebApiMapperProfile : Profile
         CreateMap<AddressBalanceDto, AddressBalanceResponseModel>()
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
             .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance))
-            .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token));
+            .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock));
 
         CreateMap<AddressBalancesDto, AddressBalancesResponseModel>()
             .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Balances))
@@ -310,7 +325,9 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
             .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
             .ForMember(dest => dest.StakingToken, opt => opt.MapFrom(src => src.StakingToken))
-            .ForMember(dest => dest.LiquidityPool, opt => opt.MapFrom(src => src.LiquidityPool));
+            .ForMember(dest => dest.LiquidityPool, opt => opt.MapFrom(src => src.LiquidityPool))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock));
 
         CreateMap<StakingPositionsDto, StakingPositionsResponseModel>()
             .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Positions))
@@ -320,7 +337,9 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
             .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
             .ForMember(dest => dest.MiningToken, opt => opt.MapFrom(src => src.MiningToken))
-            .ForMember(dest => dest.MiningPool, opt => opt.MapFrom(src => src.MiningPool));
+            .ForMember(dest => dest.MiningPool, opt => opt.MapFrom(src => src.MiningPool))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock));
 
         CreateMap<MiningPositionsDto, MiningPositionsResponseModel>()
             .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Positions))
@@ -335,6 +354,8 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.MiningPoolRewardPerPeriod, opt => opt.MapFrom(src => src.MiningPoolRewardPerPeriod))
             .ForMember(dest => dest.PeriodsUntilRewardReset, opt => opt.MapFrom(src => src.PeriodsUntilRewardReset))
             .ForMember(dest => dest.TotalRewardsPerPeriod, opt => opt.MapFrom(src => src.TotalRewardsPerPeriod))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<MiningGovernancesDto, MiningGovernancesResponseModel>()
@@ -373,6 +394,8 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.VestingEndBlock, opt => opt.MapFrom(src => src.VestingEndBlock))
             .ForMember(dest => dest.Redeemed, opt => opt.MapFrom(src => src.Redeemed))
             .ForMember(dest => dest.Revoked, opt => opt.MapFrom(src => src.Revoked))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForMember(dest => dest.Proposals, opt => opt.MapFrom(src => src.Proposals));
 
         CreateMap<VaultCertificatesDto, VaultCertificatesResponseModel>()
@@ -387,7 +410,9 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.TokensLocked, opt => opt.MapFrom(src => src.TokensLocked))
             .ForMember(dest => dest.TotalPledgeMinimum, opt => opt.MapFrom(src => src.TotalPledgeMinimum))
             .ForMember(dest => dest.TotalVoteMinimum, opt => opt.MapFrom(src => src.TotalVoteMinimum))
-            .ForMember(dest => dest.VestingDuration, opt => opt.MapFrom(src => src.VestingDuration));
+            .ForMember(dest => dest.VestingDuration, opt => opt.MapFrom(src => src.VestingDuration))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock));
 
         CreateMap<VaultsDto, VaultsResponseModel>()
             .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Vaults))
@@ -408,6 +433,8 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.NoAmount, opt => opt.MapFrom(src => src.NoAmount))
             .ForMember(dest => dest.PledgeAmount, opt => opt.MapFrom(src => src.PledgeAmount))
             .ForMember(dest => dest.Approved, opt => opt.MapFrom(src => src.Approved))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForMember(dest => dest.Certificate, opt => opt.MapFrom(src => src.Certificate));
 
         CreateMap<VaultProposalsDto, VaultProposalsResponseModel>()
@@ -419,7 +446,9 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
             .ForMember(dest => dest.Pledger, opt => opt.MapFrom(src => src.Pledger))
             .ForMember(dest => dest.Pledge, opt => opt.MapFrom(src => src.Pledge))
-            .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance));
+            .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock));
 
         CreateMap<VaultProposalPledgesDto, VaultProposalPledgesResponseModel>()
             .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Pledges))
@@ -430,7 +459,9 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
             .ForMember(dest => dest.Voter, opt => opt.MapFrom(src => src.Voter))
             .ForMember(dest => dest.Vote, opt => opt.MapFrom(src => src.Vote))
-            .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance));
+            .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock));
 
         CreateMap<VaultProposalVotesDto, VaultProposalVotesResponseModel>()
             .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Votes))

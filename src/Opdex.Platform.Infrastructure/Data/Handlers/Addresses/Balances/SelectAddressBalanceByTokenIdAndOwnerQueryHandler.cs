@@ -46,7 +46,7 @@ public class SelectAddressBalanceByOwnerAndTokenIdQueryHandler
 
         if (request.FindOrThrow && result == null)
         {
-            throw new NotFoundException($"Balance not found.");
+            throw new NotFoundException("Balance not found.");
         }
 
         return result == null ? null : _mapper.Map<AddressBalance>(result);

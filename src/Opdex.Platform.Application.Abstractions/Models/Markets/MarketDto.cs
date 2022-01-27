@@ -16,5 +16,7 @@ public class MarketDto
     public bool AuthTraders { get; set; }
     public decimal TransactionFeePercent { get; set; }
     public bool MarketFeeEnabled { get; set; }
+    public ulong CreatedBlock { get; set; }
+    public ulong ModifiedBlock { get; set; }
     public MarketSummaryDto Summary { get; set; }
 }

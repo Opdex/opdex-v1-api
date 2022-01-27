@@ -55,7 +55,7 @@ public class SelectVaultProposalByVaultIdAndPublicIdQueryHandler
 
         if (request.FindOrThrow && result == null)
         {
-            throw new NotFoundException($"{nameof(VaultProposal)} not found.");
+            throw new NotFoundException("Proposal not found.");
         }
 
         return result == null ? null : _mapper.Map<VaultProposal>(result);

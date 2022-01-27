@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates;
 
-public class SelectVaultCertificateByIdQueryHandler: IRequestHandler<SelectVaultCertificateByIdQuery, VaultCertificate>
+public class SelectVaultCertificateByIdQueryHandler : IRequestHandler<SelectVaultCertificateByIdQuery, VaultCertificate>
 {
     private static readonly string SqlQuery =
         @$"SELECT
@@ -46,7 +46,7 @@ public class SelectVaultCertificateByIdQueryHandler: IRequestHandler<SelectVault
 
         if (request.FindOrThrow && result == null)
         {
-            throw new NotFoundException($"{nameof(VaultCertificate)} not found.");
+            throw new NotFoundException("Vault certificate not found.");
         }
 
         return result == null ? null : _mapper.Map<VaultCertificate>(result);

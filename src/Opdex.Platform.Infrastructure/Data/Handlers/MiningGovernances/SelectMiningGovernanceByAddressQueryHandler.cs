@@ -46,7 +46,7 @@ public class SelectMiningGovernanceByAddressQueryHandler : IRequestHandler<Selec
 
         if (request.FindOrThrow && result == null)
         {
-            throw new NotFoundException($"{nameof(MiningGovernance)} not found.");
+            throw new NotFoundException("Mining governance not found.");
         }
 
         return result == null ? null : _mapper.Map<MiningGovernance>(result);

@@ -52,7 +52,7 @@ public class SelectMarketSummaryByMarketIdQueryHandler
 
         if (request.FindOrThrow && result == null)
         {
-            throw new NotFoundException($"{nameof(MarketSummary)} not found.");
+            throw new NotFoundException("Market summary not found.");
         }
 
         return result == null ? null : _mapper.Map<MarketSummary>(result);

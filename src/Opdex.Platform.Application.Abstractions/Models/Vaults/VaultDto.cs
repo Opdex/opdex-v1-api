@@ -12,4 +12,6 @@ public class VaultDto
     public FixedDecimal TotalPledgeMinimum { get; set; }
     public FixedDecimal TotalVoteMinimum { get; set; }
     public ulong VestingDuration { get; set; }
+    public ulong CreatedBlock { get; set; }
+    public ulong ModifiedBlock { get; set; }
 }

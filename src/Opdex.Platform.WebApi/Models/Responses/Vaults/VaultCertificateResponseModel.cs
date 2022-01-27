@@ -45,6 +45,18 @@ public class VaultCertificateResponseModel
     public bool Revoked { get; set; }
 
     /// <summary>
+    /// Block number at which the entity was created.
+    /// </summary>
+    /// <example>2500000</example>
+    public ulong CreatedBlock { get; set; }
+
+    /// <summary>
+    /// Block number at which the entity state was last modified.
+    /// </summary>
+    /// <example>3000000</example>
+    public ulong ModifiedBlock { get; set; }
+
+    /// <summary>
     /// A list of proposal Id's affecting the certificate, consisting of create or revoke certificate proposals.
     /// </summary>
     /// <example>[12, 14, 23]</example>
