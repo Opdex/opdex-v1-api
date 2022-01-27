@@ -2430,6 +2430,16 @@ components:
         token:
           $ref: "#/components/schemas/address"
           description: Address of the SRC token
+        createdBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity was created
+        modifiedBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity state was last modified
     miningPositionsResponse:
       type: object
       properties:
@@ -2455,6 +2465,16 @@ components:
         miningToken:
           $ref: "#/components/schemas/address"
           description: Address of the liquidity pool token
+        createdBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity was created
+        modifiedBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity state was last modified
     stakingPositionsResponse:
       type: object
       properties:
@@ -2480,6 +2500,16 @@ components:
         stakingToken:
           $ref: "#/components/schemas/address"
           description: Address of the token used for staking
+        createdBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity was created
+        modifiedBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity state was last modified
     blocksResponse:
       type: object
       properties:
@@ -8973,18 +9003,31 @@ paths:
                 $ref: "#/components/schemas/addressBalancesResponse"
               example:
                 results:
-                  - balance: "238.83796109"
+                  - balance: "27580.45995517"
                     address: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
-                    token: tCE8LfkCj9HJUZu3dtgERNFfquMVJVe4sh
-                  - balance: "4666893.11259768"
+                    token: tPXUEzDyZDrR8YzQ6LiAJWhVuAKB8RUjyt
+                    createdBlock: 2989306
+                    modifiedBlock: 3015545
+                  - balance: "362.628729020"
                     address: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
-                    token: tFCyMPURX9pVWXuXQqYY2hJmRcCrhmBPfY
+                    token: tCorSgPVt6pF5Q4gzcrZWDZ8f7ERVxhwAd
+                    createdBlock: 2989320
+                    modifiedBlock: 2991148
+                  - balance: "0.12026492"
+                    address: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    token: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                    createdBlock: 2989326
+                    modifiedBlock: 3009264
                   - balance: "1.00000000"
                     address: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
                     token: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
-                  - balance: "3626.28729020"
+                    createdBlock: 2989326
+                    modifiedBlock: 3003823
+                  - balance: "8.556538343928946001"
                     address: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
-                    token: tCorSgPVt6pF5Q4gzcrZWDZ8f7ERVxhwAd
+                    token: tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3
+                    createdBlock: 2989330
+                    modifiedBlock: 2991127
                 paging: {}
         400:
           description: The request is not valid
@@ -9035,9 +9078,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/addressBalanceResponse"
               example:
-                balance: "0.19703287"
+                balance: "0.12026492"
                 address: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
                 token: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                createdBlock: 2989326
+                modifiedBlock: 3009264
         400:
           description: The request is not valid
           content:
@@ -9090,9 +9135,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/addressBalanceResponse"
               example:
-                balance: "0.19703287"
+                balance: "0.12026492"
                 address: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
                 token: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                createdBlock: 2989326
+                modifiedBlock: 3009264
         400:
           description: The request is not valid
           content:
@@ -9184,6 +9231,8 @@ paths:
                     amount: "3.14831968"
                     miningPool: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
                     miningToken: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                    createdBlock: 2991138
+                    modifiedBlock: 2991446
                 paging: {}
         400:
           description: The request is not valid
@@ -9238,6 +9287,8 @@ paths:
                 amount: "3.14831968"
                 miningPool: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
                 miningToken: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                createdBlock: 2991138
+                modifiedBlock: 2991446
         400:
           description: The request is not valid
           content:
@@ -9333,6 +9384,8 @@ paths:
                     amount: "555.94827358"
                     liquidityPool: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
                     stakingToken: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
+                    createdBlock: 3646922
+                    modifiedBlock: 3721001
                 paging: {}
         400:
           description: The request is not valid
@@ -9387,6 +9440,8 @@ paths:
                 amount: "555.94827358"
                 liquidityPool: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
                 stakingToken: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
+                createdBlock: 3646922
+                modifiedBlock: 3721001
         400:
           description: The request is not valid
           content:
