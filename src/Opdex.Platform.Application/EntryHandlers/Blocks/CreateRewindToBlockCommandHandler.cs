@@ -43,7 +43,7 @@ public class CreateRewindToBlockCommandHandler : IRequestHandler<CreateRewindToB
         var currentBlock = await _mediator.Send(new RetrieveLatestBlockQuery(), cancellationToken);
         if (currentBlock.Height - rewindBlock.Height > MaxRewind)
         {
-            throw new ArgumentOutOfRangeException(nameof(request.Block), "Rewind request exceeds maximum rewind limit.");
+            throw new MaximumReorgException();
         }
 
         var rewound = await _mediator.Send(new MakeRewindToBlockCommand(request.Block), CancellationToken.None);
