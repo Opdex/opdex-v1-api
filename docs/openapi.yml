@@ -5307,7 +5307,7 @@ paths:
                 status: 400
                 errors:
                   token:
-                    - Invalid address.
+                    - Token must be a valid SRC token.
                 extensions:
                   traceId: 00-00000000000000000000000000000000-0000000000000000-00
         404:
