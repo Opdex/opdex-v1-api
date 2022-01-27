@@ -68,7 +68,7 @@ public class SelectMiningGovernanceByTokenIdQueryHandlerTests
         _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"{nameof(MiningGovernance)} not found.");
+            .WithMessage("Mining governance not found.");
     }
 
     [Fact]

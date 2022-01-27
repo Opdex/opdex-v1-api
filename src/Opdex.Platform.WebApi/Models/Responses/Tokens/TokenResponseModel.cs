@@ -53,6 +53,18 @@ public class TokenResponseModel
     public IEnumerable<TokenAttributeType> Attributes { get; set; }
 
     /// <summary>
+    /// Block number at which the entity was created.
+    /// </summary>
+    /// <example>2500000</example>
+    public ulong CreatedBlock { get; set; }
+
+    /// <summary>
+    /// Block number at which the entity state was last modified.
+    /// </summary>
+    /// <example>3000000</example>
+    public ulong ModifiedBlock { get; set; }
+
+    /// <summary>
     /// A summary including the USD price of the token and daily price change percentage if exists. Market tokens receive
     /// pricing specific to that market.
     /// </summary>

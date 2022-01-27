@@ -12,4 +12,6 @@ public class MiningPoolDto
     public UInt256 RewardPerLpt { get; set; }
     public UInt256 TokensMining { get; set; }
     public bool IsActive { get; set; }
+    public ulong CreatedBlock { get; set; }
+    public ulong ModifiedBlock { get; set; }
 }

@@ -30,4 +30,16 @@ public class MiningPositionResponseModel
     /// </summary>
     /// <example>tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L</example>
     public Address MiningToken { get; set; }
+
+    /// <summary>
+    /// Block number at which the entity was created.
+    /// </summary>
+    /// <example>2500000</example>
+    public ulong CreatedBlock { get; set; }
+
+    /// <summary>
+    /// Block number at which the entity state was last modified.
+    /// </summary>
+    /// <example>3000000</example>
+    public ulong ModifiedBlock { get; set; }
 }

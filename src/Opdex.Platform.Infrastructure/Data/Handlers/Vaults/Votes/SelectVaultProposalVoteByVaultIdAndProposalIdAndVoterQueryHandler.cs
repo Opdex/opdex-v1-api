@@ -50,7 +50,7 @@ public class SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQueryHandler
 
         if (request.FindOrThrow && result == null)
         {
-            throw new NotFoundException($"{nameof(VaultProposalVote)} not found.");
+            throw new NotFoundException("Proposal vote not found.");
         }
 
         return result == null ? null : _mapper.Map<VaultProposalVote>(result);

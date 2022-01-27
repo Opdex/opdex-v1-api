@@ -18,8 +18,8 @@ public class TokenSummaryResponseModel
     public decimal DailyPriceChangePercent { get; set; }
 
     /// <summary>
-    /// The block which the token was last updated.
+    /// Block number at which the entity state was last modified.
     /// </summary>
-    /// <example>500000</example>
+    /// <example>3000000</example>
     public ulong ModifiedBlock { get; set; }
 }

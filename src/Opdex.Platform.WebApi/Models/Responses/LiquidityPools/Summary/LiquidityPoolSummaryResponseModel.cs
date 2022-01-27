@@ -29,4 +29,10 @@ public class LiquidityPoolSummaryResponseModel
     /// Staking details based on the pool's current status.
     /// </summary>
     public StakingResponseModel Staking { get; set; }
+
+    /// <summary>
+    /// Block number at which the entity state was last modified.
+    /// </summary>
+    /// <example>3000000</example>
+    public ulong ModifiedBlock { get; set; }
 }

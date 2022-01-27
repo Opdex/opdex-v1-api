@@ -55,4 +55,16 @@ public class MiningGovernanceResponseModel
     /// </summary>
     /// <example>tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c</example>
     public Address MinedToken { get; set; }
+
+    /// <summary>
+    /// Block number at which the entity was created.
+    /// </summary>
+    /// <example>2500000</example>
+    public ulong CreatedBlock { get; set; }
+
+    /// <summary>
+    /// Block number at which the entity state was last modified.
+    /// </summary>
+    /// <example>3000000</example>
+    public ulong ModifiedBlock { get; set; }
 }

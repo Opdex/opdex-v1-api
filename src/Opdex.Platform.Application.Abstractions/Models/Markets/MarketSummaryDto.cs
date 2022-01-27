@@ -11,4 +11,5 @@ public class MarketSummaryDto
     public decimal VolumeUsd { get; set; }
     public MarketStakingDto Staking { get; set; }
     public RewardsDto Rewards { get; set; }
+    public ulong ModifiedBlock { get; set; }
 }

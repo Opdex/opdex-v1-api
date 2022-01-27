@@ -50,7 +50,7 @@ public class SelectLiquidityPoolSummaryByLiquidityPoolIdQueryHandler
 
         if (request.FindOrThrow && result == null)
         {
-            throw new NotFoundException($"{nameof(LiquidityPoolSummary)} not found.");
+            throw new NotFoundException("Liquidity pool summary not found.");
         }
 
         return result == null ? null : _mapper.Map<LiquidityPoolSummary>(result);

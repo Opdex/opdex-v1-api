@@ -88,7 +88,7 @@ public class MarketTokensController : ControllerBase
 
     /// <summary>Swap Tokens Quote</summary>
     /// <remarks>Quotes token swap transactions.</remarks>
-    /// <param name="market">The address of the market where the token is being sold..</param>
+    /// <param name="market">The address of the market where the token is being sold.</param>
     /// <param name="token">The address of the token being sold, may require allowance.</param>
     /// <param name="request">The token swap request object.</param>
     /// <param name="cancellationToken">Cancellation token.</param>

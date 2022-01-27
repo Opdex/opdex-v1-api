@@ -49,7 +49,7 @@ public class SelectMarketPermissionQueryHandler : IRequestHandler<SelectMarketPe
 
         if (request.FindOrThrow && result is null)
         {
-            throw new NotFoundException($"{nameof(MarketPermission)} not found.");
+            throw new NotFoundException("Market permission not found.");
         }
 
         return result is null ? null : _mapper.Map<MarketPermission>(result);

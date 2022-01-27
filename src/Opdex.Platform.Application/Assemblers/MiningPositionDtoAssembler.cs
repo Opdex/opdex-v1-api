@@ -30,7 +30,9 @@ public class MiningPositionDtoAssembler : IModelAssembler<AddressMining, MiningP
             Address = source.Owner,
             Amount = source.Balance.ToDecimal(token.Decimals),
             MiningPool = miningPool.Address,
-            MiningToken = token.Address
+            MiningToken = token.Address,
+            CreatedBlock = source.CreatedBlock,
+            ModifiedBlock = source.ModifiedBlock
         };
     }
 }

@@ -47,7 +47,7 @@ public class SelectLatestTokenDistributionByTokenIdQueryHandler : IRequestHandle
 
         if (request.FindOrThrow && result == null)
         {
-            throw new NotFoundException($"{nameof(TokenDistribution)} not found.");
+            throw new NotFoundException("Token distribution not found.");
         }
 
         return result == null ? null : _mapper.Map<TokenDistribution>(result);

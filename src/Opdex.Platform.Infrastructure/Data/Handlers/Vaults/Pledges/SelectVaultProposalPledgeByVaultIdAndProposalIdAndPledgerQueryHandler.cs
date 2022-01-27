@@ -49,7 +49,7 @@ public class SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQueryHandl
 
         if (request.FindOrThrow && result == null)
         {
-            throw new NotFoundException($"{nameof(VaultProposalPledge)} not found.");
+            throw new NotFoundException("Proposal pledge not found.");
         }
 
         return result == null ? null : _mapper.Map<VaultProposalPledge>(result);

@@ -4,6 +4,8 @@ using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Assemblers;
+using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Tokens;
 using System;
 using System.Threading;
@@ -24,6 +26,8 @@ public class GetMarketTokenByMarketAndTokenAddressQueryHandler : IRequestHandler
 
     public async Task<MarketTokenDto> Handle(GetMarketTokenByMarketAndTokenAddressQuery request, CancellationToken cancellationToken)
     {
+        if (request.Token == Address.Cirrus) throw new InvalidDataException("token", "Token must be a valid SRC token.");
+
         var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market), cancellationToken);
         var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token), cancellationToken);
 

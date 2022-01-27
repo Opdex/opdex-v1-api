@@ -43,7 +43,7 @@ public class SelectVaultProposalCertificateByProposalIdQueryHandler
 
         if (request.FindOrThrow && result == null)
         {
-            throw new NotFoundException($"{nameof(VaultProposalCertificate)} not found.");
+            throw new NotFoundException("Certificate not found.");
         }
 
         return result == null ? null : _mapper.Map<VaultProposalCertificate>(result);
