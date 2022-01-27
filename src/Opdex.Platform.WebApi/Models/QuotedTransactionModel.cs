@@ -1,4 +1,3 @@
-using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Common.Models;
 using System.Collections.Generic;
 
