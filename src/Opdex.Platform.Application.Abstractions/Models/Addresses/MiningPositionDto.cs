@@ -8,4 +8,6 @@ public class MiningPositionDto
     public FixedDecimal Amount { get; set; }
     public Address MiningPool { get; set; }
     public Address MiningToken { get; set; }
+    public ulong CreatedBlock { get; set; }
+    public ulong ModifiedBlock { get; set; }
 }

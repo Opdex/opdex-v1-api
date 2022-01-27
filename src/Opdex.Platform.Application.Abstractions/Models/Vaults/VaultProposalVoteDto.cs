@@ -10,4 +10,6 @@ public class VaultProposalVoteDto
     public FixedDecimal Vote { get; set; }
     public FixedDecimal Balance { get; set; }
     public bool InFavor { get; set; }
+    public ulong CreatedBlock { get; set; }
+    public ulong ModifiedBlock { get; set; }
 }

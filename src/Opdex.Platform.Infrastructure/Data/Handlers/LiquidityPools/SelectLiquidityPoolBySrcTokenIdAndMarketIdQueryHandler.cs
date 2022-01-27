@@ -47,7 +47,7 @@ public class SelectLiquidityPoolBySrcTokenIdAndMarketIdQueryHandler : IRequestHa
 
         if (request.FindOrThrow && result == null)
         {
-            throw new NotFoundException($"{nameof(LiquidityPool)} not found.");
+            throw new NotFoundException("Liquidity pool not found.");
         }
 
         return result == null ? null : _mapper.Map<LiquidityPool>(result);

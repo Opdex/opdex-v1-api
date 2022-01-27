@@ -86,7 +86,8 @@ public class LiquidityPoolDtoAssembler : IModelAssembler<LiquidityPool, Liquidit
             {
                 ProviderDailyUsd = providerUsd,
                 MarketDailyUsd = marketUsd
-            }
+            },
+            ModifiedBlock = summary.ModifiedBlock
         };
 
         if (!stakingEnabled) return poolDto;

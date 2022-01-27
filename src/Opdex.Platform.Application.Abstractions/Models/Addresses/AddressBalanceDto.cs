@@ -9,4 +9,6 @@ public class AddressBalanceDto
     public Address Address { get; set; }
 
     public Address Token { get; set; }
+    public ulong CreatedBlock { get; set; }
+    public ulong ModifiedBlock { get; set; }
 }

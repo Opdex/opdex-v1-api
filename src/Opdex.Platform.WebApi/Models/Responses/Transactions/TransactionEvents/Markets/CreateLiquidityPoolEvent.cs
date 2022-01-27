@@ -16,6 +16,6 @@ public class CreateLiquidityPoolEvent : TransactionEvent
     /// <summary>
     /// Address of the created liquidity pool.
     /// </summary>
-    /// <example>tLrMcU1csbN7RxGjBMEnJeLoae3PxmQ9cr</example>
+    /// <example>tFCyMPURX9pVWXuXQqYY2hJmRcCrhmBPfY</example>
     public Address LiquidityPool { get; set; }
 }

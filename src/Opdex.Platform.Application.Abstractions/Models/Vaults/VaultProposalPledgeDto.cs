@@ -9,4 +9,6 @@ public class VaultProposalPledgeDto
     public Address Pledger { get; set; }
     public FixedDecimal Pledge { get; set; }
     public FixedDecimal Balance { get; set; }
+    public ulong CreatedBlock { get; set; }
+    public ulong ModifiedBlock { get; set; }
 }

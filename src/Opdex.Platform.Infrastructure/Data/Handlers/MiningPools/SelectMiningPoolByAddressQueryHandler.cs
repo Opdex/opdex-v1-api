@@ -46,7 +46,7 @@ public class SelectMiningPoolByAddressQueryHandler : IRequestHandler<SelectMinin
 
         if (request.FindOrThrow && result == null)
         {
-            throw new NotFoundException($"Mining pool not found.");
+            throw new NotFoundException("Mining pool not found.");
         }
 
         return result == null ? null : _mapper.Map<MiningPool>(result);

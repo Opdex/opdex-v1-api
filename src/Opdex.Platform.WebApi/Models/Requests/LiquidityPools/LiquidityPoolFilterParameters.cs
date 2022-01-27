@@ -30,7 +30,7 @@ public class LiquidityPoolFilterParameters : FilterParameters<LiquidityPoolsCurs
     /// <summary>
     /// Liquidity pools to specifically filter for.
     /// </summary>
-    /// <example>[ "tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L", "tLrMcU1csbN7RxGjBMEnJeLoae3PxmQ9cr" ]</example>
+    /// <example>[ "tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L", "tFCyMPURX9pVWXuXQqYY2hJmRcCrhmBPfY" ]</example>
     public IEnumerable<Address> LiquidityPools { get; set; }
 
     /// <summary>

@@ -45,7 +45,7 @@ public class SelectTokenSummaryByMarketAndTokenIdQueryHandler : IRequestHandler<
 
         if (request.FindOrThrow && result == null)
         {
-            throw new NotFoundException($"{nameof(TokenSummary)} not found.");
+            throw new NotFoundException("Token summary not found.");
         }
 
         return result == null ? null : _mapper.Map<TokenSummary>(result);

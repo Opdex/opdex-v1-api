@@ -19,5 +19,7 @@ public class VaultProposalDto
     public FixedDecimal NoAmount { get; set; }
     public FixedDecimal PledgeAmount { get; set; }
     public bool Approved { get; set; }
+    public ulong CreatedBlock { get; set; }
+    public ulong ModifiedBlock { get; set; }
     public VaultCertificateDto Certificate { get; set; }
 }

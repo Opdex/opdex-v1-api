@@ -17,7 +17,7 @@ public abstract class TransactionEvent
     /// <summary>
     /// Address of the contract that logged the event.
     /// </summary>
-    /// <example>tLrMcU1csbN7RxGjBMEnJeLoae3PxmQ9cr</example>
+    /// <example>tFCyMPURX9pVWXuXQqYY2hJmRcCrhmBPfY</example>
     public Address Contract { get; set; }
 
     /// <summary>

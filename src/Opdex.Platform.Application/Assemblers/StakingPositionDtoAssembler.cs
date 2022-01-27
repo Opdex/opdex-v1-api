@@ -30,7 +30,9 @@ public class StakingPositionDtoAssembler : IModelAssembler<AddressStaking, Staki
             Address = source.Owner,
             Amount = source.Weight.ToDecimal(token.Decimals),
             LiquidityPool = liquidityPool.Address,
-            StakingToken = token.Address
+            StakingToken = token.Address,
+            CreatedBlock = source.CreatedBlock,
+            ModifiedBlock = source.ModifiedBlock
         };
     }
 }
