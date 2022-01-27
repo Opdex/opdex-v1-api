@@ -87,7 +87,6 @@ public class LiquidityPoolDtoAssembler : IModelAssembler<LiquidityPool, Liquidit
                 ProviderDailyUsd = providerUsd,
                 MarketDailyUsd = marketUsd
             },
-            CreatedBlock = summary.CreatedBlock,
             ModifiedBlock = summary.ModifiedBlock
         };
 

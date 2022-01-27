@@ -102,7 +102,6 @@ public class PlatformWebApiMapperProfile : Profile
         CreateMap<TokenSummaryDto, TokenSummaryResponseModel>()
             .ForMember(dest => dest.PriceUsd, opt => opt.MapFrom(src => src.PriceUsd))
             .ForMember(dest => dest.DailyPriceChangePercent, opt => opt.MapFrom(src => src.DailyPriceChangePercent))
-            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -145,7 +144,6 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => src.Staking))
             .ForMember(dest => dest.Volume, opt => opt.MapFrom(src => src.Volume))
             .ForMember(dest => dest.Cost, opt => opt.MapFrom(src => src.Cost))
-            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -287,7 +285,6 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.VolumeUsd, opt => opt.MapFrom(src => src.VolumeUsd))
             .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => src.Staking))
             .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => src.Rewards))
-            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 

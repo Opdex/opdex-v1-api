@@ -1857,6 +1857,16 @@ components:
         tokens:
           $ref: "#/components/schemas/liquidityPoolTokenBreakdown"
           description: Breakdown of tokens tied to the pool
+        createdBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity was created
+        modifiedBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity state was last modified
         summary:
           $ref: "#/components/schemas/liquidityPoolSummary"
     liquidityPoolTokenBreakdown:
@@ -1881,6 +1891,11 @@ components:
           $ref: "#/components/schemas/costSummary"
         staking:
           $ref: "#/components/schemas/liquidityPoolStakingSummary"
+        modifiedBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity state was last modified
     reservesSummary:
       type: object
       properties:
@@ -2061,6 +2076,16 @@ components:
           minimum: 0.0
           maximum: 1.0
           description: Percentage fee for a trade
+        createdBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity was created
+        modifiedBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity state was last modified
         summary:
           $ref: "#/components/schemas/marketSummary"
           description: Financial summary for the market
@@ -2085,6 +2110,11 @@ components:
         rewards:
           $ref: "#/components/schemas/rewardSummary"
           description: Rewards summary
+        modifiedBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity state was last modified
     marketStakingSummary:
       type: object
       properties:
@@ -2176,6 +2206,16 @@ components:
         isActive:
           type: boolean
           description: True if liquidity mining is active, otherwise false
+        createdBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity was created
+        modifiedBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity state was last modified
     marketSnapshotsResponse:
       type: object
       properties:
@@ -2263,9 +2303,19 @@ components:
           items:
             $ref: "#/components/schemas/tokenAttribute"
           description: Attributes applied to the token
+        createdBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity was created
+        modifiedBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity state was last modified
         summary:
-          $ref: "#/components/schemas/tokenSummaryResponse"
-    tokenSummaryResponse:
+          $ref: "#/components/schemas/tokenSummary"
+    tokenSummary:
       type: object
       description: Point in time pricing summary for a token
       properties:
@@ -2592,6 +2642,16 @@ components:
         minedToken:
           $ref: "#/components/schemas/address"
           description: Address of governance token that is mined
+        createdBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity was created
+        modifiedBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity state was last modified
     indexerStatusResponse:
       type: object
       description: Status of the Opdex transaction indexer
@@ -2667,6 +2727,16 @@ components:
           format: uint64
           minimum: 0
           description: Number of blocks that a certificate is vested for, before it can be redeemed
+        createdBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity was created
+        modifiedBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity state was last modified
     certificatesResponse:
       type: object
       properties:
@@ -2708,6 +2778,16 @@ components:
             type: integer
             format: uint64
             minimum: 1
+        createdBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity was created
+        modifiedBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity state was last modified
     pledgesResponse:
       type: object
       properties:
@@ -2737,6 +2817,16 @@ components:
         balance:
           $ref: "#/components/schemas/fixedDecimal"
           description: Currently pledged CRS balance
+        createdBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity was created
+        modifiedBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity state was last modified
     proposalsResponse:
       type: object
       properties:
@@ -2796,9 +2886,16 @@ components:
         approved:
           type: boolean
           description: Whether the proposal has been approved
-        certificate:
-          $ref: "#/components/schemas/certificateResponse"
-          description: The certificate either created or revoked by the proposal, if it exists
+        createdBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity was created
+        modifiedBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity state was last modified
     votesResponse:
       type: object
       properties:
@@ -2831,6 +2928,16 @@ components:
         inFavor:
           type: boolean
           description: Whether the vote is in favor of the proposal
+        createdBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity was created
+        modifiedBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity state was last modified
 paths:
   /auth:
     get:
@@ -3150,8 +3257,8 @@ paths:
               $ref: "#/components/schemas/address"
               description: Address of a liquidity pool
           example:
-            - tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
-            - tLrMcU1csbN7RxGjBMEnJeLoae3PxmQ9cr
+            - tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+            - tFCyMPURX9pVWXuXQqYY2hJmRcCrhmBPfY
         - name: tokens
           in: query
           description: Addresses of SRC tokens paired in pools
@@ -3221,14 +3328,6 @@ paths:
                     name: TBTC-TCRS
                     transactionFeePercent: 0.3
                     market: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
-                    miningPool:
-                      address: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
-                      liquidityPool: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
-                      miningPeriodEndBlock: 0
-                      rewardPerBlock: "0.00000000"
-                      rewardPerLpt: "0.00000000"
-                      tokensMining: "4.14831968"
-                      isActive: false
                     tokens:
                       crs:
                         address: CRS
@@ -3238,10 +3337,12 @@ paths:
                         sats: 100000000
                         totalSupply: "100000000.00000000"
                         attributes: []
-                        summmary:
-                          priceUsd: 1.36598319
-                          dailyPriceChangePercent: 0.00000000
-                          modifiedBlock: 2988890
+                        createdBlock: 2988890
+                        modifiedBlock: 2988890
+                        summary:
+                          priceUsd: 0.95057037
+                          dailyPriceChangePercent: 0.63000000
+                          modifiedBlock: 3043278
                       src:
                         address: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
                         name: Bitcoin (Wrapped)
@@ -3251,10 +3352,12 @@ paths:
                         totalSupply: "21000000.00000000"
                         attributes:
                           - NonProvisional
-                        summmary:
-                          priceUsd: 42633.71834591
-                          dailyPriceChangePercent: -0.04000000
-                          modifiedBlock: 2991118
+                        createdBlock: 2988918
+                        modifiedBlock: 2988918
+                        summary:
+                          priceUsd: 27698.36556351
+                          dailyPriceChangePercent: 0.21000000
+                          modifiedBlock: 3043250
                       lp:
                         address: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
                         name: Opdex Liquidity Pool Token
@@ -3264,10 +3367,22 @@ paths:
                         totalSupply: "94.39473361"
                         attributes:
                           - Provisional
-                        summmary:
-                          priceUsd: 482.64677779
-                          dailyPriceChangePercent: -0.02000000
-                          modifiedBlock: 2991118
+                        createdBlock: 2988918
+                        modifiedBlock: 2989382
+                        summary:
+                          priceUsd: 323.92670749
+                          dailyPriceChangePercent: 0.21000000
+                          modifiedBlock: 3043250
+                    miningPool:
+                      address: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+                      liquidityPool: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                      miningPeriodEndBlock: 0
+                      rewardPerBlock: "0.00000000"
+                      rewardPerLpt: "0.00000000"
+                      tokensMining: "4.14831968"
+                      isActive: false
+                      createdBlock: 2988918
+                      modifiedBlock: 2992621
                     summary:
                       reserves:
                         crs: "16676.38165376"
@@ -3296,14 +3411,17 @@ paths:
                           attributes:
                             - NonProvisional
                             - Staking
+                          createdBlock: 2988890
+                          modifiedBlock: 2989018
                           summary:
                             priceUsd: 0.00000000
                             dailyPriceChangePercent: 0.00000000
-                            modifiedBlock: 2989456
+                            modifiedBlock: 3043278
                         weight: "0.00000000"
                         usd: 0.00000000
                         dailyWeightChangePercent: 0.00000000
                         nominated: true
+                      modifiedBlock: 3043296
                 paging: {}
         400:
           description: The request is not valid
@@ -3400,7 +3518,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+          example: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
       responses:
         200:
           description: Liquidity pool found
@@ -3413,14 +3531,6 @@ paths:
                 name: TBTC-TCRS
                 transactionFeePercent: 0.3
                 market: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
-                miningPool:
-                  address: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
-                  liquidityPool: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
-                  miningPeriodEndBlock: 0
-                  rewardPerBlock: "0.00000000"
-                  rewardPerLpt: "0.00000000"
-                  tokensMining: "4.14831968"
-                  isActive: false
                 tokens:
                   crs:
                     address: CRS
@@ -3430,10 +3540,12 @@ paths:
                     sats: 100000000
                     totalSupply: "100000000.00000000"
                     attributes: []
-                    summmary:
-                      priceUsd: 1.36598319
-                      dailyPriceChangePercent: 0.00000000
-                      modifiedBlock: 2988890
+                    createdBlock: 2988890
+                    modifiedBlock: 2988890
+                    summary:
+                      priceUsd: 0.95057037
+                      dailyPriceChangePercent: 0.63000000
+                      modifiedBlock: 3043278
                   src:
                     address: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
                     name: Bitcoin (Wrapped)
@@ -3443,10 +3555,12 @@ paths:
                     totalSupply: "21000000.00000000"
                     attributes:
                       - NonProvisional
-                    summmary:
-                      priceUsd: 42633.71834591
-                      dailyPriceChangePercent: -0.04000000
-                      modifiedBlock: 2991118
+                    createdBlock: 2988918
+                    modifiedBlock: 2988918
+                    summary:
+                      priceUsd: 27698.36556351
+                      dailyPriceChangePercent: 0.21000000
+                      modifiedBlock: 3043250
                   lp:
                     address: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
                     name: Opdex Liquidity Pool Token
@@ -3456,10 +3570,22 @@ paths:
                     totalSupply: "94.39473361"
                     attributes:
                       - Provisional
-                    summmary:
-                      priceUsd: 482.64677779
-                      dailyPriceChangePercent: -0.02000000
-                      modifiedBlock: 2991118
+                    createdBlock: 2988918
+                    modifiedBlock: 2989382
+                    summary:
+                      priceUsd: 323.92670749
+                      dailyPriceChangePercent: 0.21000000
+                      modifiedBlock: 3043250
+                miningPool:
+                  address: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+                  liquidityPool: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                  miningPeriodEndBlock: 0
+                  rewardPerBlock: "0.00000000"
+                  rewardPerLpt: "0.00000000"
+                  tokensMining: "4.14831968"
+                  isActive: false
+                  createdBlock: 2988918
+                  modifiedBlock: 2992621
                 summary:
                   reserves:
                     crs: "16676.38165376"
@@ -3488,14 +3614,17 @@ paths:
                       attributes:
                         - NonProvisional
                         - Staking
+                      createdBlock: 2988890
+                      modifiedBlock: 2989018
                       summary:
                         priceUsd: 0.00000000
                         dailyPriceChangePercent: 0.00000000
-                        modifiedBlock: 2989456
+                        modifiedBlock: 3043278
                     weight: "0.00000000"
                     usd: 0.00000000
                     dailyWeightChangePercent: 0.00000000
                     nominated: true
+                  modifiedBlock: 3043296
         400:
           description: The request is not valid
           content:
@@ -3531,7 +3660,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+          example: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
         - name: interval
           in: query
           description: Time range between each snapshot
@@ -3716,7 +3845,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+          example: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
       requestBody:
         required: true
         content:
@@ -3823,7 +3952,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+          example: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
       requestBody:
         required: true
         content:
@@ -3877,7 +4006,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+          example: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
       requestBody:
         required: true
         content:
@@ -3988,7 +4117,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+          example: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
       security:
         - opdexAuth: []
       responses:
@@ -4045,7 +4174,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+          example: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
       requestBody:
         required: true
         content:
@@ -4118,7 +4247,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+          example: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
       requestBody:
         required: true
         content:
@@ -4188,7 +4317,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+          example: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
       requestBody:
         required: true
         content:
@@ -4261,7 +4390,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/address"
-          example: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+          example: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
       security:
         - opdexAuth: []
       requestBody:
@@ -4378,6 +4507,13 @@ paths:
                       decimals: 8
                       sats: 100000000
                       totalSupply: "130000000.00000000"
+                      attributes: []
+                      createdBlock: 2988890
+                      modifiedBlock: 2988890
+                      summary:
+                        priceUsd: 0.95057037
+                        dailyPriceChangePercent: 0.63000000
+                        modifiedBlock: 3043278
                     stakingToken:
                       address: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
                       name: Testnet Opdex Token
@@ -4385,6 +4521,17 @@ paths:
                       decimals: 8
                       sats: 100000000
                       totalSupply: "40000000000000000.00000000"
+                      attributes:
+                        - NonProvisional
+                        - Staking
+                      createdBlock: 2988890
+                      modifiedBlock: 2989018
+                      summary:
+                        priceUsd: 0.00000000
+                        dailyPriceChangePercent: 0.00000000
+                        modifiedBlock: 3043278
+                    createdBlock: 2988898
+                    modifiedBlock: 2988898
                     summary:
                       liquidityUsd: 2490080.59003948
                       dailyLiquidityUsdChangePercent: 4.32891108
@@ -4398,6 +4545,7 @@ paths:
                         providerDailyUsd: 1205.00639582
                         marketDailyUsd: 241.00127916
                         totalDailyUsd: 1446.00767498
+                      modifiedBlock: 3042951
                 paging: {}
         400:
           description: The request is not valid
@@ -4456,6 +4604,13 @@ paths:
                   decimals: 8
                   sats: 100000000
                   totalSupply: "130000000.00000000"
+                  attributes: []
+                  createdBlock: 2988890
+                  modifiedBlock: 2988890
+                  summary:
+                    priceUsd: 0.95057037
+                    dailyPriceChangePercent: 0.63000000
+                    modifiedBlock: 3043278
                 stakingToken:
                   address: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
                   name: Testnet Opdex Token
@@ -4463,6 +4618,17 @@ paths:
                   decimals: 8
                   sats: 100000000
                   totalSupply: "40000000000000000.00000000"
+                  attributes:
+                    - NonProvisional
+                    - Staking
+                  createdBlock: 2988890
+                  modifiedBlock: 2989018
+                  summary:
+                    priceUsd: 0.00000000
+                    dailyPriceChangePercent: 0.00000000
+                    modifiedBlock: 3043278
+                createdBlock: 2988898
+                modifiedBlock: 2988898
                 summary:
                   liquidityUsd: 2490080.59003948
                   dailyLiquidityUsdChangePercent: 4.32891108
@@ -4476,6 +4642,7 @@ paths:
                     providerDailyUsd: 1205.00639582
                     marketDailyUsd: 241.00127916
                     totalDailyUsd: 1446.00767498
+                  modifiedBlock: 3042951
         400:
           description: The request is not valid
           content:
@@ -5201,7 +5368,7 @@ paths:
               example:
                 results:
                   - market: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
-                    liqudityPool: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+                    liqudityPool: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
                     address: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
                     name: Bitcoin (Wrapped)
                     symbol: TBTC
@@ -5210,12 +5377,14 @@ paths:
                     totalSupply: "21000000.00000000"
                     attributes:
                       - NonProvisional
+                    createdBlock: 2988918
+                    modifiedBlock: 2988918
                     summary:
-                      priceUsd: 54827.48328399
-                      dailyPriceChangePercent: 2.42090338
-                      modifiedBlock: 2963822
+                      priceUsd: 27852.57795481
+                      dailyPriceChangePercent: 0.77000000
+                      modifiedBlock: 3043250
                   - market: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
-                    liqudityPool: tLrMcU1csbN7RxGjBMEnJeLoae3PxmQ9cr
+                    liqudityPool: tFCyMPURX9pVWXuXQqYY2hJmRcCrhmBPfY
                     address: tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3
                     name: ETH (Wrapped)
                     symbol: TETH
@@ -5224,12 +5393,14 @@ paths:
                     totalSupply: "100000000.000000000000000000"
                     attributes:
                       - NonProvisional
+                    createdBlock: 2988919
+                    modifiedBlock: 2988919
                     summary:
-                      priceUsd: 3822.23819994
-                      dailyPriceChangePercent: 1.98192833
-                      modifiedBlock: 2963691
+                      priceUsd: 2294.33407690
+                      dailyPriceChangePercent: 0.77000000
+                      modifiedBlock: 3043250
                 paging:
-                  next: ZGlyZWN0aW9uOkRFU0M7bGltaXQ6MTA7cGFnaW5nOkZvcndhcmQ7cHJvdmlzaW9uYWw6QWxsO2tleXdvcmQ6O29yZGVyQnk6UHJpY2VVc2Q7cG9pbnRlcjpLREF1TkRBMk1ETXpPREFzSURRcDs=
+                  next: ZGlyZWN0aW9uOkRFU0M7bGltaXQ6MjtwYWdpbmc6Rm9yd2FyZDt0b2tlbkF0dHJpYnV0ZXM6Tm9uUHJvdmlzaW9uYWw7aW5jbHVkZVplcm9MaXF1aWRpdHk6VHJ1ZTtrZXl3b3JkOjtvcmRlckJ5OlByaWNlVXNkO3BvaW50ZXI6S0RJeU56UXVOVFkxTmprM09EUXNJRFlwOw==
         400:
           description: The request is not valid
           content:
@@ -5282,7 +5453,7 @@ paths:
                 $ref: "#/components/schemas/marketTokenResponse"
               example:
                 market: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
-                liqudityPool: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+                liqudityPool: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
                 address: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
                 name: Bitcoin (Wrapped)
                 symbol: TBTC
@@ -5291,10 +5462,12 @@ paths:
                 totalSupply: "21000000.00000000"
                 attributes:
                   - NonProvisional
+                createdBlock: 2988918
+                modifiedBlock: 2988918
                 summary:
-                  priceUsd: 54827.48328399
-                  dailyPriceChangePercent: 2.42580923
-                  modifiedBlock: 2963822
+                  priceUsd: 27852.57795481
+                  dailyPriceChangePercent: 0.77000000
+                  modifiedBlock: 3043250
         400:
           description: The request is not valid
           content:
@@ -5488,7 +5661,7 @@ paths:
                 gasUsed: 60139
                 events:
                   - from: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
-                    to: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+                    to: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
                     amount: "0.00250000"
                     eventType: TransferEvent
                     contract: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
@@ -5501,7 +5674,7 @@ paths:
                     amountSrcOut: "0.00000000"
                     srcToken: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
                     eventType: SwapEvent
-                    contract: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+                    contract: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
                     sortOrder: 2
                 request:
                   sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
@@ -5715,6 +5888,8 @@ paths:
                     miningPoolRewardPerPeriod: "6250000.00000000"
                     totalRewardsPerPeriod: "25000000.00000000"
                     minedToken: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
+                    createdBlock: 2988890
+                    modifiedBlock: 2989018
                 paging: {}
         400:
           description: The request is not valid
@@ -5767,6 +5942,8 @@ paths:
                 miningPoolRewardPerPeriod: "6250000.00000000"
                 totalRewardsPerPeriod: "25000000.00000000"
                 minedToken: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
+                createdBlock: 2988890
+                modifiedBlock: 2989018
         400:
           description: The request is not valid
           content:
@@ -5914,6 +6091,8 @@ paths:
                     rewardPerLpt: "0.00000000"
                     tokensMining: "0.00000000"
                     isActive: false
+                    createdBlock: 2991252
+                    modifiedBlock: 2991252
                   - address: tJL3GQFf2xupWKvgXHuQBuMiAuutLs3Q4j
                     liquidityPool: tCE8LfkCj9HJUZu3dtgERNFfquMVJVe4sh
                     miningPeriodEndBlock: 0
@@ -5921,6 +6100,8 @@ paths:
                     rewardPerLpt: "0.00000000"
                     tokensMining: "0.00000000"
                     isActive: false
+                    createdBlock: 2988927
+                    modifiedBlock: 2988927
                   - address: t9V19aoUakGooM8hXDCrR52NmTS7ZnmN31
                     liquidityPool: tCorSgPVt6pF5Q4gzcrZWDZ8f7ERVxhwAd
                     miningPeriodEndBlock: 0
@@ -5928,6 +6109,8 @@ paths:
                     rewardPerLpt: "0.00000000"
                     tokensMining: "2314.82289849"
                     isActive: false
+                    createdBlock: 2988925
+                    modifiedBlock: 2992615
                 paging: {}
         400:
           description: The request is not valid
@@ -5978,6 +6161,8 @@ paths:
                 rewardPerLpt: "0.00000000"
                 tokensMining: "8.80764531"
                 isActive: false
+                createdBlock: 2988918
+                modifiedBlock: 2992621
         400:
           description: The request is not valid
           content:
@@ -6312,10 +6497,12 @@ paths:
                     totalSupply: "21000000.00000000"
                     attributes:
                       - NonProvisional
+                    createdBlock: 2988918
+                    modifiedBlock: 2988918
                     summary:
-                      priceUsd: 54911.53361129
-                      dailyPriceChangePercent: 2.37290288
-                      modifiedBlock: 2963825
+                      priceUsd: 27852.57795481
+                      dailyPriceChangePercent: 0.77000000
+                      modifiedBlock: 3043250
                   - address: tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3
                     name: ETH (Wrapped)
                     symbol: TETH
@@ -6324,12 +6511,14 @@ paths:
                     totalSupply: "100000000.000000000000000000"
                     attributes:
                       - NonProvisional
+                    createdBlock: 2988919
+                    modifiedBlock: 2988919
                     summary:
-                      priceUsd: 3827.34621953
-                      dailyPriceChangePercent: 2.01006408
-                      modifiedBlock: 2963712
+                      priceUsd: 2294.33407690
+                      dailyPriceChangePercent: 0.77000000
+                      modifiedBlock: 3043250
                 paging:
-                  next: ZGlyZWN0aW9uOkRFU0M7bGltaXQ6MTA7cGFnaW5nOkZvcndhcmQ7cHJvdmlzaW9uYWw6QWxsO2tleXdvcmQ6O29yZGVyQnk6UHJpY2VVc2Q7cG9pbnRlcjpLREF1TkRBMk1ETXpPREFzSURRcDs=
+                  next: ZGlyZWN0aW9uOkRFU0M7bGltaXQ6MjtwYWdpbmc6Rm9yd2FyZDt0b2tlbkF0dHJpYnV0ZXM6Tm9uUHJvdmlzaW9uYWw7aW5jbHVkZVplcm9MaXF1aWRpdHk6VHJ1ZTtrZXl3b3JkOjtvcmRlckJ5OlByaWNlVXNkO3BvaW50ZXI6S0RFeE16Y3VNamd5T0RRNE9USXNJRFlwOw==
         400:
           description: The request is not valid
           content:
@@ -6446,10 +6635,12 @@ paths:
                 totalSupply: "21000000.00000000"
                 attributes:
                   - NonProvisional
+                createdBlock: 2988918
+                modifiedBlock: 2988918
                 summary:
-                  priceUsd: 54911.53361129
-                  dailyPriceChangePercent: 2.37290288
-                  modifiedBlock: 2963825
+                  priceUsd: 27852.57795481
+                  dailyPriceChangePercent: 0.77000000
+                  modifiedBlock: 3043250
         400:
           description: The request is not valid
           content:
@@ -7141,6 +7332,8 @@ paths:
                     totalPledgeMinimum: "1000.00000000"
                     totalVoteMinimum: "2000.00000000"
                     vestingDuration: 1080000
+                    createdBlock: 2988890
+                    modifiedBlock: 3012470
                 paging: {}
         400:
           description: The request is not valid
@@ -7192,6 +7385,8 @@ paths:
                 totalPledgeMinimum: "1000.00000000"
                 totalVoteMinimum: "2000.00000000"
                 vestingDuration: 1080000
+                createdBlock: 2988890
+                modifiedBlock: 3012470
         400:
           description: The request is not valid
           content:
@@ -7279,6 +7474,8 @@ paths:
                     vestingEndBlock: 1905020
                     redeemed: false
                     revoked: false
+                    createdBlock: 3012470
+                    modifiedBlock: 3012470
                     proposals:
                       - 1
                 paging: {}
@@ -7434,11 +7631,15 @@ paths:
                     pledger: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
                     pledge: "2000.00000000"
                     balance: "2000.00000000"
+                    createdBlock: 3965259
+                    modifiedBlock: 3965259
                   - vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                     proposalId: 1
                     pledger: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
                     pledge: "10000.00000000"
                     balance: "10000.00000000"
+                    createdBlock: 3012570
+                    modifiedBlock: 3012570
                 paging: {}
         400:
           description: The request is not valid
@@ -7527,31 +7728,35 @@ paths:
                   - vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                     token: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
                     proposalId: 2
-                    creator: tTJuvSKZ7bMJwKNmC6vGYyVQUPUpiPTW5p
-                    wallet: tEtBQhXDFo5yWR1WizqXSbrZzMq6sBmhSU
-                    amount: "100000.00000000"
-                    description: "OVP-2: This person should have their certificate revoked."
+                    creator: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    wallet: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    amount: "50000.00000000"
+                    description: "OVP-2: Request to revoke certificate. As the recipient, I wish to revoke this certificate."
                     type: Revoke
-                    status: Complete
-                    expiration: 1025889
-                    yesAmount: "15000.34338002"
-                    noAmount: "37900.00009881"
-                    pledgeAmount: "10200.00540309"
+                    status: Pledge
+                    expiration: 3081041
+                    yesAmount: "0.00000000"
+                    noAmount: "0.00000000"
+                    pledgeAmount: "0.00000000"
                     approved: false
+                    createdBlock: 3043241
+                    modifiedBlock: 3043241
                   - vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                     token: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
                     proposalId: 1
-                    creator: tJyppxPeKs9rbsidSi3pqCYitkdGYjo57r
-                    wallet: tEtBQhXDFo5yWR1WizqXSbrZzMq6sBmhSU
-                    amount: "5000000.00000000"
-                    description: "OVP-1: Request for certificate. View details at: https://example.com."
+                    creator: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    wallet: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    amount: "50000.00000000"
+                    description: "OVP-1: Request for a 50000 TODX certificate. See ipfs:QmPYH5K4q3WphaRMe7zv6196NryXgj5m7uY53Jkgym2ube for details."
                     type: Create
                     status: Complete
-                    expiration: 945889
-                    yesAmount: "200600.4932824"
-                    noAmount: "17534.53831111"
+                    expiration: 3005585
+                    yesAmount: "20000.00000000"
+                    noAmount: "0.00000000"
                     pledgeAmount: "10000.00000000"
                     approved: true
+                    createdBlock: 2989374
+                    modifiedBlock: 3015519
                 paging: {}
         400:
           description: The request is not valid
@@ -7579,7 +7784,7 @@ paths:
       tags:
         - Vaults
       summary: Build Propose Create Certificate Transaction Quote
-      description: Builds a quote for a transaction to create a proposal for creating a vault certificate. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      description: Builds a quote for a transaction to create a proposal for creating a vault certificate. Creating a proposal requires a deposit of 500 CRS, which is returned upon completion of the proposal. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
       operationId: buildProposeCreateCertificateQuote
       parameters:
         - name: vault
@@ -7664,7 +7869,7 @@ paths:
       tags:
         - Vaults
       summary: Build Propose Revoke Certificate Transaction Quote
-      description: Builds a quote for a transaction to create a proposal for revoking a vault certificate. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      description: Builds a quote for a transaction to create a proposal for revoking a vault certificate. Creating a proposal requires a deposit of 500 CRS, which is returned upon completion of the proposal. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
       operationId: buildProposeRevokeCertificateQuote
       parameters:
         - name: vault
@@ -7683,7 +7888,7 @@ paths:
               $ref: "#/components/schemas/quoteProposeRevokeCertificateRequest"
             example:
               owner: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
-              description: "OVP-2: Request to revoke certificate. See https://www.example.com for details."
+              description: "OVP-2: Request to revoke certificate. As the recipient, I wish to revoke this certificate."
       security:
         - opdexAuth: []
       responses:
@@ -7694,21 +7899,29 @@ paths:
               schema:
                 $ref: "#/components/schemas/transactionQuoteResponse"
               example:
-                error:
-                  friendly: Unable to propose revoking certificate, invalid certificate.
-                  raw:
-                gasUsed: 10164
-                events: []
+                result: 2
+                gasUsed: 14498
+                events:
+                  - proposalId: 2
+                    wallet: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    amount: "50000.00000000"
+                    type: Revoke
+                    status: Pledge
+                    expiration: 3081026
+                    description: "OVP-2: Request to revoke certificate. As the recipient, I wish to revoke this certificate."
+                    eventType: CreateVaultProposalEvent
+                    contract: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
+                    sortOrder: 0
                 request:
                   sender: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
                   to: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
-                  amount: "0.00000000"
+                  amount: "500.00000000"
                   method: CreateRevokeCertificateProposal
                   parameters:
                     - label: Recipient
                       value: 9#tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
                     - label: Description
-                      value: "4#OVP-2: Request to revoke certificate. See https://www.example.com for details."
+                      value: "4#OVP-2: Request to revoke certificate. As the recipient, I wish to revoke this certificate."
                   callback: https://v1-test-api.opdex.com/v1/transactions
         400:
           description: The request is not valid
@@ -7738,7 +7951,7 @@ paths:
       tags:
         - Vaults
       summary: Build Propose Change Minimum Pledge Transaction Quote
-      description: Builds a quote for a transaction to create a proposal for changing the minimum pledge amount. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      description: Builds a quote for a transaction to create a proposal for changing the minimum pledge amount. Creating a proposal requires a deposit of 500 CRS, which is returned upon completion of the proposal. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
       operationId: buildProposeChangeMinimumPledgeQuote
       parameters:
         - name: vault
@@ -7820,7 +8033,7 @@ paths:
       tags:
         - Vaults
       summary: Build Propose Change Minimum Vote Transaction Quote
-      description: Builds a quote for a transaction to create a proposal for changing the minimum vote threshold. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      description: Builds a quote for a transaction to create a proposal for changing the minimum vote threshold. Creating a proposal requires a deposit of 500 CRS, which is returned upon completion of the proposal. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
       operationId: buildProposeChangeMinimumVoteQuote
       parameters:
         - name: vault
@@ -7932,26 +8145,19 @@ paths:
                 vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                 token: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
                 proposalId: 1
-                creator: tJyppxPeKs9rbsidSi3pqCYitkdGYjo57r
+                creator: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
                 wallet: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
-                amount: "5000000.00000000"
-                description: "OVP-1: Request for certificate. View details at: https://example.com."
+                amount: "50000.00000000"
+                description: "OVP-1: Request for a 50000 TODX certificate. See ipfs:QmPYH5K4q3WphaRMe7zv6196NryXgj5m7uY53Jkgym2ube for details."
                 type: Create
                 status: Complete
-                expiration: 945889
-                yesAmount: "200600.4932824"
-                noAmount: "17534.53831111"
+                expiration: 3005585
+                yesAmount: "20000.00000000"
+                noAmount: "0.00000000"
                 pledgeAmount: "10000.00000000"
                 approved: true
-                certificate:
-                  owner: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
-                  amount: "5000000.00000000"
-                  vestingStartBlock: 945889
-                  vestingEndBlock: 2025889
-                  redeemed: false
-                  revoked: false
-                  proposals:
-                    - 1
+                createdBlock: 2989374
+                modifiedBlock: 3015519
         400:
           description: The request is not valid
           content:
@@ -8256,6 +8462,8 @@ paths:
                 pledger: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
                 pledge: "10000.00000000"
                 balance: "10000.00000000"
+                createdBlock: 3012570
+                modifiedBlock: 3012570
         400:
           description: The request is not valid
           content:
@@ -8497,6 +8705,8 @@ paths:
                 vote: "30000.00000000"
                 balance: "30000.00000000"
                 inFavor: true
+                createdBlock: 3026455
+                modifiedBlock: 3026455
         400:
           description: The request is not valid
           content:
@@ -8600,12 +8810,16 @@ paths:
                     vote: "8000.00000000"
                     balance: "8000.00000000"
                     inFavor: false
+                    createdBlock: 4001059
+                    modifiedBlock: 4001059
                   - vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                     proposalId: 1
                     voter: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
                     vote: "30000.00000000"
                     balance: "0.00000000"
                     inFavor: true
+                    createdBlock: 3026455
+                    modifiedBlock: 3725314
                 paging: {}
         400:
           description: The request is not valid

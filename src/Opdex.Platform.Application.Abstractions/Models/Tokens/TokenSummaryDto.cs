@@ -4,6 +4,5 @@ public class TokenSummaryDto
 {
     public decimal PriceUsd { get; set; }
     public decimal DailyPriceChangePercent { get; set; }
-    public ulong CreatedBlock { get; set; }
     public ulong ModifiedBlock { get; set; }
 }
