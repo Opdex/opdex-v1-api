@@ -79,7 +79,7 @@ public class TransactionFilterParametersValidatorTests
         // Arrange
         var request = new TransactionFilterParameters
         {
-            Contracts = new List<Address>() { new Address("tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc") }
+            Contracts = new List<Address>() { new Address("tKFkNiL5KJ3Q4br929i6hHbB4X4mt1MigF") }
         };
 
         // Act

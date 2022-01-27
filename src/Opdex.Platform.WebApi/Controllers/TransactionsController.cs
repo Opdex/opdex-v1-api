@@ -12,6 +12,7 @@ using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Transactions;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
+using System.Linq;
 
 namespace Opdex.Platform.WebApi.Controllers;
 
@@ -81,10 +82,12 @@ public class TransactionsController : ControllerBase
     /// <returns>The replayed transaction quote.</returns>
     [HttpPost("replay-quote")]
     [Authorize]
-    public async Task<ActionResult<TransactionQuoteResponseModel>> ReplayTransactionQuote([FromBody] QuoteReplayRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<TransactionQuoteResponseModel>> ReplayTransactionQuote([FromBody] QuotedTransactionModel request, CancellationToken cancellationToken)
     {
-        // Todo: Probably should validate that the _context.Wallet matches request.Quote.Sender when base64 is removed from request
-        var quote = await _mediator.Send(new CreateTransactionQuoteCommand(request.Quote), cancellationToken);
+        if (_context.Wallet != request.Sender) throw new NotAllowedException("Transaction quote is not for authenticated address.");
+        var quote = await _mediator.Send(new CreateTransactionQuoteCommand(request.Sender, request.To, request.Amount, request.Method,
+                                                                           request.Parameters.Select(p => (p.Label, p.Value)),
+                                                                           request.Callback), cancellationToken);
         var response = _mapper.Map<TransactionQuoteResponseModel>(quote);
         return Ok(response);
     }

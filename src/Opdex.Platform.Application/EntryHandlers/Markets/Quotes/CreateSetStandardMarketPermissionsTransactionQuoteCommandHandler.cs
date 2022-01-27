@@ -33,9 +33,9 @@ public class CreateSetStandardMarketPermissionsTransactionQuoteCommandHandler : 
 
         if (!market.AuthPoolCreators && request.Permission == MarketPermissionType.CreatePool)
             throw new InvalidDataException("Permission", "Market does not enforce authorization for pool creation.");
-        if (!market.AuthProviders && request.Permission == MarketPermissionType.Provide) 
+        if (!market.AuthProviders && request.Permission == MarketPermissionType.Provide)
             throw new InvalidDataException("Permission", "Market does not enforce authorization for providing liquidity.");
-        if (!market.AuthTraders && request.Permission == MarketPermissionType.Trade) 
+        if (!market.AuthTraders && request.Permission == MarketPermissionType.Trade)
             throw new InvalidDataException("Permission", "Market does not enforce authorization for trading.");
 
         var requestParameters = new List<TransactionQuoteRequestParameter>
