@@ -1348,7 +1348,6 @@ components:
       properties:
         signature:
           type: string
-          format: byte
           description: Signed Stratis ID
         publicKey:
           $ref: "#/components/schemas/address"
