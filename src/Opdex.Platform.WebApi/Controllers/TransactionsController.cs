@@ -12,6 +12,7 @@ using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Transactions;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.WebApi.Caching;
 using System.Linq;
 
 namespace Opdex.Platform.WebApi.Controllers;
@@ -42,6 +43,7 @@ public class TransactionsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Details of transactions with paging.</returns>
     [HttpGet]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<TransactionsResponseModel>> GetTransactions([FromQuery] TransactionFilterParameters filters,
                                                                                CancellationToken cancellationToken)
     {
@@ -68,6 +70,7 @@ public class TransactionsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Details of the transaction.</returns>
     [HttpGet("{hash}")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<TransactionResponseModel>> GetTransaction([FromRoute] Sha256 hash, CancellationToken cancellationToken)
     {
         var transactionsDto = await _mediator.Send(new GetTransactionByHashQuery(hash), cancellationToken);
@@ -82,6 +85,7 @@ public class TransactionsController : ControllerBase
     /// <returns>The replayed transaction quote.</returns>
     [HttpPost("replay-quote")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> ReplayTransactionQuote([FromBody] QuotedTransactionModel request, CancellationToken cancellationToken)
     {
         if (_context.Wallet != request.Sender) throw new NotAllowedException("Transaction quote is not for authenticated address.");

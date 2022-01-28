@@ -7,6 +7,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.MarketTokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Routers;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.WebApi.Caching;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests;
 using Opdex.Platform.WebApi.Models.Requests.MarketTokens;
@@ -42,6 +43,7 @@ public class MarketTokensController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="MarketTokensResponseModel"/> results response with pagination.</returns>
     [HttpGet]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<MarketTokensResponseModel>> GetMarketTokens([FromRoute] Address market,
                                                                                [FromQuery] TokenFilterParameters filters,
                                                                                CancellationToken cancellationToken)
@@ -58,6 +60,7 @@ public class MarketTokensController : ControllerBase
     /// <param name="cancellationToken">cancellation token.</param>
     /// <returns>A market token response.</returns>
     [HttpGet("{token}")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<MarketTokenResponseModel>> GetMarketToken([FromRoute] Address market, [FromRoute] Address token,
                                                                              CancellationToken cancellationToken)
     {
@@ -75,6 +78,7 @@ public class MarketTokensController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Paged market snapshot data for the given token.</returns>
     [HttpGet("{token}/history")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<MarketTokenSnapshotsResponseModel>> GetMarketTokenHistory([FromRoute] Address market,
                                                                                              [FromRoute] Address token,
                                                                                              [FromQuery] SnapshotFilterParameters filters,
@@ -95,6 +99,7 @@ public class MarketTokensController : ControllerBase
     /// <returns>A token swap transaction quote.</returns>
     [HttpPost("{token}/swap")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> Swap([FromRoute] Address market, [FromRoute] Address token,
                                                                         [FromBody] SwapRequest request, CancellationToken cancellationToken)
     {
@@ -114,6 +119,7 @@ public class MarketTokensController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The amount of tokens to be input.</returns>
     [HttpPost("{token}/swap/amount-in")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<SwapAmountInQuoteResponseModel>> SwapAmountIn([FromRoute] Address market,
                                                                                  [FromRoute] Address token,
                                                                                  [FromBody] SwapAmountInQuoteRequestModel request,
@@ -132,6 +138,7 @@ public class MarketTokensController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The amount of tokens to be output.</returns>
     [HttpPost("{token}/swap/amount-out")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<SwapAmountOutQuoteResponseModel>> SwapAmountOut([FromRoute] Address market,
                                                                                    [FromRoute] Address token,
                                                                                    [FromBody] SwapAmountOutQuoteRequestModel request,

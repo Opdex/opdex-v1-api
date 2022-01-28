@@ -11,6 +11,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens.Snapshots;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.WebApi.Caching;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests;
 using Opdex.Platform.WebApi.Models.Requests.Tokens;
@@ -41,6 +42,7 @@ public class TokensController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Filtered tokens with paging.</returns>
     [HttpGet]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<TokensResponseModel>> GetTokens([FromQuery] TokenFilterParameters filters, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetTokensWithFilterQuery(filters.BuildCursor()), cancellationToken);
@@ -70,6 +72,7 @@ public class TokensController : ControllerBase
     /// <param name="cancellationToken">cancellation token.</param>
     /// <returns>Token details.</returns>
     [HttpGet("{token}")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<TokenResponseModel>> GetToken([FromRoute] Address token, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetTokenByAddressQuery(token), cancellationToken);
@@ -84,6 +87,7 @@ public class TokensController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Paged token snapshot data.</returns>
     [HttpGet("{token}/history")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<TokenSnapshotsResponseModel>> GetTokenHistory([FromRoute] Address token, [FromQuery] SnapshotFilterParameters filters,
                                                                                  CancellationToken cancellationToken)
     {
@@ -100,6 +104,7 @@ public class TokensController : ControllerBase
     /// <returns>Transaction quote of an approve allowance transaction.</returns>
     [HttpPost("{token}/approve")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<IActionResult> ApproveAllowance([FromRoute] Address token, [FromBody] ApproveAllowanceQuoteRequest request, CancellationToken cancellationToken)
     {
         if (token == Address.Cirrus) throw new InvalidDataException(nameof(token), "Address must be SRC token address.");
@@ -115,6 +120,7 @@ public class TokensController : ControllerBase
     /// <returns>Token distribute transaction quote.</returns>
     [HttpPost("{token}/distribute")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<IActionResult> Distribute([FromRoute] Address token, CancellationToken cancellationToken)
     {
         if (token == Address.Cirrus) throw new InvalidDataException(nameof(token), "Address must be SRC token address.");

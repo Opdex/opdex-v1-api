@@ -11,6 +11,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools.Snapsh
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.WebApi.Caching;
 using Opdex.Platform.WebApi.Models.Requests;
 using Opdex.Platform.WebApi.Models.Requests.LiquidityPools;
 using Opdex.Platform.WebApi.Models.Responses.LiquidityPools;
@@ -40,6 +41,7 @@ public class LiquidityPoolsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns><see cref="LiquidityPoolsResponseModel"/> of matching results and paging details.</returns>
     [HttpGet]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<LiquidityPoolsResponseModel>> LiquidityPools([FromQuery] LiquidityPoolFilterParameters filters,
                                                                                 CancellationToken cancellationToken)
     {
@@ -55,6 +57,7 @@ public class LiquidityPoolsController : ControllerBase
     /// <returns>A create liquidity pool transaction quote.</returns>
     [HttpPost]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> CreateLiquidityPool([FromBody] CreateLiquidityPoolQuoteRequest request,
                                                                                        CancellationToken cancellationToken)
     {
@@ -70,6 +73,7 @@ public class LiquidityPoolsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The requested pool</returns>
     [HttpGet("{pool}")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<LiquidityPoolResponseModel>> LiquidityPool([FromRoute] Address pool, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetLiquidityPoolByAddressQuery(pool), cancellationToken);
@@ -86,6 +90,7 @@ public class LiquidityPoolsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Paged liquidity pool snapshot data.</returns>
     [HttpGet("{pool}/history")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<LiquidityPoolSnapshotsResponseModel>> GetLiquidityPoolHistory([FromRoute] Address pool,
                                                                                                  [FromQuery] SnapshotFilterParameters filters,
                                                                                                  CancellationToken cancellationToken)
@@ -103,6 +108,7 @@ public class LiquidityPoolsController : ControllerBase
     /// <returns>Quote an add liquidity transaction.</returns>
     [HttpPost("{pool}/add")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> AddLiquidityQuote([FromRoute] Address pool,
                                                                                      [FromBody] AddLiquidityQuoteRequest request,
                                                                                      CancellationToken cancellationToken)
@@ -121,6 +127,7 @@ public class LiquidityPoolsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The quoted number of tokens to be deposited.</returns>
     [HttpPost("{pool}/add/amount-in")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<AddLiquidityAmountInQuoteResponseModel>> LiquidityAmountInQuote([FromRoute] Address pool,
                                                                                                    [FromBody] CalculateAddLiquidityAmountsRequestModel request,
                                                                                                    CancellationToken cancellationToken)
@@ -138,6 +145,7 @@ public class LiquidityPoolsController : ControllerBase
     /// <returns>Quote a remove liquidity transaction.</returns>
     [HttpPost("{pool}/remove")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> RemoveLiquidityQuote([FromRoute] Address pool,
                                                                                         [FromBody] RemoveLiquidityQuoteRequest request,
                                                                                         CancellationToken cancellationToken)
@@ -155,6 +163,7 @@ public class LiquidityPoolsController : ControllerBase
     /// <returns>Quote a sync transaction.</returns>
     [HttpPost("{pool}/sync")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> SyncQuote([FromRoute] Address pool, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateSyncTransactionQuoteCommand(pool, _context.Wallet), cancellationToken);
@@ -170,6 +179,7 @@ public class LiquidityPoolsController : ControllerBase
     /// <returns>Quote a skim transaction.</returns>
     [HttpPost("{pool}/skim")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> SkimQuote([FromRoute] Address pool,
                                                                              [FromBody] SkimQuoteRequest request,
                                                                              CancellationToken cancellationToken)
@@ -187,6 +197,7 @@ public class LiquidityPoolsController : ControllerBase
     /// <returns>Quote a start staking transaction.</returns>
     [HttpPost("{pool}/staking/start")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> StartStakingQuote([FromRoute] Address pool,
                                                                                      [FromBody] StartStakingQuoteRequest request,
                                                                                      CancellationToken cancellationToken)
@@ -204,6 +215,7 @@ public class LiquidityPoolsController : ControllerBase
     /// <returns>Quote a stop staking transaction.</returns>
     [HttpPost("{pool}/staking/stop")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> StopStakingQuote([FromRoute] Address pool,
                                                                                     [FromBody] StopStakingQuoteRequest request,
                                                                                     CancellationToken cancellationToken)
@@ -221,6 +233,7 @@ public class LiquidityPoolsController : ControllerBase
     /// <returns>Quote a collect staking rewards transaction.</returns>
     [HttpPost("{pool}/staking/collect")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> CollectStakingRewardsQuote([FromRoute] Address pool,
                                                                                               [FromBody] CollectStakingRewardsQuoteRequest request,
                                                                                               CancellationToken cancellationToken)

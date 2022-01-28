@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MiningGovernances;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.WebApi.Caching;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.MiningGovernances;
 using Opdex.Platform.WebApi.Models.Responses.MiningGovernances;
@@ -37,6 +38,7 @@ public class MiningGovernancesController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Mining miningGovernance results with paging.</returns>
     [HttpGet]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<MiningGovernancesResponseModel>> GetMiningGovernances([FromQuery] MiningGovernanceFilterParameters filters,
                                                                                          CancellationToken cancellationToken)
     {
@@ -50,6 +52,7 @@ public class MiningGovernancesController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="MiningGovernanceResponseModel"/> summary</returns>
     [HttpGet("{address}")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<MiningGovernanceResponseModel>> GetMiningGovernance([FromRoute] Address address, CancellationToken cancellationToken)
     {
         var miningGovernanceDto = await _mediator.Send(new GetMiningGovernanceByAddressQuery(address), cancellationToken);
@@ -65,6 +68,7 @@ public class MiningGovernancesController : ControllerBase
     /// <returns>Quote a stop staking transaction.</returns>
     [HttpPost("{address}/reward-mining-pools")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<IActionResult> RewardMiningPools([FromRoute] Address address,
                                                        [FromBody] RewardMiningPoolsRequest request,
                                                        CancellationToken cancellationToken)

@@ -14,6 +14,7 @@ using Opdex.Platform.WebApi.Models.Requests.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Quotes;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.WebApi.Caching;
 using System.Collections.Generic;
 
 namespace Opdex.Platform.WebApi.Controllers;
@@ -41,6 +42,7 @@ public class MarketsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Market results</returns>
     [HttpGet]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<MarketsResponseModel>> GetMarkets(
         [FromQuery] MarketFilterParameters filters,
         CancellationToken cancellationToken)
@@ -56,6 +58,7 @@ public class MarketsController : ControllerBase
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("standard")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> CreateStandardMarketQuote([FromBody] CreateStandardMarketQuoteRequest request,
                                                                                              CancellationToken cancellationToken)
     {
@@ -76,6 +79,7 @@ public class MarketsController : ControllerBase
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("staking")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> CreateStakingMarketQuote([FromBody] CreateStakingMarketQuoteRequest request,
                                                                                             CancellationToken cancellationToken)
     {
@@ -90,6 +94,7 @@ public class MarketsController : ControllerBase
     /// <param name="cancellationToken">Cancellation Token</param>
     /// <returns>Market details with its daily summary</returns>
     [HttpGet("{market}")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<MarketResponseModel>> GetMarketDetails([FromRoute] Address market, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetMarketByAddressQuery(market), cancellationToken);
@@ -104,6 +109,7 @@ public class MarketsController : ControllerBase
     /// <param name="cancellationToken">Cancellation Token</param>
     /// <returns>Market history with pagination.</returns>
     [HttpGet("{market}/history")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<MarketSnapshotsResponseModel>> GetMarketHistory([FromRoute] Address market,
                                                                                    [FromQuery] MarketSnapshotFilterParameters filters,
                                                                                    CancellationToken cancellationToken)
@@ -121,6 +127,7 @@ public class MarketsController : ControllerBase
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("{market}/standard/set-ownership")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> SetOwnershipQuote([FromRoute] Address market,
                                                                                      [FromBody] SetMarketOwnerQuoteRequest request,
                                                                                      CancellationToken cancellationToken)
@@ -138,6 +145,7 @@ public class MarketsController : ControllerBase
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("{market}/standard/claim-ownership")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> ClaimOwnershipQuote([FromRoute] Address market,
                                                                                        CancellationToken cancellationToken)
     {
@@ -156,6 +164,7 @@ public class MarketsController : ControllerBase
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("{market}/standard/permissions/{address}")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> SetPermissionsQuote([FromRoute] Address market,
                                                                                        [FromRoute] Address address,
                                                                                        [FromBody] SetMarketPermissionsQuoteRequest request,
@@ -177,6 +186,7 @@ public class MarketsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A list of all market permissions for the wallet address.</returns>
     [HttpGet("{market}/standard/permissions/{address}")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<IEnumerable<MarketPermissionType>>> GetPermissions([FromRoute] Address market,
                                                                                       [FromRoute] Address address,
                                                                                       CancellationToken cancellationToken)
@@ -192,6 +202,7 @@ public class MarketsController : ControllerBase
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("{market}/standard/collect-fees")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> CollectFeesQuote([FromRoute] Address market,
                                                                                     [FromBody] CollectMarketFeesQuoteRequest request,
                                                                                     CancellationToken cancellationToken)

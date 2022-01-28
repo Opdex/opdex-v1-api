@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MiningPools;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.WebApi.Caching;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.MiningPools;
 using Opdex.Platform.WebApi.Models.Responses.MiningPools;
@@ -37,6 +38,7 @@ public class MiningPoolsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Details of mining pools with paging.</returns>
     [HttpGet]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<MiningPoolsResponseModel>> GetMiningPools([FromQuery] MiningPoolFilterParameters filters,
                                                                              CancellationToken cancellationToken)
     {
@@ -50,6 +52,7 @@ public class MiningPoolsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Mining pool details.</returns>
     [HttpGet("{pool}")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<MiningPoolResponseModel>> GetMiningPool([FromRoute] Address pool, CancellationToken cancellationToken)
     {
         var dto = await _mediator.Send(new GetMiningPoolByAddressQuery(pool), cancellationToken);
@@ -65,6 +68,7 @@ public class MiningPoolsController : ControllerBase
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("{pool}/start")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> StartMining([FromRoute] Address pool, [FromBody] MiningQuote request,
                                                                                CancellationToken cancellationToken)
     {
@@ -81,6 +85,7 @@ public class MiningPoolsController : ControllerBase
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("{pool}/stop")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> StopMining([FromRoute] Address pool, [FromBody] MiningQuote request,
                                                                               CancellationToken cancellationToken)
     {
@@ -96,6 +101,7 @@ public class MiningPoolsController : ControllerBase
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("{pool}/collect")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> CollectMiningRewards([FromRoute] Address pool, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateCollectMiningRewardsTransactionQuoteCommand(pool, _context.Wallet), cancellationToken);
