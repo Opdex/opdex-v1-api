@@ -5,6 +5,8 @@ using Dapper;
 using Microsoft.Extensions.Logging;
 using MySqlConnector;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Polly;
+using Polly.Retry;
 using System.Diagnostics;
 
 namespace Opdex.Platform.Infrastructure.Data;
@@ -13,6 +15,11 @@ namespace Opdex.Platform.Infrastructure.Data;
 // Ref: https://stackoverflow.com/questions/538060/proper-use-of-the-idisposable-interface
 public class DbContext : IDbContext
 {
+    private readonly AsyncRetryPolicy _retryPolicy = Policy
+        .Handle<MySqlException>(ex => ex.IsTransient)
+        .Or<TimeoutException>()
+        .WaitAndRetryAsync(3, x => TimeSpan.FromSeconds(x));
+
     private readonly ILogger<DbContext> _logger;
     private readonly IDatabaseSettings<MySqlConnection> _databaseSettings;
 
@@ -61,19 +68,22 @@ public class DbContext : IDbContext
     {
         var command = new CommandDefinition(query.Sql, query.Parameters, commandType: query.Type, cancellationToken: query.Token);
 
-        var stopwatch = new Stopwatch();
-        stopwatch.Start();
-        var result = await action.Invoke(command);
-        stopwatch.Stop();
-
-        using (_logger.BeginScope(new Dictionary<string, object>
-               {
-                   { "Command", command.CommandText }
-               }))
+        return await _retryPolicy.ExecuteAsync(async () =>
         {
-            _logger.LogDebug("Executed database query in {ExecutionTimeMs} ms", stopwatch.ElapsedMilliseconds);
-        }
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var result = await action.Invoke(command);
+            stopwatch.Stop();
 
-        return result;
+            using (_logger.BeginScope(new Dictionary<string, object>
+                   {
+                       { "Command", command.CommandText }
+                   }))
+            {
+                _logger.LogDebug("Executed database query in {ExecutionTimeMs} ms", stopwatch.ElapsedMilliseconds);
+            }
+
+            return result;
+        });
     }
 }
