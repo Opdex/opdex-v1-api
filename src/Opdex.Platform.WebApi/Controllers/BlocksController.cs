@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
 using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.WebApi.Caching;
 using Opdex.Platform.WebApi.Models.Requests.Blocks;
 using Opdex.Platform.WebApi.Models.Responses.Blocks;
 using System.Threading;
@@ -30,6 +31,7 @@ public class BlocksController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Block results</returns>
     [HttpGet]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<BlocksResponseModel>> GetBlocks(
         [FromQuery] BlockFilterParameters filters,
         CancellationToken cancellationToken)
@@ -45,6 +47,7 @@ public class BlocksController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Block details</returns>
     [HttpGet("{height}")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<BlockResponseModel>> GetBlock(ulong height, CancellationToken cancellationToken)
     {
         if (height == 0) throw new InvalidDataException(nameof(height), "Height must be greater than 0.");

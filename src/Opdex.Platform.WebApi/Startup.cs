@@ -223,6 +223,8 @@ public class Startup
                 };
             });
 
+        services.AddResponseCaching();
+
         services.AddApiVersioning(options =>
         {
             options.ReportApiVersions = true;
@@ -274,6 +276,7 @@ public class Startup
         app.UseIpRateLimiting();
         app.UseAuthentication();
         app.UseAuthorization();
+        app.UseResponseCaching();
 
         // yaml mapping not supported by default, must explicitly map
         var fileExtensionContentTypeProvider = new FileExtensionContentTypeProvider();

@@ -9,6 +9,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults.Votes;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults.Certificates;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.WebApi.Caching;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Vaults;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
@@ -41,6 +42,7 @@ public class VaultsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault paging results.</returns>
     [HttpGet]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<VaultsResponseModel>> GetVaults([FromQuery] VaultFilterParameters filters, CancellationToken cancellationToken)
     {
         var vaults = await _mediator.Send(new GetVaultsWithFilterQuery(filters.BuildCursor()), cancellationToken);
@@ -53,6 +55,7 @@ public class VaultsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault details.</returns>
     [HttpGet("{vault}")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<VaultResponseModel>> GetVault([FromRoute] Address vault, CancellationToken cancellationToken)
     {
         var dto = await _mediator.Send(new GetVaultByAddressQuery(vault), cancellationToken);
@@ -67,6 +70,7 @@ public class VaultsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault certificate paging results.</returns>
     [HttpGet("{vault}/certificates")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<VaultCertificatesResponseModel>> GetCertificates([FromRoute] Address vault,
                                                                                     [FromQuery] VaultCertificateFilterParameters filters,
                                                                                     CancellationToken cancellationToken)
@@ -82,6 +86,7 @@ public class VaultsController : ControllerBase
     /// <returns>Redeem vault certificate quote.</returns>
     [HttpPost("{vault}/certificates/redeem")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteRedeemCertificate([FromRoute] Address vault, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateRedeemVaultCertificateQuoteCommand(vault, _context.Wallet), cancellationToken);
@@ -96,6 +101,7 @@ public class VaultsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault proposal pledge paging results.</returns>
     [HttpGet("{vault}/pledges")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<VaultProposalPledgesResponseModel>> GetVaultProposalPledges([FromRoute] Address vault,
                                                                                                [FromQuery] VaultProposalPledgeFilterParameters filters,
                                                                                                CancellationToken cancellationToken)
@@ -111,6 +117,7 @@ public class VaultsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault proposal paging results.</returns>
     [HttpGet("{vault}/proposals")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<VaultProposalsResponseModel>> GetVaultProposals([FromRoute] Address vault,
                                                                                    [FromQuery] VaultProposalFilterParameters filters,
                                                                                    CancellationToken cancellationToken)
@@ -127,6 +134,7 @@ public class VaultsController : ControllerBase
     /// <returns>Vault proposal quote.</returns>
     [HttpPost("{vault}/proposals/create-certificate")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteProposeCreateCertificate([FromRoute] Address vault,
                                                                                                  [FromBody] CreateCertificateVaultProposalQuoteRequest request,
                                                                                                  CancellationToken cancellationToken)
@@ -145,6 +153,7 @@ public class VaultsController : ControllerBase
     /// <returns>Vault proposal quote.</returns>
     [HttpPost("{vault}/proposals/revoke-certificate")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteProposeRevokeCertificate([FromRoute] Address vault,
                                                                                                  [FromBody] RevokeCertificateVaultProposalQuoteRequest request,
                                                                                                  CancellationToken cancellationToken)
@@ -163,6 +172,7 @@ public class VaultsController : ControllerBase
     /// <returns>Vault proposal quote.</returns>
     [HttpPost("{vault}/proposals/minimum-pledge")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteProposeMinimumPledge([FromRoute] Address vault,
                                                                                              [FromBody] MinimumPledgeVaultProposalQuoteRequest request,
                                                                                              CancellationToken cancellationToken)
@@ -181,6 +191,7 @@ public class VaultsController : ControllerBase
     /// <returns>Vault proposal quote.</returns>
     [HttpPost("{vault}/proposals/minimum-vote")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteProposeMinimumVote([FromRoute] Address vault,
                                                                                            [FromBody] MinimumVoteVaultProposalQuoteRequest request,
                                                                                            CancellationToken cancellationToken)
@@ -198,6 +209,7 @@ public class VaultsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault proposal details.</returns>
     [HttpGet("{vault}/proposals/{proposalId}")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<VaultProposalResponseModel>> GetProposal([FromRoute] Address vault, [FromRoute] ulong proposalId, CancellationToken cancellationToken)
     {
         var dto = await _mediator.Send(new GetVaultProposalByVaultAddressAndPublicIdQuery(vault, proposalId), cancellationToken);
@@ -213,6 +225,7 @@ public class VaultsController : ControllerBase
     /// <returns>Vault proposal completion quote.</returns>
     [HttpPost("{vault}/proposals/{proposalId}/complete")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteCompleteProposal([FromRoute] Address vault, [FromRoute] ulong proposalId, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateCompleteVaultProposalQuoteCommand(vault, proposalId, _context.Wallet), cancellationToken);
@@ -229,6 +242,7 @@ public class VaultsController : ControllerBase
     /// <returns>Vault proposal pledge quote.</returns>
     [HttpPost("{vault}/proposals/{proposalId}/pledges")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuotePledge([FromRoute] Address vault, [FromRoute] ulong proposalId,
                                                                                [FromBody] VaultProposalPledgeQuoteRequest request, CancellationToken cancellationToken)
     {
@@ -246,6 +260,7 @@ public class VaultsController : ControllerBase
     /// <returns>Vault proposal withdraw pledge quote.</returns>
     [HttpPost("{vault}/proposals/{proposalId}/pledges/withdraw")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteWithdrawPledge([FromRoute] Address vault, [FromRoute] ulong proposalId,
                                                                                        [FromBody] VaultProposalWithdrawPledgeQuoteRequest request, CancellationToken cancellationToken)
     {
@@ -262,6 +277,7 @@ public class VaultsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault proposal pledge details.</returns>
     [HttpGet("{vault}/proposals/{proposalId}/pledges/{pledger}")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<VaultProposalPledgeResponseModel>> GetPledge([FromRoute] Address vault, [FromRoute] ulong proposalId, [FromRoute] Address pledger,
                                                                                 CancellationToken cancellationToken)
     {
@@ -279,6 +295,7 @@ public class VaultsController : ControllerBase
     /// <returns>Vault proposal vote quote.</returns>
     [HttpPost("{vault}/proposals/{proposalId}/votes")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteVote([FromRoute] Address vault, [FromRoute] ulong proposalId,
                                                                              [FromBody] VaultProposalVoteQuoteRequest request, CancellationToken cancellationToken)
     {
@@ -296,6 +313,7 @@ public class VaultsController : ControllerBase
     /// <returns>Vault proposal withdraw vote quote.</returns>
     [HttpPost("{vault}/proposals/{proposalId}/votes/withdraw")]
     [Authorize]
+    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteWithdrawVote([FromRoute] Address vault, [FromRoute] ulong proposalId,
                                                                                      [FromBody] VaultProposalWithdrawVoteQuoteRequest request, CancellationToken cancellationToken)
     {
@@ -312,6 +330,7 @@ public class VaultsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault proposal vote details.</returns>
     [HttpGet("{vault}/proposals/{proposalId}/votes/{voter}")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<VaultProposalVoteResponseModel>> GetVote([FromRoute] Address vault, [FromRoute] ulong proposalId, [FromRoute] Address voter,
                                                                             CancellationToken cancellationToken)
     {
@@ -327,6 +346,7 @@ public class VaultsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Vault proposal vote paging results.</returns>
     [HttpGet("{vault}/votes")]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<VaultProposalVotesResponseModel>> GetVaultProposalVotes([FromRoute] Address vault,
                                                                                            [FromQuery] VaultProposalVoteFilterParameters filters,
                                                                                            CancellationToken cancellationToken)
