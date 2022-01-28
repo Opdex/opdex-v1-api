@@ -33,9 +33,9 @@ internal class BlockBasedCacheControlFilter : IAsyncActionFilter
         headers.Remove(HeaderNames.Pragma);
 
         var status = await _mediator.Send(new GetIndexerStatusQuery(), CancellationToken.None);
-        if (status.Locked && status.Reason == IndexLockReason.Rewinding)
+        if (status.Locked)
         {
-            // do not cache responses when rewinding
+            // do not cache responses when locked
             await next();
             // response data may not be valid, potentially we could even return 503
             return;
