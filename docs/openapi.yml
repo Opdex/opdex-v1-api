@@ -3172,6 +3172,12 @@ paths:
                     medianTime: 2022-01-18T21:59:44Z
                 paging:
                   next: ZGlyZWN0aW9uOkRFU0M7bGltaXQ6NTtwYWdpbmc6Rm9yd2FyZDtwb2ludGVyOk16QXdPVEF3TVE9PTs=
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         429:
           $ref: "#/components/responses/TooManyRequests"
         500:
@@ -3204,6 +3210,12 @@ paths:
                 height: 3009005
                 time: 2022-01-18T22:02:56Z
                 medianTime: 2022-01-18T22:01:04Z
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -3453,6 +3465,12 @@ paths:
                         nominated: true
                       modifiedBlock: 3043296
                 paging: {}
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -3513,6 +3531,12 @@ paths:
                     - label: Token Address
                       value: 9#tA88mLAYt3gTp5eqFR6srceAPrTNf4tdFy
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -3655,6 +3679,12 @@ paths:
                     dailyWeightChangePercent: 0.00000000
                     nominated: true
                   modifiedBlock: 3043296
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -3840,6 +3870,12 @@ paths:
                         low: 0.00000000
                         close: 0.00000000
                 paging: {}
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -3945,6 +3981,12 @@ paths:
                     - label: Deadline
                       value: 7#0
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -4001,6 +4043,12 @@ paths:
                 $ref: "#/components/schemas/liquidityAmountInQuoteResponse"
               example:
                 amountIn: "0.00080099"
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -4110,6 +4158,12 @@ paths:
                     - label: Deadline
                       value: 7#0
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -4167,6 +4221,12 @@ paths:
                   method: Sync
                   parameters: []
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -4240,6 +4300,12 @@ paths:
                     - label: Recipient
                       value: 9#tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -4310,6 +4376,12 @@ paths:
                     - label: Amount
                       value: 12#100000000
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -4383,6 +4455,12 @@ paths:
                     - label: Liquidate Rewards
                       value: 1#False
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -4450,6 +4528,12 @@ paths:
                     - label: Liquidate Rewards
                       value: 1#False
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -4577,6 +4661,12 @@ paths:
                         totalDailyUsd: 1446.00767498
                       modifiedBlock: 3042951
                 paging: {}
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -4673,6 +4763,12 @@ paths:
                     marketDailyUsd: 241.00127916
                     totalDailyUsd: 1446.00767498
                   modifiedBlock: 3042951
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -4779,6 +4875,12 @@ paths:
                     timestamp: 2022-01-13T00:00:00Z
                 paging:
                   next: ZGlyZWN0aW9uOkFTQztsaW1pdDoxO3BhZ2luZzpGb3J3YXJkO2ludGVydmFsOk9uZURheTtzdGFydDoxNjQwOTk1MjAwO2VuZDoxNjQzNTg3MjAwO3BvaW50ZXI6S0RFMk5ESXdNekl3TURBc0lERXA7
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -4850,6 +4952,12 @@ paths:
                     - label: Staking Token
                       value: 9#tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -4949,6 +5057,12 @@ paths:
                     - label: Enable Fee
                       value: 1#True
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -5022,6 +5136,12 @@ paths:
                     - label: New Owner
                       value: 9#tHYHem7cLKgoLkeb792yn4WayqKzLrjJak
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -5084,6 +5204,12 @@ paths:
                   method: ClaimPendingOwnership
                   parameters: []
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -5141,6 +5267,12 @@ paths:
               example:
                 - CreatePool
                 - Trade
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -5224,6 +5356,12 @@ paths:
                     - label: Authorize
                       value: 1#True
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -5301,6 +5439,12 @@ paths:
                     - label: Amount
                       value: 12#100
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -5431,6 +5575,12 @@ paths:
                       modifiedBlock: 3043250
                 paging:
                   next: ZGlyZWN0aW9uOkRFU0M7bGltaXQ6MjtwYWdpbmc6Rm9yd2FyZDt0b2tlbkF0dHJpYnV0ZXM6Tm9uUHJvdmlzaW9uYWw7aW5jbHVkZVplcm9MaXF1aWRpdHk6VHJ1ZTtrZXl3b3JkOjtvcmRlckJ5OlByaWNlVXNkO3BvaW50ZXI6S0RJeU56UXVOVFkxTmprM09EUXNJRFlwOw==
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -5498,6 +5648,12 @@ paths:
                   priceUsd: 27852.57795481
                   dailyPriceChangePercent: 0.77000000
                   modifiedBlock: 3043250
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -5619,6 +5775,12 @@ paths:
                         close: 53163.84322264
                       timestamp: 2022-01-01T00:00:00Z
                   paging: {}
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -5723,6 +5885,12 @@ paths:
                     - label: Deadline
                       value: 7#2960464
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -5784,6 +5952,12 @@ paths:
                 $ref: "#/components/schemas/swapAmountInQuoteResponse"
               example:
                 amountIn: "0.00038271"
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -5845,6 +6019,12 @@ paths:
                 $ref: "#/components/schemas/swapAmountOutQuoteResponse"
               example:
                 amountOut: "0.15319188"
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -5921,6 +6101,12 @@ paths:
                     createdBlock: 2988890
                     modifiedBlock: 2989018
                 paging: {}
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -5974,6 +6160,12 @@ paths:
                 minedToken: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
                 createdBlock: 2988890
                 modifiedBlock: 2989018
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -6040,6 +6232,12 @@ paths:
                   method: RewardMiningPools
                   parameters: []
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -6142,6 +6340,12 @@ paths:
                     createdBlock: 2988925
                     modifiedBlock: 2992615
                 paging: {}
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -6193,6 +6397,12 @@ paths:
                 isActive: false
                 createdBlock: 2988918
                 modifiedBlock: 2992621
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -6272,6 +6482,12 @@ paths:
                     - label: Amount
                       value: 12#10000000
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -6353,6 +6569,12 @@ paths:
                     - label: Amount
                       value: 12#10000000
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -6410,6 +6632,12 @@ paths:
                   method: CollectMiningRewards
                   parameters: []
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -6549,6 +6777,12 @@ paths:
                       modifiedBlock: 3043250
                 paging:
                   next: ZGlyZWN0aW9uOkRFU0M7bGltaXQ6MjtwYWdpbmc6Rm9yd2FyZDt0b2tlbkF0dHJpYnV0ZXM6Tm9uUHJvdmlzaW9uYWw7aW5jbHVkZVplcm9MaXF1aWRpdHk6VHJ1ZTtrZXl3b3JkOjtvcmRlckJ5OlByaWNlVXNkO3BvaW50ZXI6S0RFeE16Y3VNamd5T0RRNE9USXNJRFlwOw==
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -6671,6 +6905,12 @@ paths:
                   priceUsd: 27852.57795481
                   dailyPriceChangePercent: 0.77000000
                   modifiedBlock: 3043250
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -6785,6 +7025,12 @@ paths:
                         close: 53135.84898883
                       timestamp: 2022-01-01T00:00:00Z
                   paging: {}
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -6863,6 +7109,12 @@ paths:
                     - label: New Allowance
                       value: 12#20000000000000000
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -6928,6 +7180,12 @@ paths:
                   method: Distribute
                   parameters: []
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -7081,6 +7339,12 @@ paths:
                         sortOrder: 2
                 paging:
                   next: ZGlyZWN0aW9uOkRFU0M7bGltaXQ6NTtwYWdpbmc6Rm9yd2FyZDt3YWxsZXQ6dFE5UnVrWnNCNmJCc2VuSG5HU28xcTY5Q0p6V0dueG9obTtldmVudFR5cGVzOkFkZExpcXVpZGl0eUV2ZW50O2V2ZW50VHlwZXM6UmVtb3ZlTGlxdWlkaXR5RXZlbnQ7ZXZlbnRUeXBlczpTd2FwRXZlbnQ7ZXZlbnRUeXBlczpTdGFydFN0YWtpbmdFdmVudDtldmVudFR5cGVzOlN0b3BTdGFraW5nRXZlbnQ7ZXZlbnRUeXBlczpTdGFydE1pbmluZ0V2ZW50O2V2ZW50VHlwZXM6U3RvcE1pbmluZ0V2ZW50O3BvaW50ZXI6TmpjNTs=
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -7194,6 +7458,12 @@ paths:
                       eventType: "DistributionEvent"
                       contract: "tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c"
                       sortOrder: 0
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -7276,6 +7546,12 @@ paths:
                     - label: Amount
                       value: 12#1000000000
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -7365,6 +7641,12 @@ paths:
                     createdBlock: 2988890
                     modifiedBlock: 3012470
                 paging: {}
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -7417,6 +7699,12 @@ paths:
                 vestingDuration: 1080000
                 createdBlock: 2988890
                 modifiedBlock: 3012470
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -7509,6 +7797,12 @@ paths:
                     proposals:
                       - 1
                 paging: {}
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -7567,6 +7861,12 @@ paths:
                   method: RedeemCertificate
                   parameters: []
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -7671,6 +7971,12 @@ paths:
                     createdBlock: 3012570
                     modifiedBlock: 3012570
                 paging: {}
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -7788,6 +8094,12 @@ paths:
                     createdBlock: 2989374
                     modifiedBlock: 3015519
                 paging: {}
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -7871,6 +8183,12 @@ paths:
                     - label: Description
                       value: "4#OVP-1: Request to create certificate. See https://www.example.com for details."
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -7953,6 +8271,12 @@ paths:
                     - label: Description
                       value: "4#OVP-2: Request to revoke certificate. As the recipient, I wish to revoke this certificate."
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -8035,6 +8359,12 @@ paths:
                     - label: Description
                       value: "4#OVP-3: Request to change minimum pledge amount. See https://www.example.com for details."
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -8117,6 +8447,12 @@ paths:
                     - label: Description
                       value: "4#OVP-4: Request to change minimum vote amount. See https://www.example.com for details."
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -8188,6 +8524,12 @@ paths:
                 approved: true
                 createdBlock: 2989374
                 modifiedBlock: 3015519
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -8257,6 +8599,12 @@ paths:
                     - label: Proposal Id
                       value: 7#1
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -8343,6 +8691,12 @@ paths:
                     - label: Proposal Id
                       value: 7#1
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -8425,6 +8779,12 @@ paths:
                     - label: Withdrawal Amount
                       value: 7#1000000000
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -8494,6 +8854,12 @@ paths:
                 balance: "10000.00000000"
                 createdBlock: 3012570
                 modifiedBlock: 3012570
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -8585,6 +8951,12 @@ paths:
                     - label: Favor
                       value: 1#True
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -8667,6 +9039,12 @@ paths:
                     - label: Withdrawal Amount
                       value: 7#1000000000
                   callback: https://v1-test-api.opdex.com/v1/transactions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: private, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -8737,6 +9115,12 @@ paths:
                 inFavor: true
                 createdBlock: 3026455
                 modifiedBlock: 3026455
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -8851,6 +9235,12 @@ paths:
                     createdBlock: 3026455
                     modifiedBlock: 3725314
                 paging: {}
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -8913,6 +9303,12 @@ paths:
                 owner: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
                 spender: tAFxpxRdcV9foADqD6gK3c8sY5MeANzFp5
                 token: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -9029,6 +9425,12 @@ paths:
                     createdBlock: 2989330
                     modifiedBlock: 2991127
                 paging: {}
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -9083,6 +9485,12 @@ paths:
                 token: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
                 createdBlock: 2989326
                 modifiedBlock: 3009264
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -9140,6 +9548,12 @@ paths:
                 token: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
                 createdBlock: 2989326
                 modifiedBlock: 3009264
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -9234,6 +9648,12 @@ paths:
                     createdBlock: 2991138
                     modifiedBlock: 2991446
                 paging: {}
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -9289,6 +9709,12 @@ paths:
                 miningToken: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
                 createdBlock: 2991138
                 modifiedBlock: 2991446
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -9387,6 +9813,12 @@ paths:
                     createdBlock: 3646922
                     modifiedBlock: 3721001
                 paging: {}
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:
@@ -9442,6 +9874,12 @@ paths:
                 stakingToken: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
                 createdBlock: 3646922
                 modifiedBlock: 3721001
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
         400:
           description: The request is not valid
           content:

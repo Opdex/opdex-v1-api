@@ -97,7 +97,7 @@ public class WalletsController : ControllerBase
     /// <returns>Address balance summary.</returns>
     [HttpPost("{address}/balance/{token}")]
     [Authorize]
-    [CacheUntilNextBlock(CacheType.Private)]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<AddressBalanceResponseModel>> RefreshAddressBalance([FromRoute] Address address,
                                                                                        [FromRoute] Address token,
                                                                                        CancellationToken cancellationToken)

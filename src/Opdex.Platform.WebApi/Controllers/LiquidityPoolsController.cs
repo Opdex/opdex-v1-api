@@ -127,7 +127,7 @@ public class LiquidityPoolsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The quoted number of tokens to be deposited.</returns>
     [HttpPost("{pool}/add/amount-in")]
-    [CacheUntilNextBlock(CacheType.Private)]
+    [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<AddLiquidityAmountInQuoteResponseModel>> LiquidityAmountInQuote([FromRoute] Address pool,
                                                                                                    [FromBody] CalculateAddLiquidityAmountsRequestModel request,
                                                                                                    CancellationToken cancellationToken)

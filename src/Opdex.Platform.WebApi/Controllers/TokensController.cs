@@ -59,7 +59,6 @@ public class TokensController : ControllerBase
     /// <returns>Token details.</returns>
     [HttpPost]
     [Authorize]
-    [CacheUntilNextBlock(CacheType.Private)]
     public async Task<IActionResult> AddToken([FromBody] AddTokenRequest request, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new CreateAddTokenCommand(request.Token), cancellationToken);
