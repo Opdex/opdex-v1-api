@@ -177,7 +177,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<VaultProposalCertificateEntity, VaultProposalCertificate>()
-            .ConstructUsing(src => new VaultProposalCertificate(src.Id, src.ProposalId, src.CertificateId, src.CreatedBlock, src.ModifiedBlock))
+            .ConstructUsing(src => new VaultProposalCertificate(src.Id, src.ProposalId, src.CertificateId))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<AddressBalanceEntity, AddressBalance>()
@@ -611,8 +611,6 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
             .ForMember(dest => dest.CertificateId, opt => opt.MapFrom(src => src.CertificateId))
-            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
-            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<VaultCertificate, VaultCertificateEntity>()
