@@ -1,6 +1,7 @@
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Domain.Models.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 
 public class TokensCursor : Cursor<(string, ulong)>
 {
-    public TokensCursor(string keyword, IEnumerable<Address> tokens, IEnumerable<TokenAttributeFilter> tokenAttributes, bool includeZeroLiquidity, TokenOrderByType orderBy,
+    public TokensCursor(string keyword, IEnumerable<Address> tokens, IEnumerable<TokenAttributeFilter> tokenAttributes,
+                        IEnumerable<ChainType> nativeChains, bool includeZeroLiquidity, TokenOrderByType orderBy,
                         SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, (string, ulong) pointer)
         : base(sortDirection, limit, pagingDirection, pointer)
     {
@@ -18,6 +20,7 @@ public class TokensCursor : Cursor<(string, ulong)>
         OrderBy = orderBy;
         Tokens = tokens ?? Enumerable.Empty<Address>();
         TokenAttributes = tokenAttributes ?? Enumerable.Empty<TokenAttributeFilter>();
+        NativeChains = nativeChains ?? Enumerable.Empty<ChainType>();
         IncludeZeroLiquidity = includeZeroLiquidity;
     }
 
@@ -42,6 +45,13 @@ public class TokensCursor : Cursor<(string, ulong)>
     public IEnumerable<TokenAttributeFilter> TokenAttributes { get; }
 
     /// <summary>
+    /// Chains that the token is native to.
+    /// </summary>
+    public IEnumerable<ChainType> NativeChains { get; }
+
+    public IEnumerable<ChainType> ExternalChains => NativeChains.Where(c => c != ChainType.Cirrus);
+
+    /// <summary>
     /// Includes tokens with no liquidity if true.
     /// </summary>
     public bool IncludeZeroLiquidity { get; set; }
@@ -54,8 +64,9 @@ public class TokensCursor : Cursor<(string, ulong)>
 
         var sb = new StringBuilder();
         sb.AppendFormat("direction:{0};limit:{1};paging:{2};", SortDirection, Limit, PagingDirection);
-        foreach (var token in Tokens) sb.AppendFormat("tokens:{0};", token);
-        foreach (var attribute in TokenAttributes) sb.AppendFormat("tokenAttributes:{0};", attribute);
+        foreach (var token in Tokens) sb.AppendFormat("token:{0};", token);
+        foreach (var attribute in TokenAttributes) sb.AppendFormat("tokenAttribute:{0};", attribute);
+        foreach (var chain in NativeChains) sb.AppendFormat("chain:{0};", chain);
         sb.AppendFormat("includeZeroLiquidity:{0};", IncludeZeroLiquidity);
         sb.AppendFormat("keyword:{0};", Keyword);
         sb.AppendFormat("orderBy:{0};", OrderBy);
@@ -69,7 +80,7 @@ public class TokensCursor : Cursor<(string, ulong)>
         if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
         if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical pointer.");
 
-        return new TokensCursor(Keyword, Tokens, TokenAttributes, IncludeZeroLiquidity, OrderBy, SortDirection, Limit, direction, pointer);
+        return new TokensCursor(Keyword, Tokens, TokenAttributes, NativeChains, IncludeZeroLiquidity, OrderBy, SortDirection, Limit, direction, pointer);
     }
 
     /// <summary>
@@ -90,9 +101,10 @@ public class TokensCursor : Cursor<(string, ulong)>
 
         TryGetCursorProperty<TokenOrderByType>(values, "orderBy", out var orderBy);
 
-        TryGetCursorProperties<Address>(values, "tokens", out var tokens);
+        TryGetCursorProperties<Address>(values, "token", out var tokens);
 
-        TryGetCursorProperties<TokenAttributeFilter>(values, "tokenAttributes", out var tokenAttributes);
+        TryGetCursorProperties<TokenAttributeFilter>(values, "tokenAttribute", out var tokenAttributes);
+        TryGetCursorProperties<ChainType>(values, "chain", out var chains);
 
         TryGetCursorProperty<bool>(values, "includeZeroLiquidity", out var includeZeroLiquidity);
 
@@ -110,7 +122,7 @@ public class TokensCursor : Cursor<(string, ulong)>
 
         try
         {
-            cursor = new TokensCursor(keyword, tokens, tokenAttributes, includeZeroLiquidity, orderBy, direction, limit, paging, pointer);
+            cursor = new TokensCursor(keyword, tokens, tokenAttributes, chains, includeZeroLiquidity, orderBy, direction, limit, paging, pointer);
         }
         catch (Exception)
         {
@@ -158,6 +170,20 @@ public enum TokenAttributeFilter
     /// Opdex mined, staking tokens
     /// </summary>
     Staking = 3,
+
+    /// <summary>
+    /// Tokens wrapped by Interflux
+    /// </summary>
+    Interflux = 5
+}
+
+/// <summary>
+/// Selectable options for the token native chain
+/// </summary>
+public enum ChainType
+{
+    Cirrus = 0,
+    Ethereum = 1
 }
 
 /// <summary>

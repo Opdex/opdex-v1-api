@@ -1,7 +1,6 @@
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Responses.Tokens;
 
@@ -51,6 +50,11 @@ public class TokenResponseModel
     /// </summary>
     /// <example>["NonProvisional", "Staking"]</example>
     public IEnumerable<TokenAttributeType> Attributes { get; set; }
+
+    /// <summary>
+    /// Details of the token that is wrapped.
+    /// </summary>
+    public WrappedTokenDetailsResponseModel NativeToken { get; set; }
 
     /// <summary>
     /// Block number at which the entity was created.

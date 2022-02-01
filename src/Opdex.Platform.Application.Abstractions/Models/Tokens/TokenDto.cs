@@ -14,6 +14,7 @@ public class TokenDto
     public ulong Sats { get; set; }
     public FixedDecimal TotalSupply { get; set; }
     public IEnumerable<TokenAttributeType> Attributes { get; set; }
+    public WrappedTokenDetailsDto NativeToken { get; set; }
     public ulong CreatedBlock { get; set; }
     public ulong ModifiedBlock { get; set; }
     public TokenSummaryDto Summary { get; set; }

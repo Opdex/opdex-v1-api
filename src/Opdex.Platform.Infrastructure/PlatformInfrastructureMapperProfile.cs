@@ -56,6 +56,10 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ConstructUsing((src, ctx) => new Token(src.Id, src.Address, src.Name, src.Symbol, src.Decimals, src.Sats, src.TotalSupply, src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
+        CreateMap<TokenChainEntity, TokenChain>()
+            .ConstructUsing(src => new TokenChain(src.Id, src.TokenId, (ExternalChainType)src.NativeChainTypeId, src.NativeAddress))
+            .ForAllOtherMembers(opt => opt.Ignore());
+
         CreateMap<TokenSummaryEntity, TokenSummary>()
             .ConstructUsing(src => new TokenSummary(src.Id, src.MarketId, src.TokenId, src.DailyPriceChangePercent, src.PriceUsd, src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
@@ -442,6 +446,13 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
+            .ForAllOtherMembers(opt => opt.Ignore());
+
+        CreateMap<TokenChain, TokenChainEntity>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
+            .ForMember(dest => dest.NativeChainTypeId, opt => opt.MapFrom(src => src.NativeChain))
+            .ForMember(dest => dest.NativeAddress, opt => opt.MapFrom(src => src.NativeAddress))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<TokenSummary, TokenSummaryEntity>()
