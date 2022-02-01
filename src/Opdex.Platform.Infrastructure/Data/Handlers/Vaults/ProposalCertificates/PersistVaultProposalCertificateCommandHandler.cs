@@ -15,7 +15,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults.ProposalCertificate
 public class PersistVaultProposalCertificateCommandHandler : IRequestHandler<PersistVaultProposalCertificateCommand, ulong>
 {
     private static readonly string InsertSqlCommand =
-        $@"INSERT INTO vault (
+        $@"INSERT INTO vault_proposal_certificate (
                 {nameof(VaultProposalCertificateEntity.ProposalId)},
                 {nameof(VaultProposalCertificateEntity.CertificateId)},
                 {nameof(VaultProposalCertificateEntity.CreatedBlock)},
@@ -38,6 +38,7 @@ public class PersistVaultProposalCertificateCommandHandler : IRequestHandler<Per
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
+
     public async Task<ulong> Handle(PersistVaultProposalCertificateCommand request, CancellationToken cancellationToken)
     {
         try
