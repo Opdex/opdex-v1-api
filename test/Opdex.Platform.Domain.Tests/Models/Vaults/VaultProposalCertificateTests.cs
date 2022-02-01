@@ -13,10 +13,9 @@ public class VaultProposalCertificateTests
         // Arrange
         const ulong proposalId = 0;
         const ulong certificateId = 2;
-        const ulong blockHeight = 3;
 
         //Act
-        void Act() => new VaultProposalCertificate(proposalId, certificateId, blockHeight);
+        void Act() => new VaultProposalCertificate(proposalId, certificateId);
 
         // Assert
         Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Proposal Id must be greater than zero.");
@@ -28,10 +27,9 @@ public class VaultProposalCertificateTests
         // Arrange
         const ulong proposalId = 1;
         const ulong certificateId = 0;
-        const ulong blockHeight = 3;
 
         //Act
-        void Act() => new VaultProposalCertificate(proposalId, certificateId, blockHeight);
+        void Act() => new VaultProposalCertificate(proposalId, certificateId);
 
         // Assert
         Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Certificate Id must be greater than zero.");
@@ -43,17 +41,14 @@ public class VaultProposalCertificateTests
         // Arrange
         const ulong proposalId = 1;
         const ulong certificateId = 2;
-        const ulong blockHeight = 3;
 
         //Act
-        var proposalCertificate = new VaultProposalCertificate(proposalId, certificateId, blockHeight);
+        var proposalCertificate = new VaultProposalCertificate(proposalId, certificateId);
 
         // Assert
         proposalCertificate.Id.Should().Be(0ul);
         proposalCertificate.ProposalId.Should().Be(proposalId);
         proposalCertificate.CertificateId.Should().Be(certificateId);
-        proposalCertificate.CreatedBlock.Should().Be(blockHeight);
-        proposalCertificate.ModifiedBlock.Should().Be(blockHeight);
     }
 
     [Fact]
@@ -63,17 +58,13 @@ public class VaultProposalCertificateTests
         const ulong id = 99;
         const ulong proposalId = 1;
         const ulong certificateId = 2;
-        const ulong createdBlock = 3;
-        const ulong modifiedBlock = 4;
 
         //Act
-        var proposalCertificate = new VaultProposalCertificate(id, proposalId, certificateId, createdBlock, modifiedBlock);
+        var proposalCertificate = new VaultProposalCertificate(id, proposalId, certificateId);
 
         // Assert
         proposalCertificate.Id.Should().Be(id);
         proposalCertificate.ProposalId.Should().Be(proposalId);
         proposalCertificate.CertificateId.Should().Be(certificateId);
-        proposalCertificate.CreatedBlock.Should().Be(createdBlock);
-        proposalCertificate.ModifiedBlock.Should().Be(modifiedBlock);
     }
 }

@@ -19,9 +19,7 @@ public class SelectVaultProposalCertificateByProposalIdQueryHandler
         @$"SELECT
                 {nameof(VaultProposalCertificateEntity.Id)},
                 {nameof(VaultProposalCertificateEntity.ProposalId)},
-                {nameof(VaultProposalCertificateEntity.CertificateId)},
-                {nameof(VaultProposalCertificateEntity.CreatedBlock)},
-                {nameof(VaultProposalCertificateEntity.ModifiedBlock)}
+                {nameof(VaultProposalCertificateEntity.CertificateId)}
             FROM vault_proposal_certificate
             WHERE {nameof(VaultProposalCertificateEntity.CertificateId)} = @{nameof(SqlParams.ProposalId)}
             LIMIT 1;".RemoveExcessWhitespace();

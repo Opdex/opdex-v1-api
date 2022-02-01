@@ -17,14 +17,10 @@ public class PersistVaultProposalCertificateCommandHandler : IRequestHandler<Per
     private static readonly string InsertSqlCommand =
         $@"INSERT INTO vault_proposal_certificate (
                 {nameof(VaultProposalCertificateEntity.ProposalId)},
-                {nameof(VaultProposalCertificateEntity.CertificateId)},
-                {nameof(VaultProposalCertificateEntity.CreatedBlock)},
-                {nameof(VaultProposalCertificateEntity.ModifiedBlock)}
+                {nameof(VaultProposalCertificateEntity.CertificateId)}
               ) VALUES (
                 @{nameof(VaultProposalCertificateEntity.ProposalId)},
-                @{nameof(VaultProposalCertificateEntity.CertificateId)},
-                @{nameof(VaultProposalCertificateEntity.CreatedBlock)},
-                @{nameof(VaultProposalCertificateEntity.ModifiedBlock)}
+                @{nameof(VaultProposalCertificateEntity.CertificateId)}
               );
               SELECT LAST_INSERT_ID()".RemoveExcessWhitespace();
 
@@ -53,11 +49,10 @@ public class PersistVaultProposalCertificateCommandHandler : IRequestHandler<Per
         }
         catch (Exception ex)
         {
-            using (_logger.BeginScope(new Dictionary<string, object>()
+            using (_logger.BeginScope(new Dictionary<string, object>
             {
                 { "ProposalId", request.ProposalCertificate.ProposalId },
-                { "CertificateId", request.ProposalCertificate.CertificateId },
-                { "BlockHeight", request.ProposalCertificate.ModifiedBlock }
+                { "CertificateId", request.ProposalCertificate.CertificateId }
             }))
             {
                 _logger.LogError(ex, "Failure persisting vault proposal certificate.");
