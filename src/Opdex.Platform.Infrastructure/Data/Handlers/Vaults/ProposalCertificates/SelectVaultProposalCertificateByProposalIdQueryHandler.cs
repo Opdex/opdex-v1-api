@@ -21,7 +21,7 @@ public class SelectVaultProposalCertificateByProposalIdQueryHandler
                 {nameof(VaultProposalCertificateEntity.ProposalId)},
                 {nameof(VaultProposalCertificateEntity.CertificateId)}
             FROM vault_proposal_certificate
-            WHERE {nameof(VaultProposalCertificateEntity.CertificateId)} = @{nameof(SqlParams.ProposalId)}
+            WHERE {nameof(VaultProposalCertificateEntity.ProposalId)} = @{nameof(SqlParams.ProposalId)}
             LIMIT 1;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
