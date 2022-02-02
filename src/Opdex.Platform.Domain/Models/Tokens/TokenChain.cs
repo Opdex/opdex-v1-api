@@ -9,7 +9,6 @@ public class TokenChain
     {
         if (tokenId == 0) throw new ArgumentOutOfRangeException(nameof(tokenId), "Token id must be greater than 0.");
         if (!nativeChain.IsValid()) throw new ArgumentOutOfRangeException(nameof(nativeChain), "Chain type must be valid.");
-        if (!nativeAddress.HasValue()) throw new ArgumentNullException(nameof(nativeAddress), "Native address must be set.");
         TokenId = tokenId;
         NativeChain = nativeChain;
         NativeAddress = nativeAddress;

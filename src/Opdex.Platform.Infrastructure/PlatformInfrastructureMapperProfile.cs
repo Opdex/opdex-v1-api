@@ -36,6 +36,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.Transa
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 using System;
 
 namespace Opdex.Platform.Infrastructure;
@@ -728,6 +729,16 @@ public class PlatformInfrastructureMapperProfile : Profile
                     Interval.OneDay => SnapshotType.Daily,
                     Interval.OneHour => SnapshotType.Hourly,
                     _ => throw new ArgumentOutOfRangeException("Interval", "Invalid Interval to Snapshot type")
+                };
+            });
+
+        CreateMap<ChainType, ExternalChainType>()
+            .ConvertUsing((src, ctx) =>
+            {
+                return src switch
+                {
+                    ChainType.Ethereum => ExternalChainType.Ethereum,
+                    _ => throw new ArgumentOutOfRangeException(nameof(ChainType), "Chain type is not a valid external chain")
                 };
             });
     }

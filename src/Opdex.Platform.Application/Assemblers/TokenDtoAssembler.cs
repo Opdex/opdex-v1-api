@@ -32,11 +32,7 @@ public class TokenDtoAssembler : IModelAssembler<Token, TokenDto>
         var tokenChain = await _mediator.Send(new RetrieveTokenChainByTokenIdQuery(token.Id, false), CancellationToken.None);
         if (tokenChain is not null)
         {
-            tokenDto.NativeToken = new WrappedTokenDetailsDto
-            {
-                Chain = tokenChain.NativeChain,
-                Address = tokenChain.NativeAddress
-            };
+            tokenDto.NativeToken = _mapper.Map<WrappedTokenDetailsDto>(tokenChain);
         }
 
         if (tokenDto.Summary is null)

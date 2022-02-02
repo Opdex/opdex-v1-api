@@ -18,6 +18,6 @@ public class MakeTokenChainCommandHandler : IRequestHandler<MakeTokenChainComman
 
     public async Task<ulong> Handle(MakeTokenChainCommand request, CancellationToken cancellationToken)
     {
-        return await _mediator.Send(new PersistTokenChainCommand(request.Chain), cancellationToken);
+        return await _mediator.Send(new PersistTokenChainCommand(request.Chain), CancellationToken.None);
     }
 }

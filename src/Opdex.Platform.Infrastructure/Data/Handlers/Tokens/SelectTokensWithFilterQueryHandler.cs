@@ -85,9 +85,9 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
 
     public async Task<IEnumerable<Token>> Handle(SelectTokensWithFilterQuery request, CancellationToken cancellationToken)
     {
+        var externalChainTypes = _mapper.Map<IEnumerable<ExternalChainType>>(request.Cursor.ExternalChains);
         var sqlParams = new SqlParams(request.MarketId,request.Cursor.Pointer, request.Cursor.Keyword,
-                                      request.Cursor.Tokens, request.Cursor.TokenAttributes,
-                                      request.Cursor.ExternalChains.Select(c => (ExternalChainType)c));
+                                      request.Cursor.Tokens, request.Cursor.TokenAttributes, externalChainTypes);
 
         var query = DatabaseQuery.Create(QueryBuilder(request), sqlParams, cancellationToken);
 
