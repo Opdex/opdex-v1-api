@@ -43,6 +43,7 @@ using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Opdex.Platform.WebApi.Exceptions;
 using Opdex.Platform.Common.Encryption;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.ResponseCaching;
 using Opdex.Platform.WebApi.Conventions;
 using Microsoft.Extensions.FileProviders;
 using System.Reflection;
@@ -277,6 +278,13 @@ public class Startup
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseResponseCaching();
+        app.Use((context, next) =>
+        {
+            var responseCachingFeature = context.Features.Get<IResponseCachingFeature>();
+            // prevent cached responses when query params change
+            if (responseCachingFeature is not null) responseCachingFeature.VaryByQueryKeys = new []{ "*" };
+            return next();
+        });
 
         // yaml mapping not supported by default, must explicitly map
         var fileExtensionContentTypeProvider = new FileExtensionContentTypeProvider();
