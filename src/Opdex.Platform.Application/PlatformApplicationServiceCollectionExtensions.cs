@@ -10,6 +10,7 @@ using Opdex.Platform.Application.Abstractions.Commands.Markets;
 using Opdex.Platform.Application.Abstractions.Commands.MiningPools;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens.Distribution;
+using Opdex.Platform.Application.Abstractions.Commands.Tokens.Wrapped;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands;
@@ -177,6 +178,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults.Votes;
 using Opdex.Platform.Application.Abstractions.Models.Blocks;
 using Opdex.Platform.Application.Abstractions.Models.Index;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens.Wrapped;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults.Certificates;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults.Pledges;
@@ -191,6 +193,7 @@ using Opdex.Platform.Application.EntryHandlers.Vaults.Pledges;
 using Opdex.Platform.Application.EntryHandlers.Vaults.Proposals;
 using Opdex.Platform.Application.EntryHandlers.Vaults.Votes;
 using Opdex.Platform.Application.Handlers.Markets.Summaries;
+using Opdex.Platform.Application.Handlers.Tokens.Wrapped;
 using Opdex.Platform.Application.Handlers.Vaults;
 using Opdex.Platform.Application.Handlers.Vaults.Certificates;
 using Opdex.Platform.Application.Handlers.Vaults.Pledges;
@@ -497,6 +500,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<RetrieveTokenSummaryByTokenIdQuery, TokenSummary>, RetrieveTokenSummaryByTokenIdQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveTokenSummaryByMarketAndTokenIdQuery, TokenSummary>, RetrieveTokenSummaryByMarketAndTokenIdQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveTokenAttributesByTokenIdQuery, IEnumerable<TokenAttribute>>, RetrieveTokenAttributesByTokenIdQueryHandler>();
+        services.AddTransient<IRequestHandler<RetrieveTokenChainByTokenIdQuery, TokenChain>, RetrieveTokenChainByTokenIdQueryHandler>();
 
         // Mining Governances
         services.AddTransient<IRequestHandler<RetrieveMiningGovernanceContractSummaryByAddressQuery, MiningGovernanceContractSummary>, RetrieveMiningGovernanceContractSummaryByAddressQueryHandler>();
@@ -576,6 +580,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<MakeTokenSnapshotCommand, bool>, MakeTokenSnapshotCommandHandler>();
         services.AddTransient<IRequestHandler<MakeTokenDistributionCommand, bool>, MakeTokenDistributionCommandHandler>();
         services.AddTransient<IRequestHandler<MakeTokenAttributeCommand, bool>, MakeTokenAttributeCommandHandler>();
+        services.AddTransient<IRequestHandler<MakeTokenChainCommand, ulong>, MakeTokenChainCommandHandler>();
 
         // Transactions
         services.AddTransient<IRequestHandler<MakeTransactionCommand, ulong>, MakeTransactionCommandHandler>();

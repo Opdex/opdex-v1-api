@@ -85,7 +85,9 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
 
     public async Task<IEnumerable<Token>> Handle(SelectTokensWithFilterQuery request, CancellationToken cancellationToken)
     {
-        var sqlParams = new SqlParams(request.MarketId, request.Cursor.Pointer, request.Cursor.Keyword, request.Cursor.Tokens, request.Cursor.TokenAttributes);
+        var externalChainTypes = _mapper.Map<IEnumerable<ExternalChainType>>(request.Cursor.ExternalChains);
+        var sqlParams = new SqlParams(request.MarketId,request.Cursor.Pointer, request.Cursor.Keyword,
+                                      request.Cursor.Tokens, request.Cursor.TokenAttributes, externalChainTypes);
 
         var query = DatabaseQuery.Create(QueryBuilder(request), sqlParams, cancellationToken);
 
@@ -153,6 +155,26 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
             whereFilterBuilder.Append($" ta.{nameof(TokenAttributeEntity.AttributeTypeId)} IN @{nameof(SqlParams.TokenAttributes)}");
         }
 
+        if (request.Cursor.NativeChains.Any())
+        {
+            tableJoins.Append($" LEFT JOIN token_chain tc ON tc.{nameof(TokenChainEntity.TokenId)} = t.{nameof(TokenEntity.Id)}");
+
+            whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
+            whereFilterBuilder.Append('(');
+            var filterOnNativeToCirrus = request.Cursor.NativeChains.Contains(ChainType.Cirrus);
+            if (filterOnNativeToCirrus)
+            {
+                whereFilterBuilder.Append($" tc.{nameof(TokenChainEntity.NativeChainTypeId)} IS NULL");
+            }
+
+            if (request.Cursor.ExternalChains.Any())
+            {
+                if (filterOnNativeToCirrus) whereFilterBuilder.Append(" OR");
+                whereFilterBuilder.Append($" tc.{nameof(TokenChainEntity.NativeChainTypeId)} IN @{nameof(SqlParams.ExternalChainTypes)}");
+            }
+            whereFilterBuilder.Append(')');
+        }
+
         if (request.Cursor.Keyword.HasValue())
         {
             whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
@@ -217,7 +239,7 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
 
     private sealed class SqlParams
     {
-        internal SqlParams(ulong marketId, (string, ulong) pointer, string keyword, IEnumerable<Address> tokens, IEnumerable<TokenAttributeFilter> tokenAttributes)
+        internal SqlParams(ulong marketId, (string, ulong) pointer, string keyword, IEnumerable<Address> tokens, IEnumerable<TokenAttributeFilter> tokenAttributes, IEnumerable<ExternalChainType> externalChainTypes)
         {
             MarketId = marketId;
             OrderByValue = pointer.Item1;
@@ -225,6 +247,7 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
             Keyword = keyword;
             Tokens = tokens.Select(token => token.ToString());
             TokenAttributes = tokenAttributes;
+            ExternalChainTypes = externalChainTypes;
         }
 
         public ulong MarketId { get; }
@@ -233,5 +256,6 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
         public string Keyword { get; }
         public IEnumerable<string> Tokens { get; }
         public IEnumerable<TokenAttributeFilter> TokenAttributes { get; }
+        public IEnumerable<ExternalChainType> ExternalChainTypes { get; }
     }
 }

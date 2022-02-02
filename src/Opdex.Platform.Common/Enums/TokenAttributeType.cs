@@ -23,5 +23,10 @@ public enum TokenAttributeType
     /// <summary>
     /// Considered a security
     /// </summary>
-    Security = 4
+    Security = 4,
+
+    /// <summary>
+    /// Token wraps another token from an external chain using Interflux
+    /// </summary>
+    Interflux = 5
 }

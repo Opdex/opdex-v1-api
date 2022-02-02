@@ -122,6 +122,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinGeckoApi.Queries;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Auth;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Summaries;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Wrapped;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certificates;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Pledges;
@@ -132,6 +133,7 @@ using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Transacti
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Vaults;
 using Opdex.Platform.Infrastructure.Clients.CoinGeckoApi.Handlers;
 using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Summaries;
+using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Wrapped;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Pledges;
@@ -283,6 +285,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<SelectTokenSummaryByTokenIdQuery, TokenSummary>, SelectTokenSummaryByTokenIdQueryHandler>();
         services.AddTransient<IRequestHandler<SelectTokenSummaryByMarketAndTokenIdQuery, TokenSummary>, SelectTokenSummaryByMarketAndTokenIdQueryHandler>();
         services.AddTransient<IRequestHandler<SelectTokenAttributesByTokenIdQuery, IEnumerable<TokenAttribute>>, SelectTokenAttributesByTokenIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectTokenChainByTokenIdQuery, TokenChain>, SelectTokenChainByTokenIdQueryHandler>();
 
         // Mining Governances
         services.AddTransient<IRequestHandler<SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQuery, IEnumerable<MiningGovernanceNomination>>, SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandler>();

@@ -12,6 +12,7 @@ public sealed class TokenFilterParameters : FilterParameters<TokensCursor>
     {
         Tokens = new List<Address>();
         TokenAttributes = new List<TokenAttributeFilter>();
+        NativeChains = new List<ChainType>();
         IncludeZeroLiquidity = true;
     }
 
@@ -34,6 +35,11 @@ public sealed class TokenFilterParameters : FilterParameters<TokensCursor>
     public IEnumerable<Address> Tokens { get; set; }
 
     /// <summary>
+    /// Chains which the tokens are native to.
+    /// </summary>
+    public IEnumerable<ChainType> NativeChains { get; set; }
+
+    /// <summary>
     /// A generic keyword search against token addresses, names and ticker symbols.
     /// </summary>
     /// <example>BTC</example>
@@ -48,7 +54,7 @@ public sealed class TokenFilterParameters : FilterParameters<TokensCursor>
     /// <inheritdoc />
     protected override TokensCursor InternalBuildCursor()
     {
-        if (EncodedCursor is null) return new TokensCursor(Keyword, Tokens, TokenAttributes, IncludeZeroLiquidity, OrderBy, Direction, Limit, PagingDirection.Forward, default);
+        if (EncodedCursor is null) return new TokensCursor(Keyword, Tokens, TokenAttributes, NativeChains, IncludeZeroLiquidity, OrderBy, Direction, Limit, PagingDirection.Forward, default);
         Base64Extensions.TryBase64Decode(EncodedCursor, out var decodedCursor);
         _ = TokensCursor.TryParse(decodedCursor, out var cursor);
         return cursor;

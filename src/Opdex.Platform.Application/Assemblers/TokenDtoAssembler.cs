@@ -2,6 +2,7 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens.Wrapped;
 using Opdex.Platform.Domain.Models.Tokens;
 using System;
 using System.Linq;
@@ -26,8 +27,13 @@ public class TokenDtoAssembler : IModelAssembler<Token, TokenDto>
         var tokenDto = _mapper.Map<TokenDto>(token);
 
         var attributes = await _mediator.Send(new RetrieveTokenAttributesByTokenIdQuery(token.Id), CancellationToken.None);
-
         tokenDto.Attributes = attributes.Select(attribute => attribute.AttributeType);
+
+        var tokenChain = await _mediator.Send(new RetrieveTokenChainByTokenIdQuery(token.Id, false), CancellationToken.None);
+        if (tokenChain is not null)
+        {
+            tokenDto.NativeToken = _mapper.Map<WrappedTokenDetailsDto>(tokenChain);
+        }
 
         if (tokenDto.Summary is null)
         {

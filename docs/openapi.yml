@@ -384,6 +384,7 @@ components:
         - NonProvisional
         - Staking
         - Security
+        - Interflux
     tokenAttributeFilter:
       type: string
       description: Token attribute filter for a request
@@ -391,6 +392,17 @@ components:
         - Provisional
         - NonProvisional
         - Staking
+    externalChain:
+      type: string
+      description: External chain name
+      enum:
+        - Ethereum
+    chainFilter:
+      type: string
+      description: Chain type filter
+      enum:
+        - Cirrus
+        - Ethereum
     transactionEventType:
       type: string
       description: Opdex event type identifier
@@ -2303,6 +2315,9 @@ components:
           items:
             $ref: "#/components/schemas/tokenAttribute"
           description: Attributes applied to the token
+        nativeToken:
+          $ref: "#/components/schemas/wrappedTokenDetails"
+          description: Details for the external token that is wrapped
         createdBlock:
           type: integer
           format: uint64
@@ -2315,6 +2330,16 @@ components:
           description: Block number at which the entity state was last modified
         summary:
           $ref: "#/components/schemas/tokenSummary"
+    wrappedTokenDetails:
+      type: object
+      description: Details for an external token that is wrapped
+      properties:
+        chain:
+          $ref: "#/components/schemas/externalChain"
+          description: External chain of the wrapped token
+        address:
+          type: string
+          description: Address of the token on the native chain, or unset if the base token of the external chain is wrapped
     tokenSummary:
       type: object
       description: Point in time pricing summary for a token
@@ -5492,6 +5517,15 @@ paths:
               $ref: "#/components/schemas/tokenAttributeFilter"
           example:
             - Provisional
+        - name: nativeChains
+          in: query
+          description: Native chain filter
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/chainFilter"
+          example:
+            - Cirrus
         - name: tokens
           in: query
           description: Specific tokens to include
@@ -6699,6 +6733,15 @@ paths:
               $ref: "#/components/schemas/tokenAttributeFilter"
           example:
             - Provisional
+        - name: nativeChains
+          in: query
+          description: Native chain filter
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/chainFilter"
+          example:
+            - Cirrus
         - name: tokens
           in: query
           description: Specific tokens to include

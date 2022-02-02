@@ -36,6 +36,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.Transa
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 using System;
 
 namespace Opdex.Platform.Infrastructure;
@@ -54,6 +55,10 @@ public class PlatformInfrastructureMapperProfile : Profile
 
         CreateMap<TokenEntity, Token>()
             .ConstructUsing((src, ctx) => new Token(src.Id, src.Address, src.Name, src.Symbol, src.Decimals, src.Sats, src.TotalSupply, src.CreatedBlock, src.ModifiedBlock))
+            .ForAllOtherMembers(opt => opt.Ignore());
+
+        CreateMap<TokenChainEntity, TokenChain>()
+            .ConstructUsing(src => new TokenChain(src.Id, src.TokenId, (ExternalChainType)src.NativeChainTypeId, src.NativeAddress))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<TokenSummaryEntity, TokenSummary>()
@@ -444,6 +449,13 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
+        CreateMap<TokenChain, TokenChainEntity>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
+            .ForMember(dest => dest.NativeChainTypeId, opt => opt.MapFrom(src => src.NativeChain))
+            .ForMember(dest => dest.NativeAddress, opt => opt.MapFrom(src => src.NativeAddress))
+            .ForAllOtherMembers(opt => opt.Ignore());
+
         CreateMap<TokenSummary, TokenSummaryEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.MarketId, opt => opt.MapFrom(src => src.MarketId))
@@ -715,6 +727,16 @@ public class PlatformInfrastructureMapperProfile : Profile
                     Interval.OneDay => SnapshotType.Daily,
                     Interval.OneHour => SnapshotType.Hourly,
                     _ => throw new ArgumentOutOfRangeException("Interval", "Invalid Interval to Snapshot type")
+                };
+            });
+
+        CreateMap<ChainType, ExternalChainType>()
+            .ConvertUsing((src, ctx) =>
+            {
+                return src switch
+                {
+                    ChainType.Ethereum => ExternalChainType.Ethereum,
+                    _ => throw new ArgumentOutOfRangeException(nameof(ChainType), "Chain type is not a valid external chain")
                 };
             });
     }

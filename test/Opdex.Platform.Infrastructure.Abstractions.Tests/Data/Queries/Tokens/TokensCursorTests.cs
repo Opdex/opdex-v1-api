@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 using System;
@@ -19,6 +20,7 @@ public class TokensCursorTests
         static void Act() => new TokensCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                                               Enumerable.Empty<Address>(),
                                               Enumerable.Empty<TokenAttributeFilter>(),
+                                              Enumerable.Empty<ChainType>(),
                                               false,
                                               TokenOrderByType.PriceUsd,
                                               SortDirectionType.ASC,
@@ -39,6 +41,7 @@ public class TokensCursorTests
         void Act() => new TokensCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                                        Enumerable.Empty<Address>(),
                                        Enumerable.Empty<TokenAttributeFilter>(),
+                                       Enumerable.Empty<ChainType>(),
                                        false,
                                        TokenOrderByType.PriceUsd,
                                        SortDirectionType.ASC,
@@ -51,13 +54,14 @@ public class TokensCursorTests
     }
 
     [Fact]
-    public void Create_NullContractsProvided_SetToEmpty()
+    public void Create_NullTokensProvided_SetToEmpty()
     {
         // Act
         // Arrange
         var cursor = new TokensCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                                       null,
                                       Enumerable.Empty<TokenAttributeFilter>(),
+                                      Enumerable.Empty<ChainType>(),
                                       false,
                                       TokenOrderByType.PriceUsd,
                                       SortDirectionType.ASC,
@@ -70,12 +74,53 @@ public class TokensCursorTests
     }
 
     [Fact]
+    public void Create_NullTokenAttributesProvided_SetToEmpty()
+    {
+        // Act
+        // Arrange
+        var cursor = new TokensCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
+            Enumerable.Empty<Address>(),
+            null,
+            Enumerable.Empty<ChainType>(),
+            false,
+            TokenOrderByType.PriceUsd,
+            SortDirectionType.ASC,
+            50,
+            PagingDirection.Forward,
+            ("50", 10));
+
+        // Assert
+        cursor.TokenAttributes.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Create_NullChainTypesProvided_SetToEmpty()
+    {
+        // Act
+        // Arrange
+        var cursor = new TokensCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
+            Enumerable.Empty<Address>(),
+            Enumerable.Empty<TokenAttributeFilter>(),
+            null,
+            false,
+            TokenOrderByType.PriceUsd,
+            SortDirectionType.ASC,
+            50,
+            PagingDirection.Forward,
+            ("50", 10));
+
+        // Assert
+        cursor.NativeChains.Should().BeEmpty();
+    }
+
+    [Fact]
     public void ToString_StringifiesCursor_FormatCorrectly()
     {
         // Arrange
         var cursor = new TokensCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                                       new Address[] { "PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u" },
-                                      new [] {TokenAttributeFilter.Provisional},
+                                      new [] { TokenAttributeFilter.Provisional },
+                                      new [] { ChainType.Cirrus, ChainType.Ethereum },
                                       false,
                                       TokenOrderByType.DailyPriceChangePercent,
                                       SortDirectionType.ASC,
@@ -88,9 +133,11 @@ public class TokensCursorTests
 
         // Assert
         result.Should().Contain("keyword:PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L;");
-        result.Should().Contain("tokenAttributes:Provisional;");
-        result.Should().Contain("tokens:PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5;");
-        result.Should().Contain("tokens:PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u;");
+        result.Should().Contain("tokenAttribute:Provisional;");
+        result.Should().Contain("token:PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5;");
+        result.Should().Contain("token:PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u;");
+        result.Should().Contain("chain:Cirrus;");
+        result.Should().Contain("chain:Ethereum;");
         result.Should().Contain("orderBy:DailyPriceChangePercent;");
         result.Should().Contain("direction:ASC;");
         result.Should().Contain("limit:25;");
@@ -104,7 +151,8 @@ public class TokensCursorTests
         // Arrange
         var cursor = new TokensCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                                       new Address[] { "PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u" },
-                                      new [] {TokenAttributeFilter.NonProvisional},
+                                      new [] { TokenAttributeFilter.NonProvisional },
+                                      new [] { ChainType.Cirrus, ChainType.Ethereum },
                                       false,
                                       TokenOrderByType.DailyPriceChangePercent,
                                       SortDirectionType.ASC,
@@ -119,7 +167,8 @@ public class TokensCursorTests
         result.Should().BeOfType<TokensCursor>();
         var adjacentCursor = (TokensCursor)result;
         adjacentCursor.Keyword.Should().Be(cursor.Keyword);
-        adjacentCursor.TokenAttributes.Should().BeEquivalentTo(new [] {TokenAttributeFilter.NonProvisional});
+        adjacentCursor.TokenAttributes.Should().BeEquivalentTo(new [] { TokenAttributeFilter.NonProvisional });
+        adjacentCursor.NativeChains.Should().BeEquivalentTo(new [] { ChainType.Cirrus, ChainType.Ethereum });
         adjacentCursor.Tokens.Should().BeEquivalentTo(cursor.Tokens);
         adjacentCursor.OrderBy.Should().Be(cursor.OrderBy);
         adjacentCursor.SortDirection.Should().Be(cursor.SortDirection);
@@ -133,6 +182,7 @@ public class TokensCursorTests
     [InlineData(";:;;;;;::;;;:::;;;:::;;:::;;")]
     [InlineData("direction:Invalid;limit:50;paging:Forward;pointer:NTAw;")] // invalid direction
     [InlineData("limit:50;paging:Forward;pointer:NTAw;")] // missing direction
+    [InlineData("direction:ASC;limit:50;paging:Forward;pointer:NTAw;chain:doge")] // invalid chain type
     [InlineData("direction:ASC;limit:51;paging:Forward;pointer:NTAw;")] // over max limit
     [InlineData("direction:ASC;paging:Forward;pointer:NTAw;")] // missing limit
     [InlineData("direction:ASC;limit:50;paging:Invalid;pointer:NTAw;")] // invalid paging direction
@@ -156,7 +206,7 @@ public class TokensCursorTests
     public void TryParse_ValidCursor_ReturnTrue()
     {
         // Arrange
-        var stringified = "keyword:PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5;includeZeroLiquidity:true;orderBy:PriceUsd;tokenAttributes:NonProvisional;tokens:PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L;direction:ASC;limit:50;paging:Forward;pointer:KDUwLjAwLCAxMCk=;"; // pointer: 10;
+        var stringified = "keyword:PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5;includeZeroLiquidity:true;orderBy:PriceUsd;tokenAttribute:NonProvisional;token:PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L;chain:Cirrus;chain:Ethereum;direction:ASC;limit:50;paging:Forward;pointer:KDUwLjAwLCAxMCk=;"; // pointer: 10;
 
         // Act
         var canParse = TokensCursor.TryParse(stringified, out var cursor);
@@ -166,7 +216,8 @@ public class TokensCursorTests
         cursor.Keyword.Should().Be("PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5");
         cursor.OrderBy.Should().Be(TokenOrderByType.PriceUsd);
         cursor.IncludeZeroLiquidity.Should().Be(true);
-        cursor.TokenAttributes.Should().BeEquivalentTo(new [] {TokenAttributeFilter.NonProvisional});
+        cursor.TokenAttributes.Should().BeEquivalentTo(new [] { TokenAttributeFilter.NonProvisional });
+        cursor.NativeChains.Should().BeEquivalentTo(new [] { ChainType.Cirrus, ChainType.Ethereum });
         cursor.Tokens.Should().ContainSingle(t => t == "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L");
         cursor.SortDirection.Should().Be(SortDirectionType.ASC);
         cursor.Limit.Should().Be(50);
