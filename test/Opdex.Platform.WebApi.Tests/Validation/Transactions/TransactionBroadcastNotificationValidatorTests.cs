@@ -19,19 +19,19 @@ public class TransactionBroadcastNotificationValidatorTests
     [InlineData("")]
     [InlineData(null)]
     [InlineData("  ")]
-    public void PublicKey_Invalid(string publicKey)
+    public void WalletAddress_Invalid(string publicKey)
     {
         // Arrange
         var request = new TransactionBroadcastNotificationRequest
         {
             TransactionHash = new Sha256(34283925829),
-            PublicKey = publicKey
+            WalletAddress = publicKey
         };
 
         // Act
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(request => request.PublicKey);
+        result.ShouldHaveValidationErrorFor(request => request.WalletAddress);
     }
 }

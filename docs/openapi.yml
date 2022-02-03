@@ -1608,9 +1608,9 @@ components:
         transactionHash:
           $ref: "#/components/schemas/sha256"
           description: SHA-256 hash of the transaction
-        publicKey:
+        walletAddress:
           $ref: "#/components/schemas/address"
-          description: The transaction sender's public key
+          description: The transaction sender's wallet address
     quotedTransaction:
       type: object
       description: Quoted transaction that can be handed off to a wallet
@@ -7424,7 +7424,7 @@ paths:
               $ref: "#/components/schemas/notifyBroadcastRequest"
             example:
               transactionHash: 402aa2241adb7b04d07d4dbc89f8aae72fa1c11f9bd2bd9013222cd774ed39fe
-              publicKey: tHYHem7cLKgoLkeb792yn4WayqKzLrjJak
+              walletAddress: tHYHem7cLKgoLkeb792yn4WayqKzLrjJak
       responses:
         204:
           description: The broadcast notification was sent

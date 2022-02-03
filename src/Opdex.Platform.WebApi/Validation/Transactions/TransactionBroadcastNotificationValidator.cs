@@ -7,7 +7,7 @@ public class TransactionBroadcastNotificationValidator : AbstractValidator<Trans
 {
     public TransactionBroadcastNotificationValidator()
     {
-        RuleFor(request => request.PublicKey)
-            .MustBeNetworkAddress().WithMessage("Public key must be a valid network address.");
+        RuleFor(request => request.WalletAddress)
+            .MustBeNetworkAddress().WithMessage("Wallet address must be a valid network address.");
     }
 }
