@@ -24,12 +24,12 @@ public class WrappedTokenDetailsResponseModel
     public string Address { get; set; }
 
     /// <summary>
-    /// Block number at which the entity state was last modified.
-    /// </summary>
-    public ulong ModifiedBlock { get; set; }
-
-    /// <summary>
     /// True if the custodian is configured as trusted; otherwise false.
     /// </summary>
     public bool Trusted { get; set; }
+
+    /// <summary>
+    /// Block number at which the entity state was last modified.
+    /// </summary>
+    public ulong ModifiedBlock { get; set; }
 }
