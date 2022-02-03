@@ -27,4 +27,9 @@ public class WrappedTokenDetailsResponseModel
     /// Block number at which the entity state was last modified.
     /// </summary>
     public ulong ModifiedBlock { get; set; }
+
+    /// <summary>
+    /// True if the custodian is configured as trusted; otherwise false.
+    /// </summary>
+    public bool Trusted { get; set; }
 }

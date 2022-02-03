@@ -129,6 +129,7 @@ public class Startup
 
         // Automapper
         services.AddTransient<TransactionErrorMappingAction>();
+        services.AddTransient<TrustedBridgeMappingAction>();
         services.AddAutoMapper(mapperConfig =>
         {
             mapperConfig.AddProfile<PlatformApplicationMapperProfile>();

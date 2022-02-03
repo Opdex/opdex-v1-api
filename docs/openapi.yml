@@ -2343,6 +2343,9 @@ components:
         address:
           type: string
           description: Address of the token on the native chain, or unset if the base token of the external chain is wrapped
+        trusted:
+          type: boolean
+          description: True if the custodian is configured as trusted; otherwise false
         modifiedBlock:
           type: integer
           format: uint64

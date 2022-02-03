@@ -63,6 +63,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Chain, opt => opt.MapFrom(src => src.Chain))
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
+            .AfterMap<TrustedBridgeMappingAction>()
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<TokenDto, TokenResponseModel>()
