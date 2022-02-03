@@ -175,7 +175,6 @@ public class Startup
         services.SetupConfiguration<CoinMarketCapConfiguration>(cmcConfig);
 
         // Auth Configurations
-
         var authConfig = Configuration.GetSection(nameof(AuthConfiguration));
         services.SetupConfiguration<AuthConfiguration>(authConfig);
 

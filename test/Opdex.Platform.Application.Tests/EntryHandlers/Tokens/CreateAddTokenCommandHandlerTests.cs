@@ -213,7 +213,7 @@ public class CreateAddTokenCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ForInterfluxTokenNotOwnedByMultiSig_DoNotPersistTokenMapping()
+    public async Task Handle_ForInterfluxTokenNotOwnedByMultiSig_ThrowInvalidDataException()
     {
         // Arrange
         Address tokenAddress = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV";
@@ -239,16 +239,16 @@ public class CreateAddTokenCommandHandlerTests
             .ReturnsAsync(tokenId);
 
         // Act
-        try
-        {
-            await _handler.Handle(new CreateAddTokenCommand(tokenAddress), CancellationToken.None);
-        }
-        catch (Exception)
-        {
-            // ignored
-        }
+        Task Act() => _handler.Handle(new CreateAddTokenCommand(tokenAddress), CancellationToken.None);
 
         // Assert
+        var exception = await Assert.ThrowsAsync<InvalidDataException>(Act);
+        exception.PropertyName.Should().Be("token");
+        exception.Message.Should().Be("Wrapped token must be owned by Interflux multisig wallet.");
+        _mockMediator.Verify(callTo => callTo.Send(It.IsAny<MakeTokenCommand>(),
+            It.IsAny<CancellationToken>()), Times.Never);
+        _mockMediator.Verify(callTo => callTo.Send(It.IsAny<MakeTokenAttributeCommand>(),
+            It.IsAny<CancellationToken>()), Times.Never);
         _mockMediator.Verify(callTo => callTo.Send(It.IsAny<MakeTokenChainCommand>(),
             It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -315,6 +315,7 @@ public class CreateAddTokenCommandHandlerTests
 
         // Assert
         var exception = await Assert.ThrowsAsync<InvalidDataException>(Act);
+        exception.PropertyName.Should().Be("token");
         exception.Message.Should().Be("Unable to validate SRC token.");
     }
 

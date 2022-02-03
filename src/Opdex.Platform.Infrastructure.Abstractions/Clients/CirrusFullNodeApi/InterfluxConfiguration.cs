@@ -8,8 +8,6 @@ public class InterfluxConfiguration : IValidatable
 {
     public Address MultiSigContractAddress { get; set; }
 
-    // public Address MultiSigContract => new Address(MultiSigContractAddress);
-
     public void Validate()
     {
         if (MultiSigContractAddress == Address.Empty || MultiSigContractAddress == Address.Cirrus)
