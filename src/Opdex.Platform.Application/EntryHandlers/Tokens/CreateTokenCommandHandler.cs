@@ -62,11 +62,12 @@ public class CreateTokenCommandHandler : IRequestHandler<CreateTokenCommand, ulo
             if (tokenWrappedId == 0) _logger.LogError("Something went wrong indexing the wrapped token mapping");
         }
 
-        await Task.WhenAll(attributes.Select(attribute =>
+        var attributesPersisted = await Task.WhenAll(attributes.Select(attribute =>
         {
             var tokenAttribute = new TokenAttribute(tokenId, attribute);
             return _mediator.Send(new MakeTokenAttributeCommand(tokenAttribute), CancellationToken.None);
         }));
+        if (attributesPersisted.Any(a => !a)) _logger.LogError("Something went wrong indexing the token attributes");
 
         return tokenId;
     }
