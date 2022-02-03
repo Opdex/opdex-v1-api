@@ -1,8 +1,11 @@
+using Opdex.Platform.Common.Converters;
 using Opdex.Platform.Common.Extensions;
 using System;
+using System.ComponentModel;
 
 namespace Opdex.Platform.Common.Models;
 
+[TypeConverter(typeof(AddressTypeConverter))]
 public readonly struct Address : IEquatable<string>, IEquatable<Address>
 {
     private const string DevZero = "P8bB9yPr3vVByqfmM5KXftyGckAtAdu6f8";

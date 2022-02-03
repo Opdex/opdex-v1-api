@@ -174,8 +174,14 @@ public class Startup
         var cmcConfig = Configuration.GetSection(nameof(CoinMarketCapConfiguration));
         services.SetupConfiguration<CoinMarketCapConfiguration>(cmcConfig);
 
+        // Auth Configurations
+
         var authConfig = Configuration.GetSection(nameof(AuthConfiguration));
         services.SetupConfiguration<AuthConfiguration>(authConfig);
+
+        // Interflux Configurations
+        var interfluxConfig = Configuration.GetSection(nameof(InterfluxConfiguration));
+        services.SetupConfiguration<InterfluxConfiguration>(interfluxConfig);
 
         services.Configure<IndexerConfiguration>(Configuration.GetSection(nameof(IndexerConfiguration)));
 

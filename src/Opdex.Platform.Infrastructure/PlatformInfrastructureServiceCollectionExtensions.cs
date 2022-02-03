@@ -119,6 +119,7 @@ using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Attributes;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Auth;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinGeckoApi.Queries;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens.Wrapped;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Auth;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Summaries;
@@ -196,6 +197,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<PersistTokenSnapshotCommand, bool>, PersistTokenSnapshotCommandHandler>();
         services.AddTransient<IRequestHandler<PersistTokenSummaryCommand, ulong>, PersistTokenSummaryCommandHandler>();
         services.AddTransient<IRequestHandler<PersistTokenAttributeCommand, bool>, PersistTokenAttributeCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistTokenChainCommand, ulong>, PersistTokenChainCommandHandler>();
 
         // Transactions
         services.AddTransient<IRequestHandler<PersistTransactionCommand, ulong>, PersistTransactionCommandHandler>();
@@ -366,6 +368,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<CallCirrusGetTransactionByHashQuery, Transaction>, CallCirrusGetTransactionByHashQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetRawTransactionQuery, RawTransactionDto>, CallCirrusGetRawTransactionQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetStandardTokenContractSummaryQuery, StandardTokenContractSummary>, CallCirrusGetStandardTokenContractSummaryQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetInterfluxTokenContractSummaryQuery, InterfluxTokenContractSummary>, CallCirrusGetInterfluxTokenContractSummaryQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetMiningPoolRewardPerTokenMiningQuery, UInt256>, CallCirrusGetMiningPoolRewardPerTokenMiningQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenAllowanceQuery, UInt256>, CallCirrusGetSrcTokenAllowanceQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetOpdexLiquidityPoolReservesQuery, ReservesReceipt>, CallCirrusGetOpdexLiquidityPoolReservesQueryHandler>();

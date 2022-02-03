@@ -1,6 +1,7 @@
 using AutoMapper;
 using FluentAssertions;
 using MediatR;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
@@ -13,6 +14,7 @@ using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 using System;
 using System.Linq;
@@ -27,12 +29,15 @@ public class CreateAddTokenCommandHandlerTests
     private readonly Mock<IMapper> _mockMapper;
     private readonly Mock<IMediator> _mockMediator;
     private readonly CreateAddTokenCommandHandler _handler;
+    private readonly Address _multiSigContractAddress;
 
     public CreateAddTokenCommandHandlerTests()
     {
         _mockMapper = new Mock<IMapper>();
         _mockMediator = new Mock<IMediator>();
-        _handler = new CreateAddTokenCommandHandler(_mockMapper.Object, _mockMediator.Object);
+        _multiSigContractAddress = new Address("PVBs1gH81rtEDzzz852jBqdm55jf9h60P8xC");
+        var interfluxConfig = new InterfluxConfiguration { MultiSigContractAddress = _multiSigContractAddress };
+        _handler = new CreateAddTokenCommandHandler(_mockMapper.Object, _mockMediator.Object, interfluxConfig, new NullLogger<CreateAddTokenCommandHandler>());
     }
 
     [Fact]
