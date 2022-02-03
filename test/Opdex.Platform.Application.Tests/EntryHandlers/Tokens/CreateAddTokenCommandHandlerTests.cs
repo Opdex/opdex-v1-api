@@ -17,7 +17,6 @@ using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.Tokens;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 using System;
 using System.Linq;
@@ -32,15 +31,12 @@ public class CreateAddTokenCommandHandlerTests
     private readonly Mock<IMapper> _mockMapper;
     private readonly Mock<IMediator> _mockMediator;
     private readonly CreateAddTokenCommandHandler _handler;
-    private readonly Address _multiSigContractAddress;
 
     public CreateAddTokenCommandHandlerTests()
     {
         _mockMapper = new Mock<IMapper>();
         _mockMediator = new Mock<IMediator>();
-        _multiSigContractAddress = new Address("PVBs1gH81rtEDzzz852jBqdm55jf9h60P8xC");
-        var interfluxConfig = new InterfluxConfiguration { MultiSigContractAddress = _multiSigContractAddress };
-        _handler = new CreateAddTokenCommandHandler(_mockMapper.Object, _mockMediator.Object, interfluxConfig, new NullLogger<CreateAddTokenCommandHandler>());
+        _handler = new CreateAddTokenCommandHandler(_mockMapper.Object, _mockMediator.Object, new NullLogger<CreateAddTokenCommandHandler>());
     }
 
     [Fact]
@@ -184,7 +180,7 @@ public class CreateAddTokenCommandHandlerTests
         tokenSummary.SetBaseProperties("ChainLink (InterFlux)", "iLINK", 18);
         tokenSummary.SetTotalSupply(UInt256.Parse("1000000000000000000000000000"));
         var interfluxSummary = new InterfluxTokenContractSummary(blockReceipt.Height);
-        interfluxSummary.SetInterfluxDetails(_multiSigContractAddress, ExternalChainType.Ethereum, "0x514910771af9ca656af840dff83e8264ecf986ca");
+        interfluxSummary.SetInterfluxDetails(new Address ("PBHvTPaLKo5cVYBFdTfTgtjqfybLMJJ8W5"), ExternalChainType.Ethereum, "0x514910771af9ca656af840dff83e8264ecf986ca");
         _mockMediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync((Token)null);
         _mockMediator.Setup(callTo => callTo.Send(It.IsAny<GetBestBlockReceiptQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockReceipt);
         _mockMediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetStandardTokenContractSummaryQuery>(), It.IsAny<CancellationToken>()))
@@ -213,47 +209,6 @@ public class CreateAddTokenCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ForInterfluxTokenNotOwnedByMultiSig_ThrowInvalidDataException()
-    {
-        // Arrange
-        Address tokenAddress = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV";
-        var blockReceipt = new BlockReceipt(Sha256.Parse("59218de9ed9bc1df4400fdf4b968ec6ca42baccbdb7f25c923345ba84d5eb5b3"), 5000, DateTime.Now, DateTime.Now,
-            Sha256.Parse("bec4d5e4f8d01f8741ccd268504d8b9a1086273ad2fca90eed55096da9bc910b"),
-            Sha256.Parse("4d35ea70ce77c42fad7852045694c3c0ec30a7aa069e9cec769f344f14d3d9f9"),
-            Sha256.Parse("ad0bea2255c37ec43daa5446f2599b9f23bd36ec79ab52c2323470d0e08b718d"), Enumerable.Empty<Sha256>());
-        var tokenSummary = new StandardTokenContractSummary(blockReceipt.Height);
-        tokenSummary.SetBaseProperties("ChainLink (InterFlux)", "iLINK", 18);
-        tokenSummary.SetTotalSupply(UInt256.Parse("1000000000000000000000000000"));
-        var interfluxSummary = new InterfluxTokenContractSummary(blockReceipt.Height);
-        var nativeChain = ExternalChainType.Ethereum;
-        var nativeAddress = "0x514910771af9ca656af840dff83e8264ecf986ca";
-        interfluxSummary.SetInterfluxDetails(new Address("NOT_THE_INTERFLUX_MULTISIG_ADDRESS"), nativeChain, nativeAddress);
-        _mockMediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync((Token)null);
-        _mockMediator.Setup(callTo => callTo.Send(It.IsAny<GetBestBlockReceiptQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockReceipt);
-        _mockMediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetStandardTokenContractSummaryQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(tokenSummary);
-        _mockMediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetInterfluxTokenContractSummaryQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(interfluxSummary);
-        ulong tokenId = 5;
-        _mockMediator.Setup(callTo => callTo.Send(It.IsAny<MakeTokenCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(tokenId);
-
-        // Act
-        Task Act() => _handler.Handle(new CreateAddTokenCommand(tokenAddress), CancellationToken.None);
-
-        // Assert
-        var exception = await Assert.ThrowsAsync<InvalidDataException>(Act);
-        exception.PropertyName.Should().Be("token");
-        exception.Message.Should().Be("Wrapped token must be owned by Interflux multisig wallet.");
-        _mockMediator.Verify(callTo => callTo.Send(It.IsAny<MakeTokenCommand>(),
-            It.IsAny<CancellationToken>()), Times.Never);
-        _mockMediator.Verify(callTo => callTo.Send(It.IsAny<MakeTokenAttributeCommand>(),
-            It.IsAny<CancellationToken>()), Times.Never);
-        _mockMediator.Verify(callTo => callTo.Send(It.IsAny<MakeTokenChainCommand>(),
-            It.IsAny<CancellationToken>()), Times.Never);
-    }
-
-    [Fact]
     public async Task Handle_ForInterfluxToken_PersistTokenMapping()
     {
         // Arrange
@@ -268,7 +223,7 @@ public class CreateAddTokenCommandHandlerTests
         var interfluxSummary = new InterfluxTokenContractSummary(blockReceipt.Height);
         var nativeChain = ExternalChainType.Ethereum;
         var nativeAddress = "0x514910771af9ca656af840dff83e8264ecf986ca";
-        interfluxSummary.SetInterfluxDetails(_multiSigContractAddress, nativeChain, nativeAddress);
+        interfluxSummary.SetInterfluxDetails(new Address ("PBHvTPaLKo5cVYBFdTfTgtjqfybLMJJ8W5"), nativeChain, nativeAddress);
         _mockMediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync((Token)null);
         _mockMediator.Setup(callTo => callTo.Send(It.IsAny<GetBestBlockReceiptQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockReceipt);
         _mockMediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetStandardTokenContractSummaryQuery>(), It.IsAny<CancellationToken>()))
@@ -290,10 +245,10 @@ public class CreateAddTokenCommandHandlerTests
         }
 
         // Assert
-        _mockMediator.Verify(callTo => callTo.Send(It.Is<MakeTokenChainCommand>(
-            c => c.Chain.TokenId == tokenId
-                 && c.Chain.NativeChain == nativeChain
-                 && c.Chain.NativeAddress == nativeAddress),
+        _mockMediator.Verify(callTo => callTo.Send(It.Is<MakeTokenWrappedCommand>(
+            c => c.Wrapped.TokenId == tokenId
+                 && c.Wrapped.NativeChain == nativeChain
+                 && c.Wrapped.NativeAddress == nativeAddress),
             It.IsAny<CancellationToken>()), Times.Once);
     }
 

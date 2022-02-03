@@ -3,11 +3,9 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens.Wrapped;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
-using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.Tokens;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 using System;
 using System.Linq;
@@ -19,14 +17,11 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens;
 public class CreateTokenCommandHandler : IRequestHandler<CreateTokenCommand, ulong>
 {
     private readonly IMediator _mediator;
-    private readonly InterfluxConfiguration _interfluxConfiguration;
     private readonly ILogger<CreateTokenCommandHandler> _logger;
 
-    public CreateTokenCommandHandler(IMediator mediator, InterfluxConfiguration interfluxConfiguration,
-        ILogger<CreateTokenCommandHandler> logger)
+    public CreateTokenCommandHandler(IMediator mediator, ILogger<CreateTokenCommandHandler> logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        _interfluxConfiguration = interfluxConfiguration ?? throw new ArgumentNullException(nameof(interfluxConfiguration));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -58,13 +53,13 @@ public class CreateTokenCommandHandler : IRequestHandler<CreateTokenCommand, ulo
         if (tokenId == 0) _logger.LogError("Something went wrong indexing the token");
 
         var interfluxSummary = await _mediator.Send(new CallCirrusGetInterfluxTokenContractSummaryQuery(request.Token, request.BlockHeight), CancellationToken.None);
-        if (interfluxSummary is not null && ValidateWrappedToken(interfluxSummary))
+        if (interfluxSummary is not null)
         {
             attributes = request.Attributes.Append(TokenAttributeType.Interflux);
 
-            var tokenChain = new TokenChain(tokenId, interfluxSummary.NativeChain, interfluxSummary.NativeAddress);
-            var tokenChainId = await _mediator.Send(new MakeTokenChainCommand(tokenChain), CancellationToken.None);
-            if (tokenChainId == 0) _logger.LogError("Something went wrong indexing the wrapped token mapping");
+            var tokenWrapped = new TokenWrapped(tokenId, interfluxSummary.Owner, interfluxSummary.NativeChain, interfluxSummary.NativeAddress, request.BlockHeight);
+            var tokenWrappedId = await _mediator.Send(new MakeTokenWrappedCommand(tokenWrapped), CancellationToken.None);
+            if (tokenWrappedId == 0) _logger.LogError("Something went wrong indexing the wrapped token mapping");
         }
 
         await Task.WhenAll(attributes.Select(attribute =>
@@ -74,10 +69,5 @@ public class CreateTokenCommandHandler : IRequestHandler<CreateTokenCommand, ulo
         }));
 
         return tokenId;
-    }
-
-    private bool ValidateWrappedToken(InterfluxTokenContractSummary summary)
-    {
-        return summary.Owner == _interfluxConfiguration.MultiSigContractAddress;
     }
 }

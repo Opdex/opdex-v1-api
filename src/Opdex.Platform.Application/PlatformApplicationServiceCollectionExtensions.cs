@@ -500,7 +500,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<RetrieveTokenSummaryByTokenIdQuery, TokenSummary>, RetrieveTokenSummaryByTokenIdQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveTokenSummaryByMarketAndTokenIdQuery, TokenSummary>, RetrieveTokenSummaryByMarketAndTokenIdQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveTokenAttributesByTokenIdQuery, IEnumerable<TokenAttribute>>, RetrieveTokenAttributesByTokenIdQueryHandler>();
-        services.AddTransient<IRequestHandler<RetrieveTokenChainByTokenIdQuery, TokenChain>, RetrieveTokenChainByTokenIdQueryHandler>();
+        services.AddTransient<IRequestHandler<RetrieveTokenWrappedByTokenIdQuery, TokenWrapped>, RetrieveTokenWrappedByTokenIdQueryHandler>();
 
         // Mining Governances
         services.AddTransient<IRequestHandler<RetrieveMiningGovernanceContractSummaryByAddressQuery, MiningGovernanceContractSummary>, RetrieveMiningGovernanceContractSummaryByAddressQueryHandler>();
@@ -580,7 +580,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<MakeTokenSnapshotCommand, bool>, MakeTokenSnapshotCommandHandler>();
         services.AddTransient<IRequestHandler<MakeTokenDistributionCommand, bool>, MakeTokenDistributionCommandHandler>();
         services.AddTransient<IRequestHandler<MakeTokenAttributeCommand, bool>, MakeTokenAttributeCommandHandler>();
-        services.AddTransient<IRequestHandler<MakeTokenChainCommand, ulong>, MakeTokenChainCommandHandler>();
+        services.AddTransient<IRequestHandler<MakeTokenWrappedCommand, ulong>, MakeTokenWrappedCommandHandler>();
 
         // Transactions
         services.AddTransient<IRequestHandler<MakeTransactionCommand, ulong>, MakeTransactionCommandHandler>();

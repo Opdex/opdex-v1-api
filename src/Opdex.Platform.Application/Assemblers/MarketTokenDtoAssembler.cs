@@ -37,10 +37,10 @@ public class MarketTokenDtoAssembler : IModelAssembler<MarketToken, MarketTokenD
         var tokenAttributes = await _mediator.Send(new RetrieveTokenAttributesByTokenIdQuery(token.Id), CancellationToken.None);
         marketTokenDto.Attributes = tokenAttributes.Select(attr => attr.AttributeType);
 
-        var tokenChain = await _mediator.Send(new RetrieveTokenChainByTokenIdQuery(token.Id, false), CancellationToken.None);
-        if (tokenChain is not null)
+        var tokenWrapped = await _mediator.Send(new RetrieveTokenWrappedByTokenIdQuery(token.Id, false), CancellationToken.None);
+        if (tokenWrapped is not null)
         {
-            marketTokenDto.NativeToken = _mapper.Map<WrappedTokenDetailsDto>(tokenChain);
+            marketTokenDto.WrappedToken = _mapper.Map<WrappedTokenDetailsDto>(tokenWrapped);
         }
 
         var isLpt = marketTokenDto.Attributes.Contains(TokenAttributeType.Provisional);

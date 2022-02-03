@@ -59,8 +59,10 @@ public class PlatformWebApiMapperProfile : Profile
     public PlatformWebApiMapperProfile()
     {
         CreateMap<WrappedTokenDetailsDto, WrappedTokenDetailsResponseModel>()
+            .ForMember(dest => dest.Custodian, opt => opt.MapFrom(src => src.Custodian))
             .ForMember(dest => dest.Chain, opt => opt.MapFrom(src => src.Chain))
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<TokenDto, TokenResponseModel>()
@@ -71,7 +73,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Sats, opt => opt.MapFrom(src => src.Sats))
             .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
             .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.Attributes))
-            .ForMember(dest => dest.NativeToken, opt => opt.MapFrom(src => src.NativeToken))
+            .ForMember(dest => dest.WrappedToken, opt => opt.MapFrom(src => src.WrappedToken))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
@@ -90,7 +92,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Sats, opt => opt.MapFrom(src => src.Sats))
             .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
             .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.Attributes))
-            .ForMember(dest => dest.NativeToken, opt => opt.MapFrom(src => src.NativeToken))
+            .ForMember(dest => dest.WrappedToken, opt => opt.MapFrom(src => src.WrappedToken))
             .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
             .ForMember(dest => dest.LiquidityPool, opt => opt.MapFrom(src => src.LiquidityPool))
             .ForMember(dest => dest.Market, opt => opt.MapFrom(src => src.Market))

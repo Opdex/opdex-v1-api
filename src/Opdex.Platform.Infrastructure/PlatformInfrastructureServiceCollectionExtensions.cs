@@ -197,7 +197,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<PersistTokenSnapshotCommand, bool>, PersistTokenSnapshotCommandHandler>();
         services.AddTransient<IRequestHandler<PersistTokenSummaryCommand, ulong>, PersistTokenSummaryCommandHandler>();
         services.AddTransient<IRequestHandler<PersistTokenAttributeCommand, bool>, PersistTokenAttributeCommandHandler>();
-        services.AddTransient<IRequestHandler<PersistTokenChainCommand, ulong>, PersistTokenChainCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistTokenWrappedCommand, ulong>, PersistTokenWrappedCommandHandler>();
 
         // Transactions
         services.AddTransient<IRequestHandler<PersistTransactionCommand, ulong>, PersistTransactionCommandHandler>();
@@ -287,7 +287,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<SelectTokenSummaryByTokenIdQuery, TokenSummary>, SelectTokenSummaryByTokenIdQueryHandler>();
         services.AddTransient<IRequestHandler<SelectTokenSummaryByMarketAndTokenIdQuery, TokenSummary>, SelectTokenSummaryByMarketAndTokenIdQueryHandler>();
         services.AddTransient<IRequestHandler<SelectTokenAttributesByTokenIdQuery, IEnumerable<TokenAttribute>>, SelectTokenAttributesByTokenIdQueryHandler>();
-        services.AddTransient<IRequestHandler<SelectTokenChainByTokenIdQuery, TokenChain>, SelectTokenChainByTokenIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectTokenWrappedByTokenIdQuery, TokenWrapped>, SelectTokenWrappedByTokenIdQueryHandler>();
 
         // Mining Governances
         services.AddTransient<IRequestHandler<SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQuery, IEnumerable<MiningGovernanceNomination>>, SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandler>();

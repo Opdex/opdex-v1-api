@@ -11,7 +11,6 @@ using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Tokens;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 using System;
 using System.Threading;
@@ -24,14 +23,11 @@ public class CreateTokenCommandHandlerTests
 {
     private readonly Mock<IMediator> _mediator;
     private readonly CreateTokenCommandHandler _handler;
-    private readonly Address _multiSigContractAddress;
 
     public CreateTokenCommandHandlerTests()
     {
         _mediator = new Mock<IMediator>();
-        _multiSigContractAddress = new Address("PVBs1gH81rtEDzzz852jBqdm55jf9h60P8xC");
-        var interfluxConfig = new InterfluxConfiguration { MultiSigContractAddress = _multiSigContractAddress };
-        _handler = new CreateTokenCommandHandler(_mediator.Object, interfluxConfig, new NullLogger<CreateTokenCommandHandler>());
+        _handler = new CreateTokenCommandHandler(_mediator.Object, new NullLogger<CreateTokenCommandHandler>());
     }
 
     [Fact]
@@ -150,7 +146,7 @@ public class CreateTokenCommandHandlerTests
         const ulong blockHeight = 10;
 
         var interfluxSummary = new InterfluxTokenContractSummary(blockHeight);
-        interfluxSummary.SetInterfluxDetails(_multiSigContractAddress, ExternalChainType.Ethereum, "0x514910771af9ca656af840dff83e8264ecf986ca");
+        interfluxSummary.SetInterfluxDetails(new Address("PBHvTPaLKo5cVYBFdTfTgtjqfybLMJJ8W5"), ExternalChainType.Ethereum, "0x514910771af9ca656af840dff83e8264ecf986ca");
         _mediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetStandardTokenContractSummaryQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(() =>
             {
@@ -183,50 +179,6 @@ public class CreateTokenCommandHandlerTests
     }
 
     [Fact]
-    public async Task CreateTokenCommand_ForInterfluxTokenNotOwnedByMultiSig_DoNotPersistAttributeOrMapping()
-    {
-        // Arrange
-        Address tokenAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
-        const ulong blockHeight = 10;
-
-        var interfluxSummary = new InterfluxTokenContractSummary(blockHeight);
-        var nativeChain = ExternalChainType.Ethereum;
-        var nativeAddress = "0x514910771af9ca656af840dff83e8264ecf986ca";
-        interfluxSummary.SetInterfluxDetails(new Address("NOT_THE_INTERFLUX_MULTISIG_ADDRESS"), nativeChain, nativeAddress);
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetStandardTokenContractSummaryQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(() =>
-            {
-                var summary = new StandardTokenContractSummary(blockHeight);
-                summary.SetBaseProperties("ChainLink (InterFlux)", "iLINK", 18);
-                summary.SetTotalSupply(UInt256.Parse("1000000000000000000000000000000000000000"));
-                return summary;
-            });
-        ulong tokenId = 5;
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeTokenCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(tokenId);
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetInterfluxTokenContractSummaryQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(interfluxSummary);
-
-        // Act
-        try
-        {
-            await _handler.Handle(new CreateTokenCommand(tokenAddress, Array.Empty<TokenAttributeType>(), blockHeight), CancellationToken.None);
-        }
-        catch
-        {
-            // ignored
-        }
-
-        // Assert
-        _mediator.Verify(callTo => callTo.Send(It.Is<MakeTokenAttributeCommand>(
-                c => c.TokenAttribute.TokenId == tokenId
-                     && c.TokenAttribute.AttributeType == TokenAttributeType.Interflux),
-            It.IsAny<CancellationToken>()), Times.Never);
-        _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeTokenChainCommand>(),
-            It.IsAny<CancellationToken>()), Times.Never);
-    }
-
-    [Fact]
     public async Task CreateTokenCommand_InterfluxToken_PersistTokenMapping()
     {
         // Arrange
@@ -236,7 +188,7 @@ public class CreateTokenCommandHandlerTests
         var interfluxSummary = new InterfluxTokenContractSummary(blockHeight);
         var nativeChain = ExternalChainType.Ethereum;
         var nativeAddress = "0x514910771af9ca656af840dff83e8264ecf986ca";
-        interfluxSummary.SetInterfluxDetails(_multiSigContractAddress, nativeChain, nativeAddress);
+        interfluxSummary.SetInterfluxDetails(new Address("PBHvTPaLKo5cVYBFdTfTgtjqfybLMJJ8W5"), nativeChain, nativeAddress);
         _mediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetStandardTokenContractSummaryQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(() =>
             {
@@ -262,10 +214,10 @@ public class CreateTokenCommandHandlerTests
         }
 
         // Assert
-        _mediator.Verify(callTo => callTo.Send(It.Is<MakeTokenChainCommand>(
-                c => c.Chain.TokenId == tokenId
-                     && c.Chain.NativeChain == nativeChain
-                     && c.Chain.NativeAddress == nativeAddress),
+        _mediator.Verify(callTo => callTo.Send(It.Is<MakeTokenWrappedCommand>(
+                c => c.Wrapped.TokenId == tokenId
+                     && c.Wrapped.NativeChain == nativeChain
+                     && c.Wrapped.NativeAddress == nativeAddress),
             It.IsAny<CancellationToken>()), Times.Once);
     }
 

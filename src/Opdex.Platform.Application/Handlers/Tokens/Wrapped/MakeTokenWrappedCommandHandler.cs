@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Tokens.Wrapped;
 
-public class MakeTokenChainCommandHandler : IRequestHandler<MakeTokenChainCommand, ulong>
+public class MakeTokenWrappedCommandHandler : IRequestHandler<MakeTokenWrappedCommand, ulong>
 {
     private readonly IMediator _mediator;
 
-    public MakeTokenChainCommandHandler(IMediator mediator)
+    public MakeTokenWrappedCommandHandler(IMediator mediator)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    public async Task<ulong> Handle(MakeTokenChainCommand request, CancellationToken cancellationToken)
+    public async Task<ulong> Handle(MakeTokenWrappedCommand request, CancellationToken cancellationToken)
     {
-        return await _mediator.Send(new PersistTokenChainCommand(request.Chain), CancellationToken.None);
+        return await _mediator.Send(new PersistTokenWrappedCommand(request.Wrapped), CancellationToken.None);
     }
 }
