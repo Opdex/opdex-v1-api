@@ -179,7 +179,7 @@ public class CreateAddTokenCommandHandlerTests
         var tokenSummary = new StandardTokenContractSummary(blockReceipt.Height);
         tokenSummary.SetBaseProperties("ChainLink (InterFlux)", "iLINK", 18);
         tokenSummary.SetTotalSupply(UInt256.Parse("1000000000000000000000000000"));
-        var interfluxSummary = new InterfluxTokenContractSummary(blockReceipt.Height);
+        var interfluxSummary = new InterfluxTokenContractSummary();
         interfluxSummary.SetInterfluxDetails(new Address ("PBHvTPaLKo5cVYBFdTfTgtjqfybLMJJ8W5"), ExternalChainType.Ethereum, "0x514910771af9ca656af840dff83e8264ecf986ca");
         _mockMediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync((Token)null);
         _mockMediator.Setup(callTo => callTo.Send(It.IsAny<GetBestBlockReceiptQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockReceipt);
@@ -220,7 +220,7 @@ public class CreateAddTokenCommandHandlerTests
         var tokenSummary = new StandardTokenContractSummary(blockReceipt.Height);
         tokenSummary.SetBaseProperties("ChainLink (InterFlux)", "iLINK", 18);
         tokenSummary.SetTotalSupply(UInt256.Parse("1000000000000000000000000000"));
-        var interfluxSummary = new InterfluxTokenContractSummary(blockReceipt.Height);
+        var interfluxSummary = new InterfluxTokenContractSummary();
         var nativeChain = ExternalChainType.Ethereum;
         var nativeAddress = "0x514910771af9ca656af840dff83e8264ecf986ca";
         interfluxSummary.SetInterfluxDetails(new Address ("PBHvTPaLKo5cVYBFdTfTgtjqfybLMJJ8W5"), nativeChain, nativeAddress);

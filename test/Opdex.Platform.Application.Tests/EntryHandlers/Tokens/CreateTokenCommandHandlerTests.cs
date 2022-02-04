@@ -145,7 +145,7 @@ public class CreateTokenCommandHandlerTests
         Address tokenAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
         const ulong blockHeight = 10;
 
-        var interfluxSummary = new InterfluxTokenContractSummary(blockHeight);
+        var interfluxSummary = new InterfluxTokenContractSummary();
         interfluxSummary.SetInterfluxDetails(new Address("PBHvTPaLKo5cVYBFdTfTgtjqfybLMJJ8W5"), ExternalChainType.Ethereum, "0x514910771af9ca656af840dff83e8264ecf986ca");
         _mediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetStandardTokenContractSummaryQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(() =>
@@ -185,7 +185,7 @@ public class CreateTokenCommandHandlerTests
         Address tokenAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
         const ulong blockHeight = 10;
 
-        var interfluxSummary = new InterfluxTokenContractSummary(blockHeight);
+        var interfluxSummary = new InterfluxTokenContractSummary();
         var nativeChain = ExternalChainType.Ethereum;
         var nativeAddress = "0x514910771af9ca656af840dff83e8264ecf986ca";
         interfluxSummary.SetInterfluxDetails(new Address("PBHvTPaLKo5cVYBFdTfTgtjqfybLMJJ8W5"), nativeChain, nativeAddress);

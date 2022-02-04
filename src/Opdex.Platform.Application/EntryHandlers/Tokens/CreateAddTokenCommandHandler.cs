@@ -11,7 +11,6 @@ using Opdex.Platform.Application.Exceptions;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models.Tokens;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 using System;
 using System.Collections.Generic;
@@ -61,7 +60,7 @@ public class CreateAddTokenCommandHandler : IRequestHandler<CreateAddTokenComman
                           summary.TotalSupply.Value, latestBlock.Height);
 
         var tokenId = await _mediator.Send(new MakeTokenCommand(token, latestBlock.Height));
-        if (tokenId == 0) _logger.LogError("Something went wrong indexing the token");
+        if (tokenId == 0) throw new Exception("Something went wrong indexing the token");
 
         var attributes = new List<TokenAttributeType> { TokenAttributeType.NonProvisional };
 

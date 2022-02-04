@@ -6,10 +6,6 @@ namespace Opdex.Platform.Domain.Models.Tokens;
 
 public class InterfluxTokenContractSummary
 {
-    public InterfluxTokenContractSummary(ulong blockHeight)
-    {
-    }
-
     public Address Owner { get; private set; }
 
     public ExternalChainType NativeChain { get; private set; }

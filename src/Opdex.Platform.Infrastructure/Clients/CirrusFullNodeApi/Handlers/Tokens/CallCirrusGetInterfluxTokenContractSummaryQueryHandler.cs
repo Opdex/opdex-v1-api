@@ -1,5 +1,6 @@
 using MediatR;
 using Opdex.Platform.Common.Constants.SmartContracts.Tokens;
+using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
@@ -23,31 +24,24 @@ public class CallCirrusGetInterfluxTokenContractSummaryQueryHandler
 
     public async Task<InterfluxTokenContractSummary> Handle(CallCirrusGetInterfluxTokenContractSummaryQuery request, CancellationToken cancellationToken)
     {
-        try
-        {
-            var ownerRequest = new LocalCallRequestDto(request.Token, request.Token,
-                $"get_{InterfluxTokenConstants.Properties.Owner}", request.BlockHeight);
-            var ownerResponse = await _smartContractsModule.LocalCallAsync(ownerRequest, cancellationToken);
-            var owner = ownerResponse.DeserializeValue<Address>();
+        var ownerRequest = new LocalCallRequestDto(request.Token, request.Token,
+            $"get_{InterfluxTokenConstants.Properties.Owner}", request.BlockHeight);
+        var ownerResponse = await _smartContractsModule.LocalCallAsync(ownerRequest, cancellationToken);
+        if (!ownerResponse.TryDeserializeValue<Address>(out var owner)) return null;
 
-            var nativeChainRequest = new LocalCallRequestDto(request.Token, request.Token,
-                $"get_{InterfluxTokenConstants.Properties.NativeChain}", request.BlockHeight);
-            var nativeChainResponse = await _smartContractsModule.LocalCallAsync(nativeChainRequest, cancellationToken);
-            var nativeChain = nativeChainResponse.DeserializeValue<ExternalChainType>();
+        var nativeChainRequest = new LocalCallRequestDto(request.Token, request.Token,
+            $"get_{InterfluxTokenConstants.Properties.NativeChain}", request.BlockHeight);
+        var nativeChainResponse = await _smartContractsModule.LocalCallAsync(nativeChainRequest, cancellationToken);
+        if (!nativeChainResponse.TryDeserializeValue<ExternalChainType>(out var nativeChain)) return null;
 
-            var nativeAddressRequest = new LocalCallRequestDto(request.Token, request.Token,
-                $"get_{InterfluxTokenConstants.Properties.NativeAddress}", request.BlockHeight);
-            var nativeAddressResponse =
-                await _smartContractsModule.LocalCallAsync(nativeAddressRequest, cancellationToken);
-            var nativeAddress = nativeAddressResponse.DeserializeValue<string>();
+        var nativeAddressRequest = new LocalCallRequestDto(request.Token, request.Token,
+            $"get_{InterfluxTokenConstants.Properties.NativeAddress}", request.BlockHeight);
+        var nativeAddressResponse =
+            await _smartContractsModule.LocalCallAsync(nativeAddressRequest, cancellationToken);
+        if (!nativeAddressResponse.TryDeserializeValue<string>(out var nativeAddress)) return null;
 
-            var summary = new InterfluxTokenContractSummary(request.BlockHeight);
-            summary.SetInterfluxDetails(owner, nativeChain, nativeAddress);
-            return summary;
-        }
-        catch (Exception)
-        {
-            return null;
-        }
+        var summary = new InterfluxTokenContractSummary();
+        summary.SetInterfluxDetails(owner, nativeChain, nativeAddress);
+        return summary;
     }
 }

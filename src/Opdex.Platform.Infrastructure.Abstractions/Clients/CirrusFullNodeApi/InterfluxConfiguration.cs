@@ -10,7 +10,7 @@ public class InterfluxConfiguration : IValidatable
 
     public void Validate()
     {
-        if (MultiSigContractAddress == Address.Empty || MultiSigContractAddress == Address.Cirrus)
+        if (MultiSigContractAddress == Address.Empty|| MultiSigContractAddress == Address.Cirrus || MultiSigContractAddress.IsZero)
         {
             throw new ArgumentException(nameof(MultiSigContractAddress), "MultiSig contract address must be network address");
         }
