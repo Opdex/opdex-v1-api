@@ -114,6 +114,7 @@ public class CreateAddTokenCommandHandlerTests
         _mockMediator.Setup(callTo => callTo.Send(It.IsAny<GetBestBlockReceiptQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockReceipt);
         _mockMediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetStandardTokenContractSummaryQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(tokenSummary);
+        _mockMediator.Setup(callTo => callTo.Send(It.IsAny<MakeTokenCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(1UL);
 
         // Act
         try
