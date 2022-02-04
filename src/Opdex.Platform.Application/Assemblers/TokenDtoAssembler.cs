@@ -29,10 +29,10 @@ public class TokenDtoAssembler : IModelAssembler<Token, TokenDto>
         var attributes = await _mediator.Send(new RetrieveTokenAttributesByTokenIdQuery(token.Id), CancellationToken.None);
         tokenDto.Attributes = attributes.Select(attribute => attribute.AttributeType);
 
-        var tokenChain = await _mediator.Send(new RetrieveTokenChainByTokenIdQuery(token.Id, false), CancellationToken.None);
-        if (tokenChain is not null)
+        var tokenWrapped = await _mediator.Send(new RetrieveTokenWrappedByTokenIdQuery(token.Id, false), CancellationToken.None);
+        if (tokenWrapped is not null)
         {
-            tokenDto.NativeToken = _mapper.Map<WrappedTokenDetailsDto>(tokenChain);
+            tokenDto.WrappedToken = _mapper.Map<WrappedTokenDetailsDto>(tokenWrapped);
         }
 
         if (tokenDto.Summary is null)

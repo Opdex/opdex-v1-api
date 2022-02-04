@@ -139,9 +139,11 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
             .ForAllOtherMembers(opt => opt.Ignore());
 
-        CreateMap<TokenChain, WrappedTokenDetailsDto>()
+        CreateMap<TokenWrapped, WrappedTokenDetailsDto>()
+            .ForMember(dest => dest.Custodian, opt => opt.MapFrom(src => src.Owner))
             .ForMember(dest => dest.Chain, opt => opt.MapFrom(src => src.NativeChain))
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.NativeAddress))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<LiquidityPool, LiquidityPoolDto>()

@@ -4,9 +4,9 @@ using System;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.Tokens.Wrapped;
 
-public class RetrieveTokenChainByTokenIdQuery : FindQuery<TokenChain>
+public class RetrieveTokenWrappedByTokenIdQuery : FindQuery<TokenWrapped>
 {
-    public RetrieveTokenChainByTokenIdQuery(ulong tokenId, bool findOrThrow = true) : base(findOrThrow)
+    public RetrieveTokenWrappedByTokenIdQuery(ulong tokenId, bool findOrThrow = true) : base(findOrThrow)
     {
         if (tokenId == 0) throw new ArgumentOutOfRangeException(nameof(tokenId), "Token id must be greater than 0.");
         TokenId = tokenId;

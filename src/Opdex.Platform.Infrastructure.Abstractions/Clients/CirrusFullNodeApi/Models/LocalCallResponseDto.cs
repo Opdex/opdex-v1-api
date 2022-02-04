@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models.Transactions;
 
@@ -15,7 +16,6 @@ public class LocalCallResponseDto
     public Error ErrorMessage { get; set; }
     public object Return { get; set; }
 
-    // Todo: There should be two, Try and Regular
     // This should be done better in general
     public T DeserializeValue<T>()
     {
@@ -29,6 +29,30 @@ public class LocalCallResponseDto
 
         var value = JsonConvert.SerializeObject(Return);
         return JsonConvert.DeserializeObject<T>(value);
+    }
+
+    public bool TryDeserializeValue<T>(out T value)
+    {
+        value = default;
+
+        if (Revert) return false;
+
+        // if the call was successful, the only way return value can be null is if it's a reference type
+        if (Return is null) return !typeof(T).IsValueType;
+
+        try
+        {
+            var serializedValue = JsonConvert.SerializeObject(Return, Serialization.DefaultJsonSettings);
+            value = JsonConvert.DeserializeObject<T>(serializedValue, Serialization.DefaultJsonSettings);
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+
+        if (value is Enum enumValue) return enumValue.IsValid();
+
+        return true;
     }
 }
 

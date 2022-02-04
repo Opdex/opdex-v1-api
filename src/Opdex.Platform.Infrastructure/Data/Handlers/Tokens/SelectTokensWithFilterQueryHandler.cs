@@ -157,20 +157,20 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
 
         if (request.Cursor.NativeChains.Any())
         {
-            tableJoins.Append($" LEFT JOIN token_chain tc ON tc.{nameof(TokenChainEntity.TokenId)} = t.{nameof(TokenEntity.Id)}");
+            tableJoins.Append($" LEFT JOIN token_wrapped tw ON tw.{nameof(TokenWrappedEntity.TokenId)} = t.{nameof(TokenEntity.Id)}");
 
             whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
             whereFilterBuilder.Append('(');
             var filterOnNativeToCirrus = request.Cursor.NativeChains.Contains(ChainType.Cirrus);
             if (filterOnNativeToCirrus)
             {
-                whereFilterBuilder.Append($" tc.{nameof(TokenChainEntity.NativeChainTypeId)} IS NULL");
+                whereFilterBuilder.Append($" tw.{nameof(TokenWrappedEntity.NativeChainTypeId)} IS NULL");
             }
 
             if (request.Cursor.ExternalChains.Any())
             {
                 if (filterOnNativeToCirrus) whereFilterBuilder.Append(" OR");
-                whereFilterBuilder.Append($" tc.{nameof(TokenChainEntity.NativeChainTypeId)} IN @{nameof(SqlParams.ExternalChainTypes)}");
+                whereFilterBuilder.Append($" tw.{nameof(TokenWrappedEntity.NativeChainTypeId)} IN @{nameof(SqlParams.ExternalChainTypes)}");
             }
             whereFilterBuilder.Append(')');
         }

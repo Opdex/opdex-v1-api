@@ -54,7 +54,7 @@ public class TokenResponseModel
     /// <summary>
     /// Details of the token that is wrapped.
     /// </summary>
-    public WrappedTokenDetailsResponseModel NativeToken { get; set; }
+    public WrappedTokenDetailsResponseModel WrappedToken { get; set; }
 
     /// <summary>
     /// Block number at which the entity was created.

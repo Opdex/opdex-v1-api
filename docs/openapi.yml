@@ -2315,7 +2315,7 @@ components:
           items:
             $ref: "#/components/schemas/tokenAttribute"
           description: Attributes applied to the token
-        nativeToken:
+        wrappedToken:
           $ref: "#/components/schemas/wrappedTokenDetails"
           description: Details for the external token that is wrapped
         createdBlock:
@@ -2334,12 +2334,23 @@ components:
       type: object
       description: Details for an external token that is wrapped
       properties:
+        custodian:
+          $ref: "#/components/schemas/address"
+          description: Cirrus address for the custodian of the bridge
         chain:
           $ref: "#/components/schemas/externalChain"
           description: External chain of the wrapped token
         address:
           type: string
           description: Address of the token on the native chain, or unset if the base token of the external chain is wrapped
+        trusted:
+          type: boolean
+          description: True if the custodian is configured as trusted; otherwise false
+        modifiedBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity state was last modified
     tokenSummary:
       type: object
       description: Point in time pricing summary for a token

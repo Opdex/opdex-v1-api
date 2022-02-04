@@ -8,17 +8,17 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Tokens.Wrapped;
 
-public class RetrieveTokenChainByTokenIdQueryHandler : IRequestHandler<RetrieveTokenChainByTokenIdQuery, TokenChain>
+public class RetrieveTokenWrappedByTokenIdQueryHandler : IRequestHandler<RetrieveTokenWrappedByTokenIdQuery, TokenWrapped>
 {
     private readonly IMediator _mediator;
 
-    public RetrieveTokenChainByTokenIdQueryHandler(IMediator mediator)
+    public RetrieveTokenWrappedByTokenIdQueryHandler(IMediator mediator)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    public async Task<TokenChain> Handle(RetrieveTokenChainByTokenIdQuery request, CancellationToken cancellationToken)
+    public async Task<TokenWrapped> Handle(RetrieveTokenWrappedByTokenIdQuery request, CancellationToken cancellationToken)
     {
-        return await _mediator.Send(new SelectTokenChainByTokenIdQuery(request.TokenId, request.FindOrThrow), cancellationToken);
+        return await _mediator.Send(new SelectTokenWrappedByTokenIdQuery(request.TokenId, request.FindOrThrow), cancellationToken);
     }
 }
