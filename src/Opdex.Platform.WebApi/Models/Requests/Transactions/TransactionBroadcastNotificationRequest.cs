@@ -14,8 +14,8 @@ public class TransactionBroadcastNotificationRequest
     public Sha256 TransactionHash { get; set; }
 
     /// <summary>
-    /// The transaction sender's public key
+    /// The transaction sender's wallet address.
     /// </summary>
     /// <example>tHYHem7cLKgoLkeb792yn4WayqKzLrjJak</example>
-    public Address PublicKey { get; set; }
+    public Address WalletAddress { get; set; }
 }
