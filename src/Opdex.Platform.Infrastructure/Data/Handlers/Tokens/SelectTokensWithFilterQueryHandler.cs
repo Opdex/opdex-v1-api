@@ -198,7 +198,7 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
             direction = Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection);
 
         // Order the rows by the preferred, indexed column or tokenId by default
-        var orderBy = OrderByBuilder(request.Cursor.OrderBy, direction, reverse: false);
+        var orderBy = InnerOrderByBuilder(request.Cursor.OrderBy, direction);
 
         var limit = $" LIMIT {request.Cursor.Limit + 1}";
 
@@ -215,24 +215,35 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
 
         // re-sort back into requested order
         return PagingBackwardQuery.Replace(InnerQuery, query)
-            .Replace(OrderBySort, OrderByBuilder(request.Cursor.OrderBy,
-                                                 Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection),
-                                                 reverse: true));
+                                  .Replace(OrderBySort, OuterOrderByBuilder(
+                                      request.Cursor.OrderBy, Enum.GetName(typeof(SortDirectionType),
+                                      request.Cursor.SortDirection)));
     }
 
-    private static string OrderByBuilder(TokenOrderByType cursorOrderBy, string direction, bool reverse)
+    private static string InnerOrderByBuilder(TokenOrderByType cursorOrderBy, string direction)
     {
-        var summaryPrefix = reverse ? "r" : "ts";
-        var tokenPrefix = reverse ? "r" : "t";
-
-        var tokenIdWithDirection = $"{tokenPrefix}.{nameof(TokenEntity.Id)} {direction}";
+        var tokenIdWithDirection = $"t.{nameof(TokenEntity.Id)} {direction}";
 
         return cursorOrderBy switch
         {
-            TokenOrderByType.Name => $" ORDER BY {tokenPrefix}.{nameof(TokenEntity.Name)} {direction}, {tokenIdWithDirection}",
-            TokenOrderByType.Symbol => $" ORDER BY {tokenPrefix}.{nameof(TokenEntity.Symbol)} {direction}, {tokenIdWithDirection}",
-            TokenOrderByType.PriceUsd => $" ORDER BY AVG({summaryPrefix}.{nameof(TokenSummaryEntity.PriceUsd)}) {direction}, {tokenIdWithDirection}",
-            TokenOrderByType.DailyPriceChangePercent => $" ORDER BY AVG({summaryPrefix}.{nameof(TokenSummaryEntity.DailyPriceChangePercent)}) {direction}, {tokenIdWithDirection}",
+            TokenOrderByType.Name => $" ORDER BY t.{nameof(TokenEntity.Name)} {direction}, {tokenIdWithDirection}",
+            TokenOrderByType.Symbol => $" ORDER BY t.{nameof(TokenEntity.Symbol)} {direction}, {tokenIdWithDirection}",
+            TokenOrderByType.PriceUsd => $" ORDER BY AVG(ts.{nameof(TokenSummaryEntity.PriceUsd)}) {direction}, {tokenIdWithDirection}",
+            TokenOrderByType.DailyPriceChangePercent => $" ORDER BY AVG(ts.{nameof(TokenSummaryEntity.DailyPriceChangePercent)}) {direction}, {tokenIdWithDirection}",
+            _ => $" ORDER BY {tokenIdWithDirection}"
+        };
+    }
+
+    private static string OuterOrderByBuilder(TokenOrderByType cursorOrderBy, string direction)
+    {
+        var tokenIdWithDirection = $"{nameof(TokenEntity.Id)} {direction}";
+
+        return cursorOrderBy switch
+        {
+            TokenOrderByType.Name => $" ORDER BY {nameof(TokenEntity.Name)} {direction}, {tokenIdWithDirection}",
+            TokenOrderByType.Symbol => $" ORDER BY {nameof(TokenEntity.Symbol)} {direction}, {tokenIdWithDirection}",
+            TokenOrderByType.PriceUsd => $" ORDER BY {nameof(TokenSummaryEntity.PriceUsd)} {direction}, {tokenIdWithDirection}",
+            TokenOrderByType.DailyPriceChangePercent => $" ORDER BY {nameof(TokenSummaryEntity.DailyPriceChangePercent)} {direction}, {tokenIdWithDirection}",
             _ => $" ORDER BY {tokenIdWithDirection}"
         };
     }
