@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots;
-using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots;
@@ -13,6 +12,7 @@ using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Feeds;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,15 +22,17 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Snapshots;
 
 public class CreateCrsTokenSnapshotsCommandHandlerTests
 {
+    private readonly Mock<IFiatPriceFeed> _fiatPriceFeedMock;
     private readonly Mock<IMediator> _mediator;
     private readonly Mock<ILogger<CreateCrsTokenSnapshotsCommandHandler>> _logger;
     private readonly CreateCrsTokenSnapshotsCommandHandler _handler;
 
     public CreateCrsTokenSnapshotsCommandHandlerTests()
     {
+        _fiatPriceFeedMock = new Mock<IFiatPriceFeed>();
         _mediator = new Mock<IMediator>();
         _logger = new Mock<ILogger<CreateCrsTokenSnapshotsCommandHandler>>();
-        _handler = new CreateCrsTokenSnapshotsCommandHandler(_mediator.Object, _logger.Object);
+        _handler = new CreateCrsTokenSnapshotsCommandHandler(_fiatPriceFeedMock.Object, _mediator.Object, _logger.Object);
     }
 
     [Fact]
@@ -90,7 +92,10 @@ public class CreateCrsTokenSnapshotsCommandHandlerTests
         {
             await _handler.Handle(new CreateCrsTokenSnapshotsCommand(blockTime, blockHeight), CancellationToken.None);
         }
-        catch { }
+        catch
+        {
+            // ignored
+        }
 
         // Assert
         _mediator.Verify(callTo => callTo.Send(It.Is<MakeTokenCommand>(q => q.Token.Address == Address.Cirrus &&
@@ -163,12 +168,12 @@ public class CreateCrsTokenSnapshotsCommandHandlerTests
         var response = await _handler.Handle(new CreateCrsTokenSnapshotsCommand(blockTime, blockHeight), CancellationToken.None);
 
         // Assert
-        _mediator.Verify(callTo => callTo.Send(It.IsAny<RetrieveCmcStraxPriceQuery>(), CancellationToken.None), Times.Never);
+        _fiatPriceFeedMock.Verify(callTo => callTo.GetCrsUsdPrice(It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Never);
         response.Should().BeTrue();
     }
 
     [Fact]
-    public async Task CreateCrsTokenSnapshotsCommand_Sends_RetrieveCmcStraxPriceQuery()
+    public async Task CreateCrsTokenSnapshotsCommand_Send_GetCrsUsdPrice()
     {
         // Arrange
         DateTime blockTime = DateTime.UtcNow;
@@ -189,10 +194,13 @@ public class CreateCrsTokenSnapshotsCommandHandlerTests
         {
             await _handler.Handle(new CreateCrsTokenSnapshotsCommand(blockTime, blockHeight), CancellationToken.None);
         }
-        catch { }
+        catch
+        {
+            // ignored
+        }
 
         // Assert
-        _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveCmcStraxPriceQuery>(q => q.BlockTime == blockTime), CancellationToken.None), Times.Once);
+        _fiatPriceFeedMock.Verify(callTo => callTo.GetCrsUsdPrice(blockTime, CancellationToken.None), Times.Once);
     }
 
     [Fact]
@@ -238,7 +246,7 @@ public class CreateCrsTokenSnapshotsCommandHandlerTests
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenSnapshotWithFilterQuery>(), CancellationToken.None))
             .ReturnsAsync(latestSnapshot);
 
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveCmcStraxPriceQuery>(), CancellationToken.None))
+        _fiatPriceFeedMock.Setup(callTo => callTo.GetCrsUsdPrice(It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(price);
 
         // Act
@@ -279,7 +287,7 @@ public class CreateCrsTokenSnapshotsCommandHandlerTests
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenSnapshotWithFilterQuery>(), CancellationToken.None))
             .ReturnsAsync(latestSnapshot);
 
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveCmcStraxPriceQuery>(), CancellationToken.None))
+        _fiatPriceFeedMock.Setup(callTo => callTo.GetCrsUsdPrice(It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(price);
 
         // Act

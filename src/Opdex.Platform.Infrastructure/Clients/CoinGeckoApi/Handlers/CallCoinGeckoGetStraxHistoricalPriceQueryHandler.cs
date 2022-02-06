@@ -17,8 +17,8 @@ public class CallCoinGeckoGetStraxHistoricalPriceQueryHandler : IRequestHandler<
 
     public CallCoinGeckoGetStraxHistoricalPriceQueryHandler(ICoinGeckoClient client, ILogger<CallCoinGeckoGetStraxHistoricalPriceQueryHandler> logger)
     {
-        _client = client;
-        _logger = logger;
+        _client = client ?? throw new ArgumentNullException(nameof(client));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     /*

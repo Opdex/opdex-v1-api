@@ -130,6 +130,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Pledges;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.ProposalCertificates;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Proposals;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Votes;
+using Opdex.Platform.Infrastructure.Abstractions.Feeds;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Transactions;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Vaults;
 using Opdex.Platform.Infrastructure.Clients.CoinGeckoApi.Handlers;
@@ -141,6 +142,7 @@ using Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Pledges;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults.ProposalCertificates;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Proposals;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Votes;
+using Opdex.Platform.Infrastructure.Feeds;
 
 namespace Opdex.Platform.Infrastructure;
 
@@ -164,6 +166,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         AddCirrusServices(services, cirrusConfiguration);
         AddCoinGeckoServices(services);
         AddCmcServices(services, cmcConfiguration);
+        AddFeeds(services);
         AddSignalRServices(services);
 
         return services;
@@ -399,7 +402,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
 
     private static void AddCoinGeckoServices(IServiceCollection services)
     {
-        services.AddHttpClient<ICoinGeckoClient, CoinGeckoClient>()
+        services.AddHttpClient<ICoinGeckoClient, CoinGeckoClient>(httpClient => new CoinGeckoClient(httpClient))
             .AddPolicyHandler(CmcHttpClientBuilder.GetRetryPolicy())
             .AddPolicyHandler(CmcHttpClientBuilder.GetCircuitBreakerPolicy());
 
@@ -418,6 +421,11 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         // Queries
         services.AddTransient<IRequestHandler<CallCmcGetStraxLatestQuoteQuery, decimal>, CallCmcGetStraxLatestQuoteQueryHandler>();
         services.AddTransient<IRequestHandler<CallCmcGetStraxHistoricalQuoteQuery, decimal>, CallCmcGetStraxHistoricalQuoteQueryHandler>();
+    }
+
+    private static void AddFeeds(IServiceCollection services)
+    {
+        services.AddTransient<IFiatPriceFeed, FiatPriceFeed>();
     }
 
     private static void AddSignalRServices(IServiceCollection services)

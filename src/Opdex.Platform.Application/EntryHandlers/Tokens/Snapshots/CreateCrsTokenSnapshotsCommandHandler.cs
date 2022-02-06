@@ -2,14 +2,15 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots;
-using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Feeds;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,14 +19,16 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots;
 
 public class CreateCrsTokenSnapshotsCommandHandler : IRequestHandler<CreateCrsTokenSnapshotsCommand, bool>
 {
+    private readonly IFiatPriceFeed _fiatPriceFeed;
     private readonly IMediator _mediator;
     private readonly ILogger<CreateCrsTokenSnapshotsCommandHandler> _logger;
 
     private const ulong CrsMarketId = 0;
     private readonly SnapshotType[] _snapshotTypes = { SnapshotType.Minute, SnapshotType.Hourly, SnapshotType.Daily };
 
-    public CreateCrsTokenSnapshotsCommandHandler(IMediator mediator, ILogger<CreateCrsTokenSnapshotsCommandHandler> logger)
+    public CreateCrsTokenSnapshotsCommandHandler(IFiatPriceFeed fiatPriceFeed, IMediator mediator, ILogger<CreateCrsTokenSnapshotsCommandHandler> logger)
     {
+        _fiatPriceFeed = fiatPriceFeed ?? throw new ArgumentNullException(nameof(fiatPriceFeed));
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
@@ -52,8 +55,7 @@ public class CreateCrsTokenSnapshotsCommandHandler : IRequestHandler<CreateCrsTo
         // then we've already snapshot this minute, return successfully
         if (latestSnapshot.EndDate > request.BlockTime && latestSnapshot.Id > 0) return true;
 
-        var price = await _mediator.Send(new RetrieveCmcStraxPriceQuery(request.BlockTime));
-
+        var price = await _fiatPriceFeed.GetCrsUsdPrice(request.BlockTime, CancellationToken.None);
         if (price <= 0m) return false;
 
         var results = await Task.WhenAll(_snapshotTypes.Select(async snapshotType =>
@@ -66,7 +68,14 @@ public class CreateCrsTokenSnapshotsCommandHandler : IRequestHandler<CreateCrsTo
             var persisted = await _mediator.Send(new MakeTokenSnapshotCommand(snapshotOfType, request.BlockHeight));
             if (persisted) return true;
 
-            _logger.LogError($"Unable to persist CRS token snapshot type {snapshotType} at block time: {request.BlockTime}");
+            using (_logger.BeginScope(new Dictionary<string, object>
+                   {
+                       { "SnapshotType", snapshotType },
+                       { "BlockTime", request.BlockTime }
+                   }))
+            {
+                _logger.LogError($"Unable to persist CRS token snapshot");
+            }
             return false;
         }));
 
