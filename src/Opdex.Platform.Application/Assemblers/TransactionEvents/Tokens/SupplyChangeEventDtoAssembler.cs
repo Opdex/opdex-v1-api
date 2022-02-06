@@ -4,32 +4,32 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Assemblers.TransactionEvents.Tokens;
 
-public class ApprovalEventDtoAssembler : IModelAssembler<ApprovalLog, ApprovalEventDto>
+public class SupplyChangeEventDtoAssembler : IModelAssembler<SupplyChangeLog, SupplyChangeEventDto>
 {
     private readonly IMediator _mediator;
 
-    public ApprovalEventDtoAssembler(IMediator mediator)
+    public SupplyChangeEventDtoAssembler(IMediator mediator)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    public async Task<ApprovalEventDto> Assemble(ApprovalLog log)
+    public async Task<SupplyChangeEventDto> Assemble(SupplyChangeLog log)
     {
-        var token = await _mediator.Send(new RetrieveTokenByAddressQuery(log.Contract));
+        var token = await _mediator.Send(new RetrieveTokenByAddressQuery(log.Contract), CancellationToken.None);
 
-        return new ApprovalEventDto
+        return new SupplyChangeEventDto()
         {
             Id = log.Id,
             TransactionId = log.TransactionId,
             SortOrder = log.SortOrder,
             Contract = log.Contract,
-            Owner = log.Owner,
-            Spender = log.Spender,
-            Amount = log.Amount.ToDecimal(token.Decimals)
+            PreviousSupply = log.PreviousSupply.ToDecimal(token.Decimals),
+            TotalSupply = log.TotalSupply.ToDecimal(token.Decimals)
         };
     }
 }

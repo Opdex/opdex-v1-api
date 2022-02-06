@@ -20,35 +20,41 @@ public enum TransactionLogType : uint
     BurnLog = 9,
     SwapLog = 10,
     ReservesLog = 11,
+
+    // Standard token logs
     ApprovalLog = 12,
     TransferLog = 13,
 
+    // Interflux token logs,
+    OwnershipTransferredLog = 14,
+    SupplyChangeLog = 15,
+
     // Staking pool logs
-    StartStakingLog = 14,
-    StopStakingLog = 15,
-    CollectStakingRewardsLog = 16,
+    StartStakingLog = 16,
+    StopStakingLog = 17,
+    CollectStakingRewardsLog = 18,
 
     // Mining governance logs
-    RewardMiningPoolLog = 17,
-    NominationLog = 18,
+    RewardMiningPoolLog = 19,
+    NominationLog = 20,
 
     // Mining pool logs
-    StartMiningLog = 19,
-    StopMiningLog = 20,
-    CollectMiningRewardsLog = 21,
-    EnableMiningLog = 22,
+    StartMiningLog = 21,
+    StopMiningLog = 22,
+    CollectMiningRewardsLog = 23,
+    EnableMiningLog = 24,
 
     // Mined token logs
-    DistributionLog = 23,
+    DistributionLog = 25,
 
     // Vault logs
-    CreateVaultCertificateLog = 24,
-    RevokeVaultCertificateLog = 25,
-    RedeemVaultCertificateLog = 26,
-    CreateVaultProposalLog = 27,
-    CompleteVaultProposalLog = 28,
-    VaultProposalPledgeLog = 29,
-    VaultProposalWithdrawPledgeLog = 30,
-    VaultProposalVoteLog = 31,
-    VaultProposalWithdrawVoteLog = 32
+    CreateVaultCertificateLog = 26,
+    RevokeVaultCertificateLog = 27,
+    RedeemVaultCertificateLog = 28,
+    CreateVaultProposalLog = 29,
+    CompleteVaultProposalLog = 30,
+    VaultProposalPledgeLog = 31,
+    VaultProposalWithdrawPledgeLog = 32,
+    VaultProposalVoteLog = 33,
+    VaultProposalWithdrawVoteLog = 34
 }

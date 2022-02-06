@@ -630,6 +630,15 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
             .ForMember(dest => dest.NextDistributionBlock, opt => opt.MapFrom(src => src.NextDistributionBlock));
 
+        // Interflux token transaction events
+        CreateMap<OwnershipTransferredEventDto, OwnershipTransferredEvent>()
+            .IncludeBase<OwnershipEventDto, OwnershipEvent>();
+
+        CreateMap<SupplyChangeEventDto, SupplyChangeEvent>()
+            .IncludeBase<TransactionEventDto, TransactionEvent>()
+            .ForMember(dest => dest.PreviousSupply, opt => opt.MapFrom(src => src.PreviousSupply))
+            .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply));
+
         // Mining governance Transaction Events
         CreateMap<RewardMiningPoolEventDto, RewardMiningPoolEvent>()
             .IncludeBase<TransactionEventDto, TransactionEvent>()

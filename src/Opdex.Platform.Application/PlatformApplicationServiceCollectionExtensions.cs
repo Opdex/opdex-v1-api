@@ -397,6 +397,8 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<ProcessCreateLiquidityPoolLogCommand, bool>, ProcessCreateLiquidityPoolLogCommandHandler>();
         services.AddTransient<IRequestHandler<ProcessApprovalLogCommand, bool>, ProcessApprovalLogCommandHandler>();
         services.AddTransient<IRequestHandler<ProcessTransferLogCommand, bool>, ProcessTransferLogCommandHandler>();
+        services.AddTransient<IRequestHandler<ProcessOwnershipTransferredLogCommand, bool>, ProcessOwnershipTransferredLogCommandHandler>();
+        services.AddTransient<IRequestHandler<ProcessSupplyChangeLogCommand, bool>, ProcessSupplyChangeLogCommandHandler>();
         services.AddTransient<IRequestHandler<ProcessCreateMarketLogCommand, bool>, ProcessCreateMarketLogCommandHandler>();
         services.AddTransient<IRequestHandler<ProcessDistributionLogCommand, bool>, ProcessDistributionLogCommandHandler>();
         services.AddTransient<IRequestHandler<ProcessClaimPendingMarketOwnershipLogCommand, bool>, ProcessClaimPendingMarketOwnershipLogCommandHandler>();
@@ -673,6 +675,9 @@ public static class PlatformApplicationServiceCollectionExtensions
         // Token Logs
         services.AddTransient<IModelAssembler<TransferLog, TransferEventDto>, TransferEventDtoAssembler>();
         services.AddTransient<IModelAssembler<ApprovalLog, ApprovalEventDto>, ApprovalEventDtoAssembler>();
+
+        // Interflux Token Logs
+        services.AddTransient<IModelAssembler<SupplyChangeLog, SupplyChangeEventDto>, SupplyChangeEventDtoAssembler>();
 
         return services;
     }

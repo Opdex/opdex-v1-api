@@ -367,6 +367,10 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.MiningGovernanceAmount, opt => opt.MapFrom(src => src.MiningAmount.ToDecimal(TokenConstants.Opdex.Decimals)))
             .ForMember(dest => dest.VaultAmount, opt => opt.MapFrom(src => src.VaultAmount.ToDecimal(TokenConstants.Opdex.Decimals)));
 
+        // Interflux Token Events
+        CreateMap<OwnershipTransferredLog, OwnershipTransferredEventDto>()
+            .IncludeBase<OwnershipLog, OwnershipEventDto>();
+
         // Mining Governance Events
         CreateMap<NominationLog, NominationEventDto>()
             .IncludeBase<TransactionLog, TransactionEventDto>()
