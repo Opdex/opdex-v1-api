@@ -271,6 +271,10 @@ public class PlatformInfrastructureMapperProfile : Profile
                     (int)TransactionLogType.VaultProposalVoteLog => new VaultProposalVoteLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                     (int)TransactionLogType.VaultProposalWithdrawVoteLog => new VaultProposalWithdrawVoteLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
 
+                    // Interflux Tokens
+                    (int)TransactionLogType.OwnershipTransferredLog => new OwnershipTransferredLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                    (int)TransactionLogType.SupplyChangeLog => new SupplyChangeLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+
                     // Else
                     _ => null
                 };
@@ -329,6 +333,10 @@ public class PlatformInfrastructureMapperProfile : Profile
                     nameof(VaultProposalWithdrawPledgeLog) => new VaultProposalWithdrawPledgeLog(src.Log.Data, src.Address, src.SortOrder),
                     nameof(VaultProposalVoteLog) => new VaultProposalVoteLog(src.Log.Data, src.Address, src.SortOrder),
                     nameof(VaultProposalWithdrawVoteLog) => new VaultProposalWithdrawVoteLog(src.Log.Data, src.Address, src.SortOrder),
+
+                    // Interflux Tokens
+                    "OwnershipTransferred" => new OwnershipTransferredLog(src.Log.Data, src.Address, src.SortOrder),
+                    nameof(SupplyChangeLog) => new SupplyChangeLog(src.Log.Data, src.Address, src.SortOrder),
 
                     // Else
                     _ => null

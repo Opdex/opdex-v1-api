@@ -32,24 +32,24 @@ public enum TransactionEventType
     TransferEvent = 19,
     DistributionEvent = 20,
 
-    // Interflux tokens
-    OwnershipTransferredEvent = 21,
-    SupplyChangeEvent = 22,
-
     // Mining governance logs
-    RewardMiningPoolEvent = 23,
-    NominationEvent = 24,
+    RewardMiningPoolEvent = 21,
+    NominationEvent = 22,
 
     // Vault
-    CreateVaultCertificateEvent = 25,
-    RevokeVaultCertificateEvent = 26,
-    RedeemVaultCertificateEvent = 27,
+    CreateVaultCertificateEvent = 23,
+    RevokeVaultCertificateEvent = 24,
+    RedeemVaultCertificateEvent = 25,
 
     // Vault
-    CreateVaultProposalEvent = 28,
-    CompleteVaultProposalEvent = 29,
-    VaultProposalPledgeEvent = 30,
-    VaultProposalWithdrawPledgeEvent = 31,
-    VaultProposalVoteEvent = 32,
-    VaultProposalWithdrawVoteEvent = 33
+    CreateVaultProposalEvent = 26,
+    CompleteVaultProposalEvent = 27,
+    VaultProposalPledgeEvent = 28,
+    VaultProposalWithdrawPledgeEvent = 29,
+    VaultProposalVoteEvent = 30,
+    VaultProposalWithdrawVoteEvent = 31,
+
+    // Interflux tokens
+    OwnershipTransferredEvent = 32,
+    SupplyChangeEvent = 33,
 }
