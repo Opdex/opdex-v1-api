@@ -33,6 +33,7 @@ public class TransactionEventsDtoAssembler : IModelAssembler<IEnumerable<Transac
     private readonly IModelAssembler<TransferLog, TransferEventDto> _transferEventDtoAssembler;
     private readonly IModelAssembler<ApprovalLog, ApprovalEventDto> _approvalEventDtoAssembler;
     private readonly IModelAssembler<SupplyChangeLog, SupplyChangeEventDto> _supplyChangeEventDtoAssembler;
+    private readonly IModelAssembler<ReservesLog, ReservesChangeEventDto> _reservesChangeEventDtoAssembler;
 
     public TransactionEventsDtoAssembler(IMapper mapper,
                                          IModelAssembler<SwapLog, SwapEventDto> swapEventDtoAssembler,
@@ -40,7 +41,8 @@ public class TransactionEventsDtoAssembler : IModelAssembler<IEnumerable<Transac
                                          IModelAssembler<BurnLog, RemoveLiquidityEventDto> burnLogDtoAssembler,
                                          IModelAssembler<TransferLog, TransferEventDto> transferEventDtoAssembler,
                                          IModelAssembler<ApprovalLog, ApprovalEventDto> approvalEventDtoAssembler,
-                                         IModelAssembler<SupplyChangeLog, SupplyChangeEventDto> supplyChangeEventDtoAssembler)
+                                         IModelAssembler<SupplyChangeLog, SupplyChangeEventDto> supplyChangeEventDtoAssembler,
+                                         IModelAssembler<ReservesLog, ReservesChangeEventDto> reservesChangeEventDtoAssembler)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _swapEventDtoAssembler = swapEventDtoAssembler ?? throw new ArgumentNullException(nameof(swapEventDtoAssembler));
@@ -49,6 +51,7 @@ public class TransactionEventsDtoAssembler : IModelAssembler<IEnumerable<Transac
         _transferEventDtoAssembler = transferEventDtoAssembler ?? throw new ArgumentNullException(nameof(transferEventDtoAssembler));
         _approvalEventDtoAssembler = approvalEventDtoAssembler ?? throw new ArgumentNullException(nameof(approvalEventDtoAssembler));
         _supplyChangeEventDtoAssembler = supplyChangeEventDtoAssembler ?? throw new ArgumentNullException(nameof(supplyChangeEventDtoAssembler));
+        _reservesChangeEventDtoAssembler = reservesChangeEventDtoAssembler ?? throw new ArgumentNullException(nameof(reservesChangeEventDtoAssembler));
     }
 
     public async Task<IReadOnlyCollection<TransactionEventDto>> Assemble(IEnumerable<TransactionLog> logs)
@@ -74,6 +77,7 @@ public class TransactionEventsDtoAssembler : IModelAssembler<IEnumerable<Transac
                 TransactionLogType.SwapLog => await _swapEventDtoAssembler.Assemble((SwapLog)log),
                 TransactionLogType.MintLog => await _mintProvideEventDtoAssembler.Assemble((MintLog)log),
                 TransactionLogType.BurnLog => await _burnProvideEventDtoAssembler.Assemble((BurnLog)log),
+                TransactionLogType.ReservesLog => await _reservesChangeEventDtoAssembler.Assemble((ReservesLog)log),
                 TransactionLogType.StartStakingLog => _mapper.Map<StartStakingEventDto>((StartStakingLog)log),
                 TransactionLogType.StopStakingLog => _mapper.Map<StopStakingEventDto>((StopStakingLog)log),
                 TransactionLogType.CollectStakingRewardsLog => _mapper.Map<CollectStakingRewardsEventDto>((CollectStakingRewardsLog)log),

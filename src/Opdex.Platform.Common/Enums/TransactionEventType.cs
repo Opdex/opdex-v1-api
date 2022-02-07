@@ -17,39 +17,40 @@ public enum TransactionEventType
     AddLiquidityEvent = 8,
     RemoveLiquidityEvent = 9,
     SwapEvent = 10,
-    StartStakingEvent = 11,
-    StopStakingEvent = 12,
-    CollectStakingRewardsEvent = 13,
+    ReservesChangeEvent = 11,
+    StartStakingEvent = 12,
+    StopStakingEvent = 13,
+    CollectStakingRewardsEvent = 14,
 
     // Mining pool logs
-    StartMiningEvent = 14,
-    StopMiningEvent = 15,
-    CollectMiningRewardsEvent = 16,
-    EnableMiningEvent = 17,
+    StartMiningEvent = 15,
+    StopMiningEvent = 16,
+    CollectMiningRewardsEvent = 17,
+    EnableMiningEvent = 18,
 
     // Tokens
-    ApprovalEvent = 18,
-    TransferEvent = 19,
-    DistributionEvent = 20,
+    ApprovalEvent = 19,
+    TransferEvent = 20,
+    DistributionEvent = 21,
 
     // Mining governance logs
-    RewardMiningPoolEvent = 21,
-    NominationEvent = 22,
+    RewardMiningPoolEvent = 22,
+    NominationEvent = 23,
 
     // Vault
-    CreateVaultCertificateEvent = 23,
-    RevokeVaultCertificateEvent = 24,
-    RedeemVaultCertificateEvent = 25,
+    CreateVaultCertificateEvent = 24,
+    RevokeVaultCertificateEvent = 25,
+    RedeemVaultCertificateEvent = 26,
 
     // Vault
-    CreateVaultProposalEvent = 26,
-    CompleteVaultProposalEvent = 27,
-    VaultProposalPledgeEvent = 28,
-    VaultProposalWithdrawPledgeEvent = 29,
-    VaultProposalVoteEvent = 30,
-    VaultProposalWithdrawVoteEvent = 31,
+    CreateVaultProposalEvent = 27,
+    CompleteVaultProposalEvent = 28,
+    VaultProposalPledgeEvent = 29,
+    VaultProposalWithdrawPledgeEvent = 30,
+    VaultProposalVoteEvent = 31,
+    VaultProposalWithdrawVoteEvent = 32,
 
     // Interflux tokens
-    SetInterfluxCustodianEvent = 32,
-    SupplyChangeEvent = 33,
+    SetInterfluxCustodianEvent = 33,
+    SupplyChangeEvent = 34,
 }

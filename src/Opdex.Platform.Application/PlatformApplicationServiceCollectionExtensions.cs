@@ -668,6 +668,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IModelAssembler<IEnumerable<TransactionLog>, IReadOnlyCollection<TransactionEventDto>>, TransactionEventsDtoAssembler>();
 
         // Liquidity Pool Logs
+        services.AddTransient<IModelAssembler<ReservesLog, ReservesChangeEventDto>, ReservesChangeEventDtoAssembler>();
         services.AddTransient<IModelAssembler<SwapLog, SwapEventDto>, SwapEventDtoAssembler>();
         services.AddTransient<IModelAssembler<BurnLog, RemoveLiquidityEventDto>, RemoveLiquidityEventDtoAssembler>();
         services.AddTransient<IModelAssembler<MintLog, AddLiquidityEventDto>, AddLiquidityEventDtoAssembler>();

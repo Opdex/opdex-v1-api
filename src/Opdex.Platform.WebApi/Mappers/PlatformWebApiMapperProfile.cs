@@ -557,6 +557,11 @@ public class PlatformWebApiMapperProfile : Profile
         CreateMap<RemoveLiquidityEventDto, RemoveLiquidityEvent>()
             .IncludeBase<ProvideEventDto, ProvideEvent>();
 
+        CreateMap<ReservesChangeEventDto, ReservesChangeEvent>()
+            .IncludeBase<TransactionEventDto, TransactionEvent>()
+            .ForMember(dest => dest.Crs, opt => opt.MapFrom(src => src.Crs))
+            .ForMember(dest => dest.Src, opt => opt.MapFrom(src => src.Src));
+
         CreateMap<SwapEventDto, SwapEvent>()
             .IncludeBase<TransactionEventDto, TransactionEvent>()
             .ForMember(dest => dest.Sender, opt => opt.MapFrom(src => src.Sender))

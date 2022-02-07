@@ -416,6 +416,7 @@ components:
         - ChangeMarketPermissionEvent
         - AddLiquidityEvent
         - RemoveLiquidityEvent
+        - ReservesChangeEvent
         - SwapEvent
         - StartStakingEvent
         - StopStakingEvent
@@ -454,6 +455,7 @@ components:
         - $ref: "#/components/schemas/changeMarketPermissionEvent"
         - $ref: "#/components/schemas/addLiquidityEvent"
         - $ref: "#/components/schemas/removeLiquidityEvent"
+        - $ref: "#/components/schemas/reservesChangeEvent"
         - $ref: "#/components/schemas/swapEvent"
         - $ref: "#/components/schemas/startStakingEvent"
         - $ref: "#/components/schemas/stopStakingEvent"
@@ -489,6 +491,7 @@ components:
           changeMarketPermissionEvent: "#/components/schemas/changeMarketPermissionEvent"
           addLiquidityEvent: "#/components/schemas/addLiquidityEvent"
           removeLiquidityEvent: "#/components/schemas/removeLiquidityEvent"
+          reservesChangeEvent: "#/components/schemas/reservesChangeEvent"
           swapEvent: "#/components/schemas/swapEvent"
           startStakingEvent: "#/components/schemas/startStakingEvent"
           stopStakingEvent: "#/components/schemas/stopStakingEvent"
@@ -746,6 +749,27 @@ components:
         contract:
           $ref: "#/components/schemas/address"
           description: Address of the liquidity pool
+        sortOrder:
+          type: integer
+          format: int32
+          minimum: 0
+          description: Index to sort event order
+    reservesChangeEvent:
+      type: object
+      description: Indicates the reserves in a liquidity pool have changed
+      properties:
+        crs:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of CRS token in reserves
+        src:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of SRC token in reserves
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the SRC token
         sortOrder:
           type: integer
           format: int32

@@ -769,6 +769,7 @@ public class PlatformInfrastructureMapperProfile : Profile
                     TransactionEventType.SwapEvent => TransactionLogType.SwapLog,
                     TransactionEventType.AddLiquidityEvent => TransactionLogType.MintLog,
                     TransactionEventType.RemoveLiquidityEvent => TransactionLogType.BurnLog,
+                    TransactionEventType.ReservesChangeEvent => TransactionLogType.ReservesLog,
                     TransactionEventType.StartStakingEvent => TransactionLogType.StartStakingLog,
                     TransactionEventType.StopStakingEvent => TransactionLogType.StopStakingLog,
                     TransactionEventType.CollectStakingRewardsEvent => TransactionLogType.CollectStakingRewardsLog,
