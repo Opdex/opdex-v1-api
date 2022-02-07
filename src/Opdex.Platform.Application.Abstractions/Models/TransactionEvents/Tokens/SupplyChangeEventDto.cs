@@ -5,7 +5,7 @@ namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Token
 
 public class SupplyChangeEventDto : TransactionEventDto
 {
-    public FixedDecimal PreviousSupply { get; set; }
-    public FixedDecimal TotalSupply { get; set; }
+    public FixedDecimal PreviousTotalSupply { get; set; }
+    public FixedDecimal UpdatedTotalSupply { get; set; }
     public override TransactionEventType EventType => TransactionEventType.SupplyChangeEvent;
 }

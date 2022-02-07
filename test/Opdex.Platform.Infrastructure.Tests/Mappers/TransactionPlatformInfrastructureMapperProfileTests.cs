@@ -16,7 +16,7 @@ public class TransactionPlatformInfrastructureMapperProfileTests : PlatformInfra
     [InlineData(TransactionEventType.AddLiquidityEvent, TransactionLogType.MintLog)]
     [InlineData(TransactionEventType.CreateMarketEvent, TransactionLogType.CreateMarketLog)]
     [InlineData(TransactionEventType.EnableMiningEvent, TransactionLogType.EnableMiningLog)]
-    [InlineData(TransactionEventType.OwnershipTransferredEvent, TransactionLogType.OwnershipTransferredLog)]
+    [InlineData(TransactionEventType.SetInterfluxCustodianEvent, TransactionLogType.OwnershipTransferredLog)]
     [InlineData(TransactionEventType.RemoveLiquidityEvent, TransactionLogType.BurnLog)]
     [InlineData(TransactionEventType.StartMiningEvent, TransactionLogType.StartMiningLog)]
     [InlineData(TransactionEventType.StartStakingEvent, TransactionLogType.StartStakingLog)]

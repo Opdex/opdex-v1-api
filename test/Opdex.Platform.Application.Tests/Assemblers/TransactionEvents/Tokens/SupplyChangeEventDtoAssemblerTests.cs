@@ -75,7 +75,7 @@ public class SupplyChangeEventDtoAssemblerTests
         supplyChangeEvent.TransactionId.Should().Be(log.TransactionId);
         supplyChangeEvent.Contract.Should().Be(log.Contract);
         supplyChangeEvent.SortOrder.Should().Be(log.SortOrder);
-        supplyChangeEvent.PreviousSupply.Should().Be(log.PreviousSupply.ToDecimal(token.Decimals));
-        supplyChangeEvent.TotalSupply.Should().Be(log.TotalSupply.ToDecimal(token.Decimals));
+        supplyChangeEvent.PreviousTotalSupply.Should().Be(log.PreviousSupply.ToDecimal(token.Decimals));
+        supplyChangeEvent.UpdatedTotalSupply.Should().Be(log.TotalSupply.ToDecimal(token.Decimals));
     }
 }

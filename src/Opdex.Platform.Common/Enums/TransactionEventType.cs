@@ -50,6 +50,6 @@ public enum TransactionEventType
     VaultProposalWithdrawVoteEvent = 31,
 
     // Interflux tokens
-    OwnershipTransferredEvent = 32,
+    SetInterfluxCustodianEvent = 32,
     SupplyChangeEvent = 33,
 }

@@ -440,6 +440,8 @@ components:
         - VaultProposalWithdrawPledgeEvent
         - VaultProposalVoteEvent
         - VaultProposalWithdrawVoteEvent
+        - SetInterfluxCustodianEvent
+        - SupplyChangeEvent
     transactionEvent:
       description: An Opdex transaction event produced by contract execution
       oneOf:
@@ -473,6 +475,8 @@ components:
         - $ref: "#/components/schemas/vaultProposalWithdrawPledgeEvent"
         - $ref: "#/components/schemas/vaultProposalVoteEvent"
         - $ref: "#/components/schemas/vaultProposalWithdrawVoteEvent"
+        - $ref: "#/components/schemas/setInterfluxCustodianEvent"
+        - $ref: "#/components/schemas/supplyChangeEvent"
       discriminator:
         propertyName: eventType
         mapping:
@@ -506,6 +510,8 @@ components:
           vaultProposalWithdrawPledgeEvent: "#/components/schemas/vaultProposalWithdrawPledgeEvent"
           vaultProposalVoteEvent: "#/components/schemas/vaultProposalVoteEvent"
           vaultProposalWithdrawVoteEvent: "#/components/schemas/vaultProposalWithdrawVoteEvent"
+          setInterfluxCustodianEvent: "#/components/schemas/setInterfluxCustodianEvent"
+          supplyChangeEvent: "#/components/schemas/supplyChangeEvent"
     createMarketEvent:
       type: object
       description: Indicates a market was created
@@ -1347,6 +1353,48 @@ components:
         contract:
           $ref: "#/components/schemas/address"
           description: Address of the vault
+        sortOrder:
+          type: integer
+          format: int32
+          minimum: 0
+          description: Index to sort event order
+    setInterfluxCustodianEvent:
+      type: object
+      description: Indiciates a change in custodian address for an Interflux token
+      properties:
+        from:
+          $ref: "#/components/schemas/address"
+          description: Address of previous custodian
+        to:
+          $ref: "#/components/schemas/address"
+          description: Address of the new custodian
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the SRC token
+        sortOrder:
+          type: integer
+          format: int32
+          minimum: 0
+          description: Index to sort event order
+    supplyChangeEvent:
+      type: object
+      description: Indiciates a change in total supply for an Interflux token
+      properties:
+        previous:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Old total supply of the SRC token
+        updated:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: New total supply of the SRC token
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the SRC token
         sortOrder:
           type: integer
           format: int32

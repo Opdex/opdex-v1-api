@@ -782,7 +782,7 @@ public class PlatformInfrastructureMapperProfile : Profile
                     TransactionEventType.ApprovalEvent => TransactionLogType.ApprovalLog,
                     TransactionEventType.DistributionEvent => TransactionLogType.DistributionLog,
                     // Interflux Tokens
-                    TransactionEventType.OwnershipTransferredEvent => TransactionLogType.OwnershipTransferredLog,
+                    TransactionEventType.SetInterfluxCustodianEvent => TransactionLogType.OwnershipTransferredLog,
                     TransactionEventType.SupplyChangeEvent => TransactionLogType.SupplyChangeLog,
                     // Mining Governances
                     TransactionEventType.NominationEvent => TransactionLogType.NominationLog,

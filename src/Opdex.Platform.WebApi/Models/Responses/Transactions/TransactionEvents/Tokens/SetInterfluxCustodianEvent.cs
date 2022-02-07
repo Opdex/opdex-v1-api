@@ -3,6 +3,6 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.
 /// <summary>
 /// Ownership transferred event for an Interflux token
 /// </summary>
-public class OwnershipTransferredEvent : OwnershipEvent
+public class SetInterfluxCustodianEvent : OwnershipEvent
 {
 }

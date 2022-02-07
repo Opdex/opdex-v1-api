@@ -11,11 +11,11 @@ public class SupplyChangeEvent : TransactionEvent
     /// Old supply of the token
     /// </summary>
     /// <example>"1000.00000000"</example>
-    public FixedDecimal PreviousSupply { get; set; }
+    public FixedDecimal Previous { get; set; }
 
     /// <summary>
     /// New supply of the token
     /// </summary>
     /// <example>"50000.00000000"</example>
-    public FixedDecimal TotalSupply { get; set; }
+    public FixedDecimal Updated { get; set; }
 }

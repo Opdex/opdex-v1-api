@@ -368,7 +368,7 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.VaultAmount, opt => opt.MapFrom(src => src.VaultAmount.ToDecimal(TokenConstants.Opdex.Decimals)));
 
         // Interflux Token Events
-        CreateMap<OwnershipTransferredLog, OwnershipTransferredEventDto>()
+        CreateMap<OwnershipTransferredLog, SetInterfluxCustodianEventDto>()
             .IncludeBase<OwnershipLog, OwnershipEventDto>();
 
         // Mining Governance Events

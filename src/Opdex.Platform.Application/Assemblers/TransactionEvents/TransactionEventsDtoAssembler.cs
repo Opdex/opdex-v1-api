@@ -90,7 +90,7 @@ public class TransactionEventsDtoAssembler : IModelAssembler<IEnumerable<Transac
                 TransactionLogType.DistributionLog => _mapper.Map<DistributionEventDto>((DistributionLog)log),
 
                 // Interflux Tokens
-                TransactionLogType.OwnershipTransferredLog => _mapper.Map<OwnershipTransferredEventDto>((OwnershipTransferredLog)log),
+                TransactionLogType.OwnershipTransferredLog => _mapper.Map<SetInterfluxCustodianEventDto>((OwnershipTransferredLog)log),
                 TransactionLogType.SupplyChangeLog => await _supplyChangeEventDtoAssembler.Assemble((SupplyChangeLog)log),
 
                 // Mining Governances
