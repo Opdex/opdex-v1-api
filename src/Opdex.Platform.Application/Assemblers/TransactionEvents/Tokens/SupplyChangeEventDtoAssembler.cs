@@ -28,8 +28,7 @@ public class SupplyChangeEventDtoAssembler : IModelAssembler<SupplyChangeLog, Su
             TransactionId = log.TransactionId,
             SortOrder = log.SortOrder,
             Contract = log.Contract,
-            PreviousTotalSupply = log.PreviousSupply.ToDecimal(token.Decimals),
-            UpdatedTotalSupply = log.TotalSupply.ToDecimal(token.Decimals)
+            TotalSupply = log.TotalSupply.ToDecimal(token.Decimals)
         };
     }
 }

@@ -1407,10 +1407,7 @@ components:
       type: object
       description: Indiciates a change in total supply for an Interflux token
       properties:
-        previous:
-          $ref: "#/components/schemas/fixedDecimal"
-          description: Old total supply of the SRC token
-        updated:
+        totalSupply:
           $ref: "#/components/schemas/fixedDecimal"
           description: New total supply of the SRC token
         eventType:

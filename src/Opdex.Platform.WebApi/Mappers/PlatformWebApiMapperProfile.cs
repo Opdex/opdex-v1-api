@@ -641,8 +641,7 @@ public class PlatformWebApiMapperProfile : Profile
 
         CreateMap<SupplyChangeEventDto, SupplyChangeEvent>()
             .IncludeBase<TransactionEventDto, TransactionEvent>()
-            .ForMember(dest => dest.Previous, opt => opt.MapFrom(src => src.PreviousTotalSupply))
-            .ForMember(dest => dest.Updated, opt => opt.MapFrom(src => src.UpdatedTotalSupply));
+            .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply));
 
         // Mining governance Transaction Events
         CreateMap<RewardMiningPoolEventDto, RewardMiningPoolEvent>()

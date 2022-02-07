@@ -8,14 +8,8 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.
 public class SupplyChangeEvent : TransactionEvent
 {
     /// <summary>
-    /// Old supply of the token
-    /// </summary>
-    /// <example>"1000.00000000"</example>
-    public FixedDecimal Previous { get; set; }
-
-    /// <summary>
     /// New supply of the token
     /// </summary>
     /// <example>"50000.00000000"</example>
-    public FixedDecimal Updated { get; set; }
+    public FixedDecimal TotalSupply { get; set; }
 }
