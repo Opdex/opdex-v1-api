@@ -3,6 +3,7 @@ using MediatR;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
@@ -10,7 +11,6 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
-using Opdex.Platform.Infrastructure.Abstractions.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,7 +60,7 @@ public class SelectTransactionsWithFilterQueryHandler : IRequestHandler<SelectTr
 
     public async Task<IEnumerable<Transaction>> Handle(SelectTransactionsWithFilterQuery request, CancellationToken cancellationToken)
     {
-        var logTypes = request.Cursor.EventTypes.SelectMany(ev => ev.GetLogTypes()).Distinct().Cast<uint>();
+        var logTypes = _mapper.Map<IEnumerable<TransactionLogType>>(request.Cursor.EventTypes.Distinct()).Cast<uint>();
 
         var queryParams = new SqlParams(request.Cursor.Pointer, request.Cursor.Wallet, logTypes, request.Cursor.Contracts);
 

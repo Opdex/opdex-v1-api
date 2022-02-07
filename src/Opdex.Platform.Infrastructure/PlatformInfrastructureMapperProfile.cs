@@ -750,5 +750,56 @@ public class PlatformInfrastructureMapperProfile : Profile
                     _ => throw new ArgumentOutOfRangeException(nameof(ChainType), "Chain type is not a valid external chain")
                 };
             });
+
+        CreateMap<TransactionEventType, TransactionLogType>()
+            .ConvertUsing((eventType, ctx) =>
+            {
+                return eventType switch
+                {
+                    // Deployers
+                    TransactionEventType.ClaimPendingDeployerOwnershipEvent => TransactionLogType.ClaimPendingDeployerOwnershipLog,
+                    TransactionEventType.SetPendingDeployerOwnershipEvent => TransactionLogType.SetPendingDeployerOwnershipLog,
+                    TransactionEventType.CreateMarketEvent => TransactionLogType.CreateMarketLog,
+                    // Markets
+                    TransactionEventType.ClaimPendingMarketOwnershipEvent => TransactionLogType.ClaimPendingMarketOwnershipLog,
+                    TransactionEventType.SetPendingMarketOwnershipEvent => TransactionLogType.SetPendingMarketOwnershipLog,
+                    TransactionEventType.ChangeMarketPermissionEvent => TransactionLogType.ChangeMarketPermissionLog,
+                    TransactionEventType.CreateLiquidityPoolEvent => TransactionLogType.CreateLiquidityPoolLog,
+                    // Liquidity Pools
+                    TransactionEventType.SwapEvent => TransactionLogType.SwapLog,
+                    TransactionEventType.AddLiquidityEvent => TransactionLogType.MintLog,
+                    TransactionEventType.RemoveLiquidityEvent => TransactionLogType.BurnLog,
+                    TransactionEventType.StartStakingEvent => TransactionLogType.StartStakingLog,
+                    TransactionEventType.StopStakingEvent => TransactionLogType.StopStakingLog,
+                    TransactionEventType.CollectStakingRewardsEvent => TransactionLogType.CollectStakingRewardsLog,
+                    // Mining Pools
+                    TransactionEventType.EnableMiningEvent => TransactionLogType.EnableMiningLog,
+                    TransactionEventType.StartMiningEvent => TransactionLogType.StartMiningLog,
+                    TransactionEventType.StopMiningEvent => TransactionLogType.StopMiningLog,
+                    TransactionEventType.CollectMiningRewardsEvent => TransactionLogType.CollectMiningRewardsLog,
+                    // Tokens
+                    TransactionEventType.TransferEvent => TransactionLogType.TransferLog,
+                    TransactionEventType.ApprovalEvent => TransactionLogType.ApprovalLog,
+                    TransactionEventType.DistributionEvent => TransactionLogType.DistributionLog,
+                    // Interflux Tokens
+                    TransactionEventType.OwnershipTransferredEvent => TransactionLogType.OwnershipTransferredLog,
+                    TransactionEventType.SupplyChangeEvent => TransactionLogType.SupplyChangeLog,
+                    // Mining Governances
+                    TransactionEventType.NominationEvent => TransactionLogType.NominationLog,
+                    TransactionEventType.RewardMiningPoolEvent => TransactionLogType.RewardMiningPoolLog,
+                    // Vaults
+                    TransactionEventType.CreateVaultCertificateEvent => TransactionLogType.CreateVaultCertificateLog,
+                    TransactionEventType.RedeemVaultCertificateEvent => TransactionLogType.RedeemVaultCertificateLog,
+                    TransactionEventType.RevokeVaultCertificateEvent => TransactionLogType.RevokeVaultCertificateLog,
+                    TransactionEventType.CompleteVaultProposalEvent => TransactionLogType.CompleteVaultProposalLog,
+                    TransactionEventType.CreateVaultProposalEvent => TransactionLogType.CreateVaultProposalLog,
+                    TransactionEventType.VaultProposalPledgeEvent => TransactionLogType.VaultProposalPledgeLog,
+                    TransactionEventType.VaultProposalWithdrawPledgeEvent => TransactionLogType.VaultProposalWithdrawPledgeLog,
+                    TransactionEventType.VaultProposalVoteEvent => TransactionLogType.VaultProposalVoteLog,
+                    TransactionEventType.VaultProposalWithdrawVoteEvent => TransactionLogType.VaultProposalWithdrawVoteLog,
+
+                    _ => throw new ArgumentOutOfRangeException(nameof(eventType), "Invalid transaction event type")
+                };
+            });
     }
 }
