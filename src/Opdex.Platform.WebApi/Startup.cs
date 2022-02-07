@@ -48,6 +48,7 @@ using Opdex.Platform.WebApi.Conventions;
 using Microsoft.Extensions.FileProviders;
 using System.Reflection;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.FeatureManagement;
 
 namespace Opdex.Platform.WebApi;
 
@@ -72,12 +73,14 @@ public class Startup
         // gets rid of telemetry spam in the debug console, may prevent visual studio app insights monitoring
         TelemetryDebugWriter.IsTracingDisabled = true;
 
+        services.AddFeatureManagement();
+
         services.AddProblemDetails(options =>
         {
             options.ValidationProblemStatusCode = 400;
             // Serilog.AspNetCore.RequestLoggingMiddleware does this better although exception is lost
             // See https://github.com/serilog/serilog-aspnetcore/issues/270
-            options.ShouldLogUnhandledException = (context, exception, problem) => problem.Status == 500;
+            options.ShouldLogUnhandledException = (_, _, problem) => problem.Status == 500;
             options.Map<InvalidDataException>(e => ProblemDetailsTemplates.CreateValidationProblemDetails(e.PropertyName, e.Message));
             options.Map<AlreadyIndexedException>(e => new StatusCodeProblemDetails(StatusCodes.Status400BadRequest) { Detail = e.Message });
             options.Map<NotAllowedException>(e => new StatusCodeProblemDetails(StatusCodes.Status403Forbidden) { Detail = e.Message });
