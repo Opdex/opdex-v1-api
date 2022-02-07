@@ -92,6 +92,8 @@ public class IndexerController : ControllerBase
     [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> Rewind(RewindRequest request, CancellationToken cancellationToken)
     {
+        var startingBlock = await _mediator.Send(new RetrieveLatestBlockQuery(), CancellationToken.None);
+
         var tryLock = await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Rewinding), CancellationToken.None);
         if (!tryLock) throw new IndexingAlreadyRunningException();
 
@@ -101,7 +103,7 @@ public class IndexerController : ControllerBase
             if (!rewound) throw new Exception($"Failure rewinding database to block height: {request.Block}");
             var block = await _mediator.Send(new RetrieveBlockByHeightQuery(request.Block), cancellationToken);
             var rewindBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(block.Hash), cancellationToken);
-            await _mediator.Send(new ProcessLatestBlocksCommand(rewindBlock, _network), CancellationToken.None);
+            await _mediator.Send(new ProcessLatestBlocksCommand(rewindBlock, _network, startingBlock.Height), CancellationToken.None);
         }
         finally
         {

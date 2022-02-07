@@ -79,7 +79,8 @@ public class ProcessLatestBlocksCommandHandler : IRequestHandler<ProcessLatestBl
                 // Process all transactions in the block
                 foreach (var tx in currentBlock.TxHashes.Where(tx => tx != currentBlock.MerkleRoot))
                 {
-                    await _mediator.Send(new CreateTransactionCommand(tx), CancellationToken.None);
+                    var shouldNotify = currentBlock.Height > request.NotifyAfterHeight;
+                    await _mediator.Send(new CreateTransactionCommand(tx, shouldNotify), CancellationToken.None);
                 }
 
                 // Process market snapshots every 2 minutes

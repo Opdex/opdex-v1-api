@@ -86,7 +86,7 @@ public class CreateTransactionCommandHandler : IRequestHandler<CreateTransaction
         }
 
         // Notify the user we found a pending transaction of theirs
-        await _mediator.Send(new NotifyUserOfMinedTransactionCommand(tx.From, tx.Hash));
+        if (request.Notify) await _mediator.Send(new NotifyUserOfMinedTransactionCommand(tx.From, tx.Hash));
 
         return true;
     }

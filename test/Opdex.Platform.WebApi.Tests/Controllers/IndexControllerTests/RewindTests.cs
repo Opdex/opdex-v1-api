@@ -11,6 +11,7 @@ using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.WebApi.Controllers;
 using Opdex.Platform.WebApi.Models.Requests.Index;
@@ -136,6 +137,8 @@ public class RewindTests
         using var cancellationTokenSource = new CancellationTokenSource();
         var request = new RewindRequest { Block = 10 };
 
+        var latestBlock = new Block(50000, new Sha256(UInt256.Parse("423498324932")), DateTime.UtcNow, DateTime.UtcNow);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(latestBlock);
         _mediator.Setup(m => m.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveBlockByHeightQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Block(request.Block, new Sha256(5340958239), DateTime.UtcNow, DateTime.UtcNow));
         var blockReceipt = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, DateTime.UtcNow, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), Array.Empty<Sha256>());
@@ -147,7 +150,10 @@ public class RewindTests
         await _controller.Rewind(request, cancellationTokenSource.Token);
 
         // Assert
-        _mediator.Verify(callTo => callTo.Send(It.Is<ProcessLatestBlocksCommand>(c => c.CurrentBlock == blockReceipt && c.NetworkType == _network), CancellationToken.None), Times.Once);
+        _mediator.Verify(callTo => callTo.Send(It.Is<ProcessLatestBlocksCommand>(
+            c => c.CurrentBlock == blockReceipt
+                 && c.NetworkType == _network
+                 && c.NotifyAfterHeight == latestBlock.Height), CancellationToken.None), Times.Once);
         _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeIndexerUnlockCommand>(), CancellationToken.None), Times.Once);
     }
 
@@ -157,6 +163,8 @@ public class RewindTests
         // Arrange;
         var request = new RewindRequest { Block = 10 };
 
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Block(50000, new Sha256(UInt256.Parse("423498324932")), DateTime.UtcNow, DateTime.UtcNow));
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Block(50000000000, new Sha256(4234238947328), DateTime.UtcNow, DateTime.UtcNow));
         _mediator.Setup(m => m.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
