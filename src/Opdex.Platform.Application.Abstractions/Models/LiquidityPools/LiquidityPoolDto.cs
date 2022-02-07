@@ -16,6 +16,7 @@ public class LiquidityPoolDto
     public MarketTokenDto SrcToken { get; set; }
     public MarketTokenDto LpToken { get; set; }
     public TokenDto CrsToken { get; set; }
+    public MarketTokenDto StakingToken { get; set; }
     public MiningPoolDto MiningPool { get; set; }
     public LiquidityPoolSummaryDto Summary { get; set; }
 }
