@@ -3426,6 +3426,8 @@ paths:
                     name: TBTC-TCRS
                     transactionFeePercent: 0.3
                     market: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
+                    createdBlock: 2988918
+                    modifiedBlock: 2988918
                     tokens:
                       crs:
                         address: CRS
@@ -3440,6 +3442,7 @@ paths:
                         summary:
                           priceUsd: 0.95057037
                           dailyPriceChangePercent: 0.63000000
+                          createdBlock: 2988890
                           modifiedBlock: 3043278
                       src:
                         address: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
@@ -3455,6 +3458,7 @@ paths:
                         summary:
                           priceUsd: 27698.36556351
                           dailyPriceChangePercent: 0.21000000
+                          createdBlock: 2988918
                           modifiedBlock: 3043250
                       lp:
                         address: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
@@ -3470,6 +3474,7 @@ paths:
                         summary:
                           priceUsd: 323.92670749
                           dailyPriceChangePercent: 0.21000000
+                          createdBlock: 2988918
                           modifiedBlock: 3043250
                     miningPool:
                       address: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
@@ -3514,11 +3519,13 @@ paths:
                           summary:
                             priceUsd: 0.00000000
                             dailyPriceChangePercent: 0.00000000
+                            createdBlock: 2988890
                             modifiedBlock: 3043278
                         weight: "0.00000000"
                         usd: 0.00000000
                         dailyWeightChangePercent: 0.00000000
                         nominated: true
+                      createdBlock: 2988918
                       modifiedBlock: 3043296
                 paging: {}
           headers:
@@ -3641,6 +3648,8 @@ paths:
                 name: TBTC-TCRS
                 transactionFeePercent: 0.3
                 market: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
+                createdBlock: 2988918
+                modifiedBlock: 2988918
                 tokens:
                   crs:
                     address: CRS
@@ -3655,6 +3664,7 @@ paths:
                     summary:
                       priceUsd: 0.95057037
                       dailyPriceChangePercent: 0.63000000
+                      createdBlock: 2988918
                       modifiedBlock: 3043278
                   src:
                     address: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
@@ -3670,6 +3680,7 @@ paths:
                     summary:
                       priceUsd: 27698.36556351
                       dailyPriceChangePercent: 0.21000000
+                      createdBlock: 2988918
                       modifiedBlock: 3043250
                   lp:
                     address: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
@@ -3685,6 +3696,7 @@ paths:
                     summary:
                       priceUsd: 323.92670749
                       dailyPriceChangePercent: 0.21000000
+                      createdBlock: 2988918
                       modifiedBlock: 3043250
                 miningPool:
                   address: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
@@ -3729,11 +3741,13 @@ paths:
                       summary:
                         priceUsd: 0.00000000
                         dailyPriceChangePercent: 0.00000000
+                        createdBlock: 2988890
                         modifiedBlock: 3043278
                     weight: "0.00000000"
                     usd: 0.00000000
                     dailyWeightChangePercent: 0.00000000
                     nominated: true
+                  createdBlock: 2988918
                   modifiedBlock: 3043296
           headers:
             Cache-Control:
@@ -4683,6 +4697,7 @@ paths:
                       summary:
                         priceUsd: 0.95057037
                         dailyPriceChangePercent: 0.63000000
+                        createdBlock: 298889
                         modifiedBlock: 3043278
                     stakingToken:
                       address: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
@@ -4699,6 +4714,7 @@ paths:
                       summary:
                         priceUsd: 0.00000000
                         dailyPriceChangePercent: 0.00000000
+                        createdBlock: 2988890
                         modifiedBlock: 3043278
                     createdBlock: 2988898
                     modifiedBlock: 2988898
@@ -4715,6 +4731,7 @@ paths:
                         providerDailyUsd: 1205.00639582
                         marketDailyUsd: 241.00127916
                         totalDailyUsd: 1446.00767498
+                      createdBlock: 2988898
                       modifiedBlock: 3042951
                 paging: {}
           headers:
@@ -4786,6 +4803,7 @@ paths:
                   summary:
                     priceUsd: 0.95057037
                     dailyPriceChangePercent: 0.63000000
+                    createdBlock: 2988890
                     modifiedBlock: 3043278
                 stakingToken:
                   address: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
@@ -4802,6 +4820,7 @@ paths:
                   summary:
                     priceUsd: 0.00000000
                     dailyPriceChangePercent: 0.00000000
+                    createdBlock: 2988890
                     modifiedBlock: 3043278
                 createdBlock: 2988898
                 modifiedBlock: 2988898
@@ -4818,6 +4837,7 @@ paths:
                     providerDailyUsd: 1205.00639582
                     marketDailyUsd: 241.00127916
                     totalDailyUsd: 1446.00767498
+                  createdBlock: 2988898
                   modifiedBlock: 3042951
           headers:
             Cache-Control:
@@ -6834,6 +6854,7 @@ paths:
                     summary:
                       priceUsd: 27852.57795481
                       dailyPriceChangePercent: 0.77000000
+                      createdBlock: 2988918
                       modifiedBlock: 3043250
                   - address: tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3
                     name: ETH (Wrapped)
@@ -6848,6 +6869,7 @@ paths:
                     summary:
                       priceUsd: 2294.33407690
                       dailyPriceChangePercent: 0.77000000
+                      createdBlock: 2988919
                       modifiedBlock: 3043250
                 paging:
                   next: ZGlyZWN0aW9uOkRFU0M7bGltaXQ6MjtwYWdpbmc6Rm9yd2FyZDt0b2tlbkF0dHJpYnV0ZXM6Tm9uUHJvdmlzaW9uYWw7aW5jbHVkZVplcm9MaXF1aWRpdHk6VHJ1ZTtrZXl3b3JkOjtvcmRlckJ5OlByaWNlVXNkO3BvaW50ZXI6S0RFeE16Y3VNamd5T0RRNE9USXNJRFlwOw==
@@ -6978,6 +7000,7 @@ paths:
                 summary:
                   priceUsd: 27852.57795481
                   dailyPriceChangePercent: 0.77000000
+                  createdBlock: 2988918
                   modifiedBlock: 3043250
           headers:
             Cache-Control:
