@@ -167,6 +167,9 @@ public class CreateTransactionCommandHandler : IRequestHandler<CreateTransaction
                     TransactionLogType.ApprovalLog => await _mediator.Send(new ProcessApprovalLogCommand(log, tx.From, tx.BlockHeight)),
                     TransactionLogType.TransferLog => await _mediator.Send(new ProcessTransferLogCommand(log, tx.From, tx.BlockHeight)),
                     TransactionLogType.DistributionLog => await _mediator.Send(new ProcessDistributionLogCommand(log, tx.From, tx.BlockHeight)),
+                    // Interflux Tokens
+                    TransactionLogType.OwnershipTransferredLog => await _mediator.Send(new ProcessOwnershipTransferredLogCommand(log, tx.From, tx.BlockHeight)),
+                    TransactionLogType.SupplyChangeLog => await _mediator.Send(new ProcessSupplyChangeLogCommand(log, tx.From, tx.BlockHeight)),
                     // Mining Governances
                     TransactionLogType.RewardMiningPoolLog => await _mediator.Send(new ProcessRewardMiningPoolLogCommand(log, tx.From, tx.BlockHeight)),
                     TransactionLogType.NominationLog => await _mediator.Send(new ProcessNominationLogCommand(log, tx.From, tx.BlockHeight)),

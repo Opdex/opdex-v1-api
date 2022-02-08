@@ -416,6 +416,7 @@ components:
         - ChangeMarketPermissionEvent
         - AddLiquidityEvent
         - RemoveLiquidityEvent
+        - ReservesChangeEvent
         - SwapEvent
         - StartStakingEvent
         - StopStakingEvent
@@ -440,6 +441,8 @@ components:
         - VaultProposalWithdrawPledgeEvent
         - VaultProposalVoteEvent
         - VaultProposalWithdrawVoteEvent
+        - SetInterfluxCustodianEvent
+        - SupplyChangeEvent
     transactionEvent:
       description: An Opdex transaction event produced by contract execution
       oneOf:
@@ -452,6 +455,7 @@ components:
         - $ref: "#/components/schemas/changeMarketPermissionEvent"
         - $ref: "#/components/schemas/addLiquidityEvent"
         - $ref: "#/components/schemas/removeLiquidityEvent"
+        - $ref: "#/components/schemas/reservesChangeEvent"
         - $ref: "#/components/schemas/swapEvent"
         - $ref: "#/components/schemas/startStakingEvent"
         - $ref: "#/components/schemas/stopStakingEvent"
@@ -473,6 +477,8 @@ components:
         - $ref: "#/components/schemas/vaultProposalWithdrawPledgeEvent"
         - $ref: "#/components/schemas/vaultProposalVoteEvent"
         - $ref: "#/components/schemas/vaultProposalWithdrawVoteEvent"
+        - $ref: "#/components/schemas/setInterfluxCustodianEvent"
+        - $ref: "#/components/schemas/supplyChangeEvent"
       discriminator:
         propertyName: eventType
         mapping:
@@ -485,6 +491,7 @@ components:
           changeMarketPermissionEvent: "#/components/schemas/changeMarketPermissionEvent"
           addLiquidityEvent: "#/components/schemas/addLiquidityEvent"
           removeLiquidityEvent: "#/components/schemas/removeLiquidityEvent"
+          reservesChangeEvent: "#/components/schemas/reservesChangeEvent"
           swapEvent: "#/components/schemas/swapEvent"
           startStakingEvent: "#/components/schemas/startStakingEvent"
           stopStakingEvent: "#/components/schemas/stopStakingEvent"
@@ -506,6 +513,8 @@ components:
           vaultProposalWithdrawPledgeEvent: "#/components/schemas/vaultProposalWithdrawPledgeEvent"
           vaultProposalVoteEvent: "#/components/schemas/vaultProposalVoteEvent"
           vaultProposalWithdrawVoteEvent: "#/components/schemas/vaultProposalWithdrawVoteEvent"
+          setInterfluxCustodianEvent: "#/components/schemas/setInterfluxCustodianEvent"
+          supplyChangeEvent: "#/components/schemas/supplyChangeEvent"
     createMarketEvent:
       type: object
       description: Indicates a market was created
@@ -740,6 +749,27 @@ components:
         contract:
           $ref: "#/components/schemas/address"
           description: Address of the liquidity pool
+        sortOrder:
+          type: integer
+          format: int32
+          minimum: 0
+          description: Index to sort event order
+    reservesChangeEvent:
+      type: object
+      description: Indicates the reserves in a liquidity pool have changed
+      properties:
+        crs:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of CRS token in reserves
+        src:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of SRC token in reserves
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the SRC token
         sortOrder:
           type: integer
           format: int32
@@ -1352,6 +1382,45 @@ components:
           format: int32
           minimum: 0
           description: Index to sort event order
+    setInterfluxCustodianEvent:
+      type: object
+      description: Indiciates a change in custodian address for an Interflux token
+      properties:
+        from:
+          $ref: "#/components/schemas/address"
+          description: Address of previous custodian
+        to:
+          $ref: "#/components/schemas/address"
+          description: Address of the new custodian
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the SRC token
+        sortOrder:
+          type: integer
+          format: int32
+          minimum: 0
+          description: Index to sort event order
+    supplyChangeEvent:
+      type: object
+      description: Indiciates a change in total supply for an Interflux token
+      properties:
+        totalSupply:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: New total supply of the SRC token
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the SRC token
+        sortOrder:
+          type: integer
+          format: int32
+          minimum: 0
+          description: Index to sort event order
     stratisSignatureAuthRequest:
       type: object
       required:
@@ -1890,6 +1959,8 @@ components:
           $ref: "#/components/schemas/tokenResponse"
         lp:
           $ref: "#/components/schemas/tokenResponse"
+        staking:
+          $ref: "#/components/schemas/tokenResponse"
     liquidityPoolSummary:
       type: object
       properties:
@@ -1949,8 +2020,6 @@ components:
     liquidityPoolStakingSummary:
       type: object
       properties:
-        token:
-          $ref: "#/components/schemas/marketTokenResponse"
         weight:
           $ref: "#/components/schemas/fixedDecimal"
           description: Total number of tokens staking
@@ -2070,12 +2139,9 @@ components:
         owner:
           $ref: "#/components/schemas/address"
           description: Address of the market owner
-        crsToken:
-          $ref: "#/components/schemas/tokenResponse"
-          description: Details of the CRS token
-        stakingToken:
-          $ref: "#/components/schemas/tokenResponse"
-          description: Details of the staking token
+        tokens:
+          $ref: "#/components/schemas/marketTokenBreakdown"
+          description: Details of tokens that are tied to a market
         authPoolCreators:
           type: boolean
           description: Whether the market owner authorizes liquidity pool creators
@@ -2106,6 +2172,16 @@ components:
         summary:
           $ref: "#/components/schemas/marketSummary"
           description: Financial summary for the market
+    marketTokenBreakdown:
+      type: object
+      description: Details of tokens that are tied to a market
+      properties:
+        crs:
+          $ref: "#/components/schemas/tokenResponse"
+          description: Details of the CRS token
+        staking:
+          $ref: "#/components/schemas/tokenResponse"
+          description: Details of the staking token
     marketSummary:
       type: object
       properties:
@@ -3476,6 +3552,23 @@ paths:
                           dailyPriceChangePercent: 0.21000000
                           createdBlock: 2988918
                           modifiedBlock: 3043250
+                      staking:
+                        address: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
+                        name: Testnet Opdex Token
+                        symbol: TODX
+                        decimals: 8
+                        sats: 100000000
+                        totalSupply: "400000000.00000000"
+                        attributes:
+                          - NonProvisional
+                          - Staking
+                        createdBlock: 2988890
+                        modifiedBlock: 2989018
+                        summary:
+                          priceUsd: 0.00000000
+                          dailyPriceChangePercent: 0.00000000
+                          createdBlock: 2988890
+                          modifiedBlock: 3043278
                     miningPool:
                       address: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
                       liquidityPool: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
@@ -3502,25 +3595,6 @@ paths:
                         crsPerSrc: "31211.01244732"
                         srcPerCrs: "0.00003203"
                       staking:
-                        token:
-                          market: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
-                          liquidityPool: tGS4ad4E1eNXcKxoke3t7v5zQtjMpeRQ3U
-                          address: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
-                          name: Testnet Opdex Token
-                          symbol: TODX
-                          decimals: 8
-                          sats: 100000000
-                          totalSupply: "400000000.00000000"
-                          attributes:
-                            - NonProvisional
-                            - Staking
-                          createdBlock: 2988890
-                          modifiedBlock: 2989018
-                          summary:
-                            priceUsd: 0.00000000
-                            dailyPriceChangePercent: 0.00000000
-                            createdBlock: 2988890
-                            modifiedBlock: 3043278
                         weight: "0.00000000"
                         usd: 0.00000000
                         dailyWeightChangePercent: 0.00000000
@@ -3698,6 +3772,23 @@ paths:
                       dailyPriceChangePercent: 0.21000000
                       createdBlock: 2988918
                       modifiedBlock: 3043250
+                  staking:
+                    address: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
+                    name: Testnet Opdex Token
+                    symbol: TODX
+                    decimals: 8
+                    sats: 100000000
+                    totalSupply: "400000000.00000000"
+                    attributes:
+                      - NonProvisional
+                      - Staking
+                    createdBlock: 2988890
+                    modifiedBlock: 2989018
+                    summary:
+                      priceUsd: 0.00000000
+                      dailyPriceChangePercent: 0.00000000
+                      createdBlock: 2988890
+                      modifiedBlock: 3043278
                 miningPool:
                   address: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
                   liquidityPool: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
@@ -3724,25 +3815,6 @@ paths:
                     crsPerSrc: "31211.01244732"
                     srcPerCrs: "0.00003203"
                   staking:
-                    token:
-                      market: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
-                      liquidityPool: tGS4ad4E1eNXcKxoke3t7v5zQtjMpeRQ3U
-                      address: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
-                      name: Testnet Opdex Token
-                      symbol: TODX
-                      decimals: 8
-                      sats: 100000000
-                      totalSupply: "400000000.00000000"
-                      attributes:
-                        - NonProvisional
-                        - Staking
-                      createdBlock: 2988890
-                      modifiedBlock: 2989018
-                      summary:
-                        priceUsd: 0.00000000
-                        dailyPriceChangePercent: 0.00000000
-                        createdBlock: 2988890
-                        modifiedBlock: 3043278
                     weight: "0.00000000"
                     usd: 0.00000000
                     dailyWeightChangePercent: 0.00000000
@@ -4684,38 +4756,39 @@ paths:
                     authProviders: false
                     marketFeeEnabled: true
                     transactionFeePercent: 0.3
-                    crsToken:
-                      address: CRS
-                      name: Cirrus
-                      symbol: TCRS
-                      decimals: 8
-                      sats: 100000000
-                      totalSupply: "130000000.00000000"
-                      attributes: []
-                      createdBlock: 2988890
-                      modifiedBlock: 2988890
-                      summary:
-                        priceUsd: 0.95057037
-                        dailyPriceChangePercent: 0.63000000
-                        createdBlock: 298889
-                        modifiedBlock: 3043278
-                    stakingToken:
-                      address: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
-                      name: Testnet Opdex Token
-                      symbol: TODX
-                      decimals: 8
-                      sats: 100000000
-                      totalSupply: "40000000000000000.00000000"
-                      attributes:
-                        - NonProvisional
-                        - Staking
-                      createdBlock: 2988890
-                      modifiedBlock: 2989018
-                      summary:
-                        priceUsd: 0.00000000
-                        dailyPriceChangePercent: 0.00000000
+                    tokens:
+                      crs:
+                        address: CRS
+                        name: Cirrus
+                        symbol: TCRS
+                        decimals: 8
+                        sats: 100000000
+                        totalSupply: "130000000.00000000"
+                        attributes: []
                         createdBlock: 2988890
-                        modifiedBlock: 3043278
+                        modifiedBlock: 2988890
+                        summary:
+                          priceUsd: 0.95057037
+                          dailyPriceChangePercent: 0.63000000
+                          createdBlock: 298889
+                          modifiedBlock: 3043278
+                      staking:
+                        address: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
+                        name: Testnet Opdex Token
+                        symbol: TODX
+                        decimals: 8
+                        sats: 100000000
+                        totalSupply: "40000000000000000.00000000"
+                        attributes:
+                          - NonProvisional
+                          - Staking
+                        createdBlock: 2988890
+                        modifiedBlock: 2989018
+                        summary:
+                          priceUsd: 0.00000000
+                          dailyPriceChangePercent: 0.00000000
+                          createdBlock: 2988890
+                          modifiedBlock: 3043278
                     createdBlock: 2988898
                     modifiedBlock: 2988898
                     summary:
@@ -4790,38 +4863,39 @@ paths:
                 authProviders: false
                 marketFeeEnabled: true
                 transactionFeePercent: 0.3
-                crsToken:
-                  address: CRS
-                  name: Cirrus
-                  symbol: TCRS
-                  decimals: 8
-                  sats: 100000000
-                  totalSupply: "130000000.00000000"
-                  attributes: []
-                  createdBlock: 2988890
-                  modifiedBlock: 2988890
-                  summary:
-                    priceUsd: 0.95057037
-                    dailyPriceChangePercent: 0.63000000
+                tokens:
+                  crs:
+                    address: CRS
+                    name: Cirrus
+                    symbol: TCRS
+                    decimals: 8
+                    sats: 100000000
+                    totalSupply: "130000000.00000000"
+                    attributes: []
                     createdBlock: 2988890
-                    modifiedBlock: 3043278
-                stakingToken:
-                  address: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
-                  name: Testnet Opdex Token
-                  symbol: TODX
-                  decimals: 8
-                  sats: 100000000
-                  totalSupply: "40000000000000000.00000000"
-                  attributes:
-                    - NonProvisional
-                    - Staking
-                  createdBlock: 2988890
-                  modifiedBlock: 2989018
-                  summary:
-                    priceUsd: 0.00000000
-                    dailyPriceChangePercent: 0.00000000
+                    modifiedBlock: 2988890
+                    summary:
+                      priceUsd: 0.95057037
+                      dailyPriceChangePercent: 0.63000000
+                      createdBlock: 2988890
+                      modifiedBlock: 3043278
+                  staking:
+                    address: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
+                    name: Testnet Opdex Token
+                    symbol: TODX
+                    decimals: 8
+                    sats: 100000000
+                    totalSupply: "40000000000000000.00000000"
+                    attributes:
+                      - NonProvisional
+                      - Staking
                     createdBlock: 2988890
-                    modifiedBlock: 3043278
+                    modifiedBlock: 2989018
+                    summary:
+                      priceUsd: 0.00000000
+                      dailyPriceChangePercent: 0.00000000
+                      createdBlock: 2988890
+                      modifiedBlock: 3043278
                 createdBlock: 2988898
                 modifiedBlock: 2988898
                 summary:

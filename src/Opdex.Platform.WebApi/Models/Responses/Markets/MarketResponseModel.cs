@@ -27,14 +27,9 @@ public class MarketResponseModel
     public Address Owner { get; set; }
 
     /// <summary>
-    /// Token details about the markets staking token if exists.
+    /// Tokens involved in the market.
     /// </summary>
-    public TokenResponseModel StakingToken { get; set; }
-
-    /// <summary>
-    /// Token details of CRS.
-    /// </summary>
-    public TokenResponseModel CrsToken { get; set; }
+    public MarketTokenGroupResponseModel Tokens { get; set; }
 
     /// <summary>
     /// Flag determining if the market has a whitelist of addresses with create liquidity pool permissions.

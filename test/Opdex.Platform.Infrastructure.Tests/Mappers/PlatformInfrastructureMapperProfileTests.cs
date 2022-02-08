@@ -4,10 +4,10 @@ namespace Opdex.Platform.Infrastructure.Tests.Mappers;
 
 public abstract class PlatformInfrastructureMapperProfileTests
 {
-    protected readonly IMapper _mapper;
+    protected readonly IMapper Mapper;
 
     protected PlatformInfrastructureMapperProfileTests()
     {
-        _mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
+        Mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
     }
 }
