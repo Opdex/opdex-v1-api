@@ -34,7 +34,12 @@ public class MarketDtoAssembler : IModelAssembler<Market, MarketDto>
         var marketDto = _mapper.Map<MarketDto>(market);
 
         var summary = await _mediator.Send(new RetrieveMarketSummaryByMarketIdQuery(market.Id, findOrThrow: false), CancellationToken.None);
-        if (summary is not null) marketDto.Summary = _mapper.Map<MarketSummaryDto>(summary);
+        if (summary is not null)
+        {
+            marketDto.Summary = _mapper.Map<MarketSummaryDto>(summary);
+            // remove staking summary from standard markets
+            if (!market.IsStakingMarket) marketDto.Summary.Staking = null;
+        }
 
         marketDto.CrsToken = await AssembleToken(Address.Cirrus);
 

@@ -53,8 +53,12 @@ public class LiquidityPoolDtoAssembler : IModelAssembler<LiquidityPool, Liquidit
         poolDto.CrsToken = await AssembleToken(Address.Cirrus);
         poolDto.SrcToken = await AssembleMarketToken(pool.SrcTokenId, market);
         poolDto.LpToken = await AssembleMarketToken(pool.LpTokenId, market);
-        var stakingToken = market.IsStakingMarket && pool.SrcTokenId != market.StakingTokenId ? await AssembleMarketToken(market.StakingTokenId, market) : null;
-        var stakingEnabled = stakingToken != null;
+        var stakingToken = market.IsStakingMarket && pool.SrcTokenId != market.StakingTokenId
+            ? await AssembleMarketToken(market.StakingTokenId, market)
+            : null;
+        poolDto.StakingToken = stakingToken;
+
+        var stakingEnabled = stakingToken is not null;
 
         // Calc rewards
         (decimal providerUsd, decimal marketUsd) = MathExtensions.VolumeBasedRewards(summary.VolumeUsd, summary.StakingWeight, stakingEnabled,
@@ -99,7 +103,6 @@ public class LiquidityPoolDtoAssembler : IModelAssembler<LiquidityPool, Liquidit
         poolDto.MiningPool = await _miningPoolAssembler.Assemble(miningPool);
         poolDto.Summary.Staking = new StakingDto
         {
-            Token = stakingToken,
             Weight = summary.StakingWeight.ToDecimal(stakingToken.Decimals),
             Usd = MathExtensions.TotalFiat(summary.StakingWeight, stakingToken.Summary.PriceUsd, stakingToken.Sats),
             DailyWeightChangePercent = summary.DailyStakingWeightChangePercent,

@@ -21,4 +21,9 @@ public class LiquidityPoolTokenGroupResponseModel
     /// Pairing liquidity pool token details and pricing.
     /// </summary>
     public TokenResponseModel Lp { get; set; }
+
+    /// <summary>
+    /// Staking token details and pricing.
+    /// </summary>
+    public TokenResponseModel Staking { get; set; }
 }

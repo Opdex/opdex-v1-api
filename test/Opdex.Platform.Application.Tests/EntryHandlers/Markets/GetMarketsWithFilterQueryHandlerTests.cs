@@ -353,7 +353,7 @@ public class GetMarketsWithFilterQueryHandlerTests
             MarketFeeEnabled = market.MarketFeeEnabled,
             Summary = new MarketSummaryDto(),
             CrsToken = new TokenDto(),
-            StakingToken = new TokenDto()
+            StakingToken = new MarketTokenDto()
         };
         return marketDto;
     }
