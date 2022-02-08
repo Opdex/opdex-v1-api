@@ -137,6 +137,7 @@ public class MarketTokenDtoAssemblerTests
         tokenDto.Attributes.Should().BeEquivalentTo(new [] {TokenAttributeType.NonProvisional});
         tokenDto.Summary.PriceUsd.Should().Be(token.Summary.PriceUsd);
         tokenDto.Summary.DailyPriceChangePercent.Should().Be(token.Summary.DailyPriceChangePercent);
+        tokenDto.Summary.CreatedBlock.Should().Be(token.Summary.CreatedBlock);
         tokenDto.Summary.ModifiedBlock.Should().Be(token.Summary.ModifiedBlock);
         tokenDto.LiquidityPool.Should().Be(liquidityPool.Address);
         tokenDto.Market.Should().Be(market.Address);

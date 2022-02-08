@@ -1,6 +1,5 @@
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models.Responses.MarketTokens;
-using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Summary;
 

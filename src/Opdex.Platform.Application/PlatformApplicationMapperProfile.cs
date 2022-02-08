@@ -91,6 +91,7 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.VolumeUsd, opt => opt.MapFrom(src => src.VolumeUsd))
             .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => src))
             .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => src))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -109,6 +110,7 @@ public class PlatformApplicationMapperProfile : Profile
         CreateMap<TokenSummary, TokenSummaryDto>()
             .ForMember(dest => dest.PriceUsd, opt => opt.MapFrom(src => src.PriceUsd))
             .ForMember(dest => dest.DailyPriceChangePercent, opt => opt.MapFrom(src => src.DailyPriceChangePercent))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -143,6 +145,7 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.Custodian, opt => opt.MapFrom(src => src.Owner))
             .ForMember(dest => dest.Chain, opt => opt.MapFrom(src => src.NativeChain))
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.NativeAddress))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
