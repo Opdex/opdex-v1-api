@@ -397,6 +397,8 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<ProcessCreateLiquidityPoolLogCommand, bool>, ProcessCreateLiquidityPoolLogCommandHandler>();
         services.AddTransient<IRequestHandler<ProcessApprovalLogCommand, bool>, ProcessApprovalLogCommandHandler>();
         services.AddTransient<IRequestHandler<ProcessTransferLogCommand, bool>, ProcessTransferLogCommandHandler>();
+        services.AddTransient<IRequestHandler<ProcessOwnershipTransferredLogCommand, bool>, ProcessOwnershipTransferredLogCommandHandler>();
+        services.AddTransient<IRequestHandler<ProcessSupplyChangeLogCommand, bool>, ProcessSupplyChangeLogCommandHandler>();
         services.AddTransient<IRequestHandler<ProcessCreateMarketLogCommand, bool>, ProcessCreateMarketLogCommandHandler>();
         services.AddTransient<IRequestHandler<ProcessDistributionLogCommand, bool>, ProcessDistributionLogCommandHandler>();
         services.AddTransient<IRequestHandler<ProcessClaimPendingMarketOwnershipLogCommand, bool>, ProcessClaimPendingMarketOwnershipLogCommandHandler>();
@@ -663,6 +665,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IModelAssembler<IEnumerable<TransactionLog>, IReadOnlyCollection<TransactionEventDto>>, TransactionEventsDtoAssembler>();
 
         // Liquidity Pool Logs
+        services.AddTransient<IModelAssembler<ReservesLog, ReservesChangeEventDto>, ReservesChangeEventDtoAssembler>();
         services.AddTransient<IModelAssembler<SwapLog, SwapEventDto>, SwapEventDtoAssembler>();
         services.AddTransient<IModelAssembler<BurnLog, RemoveLiquidityEventDto>, RemoveLiquidityEventDtoAssembler>();
         services.AddTransient<IModelAssembler<MintLog, AddLiquidityEventDto>, AddLiquidityEventDtoAssembler>();
@@ -670,6 +673,9 @@ public static class PlatformApplicationServiceCollectionExtensions
         // Token Logs
         services.AddTransient<IModelAssembler<TransferLog, TransferEventDto>, TransferEventDtoAssembler>();
         services.AddTransient<IModelAssembler<ApprovalLog, ApprovalEventDto>, ApprovalEventDtoAssembler>();
+
+        // Interflux Token Logs
+        services.AddTransient<IModelAssembler<SupplyChangeLog, SupplyChangeEventDto>, SupplyChangeEventDtoAssembler>();
 
         return services;
     }

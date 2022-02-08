@@ -557,6 +557,11 @@ public class PlatformWebApiMapperProfile : Profile
         CreateMap<RemoveLiquidityEventDto, RemoveLiquidityEvent>()
             .IncludeBase<ProvideEventDto, ProvideEvent>();
 
+        CreateMap<ReservesChangeEventDto, ReservesChangeEvent>()
+            .IncludeBase<TransactionEventDto, TransactionEvent>()
+            .ForMember(dest => dest.Crs, opt => opt.MapFrom(src => src.Crs))
+            .ForMember(dest => dest.Src, opt => opt.MapFrom(src => src.Src));
+
         CreateMap<SwapEventDto, SwapEvent>()
             .IncludeBase<TransactionEventDto, TransactionEvent>()
             .ForMember(dest => dest.Sender, opt => opt.MapFrom(src => src.Sender))
@@ -629,6 +634,14 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.PeriodIndex, opt => opt.MapFrom(src => src.PeriodIndex))
             .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
             .ForMember(dest => dest.NextDistributionBlock, opt => opt.MapFrom(src => src.NextDistributionBlock));
+
+        // Interflux token transaction events
+        CreateMap<SetInterfluxCustodianEventDto, SetInterfluxCustodianEvent>()
+            .IncludeBase<OwnershipEventDto, OwnershipEvent>();
+
+        CreateMap<SupplyChangeEventDto, SupplyChangeEvent>()
+            .IncludeBase<TransactionEventDto, TransactionEvent>()
+            .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply));
 
         // Mining governance Transaction Events
         CreateMap<RewardMiningPoolEventDto, RewardMiningPoolEvent>()

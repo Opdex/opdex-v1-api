@@ -20,6 +20,8 @@ public enum TransactionLogType : uint
     BurnLog = 9,
     SwapLog = 10,
     ReservesLog = 11,
+
+    // Standard token logs
     ApprovalLog = 12,
     TransferLog = 13,
 
@@ -50,5 +52,9 @@ public enum TransactionLogType : uint
     VaultProposalPledgeLog = 29,
     VaultProposalWithdrawPledgeLog = 30,
     VaultProposalVoteLog = 31,
-    VaultProposalWithdrawVoteLog = 32
+    VaultProposalWithdrawVoteLog = 32,
+
+    // Interflux token logs,
+    OwnershipTransferredLog = 33,
+    SupplyChangeLog = 34,
 }
