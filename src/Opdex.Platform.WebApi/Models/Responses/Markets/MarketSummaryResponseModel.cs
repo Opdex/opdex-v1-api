@@ -33,6 +33,12 @@ public class MarketSummaryResponseModel
     public RewardsResponseModel Rewards { get; set; }
 
     /// <summary>
+    /// Block number at which the entity state was created.
+    /// </summary>
+    /// <example>2500000</example>
+    public ulong CreatedBlock { get; set; }
+
+    /// <summary>
     /// Block number at which the entity state was last modified.
     /// </summary>
     /// <example>3000000</example>

@@ -1903,6 +1903,11 @@ components:
           $ref: "#/components/schemas/costSummary"
         staking:
           $ref: "#/components/schemas/liquidityPoolStakingSummary"
+        createdBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity state was created
         modifiedBlock:
           type: integer
           format: uint64
@@ -2122,6 +2127,11 @@ components:
         rewards:
           $ref: "#/components/schemas/rewardSummary"
           description: Rewards summary
+        createdBlock:
+          type: integer
+          format: uint64
+          minimum: 1
+          description: Block number at which the entity state was created
         modifiedBlock:
           type: integer
           format: uint64
@@ -2346,6 +2356,11 @@ components:
         trusted:
           type: boolean
           description: True if the custodian is configured as trusted; otherwise false
+        createdBlock:
+          type: integer
+          format: uint64
+          description: Block number at which the entity state was created
+          minimum: 1
         modifiedBlock:
           type: integer
           format: uint64
@@ -2363,6 +2378,11 @@ components:
           type: number
           minimum: -100.00000000
           description: Price change percentage for the current day, reset at 00:00 UTC
+        createdBlock:
+          type: integer
+          format: uint64
+          description: Block number at which price was created
+          minimum: 1
         modifiedBlock:
           type: integer
           format: uint64

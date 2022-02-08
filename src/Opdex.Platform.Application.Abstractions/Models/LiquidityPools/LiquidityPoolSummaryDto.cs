@@ -7,5 +7,6 @@ public class LiquidityPoolSummaryDto
     public ReservesDto Reserves { get; set; }
     public CostDto Cost { get; set; }
     public StakingDto Staking { get; set; }
+    public ulong CreatedBlock { get; set; }
     public ulong ModifiedBlock { get; set; }
 }

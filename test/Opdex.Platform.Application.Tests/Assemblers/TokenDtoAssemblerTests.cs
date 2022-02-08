@@ -87,6 +87,7 @@ public class TokenDtoAssemblerTests
         tokenDto.Attributes.Should().BeEquivalentTo(new [] {TokenAttributeType.NonProvisional});
         tokenDto.Summary.PriceUsd.Should().Be(tokenSummary.PriceUsd);
         tokenDto.Summary.DailyPriceChangePercent.Should().Be(tokenSummary.DailyPriceChangePercent);
+        tokenDto.Summary.CreatedBlock.Should().Be(tokenSummary.CreatedBlock);
         tokenDto.Summary.ModifiedBlock.Should().Be(tokenSummary.ModifiedBlock);
     }
 }
