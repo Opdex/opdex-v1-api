@@ -26,6 +26,20 @@ public class PersistIndexerUnlockCommandHandlerTests
     }
 
     [Fact]
+    public async Task Update_IndexLock_CorrectTable()
+    {
+        // Arrange
+        var command = new PersistIndexerUnlockCommand();
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _dbContextMock.Verify(callTo => callTo.ExecuteCommandAsync(
+            It.Is<DatabaseQuery>(q => q.Sql.StartsWith("UPDATE index_lock"))), Times.Once);
+    }
+
+    [Fact]
     public async Task PersistIndexerUnlock_ExecuteCommand()
     {
         // Arrange

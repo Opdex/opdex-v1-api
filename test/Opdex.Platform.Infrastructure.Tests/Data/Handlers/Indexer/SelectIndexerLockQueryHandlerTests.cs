@@ -26,6 +26,23 @@ public class SelectIndexerLockQueryHandlerTests
     }
 
     [Fact]
+    public async Task Handle_Query_Limit1()
+    {
+        // Arrange
+        var query = new SelectIndexerLockQuery();
+
+        // Act
+        try
+        {
+            await _handler.Handle(query, CancellationToken.None);
+        } catch(NotFoundException) {}
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteFindAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("LIMIT 1;"))), Times.Once);
+    }
+
+    [Fact]
     public async Task SelectIndexLock_Success()
     {
         var expectedEntity = new IndexLockEntity

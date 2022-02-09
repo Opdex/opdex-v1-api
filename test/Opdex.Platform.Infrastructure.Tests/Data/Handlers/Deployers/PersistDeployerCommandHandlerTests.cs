@@ -5,6 +5,7 @@ using AutoMapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Deployers;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Deployers;
@@ -25,6 +26,51 @@ public class PersistDeployerCommandHandlerTests
 
         _dbContext = new Mock<IDbContext>();
         _handler = new PersistDeployerCommandHandler(_dbContext.Object, mapper, logger);
+    }
+
+    [Fact]
+    public async Task Insert_Deployer_CorrectTable()
+    {
+        // Arrange
+        var deployer = new Deployer(new Address("PNEPCzpKSXns3jWtVfkF7WJeZKdNeEZTBK"), "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, 3);
+        var command = new PersistDeployerCommand(deployer);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteScalarAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.StartsWith("INSERT INTO market_deployer"))), Times.Once);
+    }
+
+    [Fact]
+    public async Task Insert_Return_LastInsertId()
+    {
+        // Arrange
+        var deployer = new Deployer(new Address("PNEPCzpKSXns3jWtVfkF7WJeZKdNeEZTBK"), "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, 3);
+        var command = new PersistDeployerCommand(deployer);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteScalarAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("SELECT LAST_INSERT_ID();"))), Times.Once);
+    }
+
+    [Fact]
+    public async Task Update_Deployer_CorrectTable()
+    {
+        // Arrange
+        var deployer = new Deployer(5, new Address("PNEPCzpKSXns3jWtVfkF7WJeZKdNeEZTBK"), null, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, 3, 30);
+        var command = new PersistDeployerCommand(deployer);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteScalarAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.StartsWith("UPDATE market_deployer"))), Times.Once);
     }
 
     [Fact]

@@ -30,6 +30,20 @@ public class SelectLiquidityPoolSnapshotWithFilterQueryHandlerTests
     }
 
     [Fact]
+    public async Task Handle_Query_Limit1()
+    {
+        // Arrange
+        var query = new SelectLiquidityPoolSnapshotWithFilterQuery(5, DateTime.Now, SnapshotType.Hourly);
+
+        // Act
+        await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteFindAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("LIMIT 1;"))), Times.Once);
+    }
+
+    [Fact]
     public async Task SelectLiquidityPoolSnapshotWithFilter_Success()
     {
         const ulong liquidityPoolId = 8;

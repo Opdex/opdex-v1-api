@@ -28,9 +28,23 @@ public class SelectTransactionByHashQueryHandlerTests
     }
 
     [Fact]
+    public async Task Handle_Query_Limit1()
+    {
+        // Arrange
+        var query = new SelectTransactionByHashQuery(new Sha256(0), false);
+
+        // Act
+        await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteFindAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("LIMIT 1;"))), Times.Once);
+    }
+
+    [Fact]
     public async Task SelectTransactionByHash_Success()
     {
-        Sha256 hash = new Sha256(95840954890);
+        Sha256 hash = new(95840954890);
         var expectedResponse = new TransactionEntity
         {
             Id = 23423,

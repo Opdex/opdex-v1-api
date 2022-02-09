@@ -25,7 +25,8 @@ public class SelectMiningPoolByLiquidityPoolIdQueryHandler : IRequestHandler<Sel
                 {nameof(MiningPoolEntity.ModifiedBlock)},
                 {nameof(MiningPoolEntity.CreatedBlock)}
             FROM pool_mining
-            WHERE {nameof(MiningPoolEntity.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)};".RemoveExcessWhitespace();
+            WHERE {nameof(MiningPoolEntity.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)}
+            LIMIT 1;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

@@ -30,6 +30,21 @@ public class PersistBlockCommandHandlerTests
     }
 
     [Fact]
+    public async Task Insert_Block_CorrectTable()
+    {
+        // Arrange
+        var block = new Block(1, new Sha256(43972384723894), DateTime.UtcNow, DateTime.UtcNow);
+        var command = new PersistBlockCommand(block);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteCommandAsync(
+            It.Is<DatabaseQuery>(q => q.Sql.StartsWith("INSERT INTO block"))), Times.Once);
+    }
+
+    [Fact]
     public async Task PersistsBlockCommand_Sends_PersistCommand()
     {
         // Arrange

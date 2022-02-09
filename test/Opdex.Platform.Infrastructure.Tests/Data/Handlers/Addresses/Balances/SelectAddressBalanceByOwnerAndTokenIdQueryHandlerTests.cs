@@ -29,6 +29,20 @@ public class SelectAddressBalanceByOwnerAndTokenIdQueryHandlerTests
     }
 
     [Fact]
+    public async Task Handle_Query_Limit1()
+    {
+        // Arrange
+        var query = new SelectAddressBalanceByOwnerAndTokenIdQuery("PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 5, false);
+
+        // Act
+        await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteFindAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("LIMIT 1;"))), Times.Once);
+    }
+
+    [Fact]
     public void SelectAddressBalanceByOwnerAndTokenId_ThrowsArgumentNullException_InvalidOwner()
     {
         // Arrange

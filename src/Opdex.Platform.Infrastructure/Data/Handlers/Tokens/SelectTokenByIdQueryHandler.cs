@@ -26,7 +26,8 @@ public class SelectTokenByIdQueryHandler : IRequestHandler<SelectTokenByIdQuery,
                 {nameof(TokenEntity.CreatedBlock)},
                 {nameof(TokenEntity.ModifiedBlock)}
             FROM token
-            WHERE {nameof(TokenEntity.Id)} = @{nameof(SqlParams.Id)};".RemoveExcessWhitespace();
+            WHERE {nameof(TokenEntity.Id)} = @{nameof(SqlParams.Id)}
+            LIMIT 1;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
