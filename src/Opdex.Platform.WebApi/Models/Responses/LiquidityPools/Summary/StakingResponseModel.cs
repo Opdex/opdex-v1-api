@@ -1,6 +1,5 @@
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models.Responses.MarketTokens;
-using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Summary;
 
@@ -9,11 +8,6 @@ namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Summary;
 /// </summary>
 public class StakingResponseModel
 {
-    /// <summary>
-    /// The governance token used for staking.
-    /// </summary>
-    public MarketTokenResponseModel Token { get; set; }
-
     /// <summary>
     /// Total number of tokens staking.
     /// </summary>

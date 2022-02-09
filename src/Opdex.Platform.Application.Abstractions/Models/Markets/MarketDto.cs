@@ -7,7 +7,7 @@ public class MarketDto
 {
     public ulong Id { get; set; }
     public Address Address { get; set; }
-    public TokenDto StakingToken { get; set; }
+    public MarketTokenDto StakingToken { get; set; }
     public TokenDto CrsToken { get; set; }
     public Address PendingOwner { get; set; }
     public Address Owner { get; set; }

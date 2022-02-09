@@ -8,6 +8,7 @@ using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPoo
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Tokens;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vault;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vaults;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningGovernances;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
@@ -31,13 +32,17 @@ public class TransactionEventsDtoAssembler : IModelAssembler<IEnumerable<Transac
     private readonly IModelAssembler<BurnLog, RemoveLiquidityEventDto> _burnProvideEventDtoAssembler;
     private readonly IModelAssembler<TransferLog, TransferEventDto> _transferEventDtoAssembler;
     private readonly IModelAssembler<ApprovalLog, ApprovalEventDto> _approvalEventDtoAssembler;
+    private readonly IModelAssembler<SupplyChangeLog, SupplyChangeEventDto> _supplyChangeEventDtoAssembler;
+    private readonly IModelAssembler<ReservesLog, ReservesChangeEventDto> _reservesChangeEventDtoAssembler;
 
     public TransactionEventsDtoAssembler(IMapper mapper,
                                          IModelAssembler<SwapLog, SwapEventDto> swapEventDtoAssembler,
                                          IModelAssembler<MintLog, AddLiquidityEventDto> mintLogDtoAssembler,
                                          IModelAssembler<BurnLog, RemoveLiquidityEventDto> burnLogDtoAssembler,
                                          IModelAssembler<TransferLog, TransferEventDto> transferEventDtoAssembler,
-                                         IModelAssembler<ApprovalLog, ApprovalEventDto> approvalEventDtoAssembler)
+                                         IModelAssembler<ApprovalLog, ApprovalEventDto> approvalEventDtoAssembler,
+                                         IModelAssembler<SupplyChangeLog, SupplyChangeEventDto> supplyChangeEventDtoAssembler,
+                                         IModelAssembler<ReservesLog, ReservesChangeEventDto> reservesChangeEventDtoAssembler)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _swapEventDtoAssembler = swapEventDtoAssembler ?? throw new ArgumentNullException(nameof(swapEventDtoAssembler));
@@ -45,6 +50,8 @@ public class TransactionEventsDtoAssembler : IModelAssembler<IEnumerable<Transac
         _burnProvideEventDtoAssembler = burnLogDtoAssembler ?? throw new ArgumentNullException(nameof(burnLogDtoAssembler));
         _transferEventDtoAssembler = transferEventDtoAssembler ?? throw new ArgumentNullException(nameof(transferEventDtoAssembler));
         _approvalEventDtoAssembler = approvalEventDtoAssembler ?? throw new ArgumentNullException(nameof(approvalEventDtoAssembler));
+        _supplyChangeEventDtoAssembler = supplyChangeEventDtoAssembler ?? throw new ArgumentNullException(nameof(supplyChangeEventDtoAssembler));
+        _reservesChangeEventDtoAssembler = reservesChangeEventDtoAssembler ?? throw new ArgumentNullException(nameof(reservesChangeEventDtoAssembler));
     }
 
     public async Task<IReadOnlyCollection<TransactionEventDto>> Assemble(IEnumerable<TransactionLog> logs)
@@ -70,6 +77,7 @@ public class TransactionEventsDtoAssembler : IModelAssembler<IEnumerable<Transac
                 TransactionLogType.SwapLog => await _swapEventDtoAssembler.Assemble((SwapLog)log),
                 TransactionLogType.MintLog => await _mintProvideEventDtoAssembler.Assemble((MintLog)log),
                 TransactionLogType.BurnLog => await _burnProvideEventDtoAssembler.Assemble((BurnLog)log),
+                TransactionLogType.ReservesLog => await _reservesChangeEventDtoAssembler.Assemble((ReservesLog)log),
                 TransactionLogType.StartStakingLog => _mapper.Map<StartStakingEventDto>((StartStakingLog)log),
                 TransactionLogType.StopStakingLog => _mapper.Map<StopStakingEventDto>((StopStakingLog)log),
                 TransactionLogType.CollectStakingRewardsLog => _mapper.Map<CollectStakingRewardsEventDto>((CollectStakingRewardsLog)log),
@@ -84,6 +92,10 @@ public class TransactionEventsDtoAssembler : IModelAssembler<IEnumerable<Transac
                 TransactionLogType.TransferLog => await _transferEventDtoAssembler.Assemble((TransferLog)log),
                 TransactionLogType.ApprovalLog => await _approvalEventDtoAssembler.Assemble((ApprovalLog)log),
                 TransactionLogType.DistributionLog => _mapper.Map<DistributionEventDto>((DistributionLog)log),
+
+                // Interflux Tokens
+                TransactionLogType.OwnershipTransferredLog => _mapper.Map<SetInterfluxCustodianEventDto>((OwnershipTransferredLog)log),
+                TransactionLogType.SupplyChangeLog => await _supplyChangeEventDtoAssembler.Assemble((SupplyChangeLog)log),
 
                 // Mining Governances
                 TransactionLogType.NominationLog => _mapper.Map<NominationEventDto>((NominationLog)log),

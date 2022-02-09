@@ -183,7 +183,7 @@ public class GetMarketTokensWithFilterTests
                 Symbol = tokens[tokenAssembled].Symbol,
                 Decimals = tokens[tokenAssembled].Decimals,
                 Sats = tokens[tokenAssembled].Sats,
-                Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
+                Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, CreatedBlock = 9999, ModifiedBlock = 10000 }
             };
             tokenAssembled++;
             return tokenDto;
@@ -224,7 +224,7 @@ public class GetMarketTokensWithFilterTests
                 Symbol = tokens[tokenAssembled].Symbol,
                 Decimals = tokens[tokenAssembled].Decimals,
                 Sats = tokens[tokenAssembled].Sats,
-                Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
+                Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, CreatedBlock = 9999, ModifiedBlock = 10000 }
             };
             tokenAssembled++;
             return tokenDto;
@@ -265,7 +265,7 @@ public class GetMarketTokensWithFilterTests
                 Symbol = tokens[tokenAssembled].Symbol,
                 Decimals = tokens[tokenAssembled].Decimals,
                 Sats = tokens[tokenAssembled].Sats,
-                Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
+                Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, CreatedBlock = 9999, ModifiedBlock = 10000 }
             };
             tokenAssembled++;
             return tokenDto;
@@ -307,7 +307,7 @@ public class GetMarketTokensWithFilterTests
                 Symbol = tokens[tokenAssembled].Symbol,
                 Decimals = tokens[tokenAssembled].Decimals,
                 Sats = tokens[tokenAssembled].Sats,
-                Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
+                Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, CreatedBlock = 9999, ModifiedBlock = 10000 }
             };
             tokenAssembled++;
             return tokenDto;
@@ -350,7 +350,7 @@ public class GetMarketTokensWithFilterTests
                 Symbol = tokens[tokenAssembled].Symbol,
                 Decimals = tokens[tokenAssembled].Decimals,
                 Sats = tokens[tokenAssembled].Sats,
-                Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
+                Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, CreatedBlock = 9999, ModifiedBlock = 10000 }
             };
             tokenAssembled++;
             return tokenDto;
@@ -393,7 +393,7 @@ public class GetMarketTokensWithFilterTests
                 Symbol = tokens[tokenAssembled].Symbol,
                 Decimals = tokens[tokenAssembled].Decimals,
                 Sats = tokens[tokenAssembled].Sats,
-                Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
+                Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, CreatedBlock = 9999, ModifiedBlock = 10000 }
             };
             tokenAssembled++;
             return tokenDto;
@@ -435,7 +435,7 @@ public class GetMarketTokensWithFilterTests
                 Symbol = tokens[tokenAssembled].Symbol,
                 Decimals = tokens[tokenAssembled].Decimals,
                 Sats = tokens[tokenAssembled].Sats,
-                Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
+                Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, CreatedBlock = 9999, ModifiedBlock = 10000 }
             };
             tokenAssembled++;
             return tokenDto;
@@ -477,7 +477,7 @@ public class GetMarketTokensWithFilterTests
                 Symbol = tokens[tokenAssembled].Symbol,
                 Decimals = tokens[tokenAssembled].Decimals,
                 Sats = tokens[tokenAssembled].Sats,
-                Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
+                Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, CreatedBlock = 9999, ModifiedBlock = 10000 }
             };
             tokenAssembled++;
             return tokenDto;

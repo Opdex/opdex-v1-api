@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Mappers;
 
-public class LiquidityPoolsPlatformInfrastructureMapperProfile : PlatformInfrastructureMapperProfileTests
+public class LiquidityPoolsPlatformInfrastructureMapperProfileTests : PlatformInfrastructureMapperProfileTests
 {
     [Fact]
     public void From_LiquidityPoolSummary_To_LiquidityPoolSummaryEntity()
@@ -14,7 +14,7 @@ public class LiquidityPoolsPlatformInfrastructureMapperProfile : PlatformInfrast
         var model = new LiquidityPoolSummary(100, 1, 2.00m, 4.5m, 3.00m, 4, 6.5m, 5, 6, 7, 8);
 
         // Act
-        var entity = _mapper.Map<LiquidityPoolSummaryEntity>(model);
+        var entity = Mapper.Map<LiquidityPoolSummaryEntity>(model);
 
         // Assert
         entity.Id.Should().Be(model.Id);
@@ -50,7 +50,7 @@ public class LiquidityPoolsPlatformInfrastructureMapperProfile : PlatformInfrast
         };
 
         // Act
-        var model = _mapper.Map<LiquidityPoolSummary>(entity);
+        var model = Mapper.Map<LiquidityPoolSummary>(entity);
 
         // Assert
         entity.Id.Should().Be(model.Id);

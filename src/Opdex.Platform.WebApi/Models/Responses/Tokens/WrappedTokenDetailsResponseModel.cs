@@ -34,6 +34,11 @@ public class WrappedTokenDetailsResponseModel
     public bool Validated { get; set; }
 
     /// <summary>
+    /// Block number at which the entity state was created.
+    /// </summary>
+    public ulong CreatedBlock { get; set; }
+
+    /// <summary>
     /// Block number at which the entity state was last modified.
     /// </summary>
     public ulong ModifiedBlock { get; set; }
