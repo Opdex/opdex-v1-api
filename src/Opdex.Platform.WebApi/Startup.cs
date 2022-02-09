@@ -144,14 +144,14 @@ public class Startup
         // Rate Limiting
         services.AddMemoryCache();
         services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"))
-            .Configure<IpRateLimitOptions>(options =>
-            {
-                options.RequestBlockedBehaviorAsync = (context, identity, rateLimitCounter, rule) =>
+                .Configure<IpRateLimitOptions>(options =>
                 {
-                    var retryAfter = rateLimitCounter.Timestamp.RetryAfterFrom(rule);
-                    throw new TooManyRequestsException(rule.Limit, rule.Period, retryAfter);
-                };
-            });
+                    options.RequestBlockedBehaviorAsync = (_, _, rateLimitCounter, rule) =>
+                    {
+                        var retryAfter = rateLimitCounter.Timestamp.RetryAfterFrom(rule);
+                        throw new TooManyRequestsException(rule.Limit, rule.Period, retryAfter);
+                    };
+                });
         services.Configure<IpRateLimitPolicies>(Configuration.GetSection("IpRateLimitPolicies"));
         services.AddInMemoryRateLimiting();
         services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();

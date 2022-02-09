@@ -2432,6 +2432,9 @@ components:
         trusted:
           type: boolean
           description: True if the custodian is configured as trusted; otherwise false
+        validated:
+          type: boolean
+          description: True if the native token it points to is valid; otherwise false
         createdBlock:
           type: integer
           format: uint64

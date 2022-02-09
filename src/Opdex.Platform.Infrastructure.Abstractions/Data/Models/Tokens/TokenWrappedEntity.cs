@@ -9,4 +9,5 @@ public class TokenWrappedEntity : AuditEntity
     public Address Owner { get; set; }
     public ushort NativeChainTypeId { get; set; }
     public string NativeAddress { get; set; }
+    public bool Validated { get; set; }
 }
