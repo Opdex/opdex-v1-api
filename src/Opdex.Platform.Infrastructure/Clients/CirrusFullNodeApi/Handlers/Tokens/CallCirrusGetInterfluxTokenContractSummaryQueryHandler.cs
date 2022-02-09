@@ -1,6 +1,5 @@
 using MediatR;
 using Opdex.Platform.Common.Constants.SmartContracts.Tokens;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;

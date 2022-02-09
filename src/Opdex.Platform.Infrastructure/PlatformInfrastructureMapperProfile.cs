@@ -58,7 +58,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<TokenWrappedEntity, TokenWrapped>()
-            .ConstructUsing(src => new TokenWrapped(src.Id, src.TokenId, src.Owner, (ExternalChainType)src.NativeChainTypeId, src.NativeAddress, src.CreatedBlock, src.ModifiedBlock))
+            .ConstructUsing(src => new TokenWrapped(src.Id, src.TokenId, src.Owner, (ExternalChainType)src.NativeChainTypeId, src.NativeAddress, src.Validated, src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<TokenSummaryEntity, TokenSummary>()
@@ -455,6 +455,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
             .ForMember(dest => dest.NativeChainTypeId, opt => opt.MapFrom(src => src.NativeChain))
             .ForMember(dest => dest.NativeAddress, opt => opt.MapFrom(src => src.NativeAddress))
+            .ForMember(dest => dest.Validated, opt => opt.MapFrom(src => src.Validated))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());

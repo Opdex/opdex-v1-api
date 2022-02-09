@@ -29,6 +29,11 @@ public class WrappedTokenDetailsResponseModel
     public bool Trusted { get; set; }
 
     /// <summary>
+    /// True if the native token is seen as valid; otherwise false.
+    /// </summary>
+    public bool Validated { get; set; }
+
+    /// <summary>
     /// Block number at which the entity state was last modified.
     /// </summary>
     public ulong ModifiedBlock { get; set; }
