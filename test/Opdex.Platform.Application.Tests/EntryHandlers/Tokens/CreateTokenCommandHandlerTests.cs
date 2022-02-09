@@ -187,7 +187,7 @@ public class CreateTokenCommandHandlerTests
 
         var interfluxSummary = new InterfluxTokenContractSummary();
         var nativeChain = ExternalChainType.Ethereum;
-        var nativeAddress = "0x514910771af9ca656af840dff83e8264ecf986ca";
+        var nativeAddress = "0x514910771AF9Ca656af840dff83E8264EcF986CA";
         interfluxSummary.SetInterfluxDetails(new Address("PBHvTPaLKo5cVYBFdTfTgtjqfybLMJJ8W5"), nativeChain, nativeAddress);
         _mediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetStandardTokenContractSummaryQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(() =>

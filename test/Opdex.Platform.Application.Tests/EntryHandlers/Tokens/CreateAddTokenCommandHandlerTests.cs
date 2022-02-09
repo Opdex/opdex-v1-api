@@ -223,7 +223,7 @@ public class CreateAddTokenCommandHandlerTests
         tokenSummary.SetTotalSupply(UInt256.Parse("1000000000000000000000000000"));
         var interfluxSummary = new InterfluxTokenContractSummary();
         var nativeChain = ExternalChainType.Ethereum;
-        var nativeAddress = "0x514910771af9ca656af840dff83e8264ecf986ca";
+        var nativeAddress = "0x514910771AF9Ca656af840dff83E8264EcF986CA";
         interfluxSummary.SetInterfluxDetails(new Address ("PBHvTPaLKo5cVYBFdTfTgtjqfybLMJJ8W5"), nativeChain, nativeAddress);
         _mockMediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync((Token)null);
         _mockMediator.Setup(callTo => callTo.Send(It.IsAny<GetBestBlockReceiptQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockReceipt);
