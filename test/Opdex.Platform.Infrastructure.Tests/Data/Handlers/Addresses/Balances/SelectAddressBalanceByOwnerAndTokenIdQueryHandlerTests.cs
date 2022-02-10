@@ -104,7 +104,7 @@ public class SelectAddressBalanceByOwnerAndTokenIdQueryHandlerTests
     }
 
     [Fact]
-    public void SelectAddressBalanceByOwnerAndTokenId_Throws_NotFoundException()
+    public async Task SelectAddressBalanceByOwnerAndTokenId_Throws_NotFoundException()
     {
         // Arrange
         const ulong tokenId = 2;
@@ -117,10 +117,10 @@ public class SelectAddressBalanceByOwnerAndTokenIdQueryHandlerTests
 
         // Act
         // Assert
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"{nameof(AddressBalance)} not found.");
+            .WithMessage($"Balance not found.");
     }
 
     [Fact]

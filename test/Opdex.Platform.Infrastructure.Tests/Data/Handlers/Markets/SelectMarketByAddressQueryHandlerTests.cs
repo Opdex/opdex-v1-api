@@ -80,7 +80,7 @@ public class SelectMarketByAddressQueryHandlerTests
     }
 
     [Fact]
-    public void SelectMarketByAddress_Throws_NotFoundException()
+    public async Task SelectMarketByAddress_Throws_NotFoundException()
     {
         Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
 
@@ -89,7 +89,7 @@ public class SelectMarketByAddressQueryHandlerTests
         _dbContext.Setup(db => db.ExecuteFindAsync<MarketEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<MarketEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
             .WithMessage($"{nameof(Market)} not found.");

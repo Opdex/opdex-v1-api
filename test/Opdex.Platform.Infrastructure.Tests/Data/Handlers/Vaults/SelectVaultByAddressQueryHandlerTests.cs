@@ -80,7 +80,7 @@ public class SelectVaultByAddressQueryHandlerTests
     }
 
     [Fact]
-    public void SelectVaultByAddress_Throws_NotFoundException()
+    public async Task SelectVaultByAddress_Throws_NotFoundException()
     {
         Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
 
@@ -89,7 +89,7 @@ public class SelectVaultByAddressQueryHandlerTests
         _dbContext.Setup(db => db.ExecuteFindAsync<VaultEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<VaultEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
             .WithMessage($"{nameof(Vault)} not found.");

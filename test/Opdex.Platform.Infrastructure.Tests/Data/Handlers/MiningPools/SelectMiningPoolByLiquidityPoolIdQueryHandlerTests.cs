@@ -75,7 +75,7 @@ public class SelectMiningPoolByLiquidityPoolIdQueryHandlerTests
     }
 
     [Fact]
-    public void SelectMiningPoolByLiquidityPoolId_Throws_NotFoundException()
+    public async Task SelectMiningPoolByLiquidityPoolId_Throws_NotFoundException()
     {
         const ulong lpId = 99;
 
@@ -84,7 +84,7 @@ public class SelectMiningPoolByLiquidityPoolIdQueryHandlerTests
         _dbContext.Setup(db => db.ExecuteFindAsync<MiningPoolEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<MiningPoolEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
             .WithMessage("Mining pool not found.");

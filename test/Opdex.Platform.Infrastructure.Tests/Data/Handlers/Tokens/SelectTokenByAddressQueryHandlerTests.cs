@@ -76,7 +76,7 @@ public class SelectTokenByAddressQueryHandlerTests
     }
 
     [Fact]
-    public void SelectTokenByAddress_Throws_NotFoundException()
+    public async Task SelectTokenByAddress_Throws_NotFoundException()
     {
         Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
 
@@ -85,7 +85,7 @@ public class SelectTokenByAddressQueryHandlerTests
         _dbContext.Setup(db => db.ExecuteFindAsync<TokenEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<TokenEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
             .WithMessage($"{nameof(Token)} not found.");

@@ -79,7 +79,7 @@ public class SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQueryHandlerTe
     }
 
     [Fact]
-    public void SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQuery_Throws_NotFoundException()
+    public async Task SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQuery_Throws_NotFoundException()
     {
         const ulong vaultId = 10;
         const ulong proposalId = 11;
@@ -90,10 +90,10 @@ public class SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQueryHandlerTe
         _dbContext.Setup(db => db.ExecuteFindAsync<VaultProposalVoteEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<VaultProposalVoteEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"{nameof(VaultProposalVote)} not found.");
+            .WithMessage($"Proposal vote not found.");
     }
 
     [Fact]

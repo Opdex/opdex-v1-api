@@ -73,7 +73,7 @@ public class SelectLiquidityPoolByIdQueryHandlerTests
     }
 
     [Fact]
-    public void SelectLiquidityPoolById_Throws_NotFoundException()
+    public async Task SelectLiquidityPoolById_Throws_NotFoundException()
     {
         const ulong id = 99ul;
 
@@ -82,10 +82,10 @@ public class SelectLiquidityPoolByIdQueryHandlerTests
         _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<LiquidityPoolEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"{nameof(LiquidityPool)} not found.");
+            .WithMessage($"Liquidity pool not found.");
     }
 
     [Fact]

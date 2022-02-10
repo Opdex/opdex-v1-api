@@ -78,7 +78,7 @@ public class SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQueryHandl
     }
 
     [Fact]
-    public void SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQuery_Throws_NotFoundException()
+    public async Task SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQuery_Throws_NotFoundException()
     {
         const ulong vaultId = 10;
         const ulong proposalId = 11;
@@ -89,7 +89,7 @@ public class SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQueryHandl
         _dbContext.Setup(db => db.ExecuteFindAsync<VaultProposalPledgeEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<VaultProposalPledgeEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
             .WithMessage("Proposal pledge not found.");

@@ -82,7 +82,7 @@ public class SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQueryHand
     }
 
     [Fact]
-    public void SelectMiningGovernanceNominationByLiquidityAndMiningPoolId_Throws_NotFoundException()
+    public async Task SelectMiningGovernanceNominationByLiquidityAndMiningPoolId_Throws_NotFoundException()
     {
         // Arrange
         var command = new SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery(5, 10, 15);
@@ -92,10 +92,10 @@ public class SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQueryHand
 
         // Act
         // Assert
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"{nameof(MiningGovernanceNomination)} not found.");
+            .WithMessage($"Mining governance nomination not found.");
     }
 
     [Fact]

@@ -75,14 +75,14 @@ public class SelectMiningGovernanceByAddressQueryHandlerTests
     }
 
     [Fact]
-    public void SelectMiningGovernanceByAddress_Throws_NotFoundException()
+    public async Task SelectMiningGovernanceByAddress_Throws_NotFoundException()
     {
         var command = new SelectMiningGovernanceByAddressQuery("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u");
 
         _dbContext.Setup(db => db.ExecuteFindAsync<MiningGovernanceEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<MiningGovernanceEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
             .WithMessage("Mining governance not found.");

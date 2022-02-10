@@ -76,7 +76,7 @@ public class SelectTransactionByHashQueryHandlerTests
     }
 
     [Fact]
-    public void SelectTransactionByHash_Throws_NotFoundException()
+    public async Task SelectTransactionByHash_Throws_NotFoundException()
     {
         Sha256 hash = new Sha256(95840954890);
 
@@ -85,7 +85,7 @@ public class SelectTransactionByHashQueryHandlerTests
         _dbContext.Setup(db => db.ExecuteFindAsync<TransactionEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<TransactionEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
             .WithMessage($"{nameof(Transaction)} not found.");

@@ -80,7 +80,7 @@ public class SelectVaultByTokenIdQueryHandlerTests
     }
 
     [Fact]
-    public void SelectVaultByTokenId_Throws_NotFoundException()
+    public async Task SelectVaultByTokenId_Throws_NotFoundException()
     {
         const ulong tokenId = 10;
 
@@ -89,7 +89,7 @@ public class SelectVaultByTokenIdQueryHandlerTests
         _dbContext.Setup(db => db.ExecuteFindAsync<VaultEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<VaultEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
             .WithMessage($"{nameof(Vault)} not found.");

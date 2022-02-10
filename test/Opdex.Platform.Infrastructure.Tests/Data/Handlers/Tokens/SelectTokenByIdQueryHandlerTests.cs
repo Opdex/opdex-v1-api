@@ -75,7 +75,7 @@ public class SelectTokenByIdQueryHandlerTests
     }
 
     [Fact]
-    public void SelectTokenById_Throws_NotFoundException()
+    public async Task SelectTokenById_Throws_NotFoundException()
     {
         const ulong id = 99ul;
 
@@ -84,7 +84,7 @@ public class SelectTokenByIdQueryHandlerTests
         _dbContext.Setup(db => db.ExecuteFindAsync<TokenEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<TokenEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
             .WithMessage($"{nameof(Token)} not found.");

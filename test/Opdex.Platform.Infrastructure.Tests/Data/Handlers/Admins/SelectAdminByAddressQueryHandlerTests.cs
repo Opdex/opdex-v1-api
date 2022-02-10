@@ -74,14 +74,14 @@ public class SelectAdminByAddressQueryHandlerTests
     }
 
     [Fact]
-    public void SelectAdminByAddressQuery_Throws_NotFoundException()
+    public async Task SelectAdminByAddressQuery_Throws_NotFoundException()
     {
         // Arrange
         Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
 
         // Act
         // Assert
-        _handler.Invoking(h => h.Handle(new SelectAdminByAddressQuery(address), CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(new SelectAdminByAddressQuery(address), CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
             .WithMessage($"{nameof(Admin)} not found.");

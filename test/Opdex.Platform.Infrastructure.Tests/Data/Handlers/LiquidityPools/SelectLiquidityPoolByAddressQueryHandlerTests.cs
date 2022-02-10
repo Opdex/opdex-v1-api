@@ -74,7 +74,7 @@ public class SelectLiquidityPoolByAddressQueryHandlerTests
     }
 
     [Fact]
-    public void SelectLiquidityPoolByAddress_Throws_NotFoundException()
+    public async Task SelectLiquidityPoolByAddress_Throws_NotFoundException()
     {
         Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
 
@@ -83,10 +83,10 @@ public class SelectLiquidityPoolByAddressQueryHandlerTests
         _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<LiquidityPoolEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"{nameof(LiquidityPool)} not found.");
+            .WithMessage($"Liquidity pool not found.");
     }
 
     [Fact]

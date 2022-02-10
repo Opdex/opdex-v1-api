@@ -79,7 +79,7 @@ public class SelectMarketByIdQueryHandlerTests
     }
 
     [Fact]
-    public void SelectMarketById_Throws_NotFoundException()
+    public async Task SelectMarketById_Throws_NotFoundException()
     {
         const ulong id = 99ul;
 
@@ -88,7 +88,7 @@ public class SelectMarketByIdQueryHandlerTests
         _dbContext.Setup(db => db.ExecuteFindAsync<MarketEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<MarketEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
             .WithMessage($"{nameof(Market)} not found.");

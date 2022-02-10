@@ -85,7 +85,7 @@ public class SelectMarketSummaryByMarketIdQueryHandlerTests
     }
 
     [Fact]
-    public void SelectMarketSummaryByMarketId_Throws_NotFoundException()
+    public async Task SelectMarketSummaryByMarketId_Throws_NotFoundException()
     {
         const ulong id = 99ul;
 
@@ -94,7 +94,7 @@ public class SelectMarketSummaryByMarketIdQueryHandlerTests
         _dbContext.Setup(db => db.ExecuteFindAsync<MarketSummaryEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<MarketSummaryEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
             .WithMessage("Market summary not found.");

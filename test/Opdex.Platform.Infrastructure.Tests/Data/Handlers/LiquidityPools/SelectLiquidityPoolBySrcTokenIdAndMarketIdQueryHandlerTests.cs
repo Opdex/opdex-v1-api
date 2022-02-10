@@ -74,7 +74,7 @@ public class SelectLiquidityPoolBySrcTokenIdAndMarketIdQueryHandlerTests
     }
 
     [Fact]
-    public void SelectLiquidityPoolBySrcTokenIdAndMarketId_Throws_NotFoundException()
+    public async Task SelectLiquidityPoolBySrcTokenIdAndMarketId_Throws_NotFoundException()
     {
         const ulong srcTokenId = 99;
         const ulong marketId = 100;
@@ -84,10 +84,10 @@ public class SelectLiquidityPoolBySrcTokenIdAndMarketIdQueryHandlerTests
         _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<LiquidityPoolEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"{nameof(LiquidityPool)} not found.");
+            .WithMessage($"Liquidity pool not found.");
     }
 
     [Fact]

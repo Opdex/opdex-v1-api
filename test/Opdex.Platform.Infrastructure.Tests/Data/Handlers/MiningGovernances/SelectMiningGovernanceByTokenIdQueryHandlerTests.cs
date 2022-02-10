@@ -73,13 +73,13 @@ public class SelectMiningGovernanceByTokenIdQueryHandlerTests
     }
 
     [Fact]
-    public void SelectMiningGovernanceByTokenId_Throws_NotFoundException()
+    public async Task SelectMiningGovernanceByTokenId_Throws_NotFoundException()
     {
         var command = new SelectMiningGovernanceByTokenIdQuery(10);
 
         _dbContext.Setup(db => db.ExecuteFindAsync<MiningGovernanceEntity>(It.IsAny<DatabaseQuery>())).ReturnsAsync((MiningGovernanceEntity)null);
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
             .WithMessage("Mining governance not found.");

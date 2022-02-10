@@ -81,7 +81,7 @@ public class SelectLiquidityPoolSummaryByLiquidityPoolIdQueryHandlerTests
     }
 
     [Fact]
-    public void SelectLiquidityPoolSummaryByLiquidityPoolId_Throws_NotFoundException()
+    public async Task SelectLiquidityPoolSummaryByLiquidityPoolId_Throws_NotFoundException()
     {
         const ulong id = 99ul;
 
@@ -90,10 +90,10 @@ public class SelectLiquidityPoolSummaryByLiquidityPoolIdQueryHandlerTests
         _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolSummaryEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<LiquidityPoolSummaryEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"{nameof(LiquidityPoolSummary)} not found.");
+            .WithMessage("Liquidity pool summary not found.");
     }
 
     [Fact]

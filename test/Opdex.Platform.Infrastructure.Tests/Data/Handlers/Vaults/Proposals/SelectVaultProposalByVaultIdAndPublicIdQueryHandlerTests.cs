@@ -92,7 +92,7 @@ public class SelectVaultProposalByVaultIdAndPublicIdQueryHandlerTests
     }
 
     [Fact]
-    public void SelectVaultProposalByVaultIdAndPublicId_Throws_NotFoundException()
+    public async Task SelectVaultProposalByVaultIdAndPublicId_Throws_NotFoundException()
     {
         const ulong vaultId = 2;
         const ulong publicId = 11;
@@ -102,10 +102,10 @@ public class SelectVaultProposalByVaultIdAndPublicIdQueryHandlerTests
         _dbContext.Setup(db => db.ExecuteFindAsync<VaultProposalEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<VaultProposalEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"{nameof(VaultProposal)} not found.");
+            .WithMessage($"Proposal not found.");
     }
 
     [Fact]
