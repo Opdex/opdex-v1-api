@@ -28,7 +28,7 @@ public class TokenDistributionTests
         const ulong distributionBlock = 0;
 
         // Act
-        static void Act() => new TokenDistribution(1, 10, 20, 2, distributionBlock, 4, 5);
+        static void Act() => new TokenDistribution(1, 10, 20, 2, distributionBlock, 4);
 
         // Assert
         Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Distribution block must be greater than 0.");
@@ -41,7 +41,7 @@ public class TokenDistributionTests
         const ulong nextDistributionBlock = 0;
 
         // Act
-        static void Act() => new TokenDistribution(1, 10, 20, 2, 3, nextDistributionBlock, 5);
+        static void Act() => new TokenDistribution(1, 10, 20, 2, 3, 4, nextDistributionBlock);
 
         // Assert
         Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Next distribution block must be greater than 0.");
@@ -57,11 +57,10 @@ public class TokenDistributionTests
         const int periodIndex = 2;
         const ulong distributionBlock = 3;
         const ulong nextDistributionBlock = 4;
-        const ulong createdBlock = 5;
 
         // Act
         var distribution = new TokenDistribution(tokenId, vaultDistribution, miningGovernanceDistribution, periodIndex,
-                                                 distributionBlock, nextDistributionBlock, createdBlock);
+                                                 distributionBlock, nextDistributionBlock);
 
         // Assert
         distribution.Id.Should().Be(0);
@@ -71,8 +70,6 @@ public class TokenDistributionTests
         distribution.PeriodIndex.Should().Be(periodIndex);
         distribution.DistributionBlock.Should().Be(distributionBlock);
         distribution.NextDistributionBlock.Should().Be(nextDistributionBlock);
-        distribution.CreatedBlock.Should().Be(createdBlock);
-        distribution.ModifiedBlock.Should().Be(createdBlock);
     }
 
     [Fact]
@@ -86,12 +83,10 @@ public class TokenDistributionTests
         const int periodIndex = 2;
         const ulong distributionBlock = 3;
         const ulong nextDistributionBlock = 4;
-        const ulong createdBlock = 5;
-        const ulong modifiedBlock = 6;
 
         // Act
         var distribution = new TokenDistribution(id, tokenId, vaultDistribution, miningGovernanceDistribution, periodIndex,
-                                                 distributionBlock, nextDistributionBlock, createdBlock, modifiedBlock);
+                                                 distributionBlock, nextDistributionBlock);
 
         // Assert
         distribution.Id.Should().Be(id);
@@ -101,7 +96,5 @@ public class TokenDistributionTests
         distribution.PeriodIndex.Should().Be(periodIndex);
         distribution.DistributionBlock.Should().Be(distributionBlock);
         distribution.NextDistributionBlock.Should().Be(nextDistributionBlock);
-        distribution.CreatedBlock.Should().Be(createdBlock);
-        distribution.ModifiedBlock.Should().Be(modifiedBlock);
     }
 }

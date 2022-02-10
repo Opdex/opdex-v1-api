@@ -52,7 +52,7 @@ public class ProcessDistributionLogCommandHandler : IRequestHandler<ProcessDistr
             }
 
             var distribution = new TokenDistribution(token.Id, request.Log.VaultAmount, request.Log.MiningAmount, (int)request.Log.PeriodIndex,
-                                                     request.BlockHeight, request.Log.NextDistributionBlock, request.BlockHeight);
+                                                     request.BlockHeight, request.Log.NextDistributionBlock);
 
             var madeDistribution = await _mediator.Send(new MakeTokenDistributionCommand(distribution));
             if (!madeDistribution) return false;

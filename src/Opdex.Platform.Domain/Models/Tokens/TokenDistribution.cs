@@ -4,10 +4,10 @@ using System;
 
 namespace Opdex.Platform.Domain.Models.Tokens;
 
-public class TokenDistribution : BlockAudit
+public class TokenDistribution
 {
     public TokenDistribution(ulong tokenId, UInt256 vaultDistribution, UInt256 miningGovernanceDistribution, int periodIndex, ulong distributionBlock,
-                             ulong nextDistributionBlock, ulong createdBlock) : base(createdBlock)
+                             ulong nextDistributionBlock)
     {
         if (tokenId < 1)
         {
@@ -31,9 +31,8 @@ public class TokenDistribution : BlockAudit
         NextDistributionBlock = nextDistributionBlock;
     }
 
-    public TokenDistribution(ulong id, ulong tokenId, UInt256 vaultDistribution, UInt256 miningGovernanceDistribution, int periodIndex,
-                             ulong distributionBlock, ulong nextDistributionBlock, ulong createdBlock, ulong modifiedBlock)
-        : base(createdBlock, modifiedBlock)
+    public TokenDistribution(ulong id, ulong tokenId, UInt256 vaultDistribution, UInt256 miningGovernanceDistribution,
+                             int periodIndex, ulong distributionBlock, ulong nextDistributionBlock)
     {
         Id = id;
         TokenId = tokenId;
