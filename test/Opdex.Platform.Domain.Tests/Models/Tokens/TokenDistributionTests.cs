@@ -15,7 +15,7 @@ public class TokenDistributionTests
         const ulong tokenId = 0;
 
         // Act
-        static void Act() => new TokenDistribution(tokenId, 10, 20, 2, 3, 4, 5);
+        static void Act() => new TokenDistribution(tokenId, 10, 20, 2, 3, 4);
 
         // Assert
         Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Token Id must be greater than 0.");
@@ -41,7 +41,7 @@ public class TokenDistributionTests
         const ulong nextDistributionBlock = 0;
 
         // Act
-        static void Act() => new TokenDistribution(1, 10, 20, 2, 3, 4, nextDistributionBlock);
+        static void Act() => new TokenDistribution(10, 20, 2, 3, 4, nextDistributionBlock);
 
         // Assert
         Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Next distribution block must be greater than 0.");
