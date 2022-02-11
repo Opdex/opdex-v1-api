@@ -21,18 +21,14 @@ public class PersistTokenDistributionCommandHandler : IRequestHandler<PersistTok
                 {nameof(TokenDistributionEntity.MiningGovernanceDistribution)},
                 {nameof(TokenDistributionEntity.PeriodIndex)},
                 {nameof(TokenDistributionEntity.DistributionBlock)},
-                {nameof(TokenDistributionEntity.NextDistributionBlock)},
-                {nameof(TokenDistributionEntity.CreatedBlock)},
-                {nameof(TokenDistributionEntity.ModifiedBlock)}
+                {nameof(TokenDistributionEntity.NextDistributionBlock)}
               ) VALUES (
                 @{nameof(TokenDistributionEntity.TokenId)},
                 @{nameof(TokenDistributionEntity.VaultDistribution)},
                 @{nameof(TokenDistributionEntity.MiningGovernanceDistribution)},
                 @{nameof(TokenDistributionEntity.PeriodIndex)},
                 @{nameof(TokenDistributionEntity.DistributionBlock)},
-                @{nameof(TokenDistributionEntity.NextDistributionBlock)},
-                @{nameof(TokenDistributionEntity.CreatedBlock)},
-                @{nameof(TokenDistributionEntity.ModifiedBlock)}
+                @{nameof(TokenDistributionEntity.NextDistributionBlock)}
               );".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
@@ -64,7 +60,7 @@ public class PersistTokenDistributionCommandHandler : IRequestHandler<PersistTok
             {
                 { "TokenId", request.TokenDistribution.TokenId },
                 { "PeriodIndex", request.TokenDistribution.PeriodIndex },
-                { "BlockHeight", request.TokenDistribution.ModifiedBlock }
+                { "BlockHeight", request.TokenDistribution.DistributionBlock }
             }))
             {
                 _logger.LogError(ex, $"Failure persisting token distribution.");

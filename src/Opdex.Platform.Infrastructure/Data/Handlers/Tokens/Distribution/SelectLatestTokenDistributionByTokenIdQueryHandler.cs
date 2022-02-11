@@ -22,9 +22,7 @@ public class SelectLatestTokenDistributionByTokenIdQueryHandler : IRequestHandle
                 {nameof(TokenDistributionEntity.MiningGovernanceDistribution)},
                 {nameof(TokenDistributionEntity.PeriodIndex)},
                 {nameof(TokenDistributionEntity.DistributionBlock)},
-                {nameof(TokenDistributionEntity.NextDistributionBlock)},
-                {nameof(TokenDistributionEntity.CreatedBlock)},
-                {nameof(TokenDistributionEntity.ModifiedBlock)}
+                {nameof(TokenDistributionEntity.NextDistributionBlock)}
             FROM token_distribution
             WHERE {nameof(TokenDistributionEntity.TokenId)} = @{nameof(SqlParams.TokenId)}
             ORDER BY {nameof(TokenDistributionEntity.NextDistributionBlock)} DESC

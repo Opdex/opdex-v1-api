@@ -72,7 +72,7 @@ public class PlatformInfrastructureMapperProfile : Profile
 
         CreateMap<TokenDistributionEntity, TokenDistribution>()
             .ConstructUsing(src => new TokenDistribution(src.Id, src.TokenId, src.VaultDistribution, src.MiningGovernanceDistribution, src.PeriodIndex,
-                                                         src.DistributionBlock, src.NextDistributionBlock, src.CreatedBlock, src.ModifiedBlock))
+                                                         src.DistributionBlock, src.NextDistributionBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<TokenAttributeEntity, TokenAttribute>()
@@ -496,8 +496,6 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.NextDistributionBlock, opt => opt.MapFrom(src => src.NextDistributionBlock))
             .ForMember(dest => dest.DistributionBlock, opt => opt.MapFrom(src => src.DistributionBlock))
             .ForMember(dest => dest.PeriodIndex, opt => opt.MapFrom(src => src.PeriodIndex))
-            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
-            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<TokenAttribute, TokenAttributeEntity>()

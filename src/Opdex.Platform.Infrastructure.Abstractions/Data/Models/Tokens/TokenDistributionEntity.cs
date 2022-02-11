@@ -2,7 +2,7 @@ using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 
-public class TokenDistributionEntity : AuditEntity
+public class TokenDistributionEntity
 {
     public ulong Id { get; set; }
     public ulong TokenId { get; set; }
