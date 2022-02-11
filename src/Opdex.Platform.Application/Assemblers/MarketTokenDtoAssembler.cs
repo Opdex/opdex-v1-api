@@ -1,8 +1,10 @@
 using AutoMapper;
 using MediatR;
+using Opdex.Platform.Application.Abstractions.Models.MarketTokens;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens.Distribution;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Wrapped;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.Tokens;
@@ -35,7 +37,8 @@ public class MarketTokenDtoAssembler : IModelAssembler<MarketToken, MarketTokenD
         }
 
         var tokenAttributes = await _mediator.Send(new RetrieveTokenAttributesByTokenIdQuery(token.Id), CancellationToken.None);
-        marketTokenDto.Attributes = tokenAttributes.Select(attr => attr.AttributeType);
+        var attributeTypes = tokenAttributes.Select(attribute => attribute.AttributeType).ToList();
+        marketTokenDto.Attributes = attributeTypes;
 
         var tokenWrapped = await _mediator.Send(new RetrieveTokenWrappedByTokenIdQuery(token.Id, false), CancellationToken.None);
         if (tokenWrapped is not null)
@@ -43,7 +46,15 @@ public class MarketTokenDtoAssembler : IModelAssembler<MarketToken, MarketTokenD
             marketTokenDto.WrappedToken = _mapper.Map<WrappedTokenDetailsDto>(tokenWrapped);
         }
 
-        var isLpt = marketTokenDto.Attributes.Contains(TokenAttributeType.Provisional);
+        var tokenIsMinedToken = attributeTypes.Contains(TokenAttributeType.Staking);
+        if (tokenIsMinedToken)
+        {
+            var tokenDistribution = await _mediator.Send(new RetrieveLatestTokenDistributionByTokenIdQuery(token.Id), CancellationToken.None);
+            var tokenDistributionAssembler = new MinedTokenDistributionScheduleDtoAssembler(_mediator, token);
+            marketTokenDto.Distribution = await tokenDistributionAssembler.Assemble(tokenDistribution);
+        }
+
+        var isLpt = attributeTypes.Contains(TokenAttributeType.Provisional);
 
         var liquidityPool = isLpt
             ? await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(token.Address))

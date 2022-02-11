@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Opdex.Platform.Application.Abstractions.Models.Tokens;
+namespace Opdex.Platform.Application.Abstractions.Models.MarketTokens;
 
 public class MarketTokensDto
 {

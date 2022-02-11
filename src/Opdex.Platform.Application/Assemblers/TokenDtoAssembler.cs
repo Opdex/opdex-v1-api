@@ -2,7 +2,9 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens.Distribution;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Wrapped;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.Tokens;
 using System;
 using System.Linq;
@@ -27,12 +29,21 @@ public class TokenDtoAssembler : IModelAssembler<Token, TokenDto>
         var tokenDto = _mapper.Map<TokenDto>(token);
 
         var attributes = await _mediator.Send(new RetrieveTokenAttributesByTokenIdQuery(token.Id), CancellationToken.None);
-        tokenDto.Attributes = attributes.Select(attribute => attribute.AttributeType);
+        var attributeTypes = attributes.Select(attribute => attribute.AttributeType).ToList();
+        tokenDto.Attributes = attributeTypes;
 
         var tokenWrapped = await _mediator.Send(new RetrieveTokenWrappedByTokenIdQuery(token.Id, false), CancellationToken.None);
         if (tokenWrapped is not null)
         {
             tokenDto.WrappedToken = _mapper.Map<WrappedTokenDetailsDto>(tokenWrapped);
+        }
+
+        var tokenIsMinedToken = attributeTypes.Contains(TokenAttributeType.Staking);
+        if (tokenIsMinedToken)
+        {
+            var tokenDistribution = await _mediator.Send(new RetrieveLatestTokenDistributionByTokenIdQuery(token.Id), CancellationToken.None);
+            var tokenDistributionAssembler = new MinedTokenDistributionScheduleDtoAssembler(_mediator, token);
+            tokenDto.Distribution = await tokenDistributionAssembler.Assemble(tokenDistribution);
         }
 
         if (tokenDto.Summary is null)
