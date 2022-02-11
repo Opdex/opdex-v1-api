@@ -11,8 +11,6 @@ using System.Diagnostics;
 
 namespace Opdex.Platform.Infrastructure.Data;
 
-// Todo Implement Dispose Methods
-// Ref: https://stackoverflow.com/questions/538060/proper-use-of-the-idisposable-interface
 public class DbContext : IDbContext
 {
     private readonly AsyncRetryPolicy _retryPolicy = Policy

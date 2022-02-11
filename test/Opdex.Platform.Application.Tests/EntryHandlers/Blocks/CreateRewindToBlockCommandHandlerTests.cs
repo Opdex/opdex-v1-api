@@ -66,7 +66,7 @@ public class CreateRewindToBlockCommandHandlerTests
     }
 
     [Fact]
-    public void CreateRewindToBlockCommand_InvalidBlock_ThrowsInvalidDataException()
+    public async Task CreateRewindToBlockCommand_InvalidBlock_ThrowsInvalidDataException()
     {
         // Arrange
         const ulong block = 10;
@@ -74,7 +74,7 @@ public class CreateRewindToBlockCommandHandlerTests
 
         // Act
         // Assert
-        _handler.Invoking(h => h.Handle(new CreateRewindToBlockCommand(block), CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(new CreateRewindToBlockCommand(block), CancellationToken.None))
             .Should().ThrowAsync<InvalidDataException>()
             .WithMessage("Unable to find a block by the provided block number.");
     }
@@ -98,7 +98,7 @@ public class CreateRewindToBlockCommandHandlerTests
     }
 
     [Fact]
-    public void CreateRewindToBlockCommand_RequestExceedsMaximumRewind_ThrowsArgumentOutOfRangeException()
+    public async Task CreateRewindToBlockCommand_RequestExceedsMaximumRewind_ThrowsMaxReorgException()
     {
         // Arrange
         var rewindBlock = new Block(10, Sha256.Parse("18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147"), DateTime.UtcNow, DateTime.UtcNow);
@@ -108,9 +108,8 @@ public class CreateRewindToBlockCommandHandlerTests
 
         // Act
         // Assert
-        _handler.Invoking(h => h.Handle(new CreateRewindToBlockCommand(rewindBlock.Height), CancellationToken.None))
-            .Should().ThrowAsync<ArgumentOutOfRangeException>()
-            .WithMessage("*Rewind request exceeds maximum rewind limit.*");
+        await _handler.Invoking(h => h.Handle(new CreateRewindToBlockCommand(rewindBlock.Height), CancellationToken.None))
+            .Should().ThrowAsync<MaximumReorgException>();
     }
 
     [Fact]

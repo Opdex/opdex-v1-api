@@ -1,6 +1,7 @@
 using AutoMapper;
 using FluentAssertions;
 using Moq;
+using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MiningGovernances.Nominations;
@@ -23,6 +24,20 @@ public class SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHan
 
         _dbContext = new Mock<IDbContext>();
         _handler = new SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandler(_dbContext.Object, mapper);
+    }
+
+    [Fact]
+    public async Task Handle_Query_LimitByMaxNominations()
+    {
+        // Arrange
+        var query = new SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQuery(5);
+
+        // Act
+        await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteQueryAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith($"LIMIT {MiningGovernanceConstants.MaxNominations};"))), Times.Once);
     }
 
     [Fact]

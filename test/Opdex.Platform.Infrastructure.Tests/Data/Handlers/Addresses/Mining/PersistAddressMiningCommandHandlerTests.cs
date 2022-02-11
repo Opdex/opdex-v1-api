@@ -28,6 +28,51 @@ public class PersistAddressMiningCommandHandlerTests
     }
 
     [Fact]
+    public async Task Insert_AddressMining_CorrectTable()
+    {
+        // Arrange
+        var position = new AddressMining(1, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 100000000, 3);
+        var command = new PersistAddressMiningCommand(position);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteScalarAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.StartsWith("INSERT INTO address_mining"))), Times.Once);
+    }
+
+    [Fact]
+    public async Task Insert_Return_LastInsertId()
+    {
+        // Arrange
+        var position = new AddressMining(1, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 100000000, 3);
+        var command = new PersistAddressMiningCommand(position);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteScalarAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("SELECT LAST_INSERT_ID();"))), Times.Once);
+    }
+
+    [Fact]
+    public async Task Update_AddressMining_CorrectTable()
+    {
+        // Arrange
+        var position = new AddressMining(1, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 100000000, 3, 3000);
+        var command = new PersistAddressMiningCommand(position);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteScalarAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.StartsWith("UPDATE address_mining"))), Times.Once);
+    }
+
+    [Fact]
     public async Task Insert_AddressMining_Success()
     {
         const ulong expectedId = 10ul;

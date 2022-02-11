@@ -28,6 +28,20 @@ public class SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQueryHandlerTe
     }
 
     [Fact]
+    public async Task Handle_Query_Limit1()
+    {
+        // Arrange
+        var query = new SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQuery(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", false);
+
+        // Act
+        await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteFindAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("LIMIT 1;"))), Times.Once);
+    }
+
+    [Fact]
     public async Task SelectVaultProposalVoteById_Success()
     {
         const ulong vaultId = 10;
@@ -65,7 +79,7 @@ public class SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQueryHandlerTe
     }
 
     [Fact]
-    public void SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQuery_Throws_NotFoundException()
+    public async Task SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQuery_Throws_NotFoundException()
     {
         const ulong vaultId = 10;
         const ulong proposalId = 11;
@@ -76,10 +90,10 @@ public class SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQueryHandlerTe
         _dbContext.Setup(db => db.ExecuteFindAsync<VaultProposalVoteEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<VaultProposalVoteEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"{nameof(VaultProposalVote)} not found.");
+            .WithMessage($"Proposal vote not found.");
     }
 
     [Fact]

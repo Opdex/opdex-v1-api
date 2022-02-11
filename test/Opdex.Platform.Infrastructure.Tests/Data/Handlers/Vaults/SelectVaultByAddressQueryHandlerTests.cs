@@ -28,6 +28,20 @@ public class SelectVaultByAddressQueryHandlerTests
     }
 
     [Fact]
+    public async Task Handle_Query_Limit1()
+    {
+        // Arrange
+        var query = new SelectVaultByAddressQuery(new Address("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u"), false);
+
+        // Act
+        await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteFindAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("LIMIT 1;"))), Times.Once);
+    }
+
+    [Fact]
     public async Task SelectVaultByAddress_Success()
     {
         Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
@@ -66,7 +80,7 @@ public class SelectVaultByAddressQueryHandlerTests
     }
 
     [Fact]
-    public void SelectVaultByAddress_Throws_NotFoundException()
+    public async Task SelectVaultByAddress_Throws_NotFoundException()
     {
         Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
 
@@ -75,7 +89,7 @@ public class SelectVaultByAddressQueryHandlerTests
         _dbContext.Setup(db => db.ExecuteFindAsync<VaultEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<VaultEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
             .WithMessage($"{nameof(Vault)} not found.");

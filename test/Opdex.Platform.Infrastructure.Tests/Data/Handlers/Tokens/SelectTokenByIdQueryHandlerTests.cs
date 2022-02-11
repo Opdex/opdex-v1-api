@@ -27,6 +27,20 @@ public class SelectTokenByIdQueryHandlerTests
     }
 
     [Fact]
+    public async Task Handle_Query_Limit1()
+    {
+        // Arrange
+        var query = new SelectTokenByIdQuery(5, false);
+
+        // Act
+        await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteFindAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("LIMIT 1;"))), Times.Once);
+    }
+
+    [Fact]
     public async Task SelectTokenById_Success()
     {
         const ulong id = 99ul;
@@ -61,7 +75,7 @@ public class SelectTokenByIdQueryHandlerTests
     }
 
     [Fact]
-    public void SelectTokenById_Throws_NotFoundException()
+    public async Task SelectTokenById_Throws_NotFoundException()
     {
         const ulong id = 99ul;
 
@@ -70,7 +84,7 @@ public class SelectTokenByIdQueryHandlerTests
         _dbContext.Setup(db => db.ExecuteFindAsync<TokenEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<TokenEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
             .WithMessage($"{nameof(Token)} not found.");

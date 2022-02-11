@@ -27,7 +27,8 @@ public class SelectTransactionByHashQueryHandler : IRequestHandler<SelectTransac
                 {nameof(TransactionEntity.Success)},
                 {nameof(TransactionEntity.Error)}
             FROM transaction
-            WHERE {nameof(TransactionEntity.Hash)} = @{nameof(SqlParams.Hash)};".RemoveExcessWhitespace();
+            WHERE {nameof(TransactionEntity.Hash)} = @{nameof(SqlParams.Hash)}
+            LIMIT 1;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

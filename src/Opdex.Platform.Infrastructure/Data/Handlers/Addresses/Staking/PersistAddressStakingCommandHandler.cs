@@ -30,7 +30,7 @@ public class PersistAddressStakingCommandHandler : IRequestHandler<PersistAddres
                 @{nameof(AddressStakingEntity.CreatedBlock)},
                 @{nameof(AddressStakingEntity.ModifiedBlock)}
               );
-              SELECT LAST_INSERT_ID()".RemoveExcessWhitespace();
+              SELECT LAST_INSERT_ID();".RemoveExcessWhitespace();
 
     private static readonly string UpdateSqlCommand =
         $@"UPDATE address_staking

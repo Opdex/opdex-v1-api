@@ -29,6 +29,20 @@ public class SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQueryHand
     }
 
     [Fact]
+    public async Task Handle_Query_Limit1()
+    {
+        // Arrange
+        var query = new SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery(5, 5, 5, false);
+
+        // Act
+        await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteFindAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("LIMIT 1;"))), Times.Once);
+    }
+
+    [Fact]
     public async Task SelectMiningGovernanceNominationByLiquidityAndMiningPoolId_Success()
     {
         // Arrange
@@ -68,7 +82,7 @@ public class SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQueryHand
     }
 
     [Fact]
-    public void SelectMiningGovernanceNominationByLiquidityAndMiningPoolId_Throws_NotFoundException()
+    public async Task SelectMiningGovernanceNominationByLiquidityAndMiningPoolId_Throws_NotFoundException()
     {
         // Arrange
         var command = new SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery(5, 10, 15);
@@ -78,10 +92,10 @@ public class SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQueryHand
 
         // Act
         // Assert
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"{nameof(MiningGovernanceNomination)} not found.");
+            .WithMessage($"Mining governance nomination not found.");
     }
 
     [Fact]

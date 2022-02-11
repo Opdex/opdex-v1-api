@@ -26,7 +26,8 @@ public class SelectLiquidityPoolByAddressQueryHandler : IRequestHandler<SelectLi
                 {nameof(LiquidityPoolEntity.CreatedBlock)},
                 {nameof(LiquidityPoolEntity.ModifiedBlock)}
             FROM pool_liquidity
-            WHERE {nameof(LiquidityPoolEntity.Address)} = @{nameof(SqlParams.Address)};".RemoveExcessWhitespace();
+            WHERE {nameof(LiquidityPoolEntity.Address)} = @{nameof(SqlParams.Address)}
+            LIMIT 1;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

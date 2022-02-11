@@ -28,6 +28,20 @@ public class SelectAdminByAddressQueryHandlerTests
         _handler = new SelectAdminByAddressQueryHandler(_dbContext.Object, mapper);
     }
 
+    [Fact]
+    public async Task Handle_Query_Limit1()
+    {
+        // Arrange
+        var query = new SelectAdminByAddressQuery("PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", false);
+
+        // Act
+        await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteFindAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("LIMIT 1;"))), Times.Once);
+    }
+
     [Theory]
     [InlineData("")]
     [InlineData(" ")]
@@ -60,14 +74,14 @@ public class SelectAdminByAddressQueryHandlerTests
     }
 
     [Fact]
-    public void SelectAdminByAddressQuery_Throws_NotFoundException()
+    public async Task SelectAdminByAddressQuery_Throws_NotFoundException()
     {
         // Arrange
         Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
 
         // Act
         // Assert
-        _handler.Invoking(h => h.Handle(new SelectAdminByAddressQuery(address), CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(new SelectAdminByAddressQuery(address), CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
             .WithMessage($"{nameof(Admin)} not found.");

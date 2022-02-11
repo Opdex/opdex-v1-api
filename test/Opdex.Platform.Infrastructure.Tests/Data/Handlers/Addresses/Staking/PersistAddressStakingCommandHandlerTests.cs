@@ -28,6 +28,51 @@ public class PersistAddressStakingCommandHandlerTests
     }
 
     [Fact]
+    public async Task Insert_AddressStaking_CorrectTable()
+    {
+        // Arrange
+        var position = new AddressStaking(1, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 100000000, 3);
+        var command = new PersistAddressStakingCommand(position);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteScalarAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.StartsWith("INSERT INTO address_staking"))), Times.Once);
+    }
+
+    [Fact]
+    public async Task Insert_Return_LastInsertId()
+    {
+        // Arrange
+        var position = new AddressStaking(1, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 100000000, 3);
+        var command = new PersistAddressStakingCommand(position);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteScalarAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("SELECT LAST_INSERT_ID();"))), Times.Once);
+    }
+
+    [Fact]
+    public async Task Update_AddressStaking_CorrectTable()
+    {
+        // Arrange
+        var position = new AddressStaking(1, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 100000000, 3, 3000);
+        var command = new PersistAddressStakingCommand(position);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteScalarAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.StartsWith("UPDATE address_staking"))), Times.Once);
+    }
+
+    [Fact]
     public async Task Insert_AddressStaking_Success()
     {
         const ulong expectedId = 10ul;

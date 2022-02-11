@@ -26,6 +26,20 @@ public class SelectMarketPermissionQueryHandlerTests
     }
 
     [Fact]
+    public async Task Handle_Query_Limit1()
+    {
+        // Arrange
+        var query = new SelectMarketPermissionQuery(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", MarketPermissionType.Provide, false);
+
+        // Act
+        await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteFindAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("LIMIT 1;"))), Times.Once);
+    }
+
+    [Fact]
     public async Task Handle_AnySelectQuery_ExecuteFind()
     {
         // Arrange
