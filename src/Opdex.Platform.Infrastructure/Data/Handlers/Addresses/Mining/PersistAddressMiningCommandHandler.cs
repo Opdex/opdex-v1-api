@@ -30,7 +30,7 @@ public class PersistAddressMiningCommandHandler : IRequestHandler<PersistAddress
                 @{nameof(AddressMiningEntity.CreatedBlock)},
                 @{nameof(AddressMiningEntity.ModifiedBlock)}
               );
-              SELECT LAST_INSERT_ID()".RemoveExcessWhitespace();
+              SELECT LAST_INSERT_ID();".RemoveExcessWhitespace();
 
     private static readonly string UpdateSqlCommand =
         $@"UPDATE address_mining

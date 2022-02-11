@@ -28,6 +28,20 @@ public class SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQueryHandl
     }
 
     [Fact]
+    public async Task Handle_Query_Limit1()
+    {
+        // Arrange
+        var query = new SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQuery(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", false);
+
+        // Act
+        await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteFindAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("LIMIT 1;"))), Times.Once);
+    }
+
+    [Fact]
     public async Task SelectVaultProposalPledgeById_Success()
     {
         const ulong vaultId = 10;
@@ -64,7 +78,7 @@ public class SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQueryHandl
     }
 
     [Fact]
-    public void SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQuery_Throws_NotFoundException()
+    public async Task SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQuery_Throws_NotFoundException()
     {
         const ulong vaultId = 10;
         const ulong proposalId = 11;
@@ -75,7 +89,7 @@ public class SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQueryHandl
         _dbContext.Setup(db => db.ExecuteFindAsync<VaultProposalPledgeEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<VaultProposalPledgeEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
             .WithMessage("Proposal pledge not found.");

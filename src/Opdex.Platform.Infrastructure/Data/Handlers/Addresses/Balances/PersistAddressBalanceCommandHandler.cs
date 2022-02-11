@@ -30,7 +30,7 @@ public class PersistAddressBalanceCommandHandler : IRequestHandler<PersistAddres
                 @{nameof(AddressBalanceEntity.CreatedBlock)},
                 @{nameof(AddressBalanceEntity.ModifiedBlock)}
               );
-              SELECT LAST_INSERT_ID()".RemoveExcessWhitespace();
+              SELECT LAST_INSERT_ID();".RemoveExcessWhitespace();
 
     private static readonly string UpdateSqlCommand =
         $@"UPDATE address_balance

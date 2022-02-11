@@ -27,6 +27,20 @@ public class SelectLiquidityPoolByIdQueryHandlerTests
     }
 
     [Fact]
+    public async Task Handle_Query_Limit1()
+    {
+        // Arrange
+        var query = new SelectLiquidityPoolByIdQuery(5, false);
+
+        // Act
+        await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteFindAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("LIMIT 1;"))), Times.Once);
+    }
+
+    [Fact]
     public async Task SelectLiquidityPoolById_Success()
     {
         const ulong id = 99ul;
@@ -59,7 +73,7 @@ public class SelectLiquidityPoolByIdQueryHandlerTests
     }
 
     [Fact]
-    public void SelectLiquidityPoolById_Throws_NotFoundException()
+    public async Task SelectLiquidityPoolById_Throws_NotFoundException()
     {
         const ulong id = 99ul;
 
@@ -68,10 +82,10 @@ public class SelectLiquidityPoolByIdQueryHandlerTests
         _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<LiquidityPoolEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"{nameof(LiquidityPool)} not found.");
+            .WithMessage($"Liquidity pool not found.");
     }
 
     [Fact]

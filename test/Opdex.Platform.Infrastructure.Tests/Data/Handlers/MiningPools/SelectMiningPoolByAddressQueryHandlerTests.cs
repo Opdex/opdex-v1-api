@@ -28,6 +28,20 @@ public class SelectMiningPoolByAddressQueryHandlerTests
     }
 
     [Fact]
+    public async Task Handle_Query_Limit1()
+    {
+        // Arrange
+        var query = new SelectMiningPoolByAddressQuery("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", false);
+
+        // Act
+        await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteFindAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("LIMIT 1;"))), Times.Once);
+    }
+
+    [Fact]
     public async Task SelectMiningPoolByAddress_Success()
     {
         Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
@@ -62,7 +76,7 @@ public class SelectMiningPoolByAddressQueryHandlerTests
     }
 
     [Fact]
-    public void SelectMiningPoolByAddress_Throws_NotFoundException()
+    public async Task SelectMiningPoolByAddress_Throws_NotFoundException()
     {
         Address address = "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh";
 
@@ -71,7 +85,7 @@ public class SelectMiningPoolByAddressQueryHandlerTests
         _dbContext.Setup(db => db.ExecuteFindAsync<MiningPoolEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<MiningPoolEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
             .WithMessage("Mining pool not found.");

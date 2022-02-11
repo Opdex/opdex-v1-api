@@ -29,6 +29,20 @@ public class SelectAddressBalanceByOwnerAndTokenIdQueryHandlerTests
     }
 
     [Fact]
+    public async Task Handle_Query_Limit1()
+    {
+        // Arrange
+        var query = new SelectAddressBalanceByOwnerAndTokenIdQuery("PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 5, false);
+
+        // Act
+        await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteFindAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("LIMIT 1;"))), Times.Once);
+    }
+
+    [Fact]
     public void SelectAddressBalanceByOwnerAndTokenId_ThrowsArgumentNullException_InvalidOwner()
     {
         // Arrange
@@ -90,7 +104,7 @@ public class SelectAddressBalanceByOwnerAndTokenIdQueryHandlerTests
     }
 
     [Fact]
-    public void SelectAddressBalanceByOwnerAndTokenId_Throws_NotFoundException()
+    public async Task SelectAddressBalanceByOwnerAndTokenId_Throws_NotFoundException()
     {
         // Arrange
         const ulong tokenId = 2;
@@ -103,10 +117,10 @@ public class SelectAddressBalanceByOwnerAndTokenIdQueryHandlerTests
 
         // Act
         // Assert
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"{nameof(AddressBalance)} not found.");
+            .WithMessage($"Balance not found.");
     }
 
     [Fact]

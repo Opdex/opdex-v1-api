@@ -27,6 +27,20 @@ public class SelectVaultByIdQueryHandlerTests
     }
 
     [Fact]
+    public async Task Handle_Query_Limit1()
+    {
+        // Arrange
+        var query = new SelectVaultByIdQuery(5, false);
+
+        // Act
+        await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteFindAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("LIMIT 1;"))), Times.Once);
+    }
+
+    [Fact]
     public async Task SelectVaultById_Success()
     {
         const ulong id = 10;
@@ -65,7 +79,7 @@ public class SelectVaultByIdQueryHandlerTests
     }
 
     [Fact]
-    public void SelectVaultById_Throws_NotFoundException()
+    public async Task SelectVaultById_Throws_NotFoundException()
     {
         const ulong id = 10;
 
@@ -74,7 +88,7 @@ public class SelectVaultByIdQueryHandlerTests
         _dbContext.Setup(db => db.ExecuteFindAsync<VaultEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<VaultEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
             .WithMessage($"{nameof(Vault)} not found.");

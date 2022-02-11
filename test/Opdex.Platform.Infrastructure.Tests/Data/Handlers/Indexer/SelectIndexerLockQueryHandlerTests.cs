@@ -26,6 +26,23 @@ public class SelectIndexerLockQueryHandlerTests
     }
 
     [Fact]
+    public async Task Handle_Query_Limit1()
+    {
+        // Arrange
+        var query = new SelectIndexerLockQuery();
+
+        // Act
+        try
+        {
+            await _handler.Handle(query, CancellationToken.None);
+        } catch(NotFoundException) {}
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteFindAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("LIMIT 1;"))), Times.Once);
+    }
+
+    [Fact]
     public async Task SelectIndexLock_Success()
     {
         var expectedEntity = new IndexLockEntity
@@ -48,16 +65,16 @@ public class SelectIndexerLockQueryHandlerTests
     }
 
     [Fact]
-    public void SelectIndexLock_Throws_NotFoundException()
+    public async Task SelectIndexLock_Throws_NotFoundException()
     {
         var command = new SelectIndexerLockQuery();
 
         _dbContext.Setup(db => db.ExecuteFindAsync<IndexLockEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<IndexLockEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"{nameof(IndexLock)} not found.");
+            .WithMessage($"Index lock not found.");
     }
 }

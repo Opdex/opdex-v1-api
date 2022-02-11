@@ -28,6 +28,20 @@ public class SelectLiquidityPoolByAddressQueryHandlerTests
     }
 
     [Fact]
+    public async Task Handle_Query_Limit1()
+    {
+        // Arrange
+        var query = new SelectLiquidityPoolByAddressQuery("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", false);
+
+        // Act
+        await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteFindAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("LIMIT 1;"))), Times.Once);
+    }
+
+    [Fact]
     public async Task SelectLiquidityPoolByAddress_Success()
     {
         Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
@@ -60,7 +74,7 @@ public class SelectLiquidityPoolByAddressQueryHandlerTests
     }
 
     [Fact]
-    public void SelectLiquidityPoolByAddress_Throws_NotFoundException()
+    public async Task SelectLiquidityPoolByAddress_Throws_NotFoundException()
     {
         Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
 
@@ -69,10 +83,10 @@ public class SelectLiquidityPoolByAddressQueryHandlerTests
         _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<LiquidityPoolEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"{nameof(LiquidityPool)} not found.");
+            .WithMessage($"Liquidity pool not found.");
     }
 
     [Fact]

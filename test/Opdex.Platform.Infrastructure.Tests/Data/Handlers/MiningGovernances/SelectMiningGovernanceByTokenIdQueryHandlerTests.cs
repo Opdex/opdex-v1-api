@@ -27,6 +27,20 @@ public class SelectMiningGovernanceByTokenIdQueryHandlerTests
     }
 
     [Fact]
+    public async Task Handle_Query_Limit1()
+    {
+        // Arrange
+        var query = new SelectMiningGovernanceByTokenIdQuery(5, false);
+
+        // Act
+        await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteFindAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("LIMIT 1;"))), Times.Once);
+    }
+
+    [Fact]
     public async Task SelectMiningGovernanceByTokenId_Success()
     {
         const ulong tokenId = 10;
@@ -59,13 +73,13 @@ public class SelectMiningGovernanceByTokenIdQueryHandlerTests
     }
 
     [Fact]
-    public void SelectMiningGovernanceByTokenId_Throws_NotFoundException()
+    public async Task SelectMiningGovernanceByTokenId_Throws_NotFoundException()
     {
         var command = new SelectMiningGovernanceByTokenIdQuery(10);
 
         _dbContext.Setup(db => db.ExecuteFindAsync<MiningGovernanceEntity>(It.IsAny<DatabaseQuery>())).ReturnsAsync((MiningGovernanceEntity)null);
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
             .WithMessage("Mining governance not found.");

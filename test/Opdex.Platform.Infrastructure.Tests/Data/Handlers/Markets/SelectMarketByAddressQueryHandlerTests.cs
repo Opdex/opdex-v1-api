@@ -28,6 +28,20 @@ public class SelectMarketByAddressQueryHandlerTests
     }
 
     [Fact]
+    public async Task Handle_Query_Limit1()
+    {
+        // Arrange
+        var query = new SelectMarketByAddressQuery("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", false);
+
+        // Act
+        await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteFindAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("LIMIT 1;"))), Times.Once);
+    }
+
+    [Fact]
     public async Task SelectMarketByAddress_Success()
     {
         Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
@@ -66,7 +80,7 @@ public class SelectMarketByAddressQueryHandlerTests
     }
 
     [Fact]
-    public void SelectMarketByAddress_Throws_NotFoundException()
+    public async Task SelectMarketByAddress_Throws_NotFoundException()
     {
         Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
 
@@ -75,7 +89,7 @@ public class SelectMarketByAddressQueryHandlerTests
         _dbContext.Setup(db => db.ExecuteFindAsync<MarketEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<MarketEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
             .WithMessage($"{nameof(Market)} not found.");

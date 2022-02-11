@@ -27,6 +27,20 @@ public class SelectLatestTokenDistributionByTokenIdQueryHandlerTests
     }
 
     [Fact]
+    public async Task Handle_Query_Limit1()
+    {
+        // Arrange
+        var query = new SelectLatestTokenDistributionByTokenIdQuery(5, false);
+
+        // Act
+        await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteFindAsync<It.IsAnyType>(
+            It.Is<DatabaseQuery>(q => q.Sql.EndsWith("LIMIT 1;"))), Times.Once);
+    }
+
+    [Fact]
     public async Task SelectTokenDistributionByTokenId_Success()
     {
         const ulong tokenId = 99999;
@@ -60,7 +74,7 @@ public class SelectLatestTokenDistributionByTokenIdQueryHandlerTests
     }
 
     [Fact]
-    public void SelectTokenDistributionByTokenId_Throws_NotFoundException()
+    public async Task SelectTokenDistributionByTokenId_Throws_NotFoundException()
     {
         const ulong tokenId = 99999;
         var command = new SelectLatestTokenDistributionByTokenIdQuery(tokenId);
@@ -68,9 +82,9 @@ public class SelectLatestTokenDistributionByTokenIdQueryHandlerTests
         _dbContext.Setup(db => db.ExecuteFindAsync<TokenDistributionEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<TokenDistributionEntity>(null));
 
-        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"{nameof(TokenDistribution)} not found.");
+            .WithMessage($"Token distribution not found.");
     }
 }
