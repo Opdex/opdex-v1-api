@@ -18,6 +18,6 @@ public class MakeAuthSuccessCommandHandler : IRequestHandler<MakeAuthSuccessComm
 
     public async Task<bool> Handle(MakeAuthSuccessCommand request, CancellationToken cancellationToken)
     {
-        return await _mediator.Send(new PersistAuthSuccessCommand(request.AuthSuccess), cancellationToken);
+        return await _mediator.Send(new PersistAuthSuccessCommand(request.AuthSuccess), CancellationToken.None);
     }
 }

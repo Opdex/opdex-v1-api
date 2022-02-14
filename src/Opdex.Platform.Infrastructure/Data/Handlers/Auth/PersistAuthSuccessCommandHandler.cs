@@ -42,7 +42,7 @@ public class PersistAuthSuccessCommandHandler : IRequestHandler<PersistAuthSucce
         {
             var authSuccessEntity = _mapper.Map<AuthSuccessEntity>(request.AuthSuccess);
 
-            var command = DatabaseQuery.Create(SqlCommand, authSuccessEntity, cancellationToken);
+            var command = DatabaseQuery.Create(SqlCommand, authSuccessEntity, CancellationToken.None);
 
             var result = await _context.ExecuteCommandAsync(command);
 
