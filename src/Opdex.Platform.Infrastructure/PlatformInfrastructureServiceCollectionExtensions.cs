@@ -287,6 +287,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<SelectTokenSnapshotsWithFilterQuery, IEnumerable<TokenSnapshot>>, SelectTokenSnapshotsWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<SelectTokenSnapshotWithFilterQuery, TokenSnapshot>, SelectTokenSnapshotWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<SelectLatestTokenDistributionByTokenIdQuery, TokenDistribution>, SelectLatestTokenDistributionByTokenIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectDistributionsByTokenIdQuery, IEnumerable<TokenDistribution>>, SelectDistributionsByTokenIdQueryHandler>();
         services.AddTransient<IRequestHandler<SelectTokenSummaryByTokenIdQuery, TokenSummary>, SelectTokenSummaryByTokenIdQueryHandler>();
         services.AddTransient<IRequestHandler<SelectTokenSummaryByMarketAndTokenIdQuery, TokenSummary>, SelectTokenSummaryByMarketAndTokenIdQueryHandler>();
         services.AddTransient<IRequestHandler<SelectTokenAttributesByTokenIdQuery, IEnumerable<TokenAttribute>>, SelectTokenAttributesByTokenIdQueryHandler>();

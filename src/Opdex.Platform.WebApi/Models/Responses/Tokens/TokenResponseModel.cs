@@ -57,6 +57,11 @@ public class TokenResponseModel
     public WrappedTokenDetailsResponseModel WrappedToken { get; set; }
 
     /// <summary>
+    /// For a mined token, details the distribution schedule.
+    /// </summary>
+    public MinedTokenDistributionScheduleResponseModel Distribution { get; set; }
+
+    /// <summary>
     /// Block number at which the entity was created.
     /// </summary>
     /// <example>2500000</example>

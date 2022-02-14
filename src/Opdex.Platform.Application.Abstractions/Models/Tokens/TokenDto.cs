@@ -15,6 +15,7 @@ public class TokenDto
     public FixedDecimal TotalSupply { get; set; }
     public IEnumerable<TokenAttributeType> Attributes { get; set; }
     public WrappedTokenDetailsDto WrappedToken { get; set; }
+    public MinedTokenDistributionScheduleDto Distribution { get; set; }
     public ulong CreatedBlock { get; set; }
     public ulong ModifiedBlock { get; set; }
     public TokenSummaryDto Summary { get; set; }

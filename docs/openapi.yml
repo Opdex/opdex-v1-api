@@ -2404,6 +2404,9 @@ components:
         wrappedToken:
           $ref: "#/components/schemas/wrappedTokenDetails"
           description: Details for the external token that is wrapped
+        distribution:
+          $ref: "#/components/schemas/minedTokenDistributionDetails"
+          description: For a mined token, details the distribution
         createdBlock:
           type: integer
           format: uint64
@@ -2445,6 +2448,41 @@ components:
           format: uint64
           minimum: 1
           description: Block number at which the entity state was last modified
+    minedTokenDistributionDetails:
+      type: object
+      description: Details for the mined token distribution schedule
+      properties:
+        vault:
+          $ref: "#/components/schemas/address"
+          description: Vault address that receives the distributed tokens
+        miningGovernance:
+          $ref: "#/components/schemas/address"
+          description: Mining governance address that receives the distributed tokens
+        nextDistributionBlock:
+          type: integer
+          format: uint64
+          description: Block number at which the next distribution is available
+          minimum: 1
+        history:
+          type: array
+          description: Details for the historical mined token distributions
+          items:
+            $ref: "#/components/schemas/minedTokenDistribution"
+    minedTokenDistribution:
+      type: object
+      description: Details for a mined token distribution
+      properties:
+        vault:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of tokens distributed to the vault contract
+        miningGovernance:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of tokens distributed to the mining governance contract
+        block:
+          type: integer
+          format: uint64
+          description: Block number at which the next distribution is available
+          minimum: 1
     tokenSummary:
       type: object
       description: Point in time pricing summary for a token
@@ -3565,6 +3603,14 @@ paths:
                         attributes:
                           - NonProvisional
                           - Staking
+                        distribution:
+                          vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
+                          miningGovernance: tKFkNiL5KJ3Q4br929i6hHbB4X4mt1MigF
+                          nextDistributionBlock: 3829900
+                          history:
+                            - vault: "100000000.00000000"
+                              miningGovernance: "300000000.00000000"
+                              block: 2848893
                         createdBlock: 2988890
                         modifiedBlock: 2989018
                         summary:
@@ -3785,6 +3831,14 @@ paths:
                     attributes:
                       - NonProvisional
                       - Staking
+                    distribution:
+                      vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
+                      miningGovernance: tKFkNiL5KJ3Q4br929i6hHbB4X4mt1MigF
+                      nextDistributionBlock: 3829900
+                      history:
+                        - vault: "100000000.00000000"
+                          miningGovernance: "300000000.00000000"
+                          block: 2848893
                     createdBlock: 2988890
                     modifiedBlock: 2989018
                     summary:
@@ -4785,6 +4839,14 @@ paths:
                         attributes:
                           - NonProvisional
                           - Staking
+                        distribution:
+                          vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
+                          miningGovernance: tKFkNiL5KJ3Q4br929i6hHbB4X4mt1MigF
+                          nextDistributionBlock: 3829900
+                          history:
+                            - vault: "100000000.00000000"
+                              miningGovernance: "300000000.00000000"
+                              block: 2848893
                         createdBlock: 2988890
                         modifiedBlock: 2989018
                         summary:
@@ -4892,6 +4954,14 @@ paths:
                     attributes:
                       - NonProvisional
                       - Staking
+                    distribution:
+                      vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
+                      miningGovernance: tKFkNiL5KJ3Q4br929i6hHbB4X4mt1MigF
+                      nextDistributionBlock: 3829900
+                      history:
+                        - vault: "100000000.00000000"
+                          miningGovernance: "300000000.00000000"
+                          block: 2848893
                     createdBlock: 2988890
                     modifiedBlock: 2989018
                     summary:

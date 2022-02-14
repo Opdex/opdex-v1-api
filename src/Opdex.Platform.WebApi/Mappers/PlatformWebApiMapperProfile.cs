@@ -67,6 +67,19 @@ public class PlatformWebApiMapperProfile : Profile
             .AfterMap<TrustedBridgeMappingAction>()
             .ForAllOtherMembers(opt => opt.Ignore());
 
+        CreateMap<MinedTokenDistributionScheduleDto, MinedTokenDistributionScheduleResponseModel>()
+            .ForMember(dest => dest.Vault, opt => opt.MapFrom(src => src.Vault))
+            .ForMember(dest => dest.MiningGovernance, opt => opt.MapFrom(src => src.MiningGovernance))
+            .ForMember(dest => dest.NextDistributionBlock, opt => opt.MapFrom(src => src.NextDistributionBlock))
+            .ForMember(dest => dest.History, opt => opt.MapFrom(src => src.History))
+            .ForAllOtherMembers(opt => opt.Ignore());
+
+        CreateMap<MinedTokenDistributionItemDto, MinedTokenDistributionItemResponseModel>()
+            .ForMember(dest => dest.Vault, opt => opt.MapFrom(src => src.Vault))
+            .ForMember(dest => dest.MiningGovernance, opt => opt.MapFrom(src => src.MiningGovernance))
+            .ForMember(dest => dest.Block, opt => opt.MapFrom(src => src.Block))
+            .ForAllOtherMembers(opt => opt.Ignore());
+
         CreateMap<TokenDto, TokenResponseModel>()
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
@@ -76,6 +89,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
             .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.Attributes))
             .ForMember(dest => dest.WrappedToken, opt => opt.MapFrom(src => src.WrappedToken))
+            .ForMember(dest => dest.Distribution, opt => opt.MapFrom(src => src.Distribution))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
@@ -95,6 +109,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
             .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.Attributes))
             .ForMember(dest => dest.WrappedToken, opt => opt.MapFrom(src => src.WrappedToken))
+            .ForMember(dest => dest.Distribution, opt => opt.MapFrom(src => src.Distribution))
             .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
             .ForMember(dest => dest.LiquidityPool, opt => opt.MapFrom(src => src.LiquidityPool))
             .ForMember(dest => dest.Market, opt => opt.MapFrom(src => src.Market))
