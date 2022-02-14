@@ -4,6 +4,7 @@ using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Admins;
+using Opdex.Platform.Domain.Models.Auth;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.Deployers;
 using Opdex.Platform.Domain.Models.MiningGovernances;
@@ -26,6 +27,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Model
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Admins;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Auth;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools.Snapshots;
@@ -45,6 +47,10 @@ public class PlatformInfrastructureMapperProfile : Profile
 {
     public PlatformInfrastructureMapperProfile()
     {
+        CreateMap<AuthSuccessEntity, AuthSuccess>()
+            .ConstructUsing(src => new AuthSuccess(src.ConnectionId, src.Signer, src.Expiry))
+            .ForAllOtherMembers(opt => opt.Ignore());
+
         CreateMap<AdminEntity, Admin>()
             .ConstructUsing(src => new Admin(src.Id, src.Address))
             .ForAllOtherMembers(opt => opt.Ignore());
@@ -342,6 +348,12 @@ public class PlatformInfrastructureMapperProfile : Profile
                     _ => null
                 };
             });
+
+        CreateMap<AuthSuccess, AuthSuccessEntity>()
+            .ForMember(dest => dest.ConnectionId, opt => opt.MapFrom(src => src.ConnectionId))
+            .ForMember(dest => dest.Signer, opt => opt.MapFrom(src => src.Signer))
+            .ForMember(dest => dest.Expiry, opt => opt.MapFrom(src => src.Expiry))
+            .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<Admin, AdminEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))

@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Opdex.Platform.Application.Abstractions.Commands.Addresses;
+using Opdex.Platform.Application.Abstractions.Commands.Auth;
 using Opdex.Platform.Application.Abstractions.Commands.Blocks;
 using Opdex.Platform.Application.Abstractions.Commands.Deployers;
 using Opdex.Platform.Application.Abstractions.Commands.MiningGovernances;
@@ -192,6 +193,7 @@ using Opdex.Platform.Application.EntryHandlers.Vaults.Certificates;
 using Opdex.Platform.Application.EntryHandlers.Vaults.Pledges;
 using Opdex.Platform.Application.EntryHandlers.Vaults.Proposals;
 using Opdex.Platform.Application.EntryHandlers.Vaults.Votes;
+using Opdex.Platform.Application.Handlers.Auth;
 using Opdex.Platform.Application.Handlers.Markets.Summaries;
 using Opdex.Platform.Application.Handlers.Tokens.Wrapped;
 using Opdex.Platform.Application.Handlers.Vaults;
@@ -566,6 +568,9 @@ public static class PlatformApplicationServiceCollectionExtensions
 
     private static IServiceCollection AddCommands(this IServiceCollection services)
     {
+        // Auth
+        services.AddTransient<IRequestHandler<MakeAuthSuccessCommand, bool>, MakeAuthSuccessCommandHandler>();
+
         // Blocks
         services.AddTransient<IRequestHandler<MakeBlockCommand, bool>, MakeBlockCommandHandler>();
         services.AddTransient<IRequestHandler<MakeRewindToBlockCommand, bool>, MakeRewindToBlockCommandHandler>();

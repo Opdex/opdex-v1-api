@@ -1,4 +1,5 @@
 using FluentAssertions;
+using MediatR;
 using Microsoft.AspNetCore.SignalR;
 using Moq;
 using Opdex.Platform.Common.Configurations;
@@ -19,6 +20,7 @@ public class PlatformHubTests
     private readonly FakeTwoWayEncryptionProvider _twoWayEncryptionProvider;
     private readonly Mock<HubCallerContext> _hubCallerContextMock;
     private readonly PlatformHub _hub;
+    private readonly Mock<IMediator> _mediatorMock;
 
     private const string ApiUrlWithoutProtocol = "api.opdex.com";
     private const string ApiUrl = $"https://{ApiUrlWithoutProtocol}";
@@ -39,7 +41,8 @@ public class PlatformHubTests
             }
         };
         _hubCallerContextMock = new Mock<HubCallerContext>();
-        _hub = new PlatformHub(_twoWayEncryptionProvider, authConfiguration, opdexConfiguration)
+        _mediatorMock = new Mock<IMediator>();
+        _hub = new PlatformHub(_mediatorMock.Object, _twoWayEncryptionProvider, authConfiguration, opdexConfiguration)
         {
             Context = _hubCallerContextMock.Object
         };

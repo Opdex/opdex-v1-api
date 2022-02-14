@@ -15,6 +15,8 @@ using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Extensions;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Application.Abstractions.Commands.Auth;
+using Opdex.Platform.Domain.Models.Auth;
 using SSAS.NET;
 
 namespace Opdex.Platform.WebApi.Controllers;
@@ -100,6 +102,7 @@ public class AuthController : ControllerBase
 
         (string connectionId, string bearerToken) = await ValidateStratisSignature(callbackUri, query, body, cancellationToken);
 
+        await _mediator.Send(new MakeAuthSuccessCommand(new AuthSuccess(connectionId, body.PublicKey, DateTime.UtcNow.AddMinutes(1))), cancellationToken);
         await _mediator.Send(new NotifyUserOfSuccessfulAuthenticationCommand(connectionId, bearerToken), cancellationToken);
 
         return NoContent();
