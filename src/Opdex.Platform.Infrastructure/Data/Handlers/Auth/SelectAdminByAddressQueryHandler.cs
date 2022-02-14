@@ -2,16 +2,16 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Domain.Models.Admins;
+using Opdex.Platform.Domain.Models.Auth;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Admins;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Admins;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Auth;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Auth;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Admins;
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Auth;
 
 public class SelectAdminByAddressQueryHandler : IRequestHandler<SelectAdminByAddressQuery, Admin>
 {

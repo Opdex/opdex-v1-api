@@ -4,7 +4,6 @@ using Microsoft.IdentityModel.Tokens;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Encryption;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Admins;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Auth;
 using SSAS.NET;
 using System;
@@ -50,9 +49,8 @@ public class PlatformHub : Hub<IPlatformClient>
     {
         if (!StratisId.TryParse(sid, out var stratisId) || stratisId.Expired) return false;
 
-        var unixTimeExpiry = stratisId.Expiry;
-
-        var previousUid = Base64Extensions.UrlSafeBase64Encode(_twoWayEncryptionProvider.Encrypt(($"{previousConnectionId}{unixTimeExpiry}")));
+        var expiryUnixTime = new DateTimeOffset(stratisId.Expiry).ToUnixTimeSeconds();
+        var previousUid = Base64Extensions.UrlSafeBase64Encode(_twoWayEncryptionProvider.Encrypt(($"{previousConnectionId}{expiryUnixTime}")));
         if (stratisId.Uid != previousUid) return false;
 
         // need to verify message was signed

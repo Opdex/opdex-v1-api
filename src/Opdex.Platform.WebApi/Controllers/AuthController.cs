@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Threading;
 using System.Threading.Tasks;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Admins;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Auth;
 using Opdex.Platform.Common.Encryption;
@@ -16,6 +15,7 @@ using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Extensions;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Auth;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Auth;
 using Opdex.Platform.Domain.Models.Auth;
 using SSAS.NET;
 

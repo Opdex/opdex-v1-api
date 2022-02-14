@@ -1,8 +1,8 @@
 using Opdex.Platform.Common.Models;
 
-namespace Opdex.Platform.Application.Abstractions.Models.Admins;
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Auth;
 
-public class AdminDto
+public class AdminEntity
 {
     public ulong Id { get; set; }
     public Address Address { get; set; }

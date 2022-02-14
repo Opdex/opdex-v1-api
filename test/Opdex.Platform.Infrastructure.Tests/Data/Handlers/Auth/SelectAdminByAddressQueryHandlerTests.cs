@@ -3,17 +3,17 @@ using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Domain.Models.Admins;
+using Opdex.Platform.Domain.Models.Auth;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Admins;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Admins;
-using Opdex.Platform.Infrastructure.Data.Handlers.Admins;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Auth;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Auth;
+using Opdex.Platform.Infrastructure.Data.Handlers.Auth;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Admins;
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Auth;
 
 public class SelectAdminByAddressQueryHandlerTests
 {

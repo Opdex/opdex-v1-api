@@ -1,7 +1,7 @@
 using Opdex.Platform.Common.Models;
 using System;
 
-namespace Opdex.Platform.Domain.Models.Admins;
+namespace Opdex.Platform.Domain.Models.Auth;
 
 public class Admin
 {

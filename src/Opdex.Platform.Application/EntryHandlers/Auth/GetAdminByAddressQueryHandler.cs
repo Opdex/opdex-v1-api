@@ -1,13 +1,13 @@
 using AutoMapper;
 using MediatR;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Admins;
-using Opdex.Platform.Application.Abstractions.Models.Admins;
-using Opdex.Platform.Application.Abstractions.Queries.Admins;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Auth;
+using Opdex.Platform.Application.Abstractions.Models.Auth;
+using Opdex.Platform.Application.Abstractions.Queries.Auth;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Admins;
+namespace Opdex.Platform.Application.EntryHandlers.Auth;
 
 public class GetAdminByAddressQueryHandler : IRequestHandler<GetAdminByAddressQuery, AdminDto>
 {

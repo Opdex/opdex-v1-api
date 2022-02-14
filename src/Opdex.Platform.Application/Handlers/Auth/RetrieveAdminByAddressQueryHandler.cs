@@ -1,12 +1,12 @@
 using MediatR;
-using Opdex.Platform.Application.Abstractions.Queries.Admins;
-using Opdex.Platform.Domain.Models.Admins;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Admins;
+using Opdex.Platform.Application.Abstractions.Queries.Auth;
+using Opdex.Platform.Domain.Models.Auth;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Auth;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Admins;
+namespace Opdex.Platform.Application.Handlers.Auth;
 
 public class RetrieveAdminByAddressQueryHandler : IRequestHandler<RetrieveAdminByAddressQuery, Admin>
 {

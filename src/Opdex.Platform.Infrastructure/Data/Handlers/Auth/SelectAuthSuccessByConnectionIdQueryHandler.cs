@@ -39,7 +39,7 @@ public class SelectAuthSuccessByConnectionIdQueryHandler : IRequestHandler<Selec
 
         var result = await _context.ExecuteFindAsync<AuthSuccessEntity>(query);
 
-        return result is null ? null : _mapper.Map<AuthSuccess>(request);
+        return result is null ? null : _mapper.Map<AuthSuccess>(result);
     }
 
     private sealed class SqlParams
