@@ -3,10 +3,12 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Opdex.Platform.Application.Abstractions.Commands.Auth;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Encryption;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Auth;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
 using Opdex.Platform.WebApi.Controllers;
@@ -290,6 +292,39 @@ public class AuthControllerTests
         // Assert
         var exception = await Assert.ThrowsAsync<InvalidDataException>(Act);
         exception.PropertyName.Should().Be("uid");
+    }
+
+    [Fact]
+    public async Task StratisSignatureAuthCallback_MakeAuthSuccessCommand_Send()
+    {
+        // Arrange
+        var query = new StratisSignatureAuthCallbackQuery
+        {
+            Uid = Guid.NewGuid().ToString(),
+            Exp = DateTimeOffset.UtcNow.AddDays(1).ToUnixTimeSeconds()
+        };
+        var body = new StratisSignatureAuthCallbackBody
+        {
+            PublicKey = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV",
+            Signature = "H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc="
+        };
+
+        var connectionId = "CONNECTION_ID";
+
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusVerifyMessageQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => $"{connectionId}{query.Exp}");
+
+        CancellationToken cancellationToken;
+        using (var cts = new CancellationTokenSource()) { cancellationToken = cts.Token; }
+
+        // Act
+        await _controller.StratisSignatureAuthCallback(query, body, cancellationToken);
+
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(
+            It.Is<MakeAuthSuccessCommand>(command => command.AuthSuccess.ConnectionId == connectionId
+                && command.AuthSuccess.Signer == new Address(body.PublicKey)
+                && command.AuthSuccess.Expiry > DateTime.UtcNow), cancellationToken), Times.Once);
     }
 
     [Fact]
