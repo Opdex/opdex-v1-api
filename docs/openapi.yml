@@ -2463,9 +2463,11 @@ components:
           format: uint64
           description: Block number at which the next distribution is available
           minimum: 1
-        previous:
-          $ref: "#/components/schemas/minedTokenDistribution"
-          description: Details for the previous mined token distribution
+        history:
+          type: array
+          description: Details for the historical mined token distributions
+          items:
+            $ref: "#/components/schemas/minedTokenDistribution"
     minedTokenDistribution:
       type: object
       description: Details for a mined token distribution
@@ -3605,10 +3607,10 @@ paths:
                           vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                           miningGovernance: tKFkNiL5KJ3Q4br929i6hHbB4X4mt1MigF
                           nextDistributionBlock: 3829900
-                          previous:
-                            vault: "100000000.00000000"
-                            miningGovernance: "300000000.00000000"
-                            block: 2848893
+                          history:
+                            - vault: "100000000.00000000"
+                              miningGovernance: "300000000.00000000"
+                              block: 2848893
                         createdBlock: 2988890
                         modifiedBlock: 2989018
                         summary:
@@ -3833,10 +3835,10 @@ paths:
                       vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                       miningGovernance: tKFkNiL5KJ3Q4br929i6hHbB4X4mt1MigF
                       nextDistributionBlock: 3829900
-                      previous:
-                        vault: "100000000.00000000"
-                        miningGovernance: "300000000.00000000"
-                        block: 2848893
+                      history:
+                        - vault: "100000000.00000000"
+                          miningGovernance: "300000000.00000000"
+                          block: 2848893
                     createdBlock: 2988890
                     modifiedBlock: 2989018
                     summary:
@@ -4841,10 +4843,10 @@ paths:
                           vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                           miningGovernance: tKFkNiL5KJ3Q4br929i6hHbB4X4mt1MigF
                           nextDistributionBlock: 3829900
-                          previous:
-                            vault: "100000000.00000000"
-                            miningGovernance: "300000000.00000000"
-                            block: 2848893
+                          history:
+                            - vault: "100000000.00000000"
+                              miningGovernance: "300000000.00000000"
+                              block: 2848893
                         createdBlock: 2988890
                         modifiedBlock: 2989018
                         summary:
@@ -4956,10 +4958,10 @@ paths:
                       vault: t7hy4H51KzU6PPCL4QKCdgBGPLV9Jpmf9G
                       miningGovernance: tKFkNiL5KJ3Q4br929i6hHbB4X4mt1MigF
                       nextDistributionBlock: 3829900
-                      previous:
-                        vault: "100000000.00000000"
-                        miningGovernance: "300000000.00000000"
-                        block: 2848893
+                      history:
+                        - vault: "100000000.00000000"
+                          miningGovernance: "300000000.00000000"
+                          block: 2848893
                     createdBlock: 2988890
                     modifiedBlock: 2989018
                     summary:

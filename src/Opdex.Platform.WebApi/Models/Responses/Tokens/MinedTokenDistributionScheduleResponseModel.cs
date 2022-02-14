@@ -23,7 +23,7 @@ public class MinedTokenDistributionScheduleResponseModel
     public ulong NextDistributionBlock { get; set; }
 
     /// <summary>
-    /// Previous distribution details
+    /// Historical distribution details
     /// </summary>
-    public MinedTokenDistributionItemResponseModel Previous { get; set; }
+    public MinedTokenDistributionItemResponseModel[] History { get; set; }
 }

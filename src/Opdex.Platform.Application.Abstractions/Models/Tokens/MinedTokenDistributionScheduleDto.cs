@@ -10,5 +10,5 @@ public class MinedTokenDistributionScheduleDto
 
     public ulong NextDistributionBlock { get; set; }
 
-    public MinedTokenDistributionItemDto Previous { get; set; }
+    public MinedTokenDistributionItemDto[] History { get; set; }
 }

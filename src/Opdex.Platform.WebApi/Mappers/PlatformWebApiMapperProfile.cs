@@ -71,7 +71,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Vault, opt => opt.MapFrom(src => src.Vault))
             .ForMember(dest => dest.MiningGovernance, opt => opt.MapFrom(src => src.MiningGovernance))
             .ForMember(dest => dest.NextDistributionBlock, opt => opt.MapFrom(src => src.NextDistributionBlock))
-            .ForMember(dest => dest.Previous, opt => opt.MapFrom(src => src.Previous))
+            .ForMember(dest => dest.History, opt => opt.MapFrom(src => src.History))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<MinedTokenDistributionItemDto, MinedTokenDistributionItemResponseModel>()

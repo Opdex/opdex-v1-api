@@ -49,9 +49,9 @@ public class MarketTokenDtoAssembler : IModelAssembler<MarketToken, MarketTokenD
         var tokenIsMinedToken = attributeTypes.Contains(TokenAttributeType.Staking);
         if (tokenIsMinedToken)
         {
-            var tokenDistribution = await _mediator.Send(new RetrieveLatestTokenDistributionByTokenIdQuery(token.Id), CancellationToken.None);
+            var tokenDistributions = await _mediator.Send(new RetrieveDistributionsByTokenIdQuery(token.Id), CancellationToken.None);
             var tokenDistributionAssembler = new MinedTokenDistributionScheduleDtoAssembler(_mediator, token);
-            marketTokenDto.Distribution = await tokenDistributionAssembler.Assemble(tokenDistribution);
+            marketTokenDto.Distribution = await tokenDistributionAssembler.Assemble(tokenDistributions.ToList().AsReadOnly());
         }
 
         var isLpt = attributeTypes.Contains(TokenAttributeType.Provisional);

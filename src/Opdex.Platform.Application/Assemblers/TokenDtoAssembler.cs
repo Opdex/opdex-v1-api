@@ -41,9 +41,9 @@ public class TokenDtoAssembler : IModelAssembler<Token, TokenDto>
         var tokenIsMinedToken = attributeTypes.Contains(TokenAttributeType.Staking);
         if (tokenIsMinedToken)
         {
-            var tokenDistribution = await _mediator.Send(new RetrieveLatestTokenDistributionByTokenIdQuery(token.Id), CancellationToken.None);
+            var tokenDistributions = await _mediator.Send(new RetrieveDistributionsByTokenIdQuery(token.Id), CancellationToken.None);
             var tokenDistributionAssembler = new MinedTokenDistributionScheduleDtoAssembler(_mediator, token);
-            tokenDto.Distribution = await tokenDistributionAssembler.Assemble(tokenDistribution);
+            tokenDto.Distribution = await tokenDistributionAssembler.Assemble(tokenDistributions.ToList().AsReadOnly());
         }
 
         if (tokenDto.Summary is null)

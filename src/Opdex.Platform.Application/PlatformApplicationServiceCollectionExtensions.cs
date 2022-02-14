@@ -496,6 +496,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<RetrieveTokenSnapshotsWithFilterQuery, IEnumerable<TokenSnapshot>>, RetrieveTokenSnapshotsWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveTokenSnapshotWithFilterQuery, TokenSnapshot>, RetrieveTokenSnapshotWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveLatestTokenDistributionByTokenIdQuery, TokenDistribution>, RetrieveLatestTokenDistributionByTokenIdQueryHandler>();
+        services.AddTransient<IRequestHandler<RetrieveDistributionsByTokenIdQuery, IEnumerable<TokenDistribution>>, RetrieveDistributionsByTokenIdQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveStakingTokenContractSummaryQuery, StakingTokenContractSummary>, RetrieveStakingTokenContractSummaryQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveTokenByIdQuery, Token>, RetrieveTokenByIdQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveTokenByAddressQuery, Token>, RetrieveTokenByAddressQueryHandler>();
