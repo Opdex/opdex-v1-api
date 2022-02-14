@@ -38,6 +38,6 @@ public class NotifyUserOfSuccessfulAuthenticationCommandHandlerTests
         await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        _hubContextMock.Verify(callTo => callTo.Clients.Client(request.ConnectionId.ToString()).OnAuthenticated(request.BearerToken.ToString()), Times.Once);
+        _hubContextMock.Verify(callTo => callTo.Clients.Client(request.ConnectionId).OnAuthenticated(request.BearerToken), Times.Once);
     }
 }

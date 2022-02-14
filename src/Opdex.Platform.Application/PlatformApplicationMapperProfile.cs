@@ -1,7 +1,7 @@
 using AutoMapper;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
-using Opdex.Platform.Application.Abstractions.Models.Admins;
+using Opdex.Platform.Application.Abstractions.Models.Auth;
 using Opdex.Platform.Application.Abstractions.Models.Blocks;
 using Opdex.Platform.Application.Abstractions.Models.Index;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
@@ -28,7 +28,6 @@ using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models;
-using Opdex.Platform.Domain.Models.Admins;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningGovernances;
@@ -41,6 +40,7 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 using Opdex.Platform.Domain.Models.Transactions;
 using System.Linq;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
+using Opdex.Platform.Domain.Models.Auth;
 using Opdex.Platform.Domain.Models.Vaults;
 using System;
 

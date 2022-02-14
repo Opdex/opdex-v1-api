@@ -2,17 +2,17 @@ using AutoMapper;
 using FluentAssertions;
 using MediatR;
 using Moq;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Admins;
-using Opdex.Platform.Application.Abstractions.Queries.Admins;
-using Opdex.Platform.Application.EntryHandlers.Admins;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Auth;
+using Opdex.Platform.Application.Abstractions.Queries.Auth;
+using Opdex.Platform.Application.EntryHandlers.Auth;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Domain.Models.Admins;
+using Opdex.Platform.Domain.Models.Auth;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.EntryHandlers.Admins;
+namespace Opdex.Platform.Application.Tests.EntryHandlers.Auth;
 
 public class GetAdminByAddressQueryHandlerTests
 {

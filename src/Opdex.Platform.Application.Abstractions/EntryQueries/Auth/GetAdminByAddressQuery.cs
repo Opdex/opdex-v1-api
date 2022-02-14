@@ -1,9 +1,9 @@
-using Opdex.Platform.Application.Abstractions.Models.Admins;
+using Opdex.Platform.Application.Abstractions.Models.Auth;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Queries;
 using System;
 
-namespace Opdex.Platform.Application.Abstractions.EntryQueries.Admins;
+namespace Opdex.Platform.Application.Abstractions.EntryQueries.Auth;
 
 public class GetAdminByAddressQuery : FindQuery<AdminDto>
 {

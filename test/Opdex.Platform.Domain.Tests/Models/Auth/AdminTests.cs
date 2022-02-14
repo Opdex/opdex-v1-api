@@ -1,10 +1,10 @@
 using FluentAssertions;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Domain.Models.Admins;
+using Opdex.Platform.Domain.Models.Auth;
 using System;
 using Xunit;
 
-namespace Opdex.Platform.Domain.Tests.Models.Admins;
+namespace Opdex.Platform.Domain.Tests.Models.Auth;
 
 public class AdminTests
 {

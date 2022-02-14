@@ -1,17 +1,17 @@
 using FluentAssertions;
 using MediatR;
 using Moq;
-using Opdex.Platform.Application.Abstractions.Queries.Admins;
-using Opdex.Platform.Application.Handlers.Admins;
+using Opdex.Platform.Application.Abstractions.Queries.Auth;
+using Opdex.Platform.Application.Handlers.Auth;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Domain.Models.Admins;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Admins;
+using Opdex.Platform.Domain.Models.Auth;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Auth;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.Handlers.Admins;
+namespace Opdex.Platform.Application.Tests.Handlers.Auth;
 
 public class RetrieveAdminByAddressQueryHandlerTests
 {

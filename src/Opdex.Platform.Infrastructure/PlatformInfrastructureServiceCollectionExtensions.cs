@@ -8,7 +8,6 @@ using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Addresses;
-using Opdex.Platform.Domain.Models.Admins;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.Deployers;
 using Opdex.Platform.Domain.Models.MiningGovernances;
@@ -78,7 +77,6 @@ using Opdex.Platform.Infrastructure.Data.Handlers.Indexer;
 using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.MiningPools;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Admins;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools.Summaries;
@@ -89,7 +87,6 @@ using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Liquidity
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.LiquidityPools.LiquidityQuotes;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.LiquidityPools.SwapQuotes;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.MiningPools;
-using Opdex.Platform.Infrastructure.Data.Handlers.Admins;
 using Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools;
 using Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Snapshots;
 using Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries;
@@ -112,6 +109,7 @@ using Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernances.Nominations;
 using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Summaries;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Domain.Models.Auth;
 using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Attributes;
@@ -119,9 +117,11 @@ using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Attributes;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Auth;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinGeckoApi.Queries;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Auth;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens.Wrapped;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Auth;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Vaults;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Auth;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Summaries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Wrapped;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults;
@@ -134,6 +134,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Feeds;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Transactions;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Vaults;
 using Opdex.Platform.Infrastructure.Clients.CoinGeckoApi.Handlers;
+using Opdex.Platform.Infrastructure.Data.Handlers.Auth;
 using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Summaries;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Wrapped;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults;
@@ -174,6 +175,9 @@ public static class PlatformInfrastructureServiceCollectionExtensions
 
     private static void AddDataCommands(IServiceCollection services)
     {
+        // Auth
+        services.AddTransient<IRequestHandler<PersistAuthSuccessCommand, bool>, PersistAuthSuccessCommandHandler>();
+
         // Markets
         services.AddTransient<IRequestHandler<PersistMarketCommand, ulong>, PersistMarketCommandHandler>();
         services.AddTransient<IRequestHandler<PersistMarketPermissionCommand, ulong>, PersistMarketPermissionCommandHandler>();
@@ -233,6 +237,9 @@ public static class PlatformInfrastructureServiceCollectionExtensions
     private static void AddDataQueries(IServiceCollection services)
     {
         services.AddScoped<IDbContext, DbContext>();
+
+        // Auth
+        services.AddTransient<IRequestHandler<SelectAuthSuccessByConnectionIdQuery, AuthSuccess>, SelectAuthSuccessByConnectionIdQueryHandler>();
 
         // Admins
         services.AddTransient<IRequestHandler<SelectAdminByAddressQuery, Admin>, SelectAdminByAddressQueryHandler>();
