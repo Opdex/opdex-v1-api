@@ -42,7 +42,9 @@ public class MiningGovernanceDtoAssembler : IModelAssembler<MiningGovernance, Mi
             PeriodBlockDuration = miningGovernance.MiningDuration,
             MiningPoolRewardPerPeriod = miningGovernance.MiningPoolReward.ToDecimal(token.Decimals),
             PeriodsUntilRewardReset = (miningPoolsPerYear - miningGovernance.MiningPoolsFunded) / maxNominations,
-            TotalRewardsPerPeriod = totalRewardsPerPeriod.ToDecimal(token.Decimals)
+            TotalRewardsPerPeriod = totalRewardsPerPeriod.ToDecimal(token.Decimals),
+            CreatedBlock = miningGovernance.CreatedBlock,
+            ModifiedBlock = miningGovernance.ModifiedBlock
         };
     }
 }
