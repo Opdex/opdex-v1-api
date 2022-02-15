@@ -163,109 +163,95 @@ public class PlatformHubTests
         _callerClientMock.Verify(callTo => callTo.OnAuthenticated(It.IsAny<string>()), Times.Never);
     }
 
-    // [Fact]
-    // public async Task Reconnect_DifferentUid_DoNotAuthenticate()
-    // {
-    //     // Arrange
-    //     var connectionId = "DIFFERENT CONNECTION ID";
-    //     var unixTime10MinsFromNow = DateTimeOffset.UtcNow.AddMinutes(10).ToUnixTimeSeconds();
-    //     var previousConnectionId = "QU5FWENSWVBURURDT05ORUNUSU9OSUQ";
-    //     var stratisId = $"sid:v1-dev-api.opdex.com/v1/auth/callback?uid=JztkuBy8zCCHSoPBmQ1D9YEUnNGYmRGE8j6EshsLRiSIF2aYLQiemjKsfHtqBFEJhxLjwtGRrzS3CZk6MDxa0A&exp={unixTime10MinsFromNow}";
-    //
-    //     // Act
-    //     var succeeded = await _hub.Reconnect(previousConnectionId, stratisId);
-    //
-    //     // Assert
-    //     succeeded.Should().Be(false);
-    //     _callerClientMock.Verify(callTo => callTo.OnAuthenticated(It.IsAny<string>()), Times.Never);
-    // }
+    [Fact]
+    public async Task Reconnect_DifferentConnectionId_DoNotAuthenticate()
+    {
+        // Arrange
+        var connectionId = "DIFFERENT CONNECTION ID";
+        var unixTime10MinsFromNow = DateTimeOffset.UtcNow.AddMinutes(10).ToUnixTimeSeconds();
+        var previousConnectionId = "QU5FWENSWVBURURDT05ORUNUSU9OSUQ";
+        var stratisId = $"sid:v1-dev-api.opdex.com/v1/auth/callback?uid=JztkuBy8zCCHSoPBmQ1D9YEUnNGYmRGE8j6EshsLRiSIF2aYLQiemjKsfHtqBFEJhxLjwtGRrzS3CZk6MDxa0A&exp={unixTime10MinsFromNow}";
 
-    // [Fact]
-    // public async Task Reconnect_NoAuthSuccessRecord_DoNotAuthenticate()
-    // {
-    //     // Arrange
-    //     var unixTime10MinsFromNow = DateTimeOffset.UtcNow.AddMinutes(10).ToUnixTimeSeconds();
-    //     var previousConnectionId = "QU5FWENSWVBURURDT05ORUNUSU9OSUQ";
-    //     var connectionId = "GO73rdOHET7W1FAuWp96Tw205af2011";
-    //     var uid = "JztkuBy8zCCHSoPBmQ1D9YEUnNGYmRGE8j6EshsLRiSIF2aYLQiemjKsfHtqBFEJhxLjwtGRrzS3CZk6MDxa0A";
-    //     var stratisId = $"sid:v1-dev-api.opdex.com/v1/auth/callback?uid={uid}&exp={unixTime10MinsFromNow}";
-    //
-    //     _twoWayEncryptionProvider.WhenEncryptCalled(() => new byte[]
-    //     {
-    //         39,  59, 100, 184, 28, 188, 204, 32, 135, 74, 131, 193, 153, 13, 67, 245,
-    //         129, 20, 156, 209, 152, 153, 17, 132, 242, 62, 132, 178, 27, 11, 70, 36,
-    //         136, 23, 102, 152, 45, 8, 158, 154, 50, 172, 124, 123, 106, 4, 81, 9,
-    //         135, 18, 227, 194, 209, 145, 175, 52, 183, 9, 153, 58, 48, 60, 90, 208
-    //     });
-    //
-    //     _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<SelectAuthSuccessByConnectionIdQuery>(), It.IsAny<CancellationToken>()))
-    //         .ReturnsAsync((AuthSuccess)null);
-    //
-    //     // Act
-    //     var succeeded = await _hub.Reconnect(previousConnectionId, stratisId);
-    //
-    //     // Assert
-    //     succeeded.Should().Be(false);
-    //     _callerClientMock.Verify(callTo => callTo.OnAuthenticated(It.IsAny<string>()), Times.Never);
-    // }
-    //
-    // [Fact]
-    // public async Task Reconnect_ExpiredAuthSuccessRecord_DoNotAuthenticate()
-    // {
-    //     // Arrange
-    //     var unixTime10MinsFromNow = DateTimeOffset.UtcNow.AddMinutes(10).ToUnixTimeSeconds();
-    //     var previousConnectionId = "QU5FWENSWVBURURDT05ORUNUSU9OSUQ";
-    //     var connectionId = "GO73rdOHET7W1FAuWp96Tw205af2011";
-    //     var uid = "JztkuBy8zCCHSoPBmQ1D9YEUnNGYmRGE8j6EshsLRiSIF2aYLQiemjKsfHtqBFEJhxLjwtGRrzS3CZk6MDxa0A";
-    //     var stratisId = $"sid:v1-dev-api.opdex.com/v1/auth/callback?uid={uid}&exp={unixTime10MinsFromNow}";
-    //
-    //     _twoWayEncryptionProvider.WhenEncryptCalled(() => new byte[]
-    //     {
-    //         39,  59, 100, 184, 28, 188, 204, 32, 135, 74, 131, 193, 153, 13, 67, 245,
-    //         129, 20, 156, 209, 152, 153, 17, 132, 242, 62, 132, 178, 27, 11, 70, 36,
-    //         136, 23, 102, 152, 45, 8, 158, 154, 50, 172, 124, 123, 106, 4, 81, 9,
-    //         135, 18, 227, 194, 209, 145, 175, 52, 183, 9, 153, 58, 48, 60, 90, 208
-    //     });
-    //
-    //     _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<SelectAuthSuccessByConnectionIdQuery>(), It.IsAny<CancellationToken>()))
-    //         .ReturnsAsync(new AuthSuccess(connectionId, new Address("PAe1RRxnRVZtbS83XQ4soyjwJUDSjaJAKZ"), DateTime.UtcNow.AddMinutes(-5)));
-    //
-    //     // Act
-    //     var succeeded = await _hub.Reconnect(previousConnectionId, stratisId);
-    //
-    //     // Assert
-    //     succeeded.Should().Be(false);
-    //     _callerClientMock.Verify(callTo => callTo.OnAuthenticated(It.IsAny<string>()), Times.Never);
-    // }
-    //
-    // [Fact]
-    // public async Task Reconnect_Valid_Authenticate()
-    // {
-    //     // Arrange
-    //     var unixTime10MinsFromNow = DateTimeOffset.UtcNow.AddMinutes(10).ToUnixTimeSeconds();
-    //     var previousConnectionId = "QU5FWENSWVBURURDT05ORUNUSU9OSUQ";
-    //     var connectionId = "GO73rdOHET7W1FAuWp96Tw205af2011";
-    //     var uid = "JztkuBy8zCCHSoPBmQ1D9YEUnNGYmRGE8j6EshsLRiSIF2aYLQiemjKsfHtqBFEJhxLjwtGRrzS3CZk6MDxa0A";
-    //     var stratisId = $"sid:v1-dev-api.opdex.com/v1/auth/callback?uid={uid}&exp={unixTime10MinsFromNow}";
-    //
-    //     _twoWayEncryptionProvider.WhenEncryptCalled(() => new byte[]
-    //     {
-    //         39,  59, 100, 184, 28, 188, 204, 32, 135, 74, 131, 193, 153, 13, 67, 245,
-    //         129, 20, 156, 209, 152, 153, 17, 132, 242, 62, 132, 178, 27, 11, 70, 36,
-    //         136, 23, 102, 152, 45, 8, 158, 154, 50, 172, 124, 123, 106, 4, 81, 9,
-    //         135, 18, 227, 194, 209, 145, 175, 52, 183, 9, 153, 58, 48, 60, 90, 208
-    //     });
-    //
-    //     _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<SelectAuthSuccessByConnectionIdQuery>(), It.IsAny<CancellationToken>()))
-    //         .ReturnsAsync(new AuthSuccess(connectionId, new Address("PAe1RRxnRVZtbS83XQ4soyjwJUDSjaJAKZ"), DateTime.UtcNow.AddMinutes(1)));
-    //
-    //     // Act
-    //     var succeeded = await _hub.Reconnect(previousConnectionId, stratisId);
-    //
-    //     // Assert
-    //     succeeded.Should().Be(true);
-    //     _callerClientMock.Verify(callTo => callTo.OnAuthenticated(It.IsAny<string>()), Times.Once);
-    // }
+        _twoWayEncryptionProvider.WhenDecryptCalled(() => $"{connectionId}{unixTime10MinsFromNow}");
+
+        // Act
+        var succeeded = await _hub.Reconnect(previousConnectionId, stratisId);
+
+        // Assert
+        succeeded.Should().Be(false);
+        _callerClientMock.Verify(callTo => callTo.OnAuthenticated(It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Reconnect_NoAuthSuccessRecord_DoNotAuthenticate()
+    {
+        // Arrange
+        var unixTime10MinsFromNow = DateTimeOffset.UtcNow.AddMinutes(10).ToUnixTimeSeconds();
+        var previousConnectionId = "QU5FWENSWVBURURDT05ORUNUSU9OSUQ";
+        var connectionId = "GO73rdOHET7W1FAuWp96Tw205af2011";
+        var uid = "JztkuBy8zCCHSoPBmQ1D9YEUnNGYmRGE8j6EshsLRiSIF2aYLQiemjKsfHtqBFEJhxLjwtGRrzS3CZk6MDxa0A";
+        var stratisId = $"sid:v1-dev-api.opdex.com/v1/auth/callback?uid={uid}&exp={unixTime10MinsFromNow}";
+
+        _twoWayEncryptionProvider.WhenDecryptCalled(() => $"{previousConnectionId}{unixTime10MinsFromNow}");
+
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<SelectAuthSuccessByConnectionIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((AuthSuccess)null);
+
+        // Act
+        var succeeded = await _hub.Reconnect(previousConnectionId, stratisId);
+
+        // Assert
+        succeeded.Should().Be(false);
+        _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<SelectAuthSuccessByConnectionIdQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+        _callerClientMock.Verify(callTo => callTo.OnAuthenticated(It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Reconnect_ExpiredAuthSuccessRecord_DoNotAuthenticate()
+    {
+        // Arrange
+        var unixTime10MinsFromNow = DateTimeOffset.UtcNow.AddMinutes(10).ToUnixTimeSeconds();
+        var previousConnectionId = "QU5FWENSWVBURURDT05ORUNUSU9OSUQ";
+        var connectionId = "GO73rdOHET7W1FAuWp96Tw205af2011";
+        var uid = "JztkuBy8zCCHSoPBmQ1D9YEUnNGYmRGE8j6EshsLRiSIF2aYLQiemjKsfHtqBFEJhxLjwtGRrzS3CZk6MDxa0A";
+        var stratisId = $"sid:v1-dev-api.opdex.com/v1/auth/callback?uid={uid}&exp={unixTime10MinsFromNow}";
+
+        _twoWayEncryptionProvider.WhenDecryptCalled(() => $"{previousConnectionId}{unixTime10MinsFromNow}");
+
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<SelectAuthSuccessByConnectionIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new AuthSuccess(connectionId, new Address("PAe1RRxnRVZtbS83XQ4soyjwJUDSjaJAKZ"), DateTime.UtcNow.AddMinutes(-5)));
+
+        // Act
+        var succeeded = await _hub.Reconnect(previousConnectionId, stratisId);
+
+        // Assert
+        succeeded.Should().Be(false);
+        _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<SelectAuthSuccessByConnectionIdQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+        _callerClientMock.Verify(callTo => callTo.OnAuthenticated(It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Reconnect_Valid_Authenticate()
+    {
+        // Arrange
+        var unixTime10MinsFromNow = DateTimeOffset.UtcNow.AddMinutes(10).ToUnixTimeSeconds();
+        var previousConnectionId = "QU5FWENSWVBURURDT05ORUNUSU9OSUQ";
+        var connectionId = "GO73rdOHET7W1FAuWp96Tw205af2011";
+        var uid = "JztkuBy8zCCHSoPBmQ1D9YEUnNGYmRGE8j6EshsLRiSIF2aYLQiemjKsfHtqBFEJhxLjwtGRrzS3CZk6MDxa0A";
+        var stratisId = $"sid:v1-dev-api.opdex.com/v1/auth/callback?uid={uid}&exp={unixTime10MinsFromNow}";
+
+        _twoWayEncryptionProvider.WhenDecryptCalled(() => $"{previousConnectionId}{unixTime10MinsFromNow}");
+
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<SelectAuthSuccessByConnectionIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new AuthSuccess(connectionId, new Address("PAe1RRxnRVZtbS83XQ4soyjwJUDSjaJAKZ"), DateTime.UtcNow.AddMinutes(1)));
+
+        // Act
+        var succeeded = await _hub.Reconnect(previousConnectionId, stratisId);
+
+        // Assert
+        succeeded.Should().Be(true);
+        _callerClientMock.Verify(callTo => callTo.OnAuthenticated(It.IsAny<string>()), Times.Once);
+    }
 }
 
 class FakeTwoWayEncryptionProvider : ITwoWayEncryptionProvider
