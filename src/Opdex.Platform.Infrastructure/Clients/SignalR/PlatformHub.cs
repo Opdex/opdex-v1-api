@@ -49,9 +49,10 @@ public class PlatformHub : Hub<IPlatformClient>
     {
         if (!StratisId.TryParse(sid, out var stratisId) || stratisId.Expired) return false;
 
-        var expiryUnixTime = new DateTimeOffset(stratisId.Expiry).ToUnixTimeSeconds();
-        var previousUid = Base64Extensions.UrlSafeBase64Encode(_twoWayEncryptionProvider.Encrypt($"{previousConnectionId}{expiryUnixTime}"));
-        if (stratisId.Uid != previousUid) return false;
+        const int unixTimestampLength = 10;
+        var decryptedUid = _twoWayEncryptionProvider.Decrypt(Base64Extensions.UrlSafeBase64Decode(stratisId.Uid));
+        var expectedConnectionId = decryptedUid.Substring(0, decryptedUid.Length - unixTimestampLength);
+        if (previousConnectionId != expectedConnectionId) return false;
 
         // need to verify message was signed
         var authSuccess = await _mediator.Send(new SelectAuthSuccessByConnectionIdQuery(previousConnectionId));
