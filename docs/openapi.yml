@@ -5724,7 +5724,7 @@ paths:
                     name: ETH (Wrapped)
                     symbol: TETH
                     decimals: 18
-                    sats: "100000000"0000000000
+                    sats: "1000000000000000000"
                     totalSupply: "100000000.000000000000000000"
                     attributes:
                       - NonProvisional
