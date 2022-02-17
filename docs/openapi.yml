@@ -2389,10 +2389,9 @@ components:
           description: Number of decimals of precision for token values
           minimum: 0
         sats:
-          type: integer
-          format: uint64
+          type: string
           description: Number of parts which make up one whole token
-          minimum: 1
+          pattern: ^[0-9]+$
         totalSupply:
           $ref: "#/components/schemas/fixedDecimal"
           description: Total supply for the entire token
@@ -3513,7 +3512,7 @@ paths:
                         name: Cirrus
                         symbol: TCRS
                         decimals: 8
-                        sats: 100000000
+                        sats: "100000000"
                         totalSupply: "100000000.00000000"
                         attributes: []
                         createdBlock: 2988890
@@ -3528,7 +3527,7 @@ paths:
                         name: Bitcoin (Wrapped)
                         symbol: TBTC
                         decimals: 8
-                        sats: 100000000
+                        sats: "100000000"
                         totalSupply: "21000000.00000000"
                         attributes:
                           - NonProvisional
@@ -3544,7 +3543,7 @@ paths:
                         name: Opdex Liquidity Pool Token
                         symbol: OLPT
                         decimals: 8
-                        sats: 100000000
+                        sats: "100000000"
                         totalSupply: "94.39473361"
                         attributes:
                           - Provisional
@@ -3560,7 +3559,7 @@ paths:
                         name: Testnet Opdex Token
                         symbol: TODX
                         decimals: 8
-                        sats: 100000000
+                        sats: "100000000"
                         totalSupply: "400000000.00000000"
                         attributes:
                           - NonProvisional
@@ -3733,7 +3732,7 @@ paths:
                     name: Cirrus
                     symbol: TCRS
                     decimals: 8
-                    sats: 100000000
+                    sats: "100000000"
                     totalSupply: "100000000.00000000"
                     attributes: []
                     createdBlock: 2988890
@@ -3748,7 +3747,7 @@ paths:
                     name: Bitcoin (Wrapped)
                     symbol: TBTC
                     decimals: 8
-                    sats: 100000000
+                    sats: "100000000"
                     totalSupply: "21000000.00000000"
                     attributes:
                       - NonProvisional
@@ -3764,7 +3763,7 @@ paths:
                     name: Opdex Liquidity Pool Token
                     symbol: OLPT
                     decimals: 8
-                    sats: 100000000
+                    sats: "100000000"
                     totalSupply: "94.39473361"
                     attributes:
                       - Provisional
@@ -3780,7 +3779,7 @@ paths:
                     name: Testnet Opdex Token
                     symbol: TODX
                     decimals: 8
-                    sats: 100000000
+                    sats: "100000000"
                     totalSupply: "400000000.00000000"
                     attributes:
                       - NonProvisional
@@ -4765,7 +4764,7 @@ paths:
                         name: Cirrus
                         symbol: TCRS
                         decimals: 8
-                        sats: 100000000
+                        sats: "100000000"
                         totalSupply: "130000000.00000000"
                         attributes: []
                         createdBlock: 2988890
@@ -4780,7 +4779,7 @@ paths:
                         name: Testnet Opdex Token
                         symbol: TODX
                         decimals: 8
-                        sats: 100000000
+                        sats: "100000000"
                         totalSupply: "40000000000000000.00000000"
                         attributes:
                           - NonProvisional
@@ -4872,7 +4871,7 @@ paths:
                     name: Cirrus
                     symbol: TCRS
                     decimals: 8
-                    sats: 100000000
+                    sats: "100000000"
                     totalSupply: "130000000.00000000"
                     attributes: []
                     createdBlock: 2988890
@@ -4887,7 +4886,7 @@ paths:
                     name: Testnet Opdex Token
                     symbol: TODX
                     decimals: 8
-                    sats: 100000000
+                    sats: "100000000"
                     totalSupply: "40000000000000000.00000000"
                     attributes:
                       - NonProvisional
@@ -5709,7 +5708,7 @@ paths:
                     name: Bitcoin (Wrapped)
                     symbol: TBTC
                     decimals: 8
-                    sats: 100000000
+                    sats: "100000000"
                     totalSupply: "21000000.00000000"
                     attributes:
                       - NonProvisional
@@ -5725,7 +5724,7 @@ paths:
                     name: ETH (Wrapped)
                     symbol: TETH
                     decimals: 18
-                    sats: 1000000000000000000
+                    sats: "100000000"0000000000
                     totalSupply: "100000000.000000000000000000"
                     attributes:
                       - NonProvisional
@@ -5800,7 +5799,7 @@ paths:
                 name: Bitcoin (Wrapped)
                 symbol: TBTC
                 decimals: 8
-                sats: 100000000
+                sats: "100000000"
                 totalSupply: "21000000.00000000"
                 attributes:
                   - NonProvisional
@@ -6922,7 +6921,7 @@ paths:
                     name: Bitcoin (Wrapped)
                     symbol: TBTC
                     decimals: 8
-                    sats: 100000000
+                    sats: "100000000"
                     totalSupply: "21000000.00000000"
                     attributes:
                       - NonProvisional
@@ -6937,7 +6936,7 @@ paths:
                     name: ETH (Wrapped)
                     symbol: TETH
                     decimals: 18
-                    sats: 1000000000000000000
+                    sats: "100000000"0000000000
                     totalSupply: "100000000.000000000000000000"
                     attributes:
                       - NonProvisional
@@ -7003,7 +7002,7 @@ paths:
                 name: LTC (Wrapped)
                 symbol: xLTC
                 decimals: 8
-                sats: 100000000
+                sats: "100000000"
                 totalSupply: "84000000.00000000"
                 attributes: []
           headers:
@@ -7068,7 +7067,7 @@ paths:
                 name: Bitcoin (Wrapped)
                 symbol: TBTC
                 decimals: 8
-                sats: 100000000
+                sats: "100000000"
                 totalSupply: "21000000.00000000"
                 attributes:
                   - NonProvisional

@@ -37,7 +37,7 @@ public class TokenResponseModel
     /// The total number of satoshis per full token.
     /// </summary>
     /// <example>100000000</example>
-    public ulong Sats { get; set; }
+    public string Sats { get; set; }
 
     /// <summary>
     /// The total supply of the token as stored in contract.
