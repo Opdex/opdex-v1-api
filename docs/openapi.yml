@@ -3501,7 +3501,7 @@ paths:
                 results:
                   - address: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
                     name: TBTC-TCRS
-                    transactionFeePercent: 0.3
+                    transactionFeePercent: "0.3"
                     market: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
                     createdBlock: 2988918
                     modifiedBlock: 2988918
@@ -3517,8 +3517,8 @@ paths:
                         createdBlock: 2988890
                         modifiedBlock: 2988890
                         summary:
-                          priceUsd: 0.95057037
-                          dailyPriceChangePercent: 0.63000000
+                          priceUsd: "0.95057037"
+                          dailyPriceChangePercent: "0.63000000"
                           createdBlock: 2988890
                           modifiedBlock: 3043278
                       src:
@@ -3533,8 +3533,8 @@ paths:
                         createdBlock: 2988918
                         modifiedBlock: 2988918
                         summary:
-                          priceUsd: 27698.36556351
-                          dailyPriceChangePercent: 0.21000000
+                          priceUsd: "27698.36556351"
+                          dailyPriceChangePercent: "0.21000000"
                           createdBlock: 2988918
                           modifiedBlock: 3043250
                       lp:
@@ -3549,8 +3549,8 @@ paths:
                         createdBlock: 2988918
                         modifiedBlock: 2989382
                         summary:
-                          priceUsd: 323.92670749
-                          dailyPriceChangePercent: 0.21000000
+                          priceUsd: "323.92670749"
+                          dailyPriceChangePercent: "0.21000000"
                           createdBlock: 2988918
                           modifiedBlock: 3043250
                       staking:
@@ -3566,8 +3566,8 @@ paths:
                         createdBlock: 2988890
                         modifiedBlock: 2989018
                         summary:
-                          priceUsd: 0.00000000
-                          dailyPriceChangePercent: 0.00000000
+                          priceUsd: "0.00000000"
+                          dailyPriceChangePercent: "0.00000000"
                           createdBlock: 2988890
                           modifiedBlock: 3043278
                     miningPool:
@@ -3584,21 +3584,21 @@ paths:
                       reserves:
                         crs: "16676.38165376"
                         src: "0.53431082"
-                        usd: 45559.31401812
-                        dailyUsdChangePercent: -0.02000000
+                        usd: "45559.31401812"
+                        dailyUsdChangePercent: "-0.02000000"
                       rewards:
-                        providerDailyUsd: 0.01000000
-                        marketDailyUsd: 0.00000000
-                        totalDailyUsd: 0.01000000
+                        providerDailyUsd: "0.01000000"
+                        marketDailyUsd: "0.00000000"
+                        totalDailyUsd: "0.01000000"
                       volume:
-                        dailyUsd: 4.26496572
+                        dailyUsd: "4.26496572"
                       cost:
                         crsPerSrc: "31211.01244732"
                         srcPerCrs: "0.00003203"
                       staking:
                         weight: "0.00000000"
-                        usd: 0.00000000
-                        dailyWeightChangePercent: 0.00000000
+                        usd: "0.00000000"
+                        dailyWeightChangePercent: "0.00000000"
                         nominated: true
                       createdBlock: 2988918
                       modifiedBlock: 3043296
@@ -3721,7 +3721,7 @@ paths:
               example:
                 address: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
                 name: TBTC-TCRS
-                transactionFeePercent: 0.3
+                transactionFeePercent: "0.3"
                 market: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
                 createdBlock: 2988918
                 modifiedBlock: 2988918
@@ -3737,8 +3737,8 @@ paths:
                     createdBlock: 2988890
                     modifiedBlock: 2988890
                     summary:
-                      priceUsd: 0.95057037
-                      dailyPriceChangePercent: 0.63000000
+                      priceUsd: "0.95057037"
+                      dailyPriceChangePercent: "0.63000000"
                       createdBlock: 2988918
                       modifiedBlock: 3043278
                   src:
@@ -3753,8 +3753,8 @@ paths:
                     createdBlock: 2988918
                     modifiedBlock: 2988918
                     summary:
-                      priceUsd: 27698.36556351
-                      dailyPriceChangePercent: 0.21000000
+                      priceUsd: "27698.36556351"
+                      dailyPriceChangePercent: "0.21000000"
                       createdBlock: 2988918
                       modifiedBlock: 3043250
                   lp:
@@ -3769,8 +3769,8 @@ paths:
                     createdBlock: 2988918
                     modifiedBlock: 2989382
                     summary:
-                      priceUsd: 323.92670749
-                      dailyPriceChangePercent: 0.21000000
+                      priceUsd: "323.92670749"
+                      dailyPriceChangePercent: "0.21000000"
                       createdBlock: 2988918
                       modifiedBlock: 3043250
                   staking:
@@ -3786,8 +3786,8 @@ paths:
                     createdBlock: 2988890
                     modifiedBlock: 2989018
                     summary:
-                      priceUsd: 0.00000000
-                      dailyPriceChangePercent: 0.00000000
+                      priceUsd: "0.00000000"
+                      dailyPriceChangePercent: "0.00000000"
                       createdBlock: 2988890
                       modifiedBlock: 3043278
                 miningPool:
@@ -3804,21 +3804,21 @@ paths:
                   reserves:
                     crs: "16676.38165376"
                     src: "0.53431082"
-                    usd: 45559.31401812
-                    dailyUsdChangePercent: -0.02000000
+                    usd: "45559.31401812"
+                    dailyUsdChangePercent: "-0.02000000"
                   rewards:
-                    providerDailyUsd: 0.01000000
-                    marketDailyUsd: 0.00000000
-                    totalDailyUsd: 0.01000000
+                    providerDailyUsd: "0.01000000"
+                    marketDailyUsd: "0.00000000"
+                    totalDailyUsd: "0.01000000"
                   volume:
-                    dailyUsd: 4.26496572
+                    dailyUsd: "4.26496572"
                   cost:
                     crsPerSrc: "31211.01244732"
                     srcPerCrs: "0.00003203"
                   staking:
                     weight: "0.00000000"
-                    usd: 0.00000000
-                    dailyWeightChangePercent: 0.00000000
+                    usd: "0.00000000"
+                    dailyWeightChangePercent: "0.00000000"
                     nominated: true
                   createdBlock: 2988918
                   modifiedBlock: 3043296
@@ -3930,18 +3930,18 @@ paths:
                         low: "0.03202800"
                         close: "0.53421082"
                       usd:
-                        open: 2731.96638000
-                        high: 50395.18531668
-                        low: 2731.96638000
-                        close: 45567.81677288
+                        open: "2731.96638000"
+                        high: "50395.18531668"
+                        low: "2731.96638000"
+                        close: "45567.81677288"
                     rewards:
-                      providerUsd: 0.00000000
-                      marketUsd: 0.00000000
-                      totalUsd: 0.00000000
+                      providerUsd: "0.00000000"
+                      marketUsd: "0.00000000"
+                      totalUsd: "0.00000000"
                     volume:
                       crs: "0.00000000"
                       src: "0.00000000"
-                      usd: 0.00000000
+                      usd: "0.00000000"
                     cost:
                       crsPerSrc:
                         open: "31222.68015486"
@@ -3960,10 +3960,10 @@ paths:
                         low: "0.00000000"
                         close: "0.00000000"
                       usd:
-                        open: 0.00000000
-                        high: 0.00000000
-                        low: 0.00000000
-                        close: 0.00000000
+                        open: "0.00000000"
+                        high: "0.00000000"
+                        low: "0.00000000"
+                        close: "0.00000000"
                   - timestamp: 2022-01-14T00:00:00Z
                     tranasctionCount: 1
                     reserves:
@@ -3978,18 +3978,18 @@ paths:
                         low: "0.53421082"
                         close: "0.53431082"
                       usd:
-                        open: 45567.81677288
-                        high: 45567.81677288
-                        low: 45559.31401812
-                        close: 45559.31401812
+                        open: "45567.81677288"
+                        high: "45567.81677288"
+                        low: "45559.31401812"
+                        close: "45559.31401812"
                     rewards:
-                      providerUsd: 0.01000000
-                      marketUsd: 0.00000000
-                      totalUsd: 0.01000000
+                      providerUsd: "0.01000000"
+                      marketUsd: "0.00000000"
+                      totalUsd: "0.01000000"
                     volume:
                       crs: "3.11232043"
                       src: "0.00000000"
-                      usd: 4.26496572
+                      usd: "4.26496572"
                     cost:
                       crsPerSrc:
                         open: "31222.68091498"
@@ -4008,10 +4008,10 @@ paths:
                         low: "0.00000000"
                         close: "0.00000000"
                       usd:
-                        open: 0.00000000
-                        high: 0.00000000
-                        low: 0.00000000
-                        close: 0.00000000
+                        open: "0.00000000"
+                        high: "0.00000000"
+                        low: "0.00000000"
+                        close: "0.00000000"
                 paging: {}
           headers:
             Cache-Control:
@@ -4101,7 +4101,7 @@ paths:
                     amountLpt: "0.14150796"
                     tokenSrc: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
                     tokenLp: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
-                    tokenLpTotalSupply: 94.53624157
+                    tokenLpTotalSupply: "94.53624157"
                     eventType: AddLiquidityEvent
                     contract: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
                     sortOrder: 2
@@ -4278,7 +4278,7 @@ paths:
                     amountLpt: "0.05000000"
                     tokenSrc: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
                     tokenLp: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
-                    tokenLpTotalSupply: 94.34473361
+                    tokenLpTotalSupply: "94.34473361"
                     eventType: RemoveLiquidityEvent
                     contract: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
                     sortOrder: 3
@@ -4756,7 +4756,7 @@ paths:
                     authTraders: false
                     authProviders: false
                     marketFeeEnabled: true
-                    transactionFeePercent: 0.3
+                    transactionFeePercent: "0.3"
                     tokens:
                       crs:
                         address: CRS
@@ -4769,8 +4769,8 @@ paths:
                         createdBlock: 2988890
                         modifiedBlock: 2988890
                         summary:
-                          priceUsd: 0.95057037
-                          dailyPriceChangePercent: 0.63000000
+                          priceUsd: "0.95057037"
+                          dailyPriceChangePercent: "0.63000000"
                           createdBlock: 298889
                           modifiedBlock: 3043278
                       staking:
@@ -4786,25 +4786,25 @@ paths:
                         createdBlock: 2988890
                         modifiedBlock: 2989018
                         summary:
-                          priceUsd: 0.00000000
-                          dailyPriceChangePercent: 0.00000000
+                          priceUsd: "0.00000000"
+                          dailyPriceChangePercent: "0.00000000"
                           createdBlock: 2988890
                           modifiedBlock: 3043278
                     createdBlock: 2988898
                     modifiedBlock: 2988898
                     summary:
-                      liquidityUsd: 2490080.59003948
-                      dailyLiquidityUsdChangePercent: 4.32891108
-                      volumeUsd: 482002.55832901
+                      liquidityUsd: "2490080.59003948"
+                      dailyLiquidityUsdChangePercent: "4.32891108"
+                      volumeUsd: "482002.55832901"
                       staking:
                         stakingWeight: "54883992.33820003"
-                        dailyStakingWeightChangePercent: 7.33825455
-                        stakingUsd: 8713399.088810338
-                        dailyStakingUsdChangePercent: 9.58339281
+                        dailyStakingWeightChangePercent: "7.33825455"
+                        stakingUsd: "8713399.088810338"
+                        dailyStakingUsdChangePercent: "9.58339281"
                       rewards:
-                        providerDailyUsd: 1205.00639582
-                        marketDailyUsd: 241.00127916
-                        totalDailyUsd: 1446.00767498
+                        providerDailyUsd: "1205.00639582"
+                        marketDailyUsd: "241.00127916"
+                        totalDailyUsd: "1446.00767498"
                       createdBlock: 2988898
                       modifiedBlock: 3042951
                 paging: {}
@@ -4863,7 +4863,7 @@ paths:
                 authTraders: false
                 authProviders: false
                 marketFeeEnabled: true
-                transactionFeePercent: 0.3
+                transactionFeePercent: "0.3"
                 tokens:
                   crs:
                     address: CRS
@@ -4876,8 +4876,8 @@ paths:
                     createdBlock: 2988890
                     modifiedBlock: 2988890
                     summary:
-                      priceUsd: 0.95057037
-                      dailyPriceChangePercent: 0.63000000
+                      priceUsd: "0.95057037"
+                      dailyPriceChangePercent: "0.63000000"
                       createdBlock: 2988890
                       modifiedBlock: 3043278
                   staking:
@@ -4893,25 +4893,25 @@ paths:
                     createdBlock: 2988890
                     modifiedBlock: 2989018
                     summary:
-                      priceUsd: 0.00000000
-                      dailyPriceChangePercent: 0.00000000
+                      priceUsd: "0.00000000"
+                      dailyPriceChangePercent: "0.00000000"
                       createdBlock: 2988890
                       modifiedBlock: 3043278
                 createdBlock: 2988898
                 modifiedBlock: 2988898
                 summary:
-                  liquidityUsd: 2490080.59003948
-                  dailyLiquidityUsdChangePercent: 4.32891108
-                  volumeUsd: 482002.55832901
+                  liquidityUsd: "2490080.59003948"
+                  dailyLiquidityUsdChangePercent: "4.32891108"
+                  volumeUsd: "482002.55832901"
                   staking:
                     stakingWeight: "54883992.33820003"
-                    dailyStakingWeightChangePercent: 7.33825455
-                    stakingUsd: 8713399.088810338
-                    dailyStakingUsdChangePercent: 9.58339281
+                    dailyStakingWeightChangePercent: "7.33825455"
+                    stakingUsd: "8713399.088810338"
+                    dailyStakingUsdChangePercent: "9.58339281"
                   rewards:
-                    providerDailyUsd: 1205.00639582
-                    marketDailyUsd: 241.00127916
-                    totalDailyUsd: 1446.00767498
+                    providerDailyUsd: "1205.00639582"
+                    marketDailyUsd: "241.00127916"
+                    totalDailyUsd: "1446.00767498"
                   createdBlock: 2988898
                   modifiedBlock: 3042951
           headers:
@@ -5003,11 +5003,11 @@ paths:
               example:
                 results:
                   - liquidityUsd:
-                      open: 2731.96638000
-                      high: 186586.18004516
-                      low: 2731.96638000
-                      close: 173066.54009626
-                    volumeUsd: 349.25360470
+                      open: "2731.96638000"
+                      high: "186586.18004516"
+                      low: "2731.96638000"
+                      close: "173066.54009626"
+                    volumeUsd: "349.25360470"
                     staking:
                       weight:
                         open: "0.00000000"
@@ -5015,14 +5015,14 @@ paths:
                         low: "0.00000000"
                         close: "0.00000000"
                       usd:
-                        open: 0.00000000
-                        high: 0.00000000
-                        low: 0.00000000
-                        close: 0.00000000
+                        open: "0.00000000"
+                        high: "0.00000000"
+                        low: "0.00000000"
+                        close: "0.00000000"
                     rewards:
-                      providerUsd: 1.05000000
-                      marketUsd: 0.00000000
-                      totalUsd: 1.05000000
+                      providerUsd: "1.05000000"
+                      marketUsd: "0.00000000"
+                      totalUsd: "1.05000000"
                     timestamp: 2022-01-13T00:00:00Z
                 paging:
                   next: ZGlyZWN0aW9uOkFTQztsaW1pdDoxO3BhZ2luZzpGb3J3YXJkO2ludGVydmFsOk9uZURheTtzdGFydDoxNjQwOTk1MjAwO2VuZDoxNjQzNTg3MjAwO3BvaW50ZXI6S0RFMk5ESXdNekl3TURBc0lERXA7
@@ -5088,7 +5088,7 @@ paths:
                     authPoolCreators: false
                     authProviders: false
                     authTraders: false
-                    transactionFeePercent: 0.3
+                    transactionFeePercent: "0.3"
                     stakingToken: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
                     enableMarketFee: true
                     eventType: CreateMarketEvent
@@ -5148,7 +5148,7 @@ paths:
               $ref: "#/components/schemas/quoteCreateStandardMarketRequest"
             example:
               owner: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
-              transactionFeePercent: 0.5
+              transactionFeePercent: "0.5"
               authPoolCreators: true
               authLiquidityProviders: false
               authTraders: false
@@ -5172,7 +5172,7 @@ paths:
                     authPoolCreators: false
                     authProviders: true
                     authTraders: false
-                    transactionFeePercent: 0.5
+                    transactionFeePercent: "0.5"
                     stakingToken: t6vc3nrbAurGs3i17HJUavZuw4ioKTiFCE
                     enableMarketFee: true
                     eventType: CreateMarketEvent
@@ -5714,8 +5714,8 @@ paths:
                     createdBlock: 2988918
                     modifiedBlock: 2988918
                     summary:
-                      priceUsd: 27852.57795481
-                      dailyPriceChangePercent: 0.77000000
+                      priceUsd: "27852.57795481"
+                      dailyPriceChangePercent: "0.77000000"
                       modifiedBlock: 3043250
                   - market: t7RorA7xQCMVYKPM1ibPE1NSswaLbpqLQb
                     liqudityPool: tFCyMPURX9pVWXuXQqYY2hJmRcCrhmBPfY
@@ -5730,8 +5730,8 @@ paths:
                     createdBlock: 2988919
                     modifiedBlock: 2988919
                     summary:
-                      priceUsd: 2294.33407690
-                      dailyPriceChangePercent: 0.77000000
+                      priceUsd: "2294.33407690"
+                      dailyPriceChangePercent: "0.77000000"
                       modifiedBlock: 3043250
                 paging:
                   next: ZGlyZWN0aW9uOkRFU0M7bGltaXQ6MjtwYWdpbmc6Rm9yd2FyZDt0b2tlbkF0dHJpYnV0ZXM6Tm9uUHJvdmlzaW9uYWw7aW5jbHVkZVplcm9MaXF1aWRpdHk6VHJ1ZTtrZXl3b3JkOjtvcmRlckJ5OlByaWNlVXNkO3BvaW50ZXI6S0RJeU56UXVOVFkxTmprM09EUXNJRFlwOw==
@@ -5805,8 +5805,8 @@ paths:
                 createdBlock: 2988918
                 modifiedBlock: 2988918
                 summary:
-                  priceUsd: 27852.57795481
-                  dailyPriceChangePercent: 0.77000000
+                  priceUsd: "27852.57795481"
+                  dailyPriceChangePercent: "0.77000000"
                   modifiedBlock: 3043250
           headers:
             Cache-Control:
@@ -5911,28 +5911,28 @@ paths:
                 properties:
                   results:
                     - price:
-                        open: 54274.35344481
-                        high: 55172.00419378
-                        low: 54239.99642473
-                        close: 55000.14239378
+                        open: "54274.35344481"
+                        high: "55172.00419378"
+                        low: "54239.99642473"
+                        close: "55000.14239378"
                       timestamp: 2022-01-04T00:00:00Z
                     - price:
-                        open: 52159.53226778
-                        high: 54463.33523111
-                        low: 52159.53226778
-                        close: 54274.35344481
+                        open: "52159.53226778"
+                        high: "54463.33523111"
+                        low: "52159.53226778"
+                        close: "54274.35344481"
                       timestamp: 2022-01-03T00:00:00Z
                     - price:
-                        open: 53163.84322264
-                        high: 54339.99180028
-                        low: 52101.00022178
-                        close: 52159.53226778
+                        open: "53163.84322264"
+                        high: "54339.99180028"
+                        low: "52101.00022178"
+                        close: "52159.53226778"
                       timestamp: 2022-01-02T00:00:00Z
                     - price:
-                        open: 54293.91289928
-                        high: 54333.91319534
-                        low: 52983.129000420
-                        close: 53163.84322264
+                        open: "54293.91289928"
+                        high: "54333.91319534"
+                        low: "52983.129000420"
+                        close: "53163.84322264"
                       timestamp: 2022-01-01T00:00:00Z
                   paging: {}
           headers:
@@ -6927,23 +6927,23 @@ paths:
                     createdBlock: 2988918
                     modifiedBlock: 2988918
                     summary:
-                      priceUsd: 27852.57795481
-                      dailyPriceChangePercent: 0.77000000
+                      priceUsd: "27852.57795481"
+                      dailyPriceChangePercent: "0.77000000"
                       createdBlock: 2988918
                       modifiedBlock: 3043250
                   - address: tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3
                     name: ETH (Wrapped)
                     symbol: TETH
                     decimals: 18
-                    sats: "100000000"0000000000
+                    sats: "1000000000000000000"
                     totalSupply: "100000000.000000000000000000"
                     attributes:
                       - NonProvisional
                     createdBlock: 2988919
                     modifiedBlock: 2988919
                     summary:
-                      priceUsd: 2294.33407690
-                      dailyPriceChangePercent: 0.77000000
+                      priceUsd: "2294.33407690"
+                      dailyPriceChangePercent: "0.77000000"
                       createdBlock: 2988919
                       modifiedBlock: 3043250
                 paging:
@@ -7073,8 +7073,8 @@ paths:
                 createdBlock: 2988918
                 modifiedBlock: 2988918
                 summary:
-                  priceUsd: 27852.57795481
-                  dailyPriceChangePercent: 0.77000000
+                  priceUsd: "27852.57795481"
+                  dailyPriceChangePercent: "0.77000000"
                   createdBlock: 2988918
                   modifiedBlock: 3043250
           headers:
@@ -7173,28 +7173,28 @@ paths:
                 properties:
                   results:
                     - price:
-                        open: 54193.34115385
-                        high: 55199.32820982
-                        low: 54187.23589023
-                        close: 55063.99234829
+                        open: "54193.34115385"
+                        high: "55199.32820982"
+                        low: "54187.23589023"
+                        close: "55063.99234829"
                       timestamp: 2022-01-04T00:00:00Z
                     - price:
-                        open: 52402.45948025
-                        high: 54362.13294822
-                        low: 52351.34292224
-                        close: 54193.34115385
+                        open: "52402.45948025"
+                        high: "54362.13294822"
+                        low: "52351.34292224"
+                        close: "54193.34115385"
                       timestamp: 2022-01-03T00:00:00Z
                     - price:
-                        open: 53135.84898883
-                        high: 54339.34298819
-                        low: 52217.00424382
-                        close: 52402.45948025
+                        open: "53135.84898883"
+                        high: "54339.34298819"
+                        low: "52217.00424382"
+                        close: "52402.45948025"
                       timestamp: 2022-01-02T00:00:00Z
                     - price:
-                        open: 54284.23999384
-                        high: 54300.22222003
-                        low: 53025.42828821
-                        close: 53135.84898883
+                        open: "54284.23999384"
+                        high: "54300.22222003"
+                        low: "53025.42828821"
+                        close: "53135.84898883"
                       timestamp: 2022-01-01T00:00:00Z
                   paging: {}
           headers:
