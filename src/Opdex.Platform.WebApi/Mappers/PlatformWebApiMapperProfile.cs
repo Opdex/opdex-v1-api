@@ -85,7 +85,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.Symbol, opt => opt.MapFrom(src => src.Symbol))
             .ForMember(dest => dest.Decimals, opt => opt.MapFrom(src => src.Decimals))
-            .ForMember(dest => dest.Sats, opt => opt.MapFrom(src => src.Sats))
+            .ForMember(dest => dest.Sats, opt => opt.MapFrom(src => src.Sats.ToString()))
             .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
             .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.Attributes))
             .ForMember(dest => dest.WrappedToken, opt => opt.MapFrom(src => src.WrappedToken))
