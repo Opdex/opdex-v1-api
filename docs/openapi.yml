@@ -538,9 +538,8 @@ components:
           type: boolean
           description: Whether the market requires authorization to swap
         transactionFeePercent:
-          type: number
-          minimum: 0.0
-          maximum: 0.1
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^0.[0-9]|1.0$
           description: Swap fee percentage amount
         stakingToken:
           $ref: "#/components/schemas/address"
@@ -1752,9 +1751,8 @@ components:
           $ref: "#/components/schemas/address"
           description: Address to assign as owner of the market
         transactionFeePercent:
-          type: number
-          minimum: 0.0
-          maximum: 1.0
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^0.[0-9]|1.0$
           description: Swap fee percentage amount
         authPoolCreators:
           type: boolean
@@ -1926,9 +1924,8 @@ components:
           type: string
           description: Name of the liquidity pool
         transactionFeePercent:
-          type: number
-          minimum: 0.0
-          maximum: 1.0
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^0.[0-9]|1.0$
           description: Percentage fee for a trade
         market:
           $ref: "#/components/schemas/address"
@@ -1994,19 +1991,19 @@ components:
           $ref: "#/components/schemas/fixedDecimal"
           description: SRC reserve amount
         usd:
-          type: number
-          minimum: 0.00000000
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: USD value of reserve amount
         dailyUsdPercentChange:
-          type: number
-          minimum: -100.00
+          pattern: \d+.\d{8}$
+          $ref: "#/components/schemas/fixedDecimal"
           description: Percentage change of USD value from the previous day
     volumeSummary:
       type: object
       properties:
         dailyUsd:
-          type: number
-          minimum: 0.00000000
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: USD value of total daily volume
     costSummary:
       type: object
@@ -2024,12 +2021,12 @@ components:
           $ref: "#/components/schemas/fixedDecimal"
           description: Total number of tokens staking
         usd:
-          type: number
-          minimum: 0.00000000
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: USD value of tokens staking
         dailyWeightChangePercent:
-          type: number
-          minimum: -100.00
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: .\d{8}$
           description: Percentage change of tokens staking from the previous day
         nominated:
           type: boolean
@@ -2078,16 +2075,16 @@ components:
       type: object
       properties:
         providerUsd:
-          type: number
-          minimum: 0.00000000
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: Total USD value of tokens rewarded to liquidity providers
         marketUsd:
-          type: number
-          minimum: 0.00000000
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: Total USD value of tokens rewarded to the market; either the owner of a standard market or stakers in a staking market
         totalUsd:
-          type: number
-          minimum: 0.00000000
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: Total USD value of all tokens rewarded
     volumeSnapshot:
       type: object
@@ -2099,8 +2096,8 @@ components:
           $ref: "#/components/schemas/fixedDecimal"
           description: Amount of SRC token volume
         usd:
-          type: number
-          minimum: 0.00000000
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: USD value of all token volume
     costSnapshot:
       type: object
@@ -2155,9 +2152,8 @@ components:
           type: boolean
           description: Whether the market fee is enabled
         transactionFeePercent:
-          type: number
-          minimum: 0.0
-          maximum: 1.0
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^0.[0-9]|1.0$
           description: Percentage fee for a trade
         createdBlock:
           type: integer
@@ -2186,16 +2182,16 @@ components:
       type: object
       properties:
         liquidityUsd:
-          type: number
-          minimum: 0.00000000
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: Total liquidity USD amount
         dailyLiquidityUsdChangePercent:
-          type: number
-          minimum: -100.00000000
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: .\d{8}$
           description: Percentage change of the liquidity USD amount from the previous day
         volumeUsd:
-          type: number
-          minimum: 0.00000000
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: Total volume USD amount
         staking:
           $ref: "#/components/schemas/marketStakingSummary"
@@ -2220,31 +2216,31 @@ components:
           $ref: "#/components/schemas/fixedDecimal"
           description: Total staking weight in all pools
         dailyStakingWeightChangePercent:
-          type: number
-          minimum: 0.00000000
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: Percentage change of the staking weight amount from the previous day
         stakingUsd:
-          type: number
-          minimum: 0.00000000
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: Total staking weight USD amount
         dailyStakingUsdChangePercent:
-          type: number
-          minimum: 0.00000000
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: Percentage change of the staking USD amount from the previous day
     rewardSummary:
       type: object
       properties:
         providerDailyUsd:
-          type: number
-          minimum: 0.00000000
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: USD value of rewards distributed to liquidity providers for the day
         marketDailyUsd:
-          type: number
-          minimum: 0.00000000
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: USD value of rewards distributed to the market for the day
         totalDailyUsd:
-          type: number
-          minimum: 0.00000000
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: Total USD value of rewards distributed for the day
     marketTokensResponse:
       type: object
@@ -2353,13 +2349,16 @@ components:
       type: object
       properties:
         providerUsd:
-          type: number
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: USD value of rewards to providers
         marketUsd:
-          type: number
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: USD value of rewards to the market; either the owner of a standard market or stakers in a staking market
         totalUsd:
-          type: number
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: USD value of all rewards from token swaps
     tokensResponse:
       type: object
@@ -2449,12 +2448,12 @@ components:
       description: Point in time pricing summary for a token
       properties:
         priceUsd:
-          type: number
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: USD token price
-          minimum: 0.00
         dailyPriceChangePercent:
-          type: number
-          minimum: -100.00000000
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: .\d{8}$
           description: Price change percentage for the current day, reset at 00:00 UTC
         createdBlock:
           type: integer
@@ -2678,21 +2677,21 @@ components:
       description: Open, high, low, close values within a time interval
       properties:
         open:
-          type: number
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: Value at the start of the time interval
-          minimum: 0.00
         high:
-          type: number
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: Highest value during the time interval
-          minimum: 0.00
         low:
-          type: number
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: Lowest value during the time interval
-          minimum: 0.00
         close:
-          type: number
+          $ref: "#/components/schemas/fixedDecimal"
+          pattern: ^\d+.\d{8}$
           description: Value at the end of the time interval
-          minimum: 0.00
     ohlcFixedDecimalResponse:
       type: object
       description: Open, high, low, close values within a time interval
