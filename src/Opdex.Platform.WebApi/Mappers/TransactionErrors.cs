@@ -190,8 +190,9 @@ public static class TransactionErrors
         private const string MiningPoolNotifyRewardAmount = "OpdexMiningPool.NotifyRewardAmount(UInt256 reward)";
 
         private const string MinedTokenNominateLiquidityPool = "OpdexMinedToken.NominateLiquidityPool()";
-        private const string MinedTokenDistributeGenesis = "OpdexMinedToken.DistributeGenesis(Address firstNomination, Address secondNomination, Address thirdNomination, Address fourthNomination)";
         private const string MinedTokenDistribute = "OpdexMinedToken.Distribute()";
+        private const string MinedTokenDistributeGenesis = "OpdexMinedToken.DistributeGenesis(Address firstNomination, Address secondNomination, Address thirdNomination, Address fourthNomination)";
+        private const string MinedTokenDistributeExecute = "OpdexMinedToken.DistributeExecute(UInt32 periodIndex, Address[] nominations)";
 
         private const string MiningGovernanceNotifyDistribution = "OpdexMiningGovernance.NotifyDistribution(Address firstNomination, Address secondNomination, Address thirdNomination, Address fourthNomination)";
         private const string MiningGovernanceNominateLiquidityPool = "OpdexMiningGovernance.NominateLiquidityPool(Address stakingPool, UInt256 weight)";
@@ -466,14 +467,12 @@ public static class TransactionErrors
                 (MinedTokenDistributeGenesis, Unauthorized) => "Unable to distribute genesis, unauthorized.",
                 (MinedTokenDistributeGenesis, InvalidNomination) => "Unable to distribute genesis, nomination(s) invalid.",
                 (MinedTokenDistributeGenesis, DuplicateNomination) => "Unable to distribute genesis, duplicate nomination.",
-                (MinedTokenDistributeGenesis, DistributionNotReady) => "Unable to distribute genesis, something unexpected happened.",
-                (MinedTokenDistributeGenesis, FailedGovernanceDistribution) => "Unable to distribute genesis, something unexpected happened.",
-                (MinedTokenDistributeGenesis, FailedVaultDistribution) => "Unable to distribute genesis, something unexpected happened.",
 
-                (MinedTokenDistribute, InvalidDistributionPeriod) => "Unable to distribute, genesis not distributed.",
-                (MinedTokenDistribute, DistributionNotReady) => "Unable to distribute, not yet ready.",
-                (MinedTokenDistribute, FailedGovernanceDistribution) => "Unable to distribute genesis, something unexpected happened.",
-                (MinedTokenDistribute, FailedVaultDistribution) => "Unable to distribute genesis, something unexpected happened.",
+                (MinedTokenDistribute, InvalidDistributionPeriod) => "Unable to distribute, genesis not yet distributed.",
+
+                (MinedTokenDistributeExecute, DistributionNotReady) => "Unable to distribute, not yet ready.",
+                (MinedTokenDistributeExecute, FailedGovernanceDistribution) => "Unable to distribute, mining governance distribution failed.",
+                (MinedTokenDistributeExecute, FailedVaultDistribution) => "Unable to distribute, vault distribution failed.",
 
                 // --- Mining Governance ---
                 (MiningGovernanceNotifyDistribution, InvalidSender) => "Unable to notify distribution, invalid sender.",
