@@ -19,7 +19,6 @@ public class RawTransactionDto
 
     public VOutDto[] Vout { get; set; }
 
-
     /*
      *
      * External transfers scriptPubKey include OP_CREATECONTRACT or OP_CALLCONTRACT (nonstandard)

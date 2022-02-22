@@ -72,7 +72,7 @@ public class BlockReceiptTests
         blockReceipt.PreviousBlockHash.Should().Be(previousBlockHash);
         blockReceipt.NextBlockHash.Should().Be(nextBlockHash);
         blockReceipt.MerkleRoot.Should().Be(merkleRoot);
-        blockReceipt.SmartContractCallTxHashes.Should().BeEquivalentTo(smartContractCallTxHashes);
+        blockReceipt.SmartContractTxHashes.Should().BeEquivalentTo(smartContractCallTxHashes);
     }
 
     [Fact]

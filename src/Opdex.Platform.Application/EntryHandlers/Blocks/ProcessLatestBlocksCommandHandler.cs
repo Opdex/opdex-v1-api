@@ -77,7 +77,7 @@ public class ProcessLatestBlocksCommandHandler : IRequestHandler<ProcessLatestBl
                 }
 
                 // Process all smart contract call transactions in the block
-                foreach (var tx in currentBlock.SmartContractCallTxHashes)
+                foreach (var tx in currentBlock.SmartContractTxHashes)
                 {
                     var shouldNotify = currentBlock.Height > request.NotifyAfterHeight;
                     await _mediator.Send(new CreateTransactionCommand(tx, shouldNotify), CancellationToken.None);

@@ -39,11 +39,8 @@ public class BlockReceiptDto
     public IEnumerable<Sha256> Tx { get; set; }
 
     public IEnumerable<RawTransactionDto> Transactions { get; set; }
-    public IEnumerable<Sha256> SmartContractCallTxs => Transactions
-        .Where(t => t.IsExternalSmartContractTransfer && t.IsSmartContractCall)
-        .Select(t => t.Hash);
 
-    public IEnumerable<Sha256> SmartContractCreateTxs => Transactions
-        .Where(t => t.IsExternalSmartContractTransfer && t.IsSmartContractCreate)
+    public IEnumerable<Sha256> SmartContractTxs => Transactions
+        .Where(t => t.IsExternalSmartContractTransfer && (t.IsSmartContractCall || t.IsSmartContractCreate))
         .Select(t => t.Hash);
 }
