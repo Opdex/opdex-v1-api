@@ -59,10 +59,10 @@ public class BlockReceiptTests
         Sha256 previousBlockHash = new Sha256(42394832940);
         Sha256 nextBlockHash = new Sha256(92839482912423432);
         Sha256 merkleRoot = new Sha256(13249049);
-        Sha256[] txHashes = new[] { new Sha256(323243298) };
+        Sha256[] smartContractCallTxHashes = { new(323243298) };
 
         // Act
-        var blockReceipt = new BlockReceipt(hash, height, time, medianTime, previousBlockHash, nextBlockHash, merkleRoot, txHashes);
+        var blockReceipt = new BlockReceipt(hash, height, time, medianTime, previousBlockHash, nextBlockHash, merkleRoot, smartContractCallTxHashes);
 
         // Assert
         blockReceipt.Hash.Should().Be(hash);
@@ -72,7 +72,7 @@ public class BlockReceiptTests
         blockReceipt.PreviousBlockHash.Should().Be(previousBlockHash);
         blockReceipt.NextBlockHash.Should().Be(nextBlockHash);
         blockReceipt.MerkleRoot.Should().Be(merkleRoot);
-        blockReceipt.TxHashes.Should().BeEquivalentTo(txHashes);
+        blockReceipt.SmartContractCallTxHashes.Should().BeEquivalentTo(smartContractCallTxHashes);
     }
 
     [Fact]

@@ -24,6 +24,6 @@ public class CallCirrusGetBestBlockReceiptQueryHandler : IRequestHandler<CallCir
         var block = await _blockStore.GetBlockAsync(bestsBlockHash, cancellationToken);
 
         return new BlockReceipt(block.Hash, block.Height, block.Time.FromUnixTimeSeconds(), block.MedianTime.FromUnixTimeSeconds(),
-                                block.PreviousBlockHash, block.NextBlockHash, block.MerkleRoot, block.Tx);
+                                block.PreviousBlockHash, block.NextBlockHash, block.MerkleRoot, block.SmartContractCallTxs);
     }
 }
