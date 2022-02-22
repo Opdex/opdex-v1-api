@@ -23,14 +23,14 @@ public class CallCmcGetStraxLatestQuoteQueryHandler : IRequestHandler<CallCmcGet
     {
         var quote = await _quotesModule.GetLatestQuoteAsync(CmcTokens.STRAX, cancellationToken);
 
-        if (quote?.Data == null || !quote.Data.TryGetValue(CmcTokens.STRAX.ToString(), out var tokenDetails))
+        if (quote?.Data is null || !quote.Data.TryGetValue(CmcTokens.STRAX.ToString(), out var tokenDetails))
         {
             _logger.LogError("STRAX USD price not found");
             return 0m;
         }
 
         var foundQuotePrice = tokenDetails.Quote.TryGetValue("USD", out var quotePrice);
-        if (foundQuotePrice && quotePrice != null)
+        if (foundQuotePrice && quotePrice is not null)
         {
             return quotePrice.Price;
         }

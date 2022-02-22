@@ -25,15 +25,14 @@ public class CallCmcGetStraxHistoricalQuoteQueryHandler : IRequestHandler<CallCm
         var quote = await _quotesModule.GetHistoricalQuoteAsync(CmcTokens.STRAX, request.DateTime, cancellationToken);
 
         var fiatPrices = quote?.Data?.Quotes?.FirstOrDefault()?.Quote;
-
-        if (fiatPrices == null)
+        if (fiatPrices is null)
         {
             _logger.LogError("STRAX quote not found for {RequestedTime}", request.DateTime);
             return 0m;
         }
 
         var usdFound = fiatPrices.TryGetValue("USD", out var usd);
-        if (usdFound && usd != null)
+        if (usdFound && usd is not null)
         {
             return usd.Price;
         }

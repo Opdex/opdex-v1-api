@@ -26,9 +26,11 @@ public class FiatPriceFeed : IFiatPriceFeed
         var isFiveMinutesOrOlder = DateTime.UtcNow.Subtract(blockTime) > TimeSpan.FromMinutes(5);
         if (await _featureManager.IsEnabledAsync(FeatureFlags.CoinMarketCapPriceFeed))
         {
-            return isFiveMinutesOrOlder
+            var price = isFiveMinutesOrOlder
                 ? await _mediator.Send(new CallCmcGetStraxHistoricalQuoteQuery(blockTime), cancellationToken)
                 : await _mediator.Send(new CallCmcGetStraxLatestQuoteQuery(), cancellationToken);
+            if (price != 0) return price;
+            // falls back to CoinGecko if coin market cap returns 0
         }
 
         return isFiveMinutesOrOlder
