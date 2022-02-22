@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -76,8 +75,8 @@ public class ProcessLatestBlocksCommandHandler : IRequestHandler<ProcessLatestBl
                                                                                        crsUsd.Value), CancellationToken.None);
                 }
 
-                // Process all transactions in the block
-                foreach (var tx in currentBlock.TxHashes.Where(tx => tx != currentBlock.MerkleRoot))
+                // Process all smart contract call transactions in the block
+                foreach (var tx in currentBlock.SmartContractTxHashes)
                 {
                     var shouldNotify = currentBlock.Height > request.NotifyAfterHeight;
                     await _mediator.Send(new CreateTransactionCommand(tx, shouldNotify), CancellationToken.None);

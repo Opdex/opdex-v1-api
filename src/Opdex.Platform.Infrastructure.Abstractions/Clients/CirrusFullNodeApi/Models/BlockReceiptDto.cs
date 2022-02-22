@@ -1,11 +1,17 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Opdex.Platform.Common.Models;
+using System.Linq;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 
 public class BlockReceiptDto
 {
+    public BlockReceiptDto()
+    {
+        Transactions = new List<RawTransactionDto>();
+    }
+
     public Sha256 Hash { get; set; }
     public ulong Confirmations { get; set; }
     public ulong Size { get; set; }
@@ -31,4 +37,10 @@ public class BlockReceiptDto
     public Sha256 MerkleRoot { get; set; }
 
     public IEnumerable<Sha256> Tx { get; set; }
+
+    public IEnumerable<RawTransactionDto> Transactions { get; set; }
+
+    public IEnumerable<Sha256> SmartContractTxs => Transactions
+        .Where(t => t.IsExternalSmartContractTransfer && (t.IsSmartContractCall || t.IsSmartContractCreate))
+        .Select(t => t.Hash);
 }

@@ -21,7 +21,8 @@ public class BlockStoreModule : ApiClientBase, IBlockStoreModule
     public Task<BlockReceiptDto> GetBlockAsync(Sha256 blockHash, CancellationToken cancellationToken)
     {
         const bool outputJson = true;
-        var uri = string.Format(CirrusUriHelper.BlockStore.GetBlockByHash, blockHash, outputJson);
+        const bool showTransactionDetails = true;
+        var uri = string.Format(CirrusUriHelper.BlockStore.GetBlockByHash, blockHash, outputJson, showTransactionDetails);
 
         var logDetails = new Dictionary<string, object>
         {

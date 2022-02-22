@@ -7,7 +7,7 @@ namespace Opdex.Platform.Domain.Models.Blocks;
 public class BlockReceipt
 {
     public BlockReceipt(Sha256 hash, ulong height, DateTime time, DateTime medianTime, Sha256? previousBlockHash, Sha256? nextBlockHash,
-                        Sha256 merkleRoot, IEnumerable<Sha256> txHashes)
+                        Sha256 merkleRoot, IEnumerable<Sha256> smartContractTxHashes)
     {
         if (height < 1)
         {
@@ -31,7 +31,7 @@ public class BlockReceipt
         PreviousBlockHash = previousBlockHash;
         NextBlockHash = nextBlockHash;
         MerkleRoot = merkleRoot;
-        TxHashes = txHashes;
+        SmartContractTxHashes = smartContractTxHashes;
     }
 
     public Sha256 Hash { get; }
@@ -41,7 +41,7 @@ public class BlockReceipt
     public Sha256? PreviousBlockHash { get; }
     public Sha256? NextBlockHash { get; }
     public Sha256 MerkleRoot { get; }
-    public IEnumerable<Sha256> TxHashes { get; }
+    public IEnumerable<Sha256> SmartContractTxHashes { get; }
 
     public bool IsNewYearFromPrevious(DateTime previousBlockMedianTime)
     {
