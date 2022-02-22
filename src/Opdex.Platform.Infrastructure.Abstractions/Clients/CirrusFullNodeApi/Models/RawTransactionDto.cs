@@ -20,6 +20,21 @@ public class RawTransactionDto
     public VOutDto[] Vout { get; set; }
 
     /*
+     * Smart contracts can be thought of as having external and internal transfers/calls.
+     * - External calls are done by a user to a smart contract method.
+     * - Internal calls are created as a result of the contract execution.
+     *
+     * For example, in the example block: https://chainz.cryptoid.info/cirrus-test/block.dws?3434decc0e31d8e0a5cccb662b73ac225beaf259c7e8eceec69f83c71c69f7e2.htm
+     *  - The 1st transaction is the coinbase
+     *  - The 2nd is an external smart contract transactions
+     *  - The 3rd an internal transaction.
+     *
+     * Internal transactions are created by the contract executor, see https://github.com/stratisproject/StratisFullNode/blob/master/src/Stratis.SmartContracts.CLR/ContractExecutor.cs#L90
+     *
+     */
+    public bool IsExternalSmartContractTransfer => Vin.All(v => v.ScriptSig is not null && !v.ScriptSig.IsSmartContractScript());
+
+    /*
      *
      * External transfers scriptPubKey include OP_CREATECONTRACT or OP_CALLCONTRACT (nonstandard)
      * Internal transfers scriptSig include OP_SPEND (nonstandard)
@@ -31,10 +46,8 @@ public class RawTransactionDto
      * Finally, we return transactions where the script pub key uses nonstandard smart contract OP codes.
      *
      */
-    public bool IsSmartContractCall => Vout.Any(v => v.ScriptPubKey.SmartContractScriptType == ScOpcodeType.OP_CALLCONTRACT);
-    public bool IsSmartContractCreate => Vout.Any(v => v.ScriptPubKey.SmartContractScriptType == ScOpcodeType.OP_CREATECONTRACT);
-
-    public bool IsExternalSmartContractTransfer => Vin.All(v => v.ScriptSig is not null && !v.ScriptSig.IsSmartContractScript);
+    public bool IsSmartContractCall => Vout.Any(v => v.ScriptPubKey.TryParseSmartContractScriptType(out var scriptType) && scriptType == ScOpCodeType.OP_CALLCONTRACT);
+    public bool IsSmartContractCreate => Vout.Any(v => v.ScriptPubKey.TryParseSmartContractScriptType(out var scriptType) && scriptType == ScOpCodeType.OP_CREATECONTRACT);
 }
 
 public class VInDto
@@ -47,28 +60,16 @@ public class VOutDto
     public ScriptPubKeyDto ScriptPubKey { get; set; }
 }
 
-public class ScriptSigDto
+public abstract class ScriptDto
 {
     public string Hex { get; set; }
-
-    public bool IsSmartContractScript => SmartContractScriptType.IsValid();
-
-    // For a smart contract script, we can get the type from the first byte
-    public ScOpcodeType SmartContractScriptType
-    {
-        get
-        {
-            if (Hex is null) return default;
-            var isValidScript = byte.TryParse(Hex[..2], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var firstByte);
-            if (!isValidScript) return default;
-            var smartContractScriptType = ((ScOpcodeType)firstByte);
-            var isValidSmartContractScript = smartContractScriptType.IsValid();
-            return isValidSmartContractScript ? smartContractScriptType : default;
-        }
-    }
 }
 
-public class ScriptPubKeyDto
+public class ScriptSigDto : ScriptDto
+{
+}
+
+public class ScriptPubKeyDto : ScriptDto
 {
     public ScriptPubKeyDto()
     {
@@ -76,22 +77,4 @@ public class ScriptPubKeyDto
     }
 
     public Address[] Addresses { get; set; }
-
-    public string Hex { get; set; }
-
-    public bool IsSmartContractScript => SmartContractScriptType.IsValid();
-
-    // For a smart contract script, we can get the type from the first byte
-    public ScOpcodeType SmartContractScriptType
-    {
-        get
-        {
-            if (Hex is null) return default;
-            var isValidScript = byte.TryParse(Hex[..2], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var firstByte);
-            if (!isValidScript) return default;
-            var smartContractScriptType = ((ScOpcodeType)firstByte);
-            var isValidSmartContractScript = smartContractScriptType.IsValid();
-            return isValidSmartContractScript ? smartContractScriptType : default;
-        }
-    }
 }

@@ -1,6 +1,6 @@
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 
-public enum ScOpcodeType : byte
+public enum ScOpCodeType : byte
 {
     OP_CREATECONTRACT = 0xc0,
     OP_CALLCONTRACT = 0xc1,
