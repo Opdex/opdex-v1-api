@@ -54,7 +54,7 @@ public class ScriptSigDto
 
     public bool IsSmartContractScript => SmartContractScriptType.IsValid();
 
-    // For a smart contract script, we can get the type from the first
+    // For a smart contract script, we can get the type from the first byte
     public ScOpcodeType SmartContractScriptType
     {
         get
@@ -82,7 +82,7 @@ public class ScriptPubKeyDto
 
     public bool IsSmartContractScript => SmartContractScriptType.IsValid();
 
-    // For a smart contract script, we can get the type from the first
+    // For a smart contract script, we can get the type from the first byte
     public ScOpcodeType SmartContractScriptType
     {
         get
