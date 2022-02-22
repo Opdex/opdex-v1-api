@@ -20,7 +20,7 @@ public static class CirrusUriHelper
 
     public static class BlockStore
     {
-        public const string GetBlockByHash = "BlockStore/block?hash={0}&OutputJson={1}";
+        public const string GetBlockByHash = "BlockStore/block?hash={0}&OutputJson={1}&showTransactionDetails={2}";
         public const string GetAddressesBalances = "BlockStore/getaddressesbalances?addresses={0}";
     }
 
