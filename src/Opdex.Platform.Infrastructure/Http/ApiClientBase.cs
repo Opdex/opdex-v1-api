@@ -12,11 +12,11 @@ namespace Opdex.Platform.Infrastructure.Http;
 
 public abstract class ApiClientBase
 {
-    protected readonly ILogger _logger;
+    protected readonly ILogger<ApiClientBase> _logger;
     protected readonly JsonSerializerSettings _serializerSettings;
     private readonly HttpClient _httpClient;
 
-    protected ApiClientBase(HttpClient httpClient, ILogger logger, JsonSerializerSettings serializerSettings = null)
+    protected ApiClientBase(HttpClient httpClient, ILogger<ApiClientBase> logger, JsonSerializerSettings serializerSettings = null)
     {
         _httpClient = httpClient;
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -57,17 +57,17 @@ public abstract class ApiClientBase
         }
         catch (TaskCanceledException ex)
         {
-            _logger.LogError(ex, $"The request to {uri} failed due to a timeout with {ex.Message}");
-            throw;
+            _logger.LogError(ex, "The request to {Uri} failed with {Message}", uri, ex.Message);
+            return default;
         }
         catch (HttpRequestException ex)
         {
-            _logger.LogError(ex, $"The request to {uri} failed with {ex.Message}");
-            throw;
+            _logger.LogError(ex, "The request to {Uri} failed with {Message}", uri, ex.Message);
+            return default;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Unable to parse response from {uri} with {ex.Message}");
+            _logger.LogError(ex, "The request to {Uri} failed with {Message}", uri, ex.Message);
             throw;
         }
     }
@@ -88,7 +88,7 @@ public abstract class ApiClientBase
             {
                 using (_logger.BeginScope(new Dictionary<string, object> { ["Response"] = jsonString }))
                 {
-                    _logger.LogError("Unable to deserialize expected response type.");
+                    _logger.LogError("Unable to deserialize expected response type");
                 }
 
                 throw;
