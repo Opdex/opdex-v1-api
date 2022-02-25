@@ -17,13 +17,13 @@ public class NodeModule : ApiClientBase, INodeModule
     {
     }
 
-    public Task<NodeStatusDto> GetNodeStatusAsync(CancellationToken cancellationToken)
+    public async Task<NodeStatusDto> GetNodeStatusAsync(CancellationToken cancellationToken)
     {
-        return GetAsync<NodeStatusDto>(CirrusUriHelper.Node.Status, cancellationToken);
+        return await GetAsync<NodeStatusDto>(CirrusUriHelper.Node.Status, cancellationToken: cancellationToken);
     }
 
     public async Task<RawTransactionDto> GetRawTransactionAsync(Sha256 transactionHash, CancellationToken cancellationToken)
     {
-        return await GetAsync<RawTransactionDto>(string.Format(CirrusUriHelper.Node.GetRawTransaction, transactionHash, true), cancellationToken);
+        return await GetAsync<RawTransactionDto>(string.Format(CirrusUriHelper.Node.GetRawTransaction, transactionHash, true), cancellationToken: cancellationToken);
     }
 }

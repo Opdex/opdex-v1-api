@@ -42,13 +42,13 @@ public class CreateTransactionCommandHandler : IRequestHandler<CreateTransaction
 
     public async Task<bool> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
     {
-        var tx = await _mediator.Send(new RetrieveTransactionByHashQuery(request.TxHash, findOrThrow: false));
+        var tx = await _mediator.Send(new RetrieveTransactionByHashQuery(request.TxHash, findOrThrow: false), CancellationToken.None);
 
         // If the transaction already exists, skip it
         if (tx != null) return true;
 
         // Get the transaction from Cirrus
-        tx = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash));
+        tx = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), CancellationToken.None);
 
         // Can't process transactions we don't find
         if (tx == null) return false;
@@ -59,7 +59,7 @@ public class CreateTransactionCommandHandler : IRequestHandler<CreateTransaction
         // If all logs are transfer logs, process balance updates of tokens we know about and exit
         if (tx.Logs.Count > 0 && tx.Logs.All(log => log.LogType == TransactionLogType.TransferLog))
         {
-            await Task.WhenAll(tx.Logs.Select(log => _mediator.Send(new ProcessTransferLogCommand(log, tx.From, tx.BlockHeight))));
+            await Task.WhenAll(tx.Logs.Select(log => _mediator.Send(new ProcessTransferLogCommand(log, tx.From, tx.BlockHeight), CancellationToken.None)));
             return false;
         }
 
@@ -76,17 +76,17 @@ public class CreateTransactionCommandHandler : IRequestHandler<CreateTransaction
         }
 
         // Persist the transaction if logs were processed or its a failed Opdex related transaction
-        var txId = await _mediator.Send(new MakeTransactionCommand(tx));
+        var txId = await _mediator.Send(new MakeTransactionCommand(tx), CancellationToken.None);
         if (txId == 0) return false;
 
         // Only attempt to process snapshots this transaction affects on successful transactions
         if (tx.Success)
         {
-            await _mediator.Send(new ProcessLiquidityPoolSnapshotsByTransactionCommand(tx));
+            await _mediator.Send(new ProcessLiquidityPoolSnapshotsByTransactionCommand(tx), CancellationToken.None);
         }
 
         // Notify the user we found a pending transaction of theirs
-        if (request.Notify) await _mediator.Send(new NotifyUserOfMinedTransactionCommand(tx.From, tx.Hash));
+        if (request.Notify) await _mediator.Send(new NotifyUserOfMinedTransactionCommand(tx.From, tx.Hash), CancellationToken.None);
 
         return true;
     }

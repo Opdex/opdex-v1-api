@@ -29,10 +29,9 @@ public class ProcessCoreDeploymentTransactionCommandHandler : IRequestHandler<Pr
     {
         try
         {
-            var transaction = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), CancellationToken.None) ??
-                              await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), CancellationToken.None);
+            var transaction = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), CancellationToken.None);
 
-            if (transaction == null || transaction.Id > 0) return Unit.Value;
+            if (transaction is null || transaction.Id > 0) return Unit.Value;
 
             // Deployments can have block gaps between transactions. Create all blocks in from our best block to the current block
             // that the Core deployment transaction hash is within.
@@ -42,8 +41,8 @@ public class ProcessCoreDeploymentTransactionCommandHandler : IRequestHandler<Pr
 
             while (bestBlock.Height <= hashBlock.Height && bestBlock.NextBlockHash.HasValue)
             {
-                await _mediator.Send(new MakeBlockCommand(bestBlock.Height, bestBlock.Hash, bestBlock.Time, bestBlock.MedianTime));
-                bestBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(bestBlock.NextBlockHash.Value, findOrThrow: true));
+                await _mediator.Send(new MakeBlockCommand(bestBlock.Height, bestBlock.Hash, bestBlock.Time, bestBlock.MedianTime), CancellationToken.None);
+                bestBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(bestBlock.NextBlockHash.Value, findOrThrow: true), CancellationToken.None);
             }
 
             await _mediator.Send(new CreateCrsTokenSnapshotsCommand(hashBlock.MedianTime, transaction.BlockHeight), CancellationToken.None);
@@ -52,7 +51,7 @@ public class ProcessCoreDeploymentTransactionCommandHandler : IRequestHandler<Pr
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failure processing deployer deployment.");
+            _logger.LogWarning(ex, "Failure processing deployer deployment");
         }
 
         return Unit.Value;

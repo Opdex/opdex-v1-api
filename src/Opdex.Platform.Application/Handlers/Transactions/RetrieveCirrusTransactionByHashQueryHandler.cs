@@ -5,12 +5,20 @@ using MediatR;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Domain.Models.Transactions;
+using Polly;
+using Polly.Retry;
+using System.Net.Http;
 
 namespace Opdex.Platform.Application.Handlers.Transactions;
 
 public class RetrieveCirrusTransactionByHashQueryHandler : IRequestHandler<RetrieveCirrusTransactionByHashQuery, Transaction>
 {
     private readonly IMediator _mediator;
+
+    private readonly AsyncRetryPolicy _retryPolicy = Policy
+        .Handle<HttpRequestException>()
+        .Or<TaskCanceledException>()
+        .WaitAndRetryAsync(3, x => TimeSpan.FromSeconds(x));
 
     public RetrieveCirrusTransactionByHashQueryHandler(IMediator mediator)
     {
@@ -19,13 +27,8 @@ public class RetrieveCirrusTransactionByHashQueryHandler : IRequestHandler<Retri
 
     public async Task<Transaction> Handle(RetrieveCirrusTransactionByHashQuery request, CancellationToken cancellationToken)
     {
-        try
-        {
-            return await _mediator.Send(new CallCirrusGetTransactionByHashQuery(request.TxHash), cancellationToken);
-        }
-        catch (Exception)
-        {
-            return null;
-        }
+        var query = await _retryPolicy.ExecuteAndCaptureAsync(
+            async () => await _mediator.Send(new CallCirrusGetTransactionByHashQuery(request.TxHash), cancellationToken));
+        return query.Result;
     }
 }

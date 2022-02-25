@@ -17,15 +17,15 @@ public class QuotesModule : ApiClientBase, IQuotesModule
     {
     }
 
-    public Task<CmcLatestQuote> GetLatestQuoteAsync(int tokenId, CancellationToken cancellationToken)
+    public async Task<CmcLatestQuote> GetLatestQuoteAsync(int tokenId, CancellationToken cancellationToken)
     {
         var uri = string.Format(CmcUriHelper.Quotes.Latest, tokenId);
-        return GetAsync<CmcLatestQuote>(uri, cancellationToken);
+        return await GetAsync<CmcLatestQuote>(uri, false, cancellationToken);
     }
 
-    public Task<CmcHistoricalQuote> GetHistoricalQuoteAsync(int tokenId, DateTime dateTime, CancellationToken cancellationToken)
+    public async Task<CmcHistoricalQuote> GetHistoricalQuoteAsync(int tokenId, DateTime dateTime, CancellationToken cancellationToken)
     {
         var uri = string.Format(CmcUriHelper.Quotes.Historical, tokenId, dateTime);
-        return GetAsync<CmcHistoricalQuote>(uri, cancellationToken);
+        return await GetAsync<CmcHistoricalQuote>(uri, false, cancellationToken);
     }
 }
