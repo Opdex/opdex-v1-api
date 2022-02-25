@@ -18,7 +18,7 @@ public class BlockStoreModule : ApiClientBase, IBlockStoreModule
     {
     }
 
-    public Task<BlockReceiptDto> GetBlockAsync(Sha256 blockHash, CancellationToken cancellationToken)
+    public async Task<BlockReceiptDto> GetBlockAsync(Sha256 blockHash, CancellationToken cancellationToken)
     {
         const bool outputJson = true;
         const bool showTransactionDetails = true;
@@ -31,16 +31,16 @@ public class BlockStoreModule : ApiClientBase, IBlockStoreModule
 
         using (_logger.BeginScope(logDetails))
         {
-            return GetAsync<BlockReceiptDto>(uri, cancellationToken);
+            return await GetAsync<BlockReceiptDto>(uri, cancellationToken: cancellationToken);
         }
     }
 
-    public Task<Sha256> GetBestBlockAsync(CancellationToken cancellationToken)
+    public async Task<Sha256> GetBestBlockAsync(CancellationToken cancellationToken)
     {
-        return GetAsync<Sha256>(CirrusUriHelper.Consensus.GetBestBlockHash, cancellationToken);
+        return await GetAsync<Sha256>(CirrusUriHelper.Consensus.GetBestBlockHash, cancellationToken: cancellationToken);
     }
 
-    public Task<Sha256> GetBlockHashAsync(ulong height, CancellationToken cancellationToken)
+    public async Task<Sha256> GetBlockHashAsync(ulong height, CancellationToken cancellationToken)
     {
         var uri = string.Format(CirrusUriHelper.Consensus.GetBlockHash, height);
 
@@ -51,13 +51,13 @@ public class BlockStoreModule : ApiClientBase, IBlockStoreModule
 
         using (_logger.BeginScope(logDetails))
         {
-            return GetAsync<Sha256>(uri, cancellationToken);
+            return await GetAsync<Sha256>(uri, cancellationToken: cancellationToken);
         }
     }
 
     public async Task<AddressesBalancesDto> GetWalletAddressesBalances(IEnumerable<Address> addresses, CancellationToken cancellationToken)
     {
         var uri = string.Format(CirrusUriHelper.BlockStore.GetAddressesBalances, string.Join(',', addresses));
-        return await GetAsync<AddressesBalancesDto>(uri, cancellationToken);
+        return await GetAsync<AddressesBalancesDto>(uri, cancellationToken: cancellationToken);
     }
 }

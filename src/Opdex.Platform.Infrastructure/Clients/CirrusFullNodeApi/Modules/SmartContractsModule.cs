@@ -21,10 +21,10 @@ public class SmartContractsModule : ApiClientBase, ISmartContractsModule
     {
     }
 
-    public Task<ContractCodeDto> GetContractCodeAsync(Address address, CancellationToken cancellationToken)
+    public async Task<ContractCodeDto> GetContractCodeAsync(Address address, CancellationToken cancellationToken)
     {
         var uri = string.Format(CirrusUriHelper.SmartContracts.GetContractCode, address);
-        return GetAsync<ContractCodeDto>(uri, cancellationToken);
+        return await GetAsync<ContractCodeDto>(uri, cancellationToken: cancellationToken);
     }
 
     public async Task<string> GetContractStorageAsync(Address address, string storageKey, SmartContractParameterType dataType,
@@ -34,29 +34,29 @@ public class SmartContractsModule : ApiClientBase, ISmartContractsModule
 
         if (blockHeight > 0) uri += $"&BlockHeight={blockHeight}";
 
-        return await GetAsync<string>(uri, cancellationToken);
+        return await GetAsync<string>(uri, cancellationToken: cancellationToken);
     }
 
-    public Task<string> GetContractBalanceAsync(Address address, CancellationToken cancellationToken)
+    public async Task<string> GetContractBalanceAsync(Address address, CancellationToken cancellationToken)
     {
         var uri = string.Format(CirrusUriHelper.SmartContracts.GetContractBalance, address);
-        return GetAsync<string>(uri, cancellationToken);
+        return await GetAsync<string>(uri, cancellationToken: cancellationToken);
     }
 
-    public Task<TransactionReceiptDto> GetReceiptAsync(Sha256 txHash, CancellationToken cancellationToken)
+    public async Task<TransactionReceiptDto> GetReceiptAsync(Sha256 txHash, CancellationToken cancellationToken)
     {
         var uri = string.Format(CirrusUriHelper.SmartContracts.GetTransactionReceipt, txHash);
-        return GetAsync<TransactionReceiptDto>(uri, cancellationToken);
+        return await GetAsync<TransactionReceiptDto>(uri, cancellationToken: cancellationToken);
     }
 
-    public Task<IEnumerable<TransactionReceiptDto>> ReceiptSearchAsync(Address contractAddress, string logName, ulong fromBlock,
+    public async Task<IEnumerable<TransactionReceiptDto>> ReceiptSearchAsync(Address contractAddress, string logName, ulong fromBlock,
                                                                        ulong? toBlock, CancellationToken cancellationToken)
     {
         var uri = string.Format(CirrusUriHelper.SmartContracts.GetContractReceiptSearch, contractAddress, logName, fromBlock);
 
         if (toBlock.GetValueOrDefault() > 0) uri += $"&to={toBlock}";
 
-        return GetAsync<IEnumerable<TransactionReceiptDto>>(uri, cancellationToken);
+        return await GetAsync<IEnumerable<TransactionReceiptDto>>(uri, cancellationToken: cancellationToken);
     }
 
     public async Task<LocalCallResponseDto> LocalCallAsync(LocalCallRequestDto request, CancellationToken cancellationToken)
@@ -77,7 +77,7 @@ public class SmartContractsModule : ApiClientBase, ISmartContractsModule
 
         using (_logger.BeginScope(logDetails))
         {
-            return await PostAsync<LocalCallResponseDto>(uri, httpRequest.Content, cancellationToken);
+            return await PostAsync<LocalCallResponseDto>(uri, httpRequest.Content, cancellationToken: cancellationToken);
         }
     }
 
@@ -98,7 +98,7 @@ public class SmartContractsModule : ApiClientBase, ISmartContractsModule
 
         using (_logger.BeginScope(logDetails))
         {
-            var response = await PostAsync<SmartContractCallResponseDto>(uri, httpRequest.Content, cancellationToken);
+            var response = await PostAsync<SmartContractCallResponseDto>(uri, httpRequest.Content, cancellationToken: cancellationToken);
             return response.TransactionId;
         }
     }
@@ -119,7 +119,7 @@ public class SmartContractsModule : ApiClientBase, ISmartContractsModule
 
         using (_logger.BeginScope(logDetails))
         {
-            var transactionHash = await PostAsync<Sha256>(uri, httpRequest.Content, cancellationToken);
+            var transactionHash = await PostAsync<Sha256>(uri, httpRequest.Content, cancellationToken: cancellationToken);
             return transactionHash;
         }
     }

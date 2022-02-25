@@ -30,7 +30,7 @@ public class WalletModule : ApiClientBase, IWalletModule
 
         using (_logger.BeginScope(logDetails))
         {
-            return await PostAsync<bool>(CirrusUriHelper.Wallet.VerifyMessage, httpRequest.Content, cancellationToken);
+            return await PostAsync<bool>(CirrusUriHelper.Wallet.VerifyMessage, httpRequest.Content, cancellationToken: cancellationToken);
         }
     }
 }

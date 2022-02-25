@@ -18,52 +18,52 @@ public abstract class ApiClientBase
 
     protected ApiClientBase(HttpClient httpClient, ILogger<ApiClientBase> logger, JsonSerializerSettings serializerSettings = null)
     {
-        _httpClient = httpClient;
+        _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _serializerSettings = serializerSettings ?? Serialization.DefaultJsonSettings;
     }
 
-    protected Task<TReturn> GetAsync<TReturn>(string uri, CancellationToken cancellationToken)
+    protected async Task<TReturn> GetAsync<TReturn>(string uri, bool findOrThrow = true, CancellationToken cancellationToken = default)
     {
-        return ExecuteCallAsync<TReturn>(() => _httpClient.GetAsync(uri, cancellationToken), uri);
+        return await ExecuteCallAsync<TReturn>(() => _httpClient.GetAsync(uri, cancellationToken), uri, findOrThrow, cancellationToken);
     }
 
-    protected Task<TReturn> PostAsync<TReturn>(string uri, HttpContent httpContent, CancellationToken cancellationToken)
+    protected async Task<TReturn> PostAsync<TReturn>(string uri, HttpContent httpContent, bool findOrThrow = true, CancellationToken cancellationToken = default)
     {
-        return ExecuteCallAsync<TReturn>(() => _httpClient.PostAsync(uri, httpContent, cancellationToken), uri);
+        return await ExecuteCallAsync<TReturn>(() => _httpClient.PostAsync(uri, httpContent, cancellationToken), uri, findOrThrow, cancellationToken);
     }
 
-    protected Task<TReturn> PutAsync<TReturn>(string uri, HttpContent httpContent, CancellationToken cancellationToken)
+    protected async Task<TReturn> PutAsync<TReturn>(string uri, HttpContent httpContent, bool findOrThrow = true, CancellationToken cancellationToken = default)
     {
-        return ExecuteCallAsync<TReturn>(() => _httpClient.PutAsync(uri, httpContent, cancellationToken), uri);
+        return await ExecuteCallAsync<TReturn>(() => _httpClient.PutAsync(uri, httpContent, cancellationToken), uri, findOrThrow, cancellationToken);
     }
 
-    protected Task<TReturn> PatchAsync<TReturn>(string uri, HttpContent httpContent, CancellationToken cancellationToken)
+    protected async Task<TReturn> PatchAsync<TReturn>(string uri, HttpContent httpContent, bool findOrThrow = true, CancellationToken cancellationToken = default)
     {
-        return ExecuteCallAsync<TReturn>(() => _httpClient.PatchAsync(uri, httpContent, cancellationToken), uri);
+        return await ExecuteCallAsync<TReturn>(() => _httpClient.PatchAsync(uri, httpContent, cancellationToken), uri, findOrThrow, cancellationToken);
     }
 
-    protected Task<TReturn> DeleteAsync<TReturn>(string uri, CancellationToken cancellationToken)
+    protected async Task<TReturn> DeleteAsync<TReturn>(string uri, bool findOrThrow = true, CancellationToken cancellationToken = default)
     {
-        return ExecuteCallAsync<TReturn>(() => _httpClient.DeleteAsync(uri, cancellationToken), uri);
+        return await ExecuteCallAsync<TReturn>(() => _httpClient.DeleteAsync(uri, cancellationToken), uri, findOrThrow, cancellationToken);
     }
 
-    private async Task<TReturn> ExecuteCallAsync<TReturn>(Func<Task<HttpResponseMessage>> call, string uri)
+    private async Task<TReturn> ExecuteCallAsync<TReturn>(Func<Task<HttpResponseMessage>> call, string uri, bool findOrThrow, CancellationToken cancellationToken)
     {
         try
         {
             var response = await call();
-            return await HandleClientResponse<TReturn>(response);
+            return await HandleClientResponse<TReturn>(response, findOrThrow, cancellationToken);
         }
         catch (TaskCanceledException ex)
         {
             _logger.LogError(ex, "The request to {Uri} failed with {Message}", uri, ex.Message);
-            return default;
+            throw;
         }
         catch (HttpRequestException ex)
         {
             _logger.LogError(ex, "The request to {Uri} failed with {Message}", uri, ex.Message);
-            return default;
+            throw;
         }
         catch (Exception ex)
         {
@@ -72,13 +72,13 @@ public abstract class ApiClientBase
         }
     }
 
-    private async Task<TReturn> HandleClientResponse<TReturn>(HttpResponseMessage httpResponse)
+    private async Task<TReturn> HandleClientResponse<TReturn>(HttpResponseMessage httpResponse, bool findOrThrow, CancellationToken cancellationToken)
     {
-        httpResponse.EnsureSuccessStatusCode();
+        if (findOrThrow) httpResponse.EnsureSuccessStatusCode();
 
         if (httpResponse.StatusCode != HttpStatusCode.NoContent)
         {
-            var jsonString = await httpResponse.Content.ReadAsStringAsync();
+            var jsonString = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
 
             try
             {
