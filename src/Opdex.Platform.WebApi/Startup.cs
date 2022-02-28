@@ -78,9 +78,7 @@ public class Startup
         services.AddProblemDetails(options =>
         {
             options.ValidationProblemStatusCode = 400;
-            // Serilog.AspNetCore.RequestLoggingMiddleware does this better although exception is lost
-            // See https://github.com/serilog/serilog-aspnetcore/issues/270
-            options.ShouldLogUnhandledException = (_, _, problem) => problem.Status == 500;
+            options.ShouldLogUnhandledException = (_, _, _) => false;
             options.Map<InvalidDataException>(e => ProblemDetailsTemplates.CreateValidationProblemDetails(e.PropertyName, e.Message));
             options.Map<AlreadyIndexedException>(e => new StatusCodeProblemDetails(StatusCodes.Status400BadRequest) { Detail = e.Message });
             options.Map<NotAllowedException>(e => new StatusCodeProblemDetails(StatusCodes.Status403Forbidden) { Detail = e.Message });
