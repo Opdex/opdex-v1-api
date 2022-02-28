@@ -47,180 +47,180 @@ public class PlatformInfrastructureMapperProfile : Profile
     {
         CreateMap<AuthSuccessEntity, AuthSuccess>()
             .ConstructUsing(src => new AuthSuccess(src.ConnectionId, src.Signer, src.Expiry))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<AdminEntity, Admin>()
             .ConstructUsing(src => new Admin(src.Id, src.Address))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<TransactionEntity, Transaction>()
             .ConstructUsing(src => new Transaction(src.Id, src.Hash, src.Block, src.GasUsed, src.From, src.To, src.Success, src.Error, src.NewContractAddress))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<TokenEntity, Token>()
             .ConstructUsing((src, ctx) => new Token(src.Id, src.Address, src.Name, src.Symbol, src.Decimals, src.Sats, src.TotalSupply, src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<TokenWrappedEntity, TokenWrapped>()
             .ConstructUsing(src => new TokenWrapped(src.Id, src.TokenId, src.Owner, (ExternalChainType)src.NativeChainTypeId, src.NativeAddress, src.Validated, src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<TokenSummaryEntity, TokenSummary>()
             .ConstructUsing(src => new TokenSummary(src.Id, src.MarketId, src.TokenId, src.DailyPriceChangePercent, src.PriceUsd, src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<TokenSnapshotEntity, TokenSnapshot>()
             .ConstructUsing((src, ctx) => new TokenSnapshot(src.Id, src.TokenId, src.MarketId, ctx.Mapper.Map<Ohlc<decimal>>(src.Price),
                                                             (SnapshotType)src.SnapshotTypeId, src.StartDate, src.EndDate, src.ModifiedDate))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<TokenDistributionEntity, TokenDistribution>()
             .ConstructUsing(src => new TokenDistribution(src.Id, src.TokenId, src.VaultDistribution, src.MiningGovernanceDistribution, src.PeriodIndex,
                                                          src.DistributionBlock, src.NextDistributionBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<TokenAttributeEntity, TokenAttribute>()
             .ConstructUsing(src => new TokenAttribute(src.Id, src.TokenId, (TokenAttributeType)src.AttributeTypeId))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<BlockEntity, Block>()
             .ConstructUsing(src => new Block(src.Height, src.Hash, src.Time, src.MedianTime))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<LiquidityPoolEntity, LiquidityPool>()
             .ConstructUsing(src => new LiquidityPool(src.Id, src.Address, src.Name, src.SrcTokenId, src.LpTokenId, src.MarketId, src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<LiquidityPoolSummaryEntity, LiquidityPoolSummary>()
             .ConstructUsing(src => new LiquidityPoolSummary(src.Id, src.LiquidityPoolId, src.LiquidityUsd, src.DailyLiquidityUsdChangePercent,
                                                             src.VolumeUsd, src.StakingWeight, src.DailyStakingWeightChangePercent, src.LockedCrs,
                                                             src.LockedSrc, src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<LiquidityPoolSnapshotEntity, LiquidityPoolSnapshot>()
             .ConstructUsing((src, ctx) => new LiquidityPoolSnapshot(src.Id, src.LiquidityPoolId, src.TransactionCount, ctx.Mapper.Map<ReservesSnapshot>(src.Reserves),
                                                                     ctx.Mapper.Map<RewardsSnapshot>(src.Rewards), ctx.Mapper.Map<StakingSnapshot>(src.Staking), ctx.Mapper.Map<VolumeSnapshot>(src.Volume),
                                                                     ctx.Mapper.Map<CostSnapshot>(src.Cost), (SnapshotType)src.SnapshotTypeId, src.StartDate, src.EndDate, src.ModifiedDate))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<SnapshotReservesEntity, ReservesSnapshot>()
             .ConstructUsing((src, ctx) => new ReservesSnapshot(ctx.Mapper.Map<Ohlc<ulong>>(src.Crs), ctx.Mapper.Map<Ohlc<UInt256>>(src.Src), ctx.Mapper.Map<Ohlc<decimal>>(src.Usd)))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<SnapshotRewardsEntity, RewardsSnapshot>()
             .ConstructUsing(src => new RewardsSnapshot(src.ProviderUsd, src.MarketUsd))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<SnapshotStakingEntity, StakingSnapshot>()
             .ConstructUsing((src, ctx) => new StakingSnapshot(ctx.Mapper.Map<Ohlc<UInt256>>(src.Weight), ctx.Mapper.Map<Ohlc<decimal>>(src.Usd)))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<SnapshotVolumeEntity, VolumeSnapshot>()
             .ConstructUsing(src => new VolumeSnapshot(src.Crs, src.Src, src.Usd))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<SnapshotCostEntity, CostSnapshot>()
             .ConstructUsing((src, ctx) => new CostSnapshot(ctx.Mapper.Map<Ohlc<UInt256>>(src.CrsPerSrc), ctx.Mapper.Map<Ohlc<UInt256>>(src.SrcPerCrs)))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<OhlcEntity<UInt256>, Ohlc<UInt256>>()
             .ConstructUsing(src => new Ohlc<UInt256>(src.Open, src.High, src.Low, src.Close))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<OhlcEntity<decimal>, Ohlc<decimal>>()
             .ConstructUsing(src => new Ohlc<decimal>(src.Open, src.High, src.Low, src.Close))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<OhlcEntity<ulong>, Ohlc<ulong>>()
             .ConstructUsing(src => new Ohlc<ulong>(src.Open, src.High, src.Low, src.Close))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<MiningPoolEntity, MiningPool>()
             .ConstructUsing(src => new MiningPool(src.Id, src.LiquidityPoolId, src.Address, src.RewardPerBlock, src.RewardPerLpt, src.MiningPeriodEndBlock,
                                                   src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<MarketEntity, Market>()
             .ConstructUsing(src => new Market(src.Id, src.Address, src.DeployerId, src.StakingTokenId, src.PendingOwner, src.Owner, src.AuthPoolCreators,
                                               src.AuthProviders, src.AuthTraders, src.TransactionFee, src.MarketFeeEnabled, src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<MarketSummaryEntity, MarketSummary>()
             .ConstructUsing(src => new MarketSummary(src.Id, src.MarketId, src.LiquidityUsd, src.DailyLiquidityUsdChangePercent, src.VolumeUsd, src.StakingWeight,
                                 src.DailyStakingWeightChangePercent, src.StakingUsd, src.DailyStakingUsdChangePercent, src.ProviderRewardsDailyUsd, src.MarketRewardsDailyUsd,
                                 src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<MarketPermissionEntity, MarketPermission>()
             .ConstructUsing(src => new MarketPermission(src.Id, src.MarketId, src.User, (MarketPermissionType)src.Permission, src.IsAuthorized, src.Blame,
                                                         src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<MarketRouterEntity, MarketRouter>()
             .ConstructUsing(src => new MarketRouter(src.Id, src.Address, src.MarketId, src.IsActive, src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<MiningGovernanceEntity, MiningGovernance>()
             .ConstructUsing(src => new MiningGovernance(src.Id, src.Address, src.TokenId, src.NominationPeriodEnd, src.MiningDuration,
                                                         src.MiningPoolsFunded, src.MiningPoolReward, src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<MiningGovernanceNominationEntity, MiningGovernanceNomination>()
             .ConstructUsing(src => new MiningGovernanceNomination(src.Id, src.MiningGovernanceId, src.LiquidityPoolId, src.MiningPoolId, src.IsNominated, src.Weight, src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<DeployerEntity, Deployer>()
             .ConstructUsing(src => new Deployer(src.Id, src.Address, src.PendingOwner, src.Owner, src.IsActive, src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<MarketSnapshotEntity, MarketSnapshot>()
             .ConstructUsing((src, ctx) => new MarketSnapshot(src.Id, src.MarketId, ctx.Mapper.Map<Ohlc<decimal>>(src.LiquidityUsd), src.VolumeUsd,
                                                              ctx.Mapper.Map<StakingSnapshot>(src.Staking),
                                                              ctx.Mapper.Map<RewardsSnapshot>(src.Rewards),
                                                              (SnapshotType)src.SnapshotTypeId, src.StartDate, src.EndDate))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<VaultCertificateEntity, VaultCertificate>()
             .ConstructUsing(src => new VaultCertificate(src.Id, src.VaultId, src.Owner, src.Amount, src.VestedBlock, src.Redeemed, src.Revoked,
                                                         src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<VaultProposalCertificateEntity, VaultProposalCertificate>()
             .ConstructUsing(src => new VaultProposalCertificate(src.Id, src.ProposalId, src.CertificateId))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<AddressBalanceEntity, AddressBalance>()
             .ConstructUsing(src => new AddressBalance(src.Id, src.TokenId, src.Owner, src.Balance, src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<AddressMiningEntity, AddressMining>()
             .ConstructUsing(src => new AddressMining(src.Id, src.MiningPoolId, src.Owner, src.Balance, src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<AddressStakingEntity, AddressStaking>()
             .ConstructUsing(src => new AddressStaking(src.Id, src.LiquidityPoolId, src.Owner, src.Weight, src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<VaultProposalEntity, VaultProposal>()
             .ConstructUsing(src => new VaultProposal(src.Id, src.PublicId, src.VaultId, src.Creator, src.Wallet, src.Amount, src.Description,
                                                      (VaultProposalType)src.ProposalTypeId, (VaultProposalStatus)src.ProposalStatusId, src.Expiration,
                                                      src.YesAmount, src.NoAmount, src.PledgeAmount, src.Approved, src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<VaultProposalPledgeEntity, VaultProposalPledge>()
             .ConstructUsing(src => new VaultProposalPledge(src.Id, src.VaultId, src.ProposalId, src.Pledger, src.Pledge, src.Balance,
                                                            src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<VaultProposalVoteEntity, VaultProposalVote>()
             .ConstructUsing(src => new VaultProposalVote(src.Id, src.VaultId, src.ProposalId, src.Voter, src.Vote, src.Balance, src.InFavor,
                                                          src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<VaultEntity, Vault>()
             .ConstructUsing(src => new Vault(src.Id, src.Address, src.TokenId, src.UnassignedSupply, src.VestingDuration, src.ProposedSupply,
                                                        src.TotalPledgeMinimum, src.TotalVoteMinimum, src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<TransactionLogEntity, TransactionLog>()
             .ConstructUsing((src, ctx) =>
@@ -283,7 +283,7 @@ public class PlatformInfrastructureMapperProfile : Profile
                     _ => null
                 };
             })
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<TransactionLogSummaryDto, TransactionLog>()
             .ConstructUsing((src, ctx) =>
@@ -351,12 +351,12 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.ConnectionId, opt => opt.MapFrom(src => src.ConnectionId))
             .ForMember(dest => dest.Signer, opt => opt.MapFrom(src => src.Signer))
             .ForMember(dest => dest.Expiry, opt => opt.MapFrom(src => src.Expiry))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<Admin, AdminEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<Market, MarketEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -372,7 +372,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.MarketFeeEnabled, opt => opt.MapFrom(src => src.MarketFeeEnabled))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<MarketSummary, MarketSummaryEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -388,7 +388,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.MarketRewardsDailyUsd, opt => opt.MapFrom(src => src.MarketRewardsDailyUsd))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<MarketPermission, MarketPermissionEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -399,7 +399,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.Blame, opt => opt.MapFrom(src => src.Blame))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<MarketRouter, MarketRouterEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -408,7 +408,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<MarketSnapshot, MarketSnapshotEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -420,7 +420,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.SnapshotTypeId, opt => opt.MapFrom(src => (int)src.SnapshotType))
             .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
             .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<Deployer, DeployerEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -430,7 +430,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<MiningGovernance, MiningGovernanceEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -442,7 +442,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.MiningPoolReward, opt => opt.MapFrom(src => src.MiningPoolReward))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<MiningGovernanceNomination, MiningGovernanceNominationEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -453,7 +453,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<Token, TokenEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -465,7 +465,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<TokenWrapped, TokenWrappedEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -476,7 +476,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.Validated, opt => opt.MapFrom(src => src.Validated))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<TokenSummary, TokenSummaryEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -486,7 +486,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.PriceUsd, opt => opt.MapFrom(src => src.PriceUsd))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<TokenSnapshot, TokenSnapshotEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -496,7 +496,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.SnapshotTypeId, opt => opt.MapFrom(src => (int)src.SnapshotType))
             .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
             .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<TokenDistribution, TokenDistributionEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -506,13 +506,13 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.NextDistributionBlock, opt => opt.MapFrom(src => src.NextDistributionBlock))
             .ForMember(dest => dest.DistributionBlock, opt => opt.MapFrom(src => src.DistributionBlock))
             .ForMember(dest => dest.PeriodIndex, opt => opt.MapFrom(src => src.PeriodIndex))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<TokenAttribute, TokenAttributeEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
             .ForMember(dest => dest.AttributeTypeId, opt => opt.MapFrom(src => (uint)src.AttributeType))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<LiquidityPool, LiquidityPoolEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -523,7 +523,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.MarketId, opt => opt.MapFrom(src => src.MarketId))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<LiquidityPoolSummary, LiquidityPoolSummaryEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -537,7 +537,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.LockedCrs, opt => opt.MapFrom(src => src.LockedCrs))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<LiquidityPoolSnapshot, LiquidityPoolSnapshotEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -552,55 +552,55 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
             .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
             .ForMember(dest => dest.ModifiedDate, opt => opt.MapFrom(src => src.ModifiedDate))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<ReservesSnapshot, SnapshotReservesEntity>()
             .ForMember(dest => dest.Crs, opt => opt.MapFrom(src => src.Crs))
             .ForMember(dest => dest.Src, opt => opt.MapFrom(src => src.Src))
             .ForMember(dest => dest.Usd, opt => opt.MapFrom(src => src.Usd))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<StakingSnapshot, SnapshotStakingEntity>()
             .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight))
             .ForMember(dest => dest.Usd, opt => opt.MapFrom(src => src.Usd))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<VolumeSnapshot, SnapshotVolumeEntity>()
             .ForMember(dest => dest.Crs, opt => opt.MapFrom(src => src.Crs))
             .ForMember(dest => dest.Src, opt => opt.MapFrom(src => src.Src))
             .ForMember(dest => dest.Usd, opt => opt.MapFrom(src => src.Usd))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<RewardsSnapshot, SnapshotRewardsEntity>()
             .ForMember(dest => dest.ProviderUsd, opt => opt.MapFrom(src => src.ProviderUsd))
             .ForMember(dest => dest.MarketUsd, opt => opt.MapFrom(src => src.MarketUsd))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<CostSnapshot, SnapshotCostEntity>()
             .ForMember(dest => dest.CrsPerSrc, opt => opt.MapFrom(src => src.CrsPerSrc))
             .ForMember(dest => dest.SrcPerCrs, opt => opt.MapFrom(src => src.SrcPerCrs))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<Ohlc<ulong>, OhlcEntity<ulong>>()
             .ForMember(dest => dest.Open, opt => opt.MapFrom(src => src.Open))
             .ForMember(dest => dest.High, opt => opt.MapFrom(src => src.High))
             .ForMember(dest => dest.Low, opt => opt.MapFrom(src => src.Low))
             .ForMember(dest => dest.Close, opt => opt.MapFrom(src => src.Close))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<Ohlc<UInt256>, OhlcEntity<UInt256>>()
             .ForMember(dest => dest.Open, opt => opt.MapFrom(src => src.Open))
             .ForMember(dest => dest.High, opt => opt.MapFrom(src => src.High))
             .ForMember(dest => dest.Low, opt => opt.MapFrom(src => src.Low))
             .ForMember(dest => dest.Close, opt => opt.MapFrom(src => src.Close))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<Ohlc<decimal>, OhlcEntity<decimal>>()
             .ForMember(dest => dest.Open, opt => opt.MapFrom(src => src.Open))
             .ForMember(dest => dest.High, opt => opt.MapFrom(src => src.High))
             .ForMember(dest => dest.Low, opt => opt.MapFrom(src => src.Low))
             .ForMember(dest => dest.Close, opt => opt.MapFrom(src => src.Close))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<MiningPool, MiningPoolEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -611,14 +611,14 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.MiningPeriodEndBlock, opt => opt.MapFrom(src => src.MiningPeriodEndBlock))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<Block, BlockEntity>()
             .ForMember(dest => dest.Height, opt => opt.MapFrom(src => src.Height))
             .ForMember(dest => dest.Hash, opt => opt.MapFrom(src => src.Hash))
             .ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.Time))
             .ForMember(dest => dest.MedianTime, opt => opt.MapFrom(src => src.MedianTime))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<Transaction, TransactionEntity>()
             .ForMember(dest => dest.Block, opt => opt.MapFrom(src => src.BlockHeight))
@@ -629,7 +629,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.Success, opt => opt.MapFrom(src => src.Success))
             .ForMember(dest => dest.Error, opt => opt.MapFrom(src => src.Error))
             .ForMember(dest => dest.NewContractAddress, opt => opt.MapFrom(src => src.NewContractAddress))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<TransactionLog, TransactionLogEntity>()
             .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
@@ -637,13 +637,13 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.Contract, opt => opt.MapFrom(src => src.Contract))
             .ForMember(dest => dest.Details, opt => opt.MapFrom(src => src.SerializeLogDetails()))
             .ForMember(dest => dest.LogTypeId, opt => opt.MapFrom(src => (int)src.LogType))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<VaultProposalCertificate, VaultProposalCertificateEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
             .ForMember(dest => dest.CertificateId, opt => opt.MapFrom(src => src.CertificateId))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<VaultCertificate, VaultCertificateEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -655,7 +655,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.Revoked, opt => opt.MapFrom(src => src.Revoked))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<AddressBalance, AddressBalanceEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -664,7 +664,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<AddressMining, AddressMiningEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -673,7 +673,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<AddressStaking, AddressStakingEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -682,7 +682,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<VaultProposal, VaultProposalEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -701,7 +701,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.Approved, opt => opt.MapFrom(src => src.Approved))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<VaultProposalPledge, VaultProposalPledgeEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -712,7 +712,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<VaultProposalVote, VaultProposalVoteEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -724,7 +724,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.InFavor, opt => opt.MapFrom(src => src.InFavor))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<Vault, VaultEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -737,7 +737,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.TotalVoteMinimum, opt => opt.MapFrom(src => src.TotalVoteMinimum))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
+            .ValidateMemberList(MemberList.None);
 
         CreateMap<Interval, SnapshotType>()
             .ConvertUsing((src, ctx) =>
