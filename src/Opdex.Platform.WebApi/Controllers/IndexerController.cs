@@ -72,8 +72,8 @@ public class IndexerController : ControllerBase
 
         try
         {
-            await _mediator.Send(new ProcessGovernanceDeploymentTransactionCommand(request.MinedTokenDeploymentHash), CancellationToken.None);
             await _mediator.Send(new ProcessCoreDeploymentTransactionCommand(request.MarketDeployerDeploymentTxHash), CancellationToken.None);
+            await _mediator.Send(new ProcessGovernanceDeploymentTransactionCommand(request.MinedTokenDeploymentHash), CancellationToken.None);
             var bestBlock = await _mediator.Send(new GetBestBlockReceiptQuery(), CancellationToken.None);
             await _mediator.Send(new ProcessLatestBlocksCommand(bestBlock, _network), CancellationToken.None);
         }
