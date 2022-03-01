@@ -28,17 +28,25 @@ public class MinedTokenDistributionScheduleDtoAssembler
         var vault = await _mediator.Send(new RetrieveVaultByTokenIdQuery(_token.Id), CancellationToken.None);
         var miningGovernance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(_token.Id), CancellationToken.None);
 
-        return new MinedTokenDistributionScheduleDto
+        var scheduleDto = new MinedTokenDistributionScheduleDto
         {
             Vault = vault.Address,
-            MiningGovernance = miningGovernance.Address,
-            NextDistributionBlock = distributions.Max(d => d.NextDistributionBlock),
-            History = distributions.Select(d => new MinedTokenDistributionItemDto
-            {
-                Vault = d.VaultDistribution.ToDecimal(_token.Decimals),
-                MiningGovernance = d.MiningGovernanceDistribution.ToDecimal(_token.Decimals),
-                Block = d.DistributionBlock
-            }).ToArray()
+            MiningGovernance = miningGovernance.Address
         };
+
+        if (distributions.Count <= 0)
+        {
+            return scheduleDto;
+        }
+
+        scheduleDto.NextDistributionBlock = distributions.Max(d => d.NextDistributionBlock);
+        scheduleDto.History = distributions.Select(d => new MinedTokenDistributionItemDto
+        {
+            Vault = d.VaultDistribution.ToDecimal(_token.Decimals),
+            MiningGovernance = d.MiningGovernanceDistribution.ToDecimal(_token.Decimals),
+            Block = d.DistributionBlock
+        }).ToArray();
+
+        return scheduleDto;
     }
 }
