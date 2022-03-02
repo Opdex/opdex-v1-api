@@ -56,12 +56,12 @@ public readonly struct Address : IEquatable<string>, IEquatable<Address>
 
     public override int GetHashCode()
     {
-        return Value is null ? "".GetHashCode() : Value.GetHashCode();
+        return Value is null ? string.Empty.GetHashCode() : Value.GetHashCode();
     }
 
     public override string ToString()
     {
-        return Value ?? "";
+        return Value ?? string.Empty;
     }
 
     public override bool Equals(object obj)
