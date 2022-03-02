@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using Opdex.Platform.Application.Abstractions.Cache;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Distribution;
@@ -17,11 +18,13 @@ public class TokenDtoAssembler : IModelAssembler<Token, TokenDto>
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
+    private readonly IWrappedTokenTrustValidator _wrappedTokenTrustValidator;
 
-    public TokenDtoAssembler(IMediator mediator, IMapper mapper)
+    public TokenDtoAssembler(IMediator mediator, IMapper mapper, IWrappedTokenTrustValidator wrappedTokenTrustValidator)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _wrappedTokenTrustValidator = wrappedTokenTrustValidator ?? throw new ArgumentNullException(nameof(wrappedTokenTrustValidator));
     }
 
     public async Task<TokenDto> Assemble(Token token)
@@ -36,6 +39,7 @@ public class TokenDtoAssembler : IModelAssembler<Token, TokenDto>
         if (tokenWrapped is not null)
         {
             tokenDto.WrappedToken = _mapper.Map<WrappedTokenDetailsDto>(tokenWrapped);
+            tokenDto.WrappedToken.Trusted = await _wrappedTokenTrustValidator.Validate(token.Address);
         }
 
         var tokenIsMinedToken = attributeTypes.Contains(TokenAttributeType.Staking);

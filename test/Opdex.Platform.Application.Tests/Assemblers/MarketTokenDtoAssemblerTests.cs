@@ -2,6 +2,7 @@ using AutoMapper;
 using FluentAssertions;
 using MediatR;
 using Moq;
+using Opdex.Platform.Application.Abstractions.Cache;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Assemblers;
@@ -21,14 +22,16 @@ public class MarketTokenDtoAssemblerTests
 {
     private readonly Mock<IMediator> _mediatorMock;
     private readonly MarketTokenDtoAssembler _assembler;
+    private readonly Mock<IWrappedTokenTrustValidator> _wrappedTokenTrustValidatorMock;
 
     public MarketTokenDtoAssemblerTests()
     {
         _mediatorMock = new Mock<IMediator>();
+        _wrappedTokenTrustValidatorMock = new Mock<IWrappedTokenTrustValidator>();
 
         var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformApplicationMapperProfile())).CreateMapper();
 
-        _assembler = new MarketTokenDtoAssembler(_mediatorMock.Object, mapper);
+        _assembler = new MarketTokenDtoAssembler(_mediatorMock.Object, mapper, _wrappedTokenTrustValidatorMock.Object);
     }
 
     [Fact]

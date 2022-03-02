@@ -11,15 +11,15 @@ using Xunit;
 
 namespace Opdex.Platform.Application.Tests.Cache;
 
-public class WrappedTokenValidatorTests
+public class WrappedTokenTrustValidatorTests
 {
     private readonly Mock<ISupportedContractsModule> _supportedContractsModuleMock;
-    private readonly WrappedTokenValidator _wrappedTokenValidator;
+    private readonly WrappedTokenTrustValidator _wrappedTokenTrustValidator;
 
-    public WrappedTokenValidatorTests()
+    public WrappedTokenTrustValidatorTests()
     {
         _supportedContractsModuleMock = new Mock<ISupportedContractsModule>();
-        _wrappedTokenValidator = new WrappedTokenValidator(_supportedContractsModuleMock.Object);
+        _wrappedTokenTrustValidator = new WrappedTokenTrustValidator(_supportedContractsModuleMock.Object);
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class WrappedTokenValidatorTests
         var cancellationToken = cancellationTokenSource.Token;
 
         // Act
-        await _wrappedTokenValidator.Validate(Address.Empty, cancellationToken);
+        await _wrappedTokenTrustValidator.Validate(Address.Empty, cancellationToken);
 
         // Assert
         _supportedContractsModuleMock.Verify(callTo => callTo.GetList(cancellationToken), Times.Once);
@@ -43,10 +43,10 @@ public class WrappedTokenValidatorTests
         using var cancellationTokenSource = new CancellationTokenSource();
         var cancellationToken = cancellationTokenSource.Token;
 
-        await _wrappedTokenValidator.Validate(Address.Empty, cancellationToken);
+        await _wrappedTokenTrustValidator.Validate(Address.Empty, cancellationToken);
 
         // Act
-        await _wrappedTokenValidator.Validate(Address.Empty, cancellationToken);
+        await _wrappedTokenTrustValidator.Validate(Address.Empty, cancellationToken);
 
         // Assert
         _supportedContractsModuleMock.Verify(callTo => callTo.GetList(cancellationToken), Times.Once);
@@ -74,7 +74,7 @@ public class WrappedTokenValidatorTests
 
 
         // Act
-        var isValid = await _wrappedTokenValidator.Validate(Address.Empty);
+        var isValid = await _wrappedTokenTrustValidator.Validate(Address.Empty);
 
         // Assert
         isValid.Should().Be(false);
@@ -102,7 +102,7 @@ public class WrappedTokenValidatorTests
 
 
         // Act
-        var isValid = await _wrappedTokenValidator.Validate(new Address("tNVR1r6WSWSCK7XVQsz9aJk3CdBGGvFgY5"));
+        var isValid = await _wrappedTokenTrustValidator.Validate(new Address("tNVR1r6WSWSCK7XVQsz9aJk3CdBGGvFgY5"));
 
         // Assert
         isValid.Should().Be(true);

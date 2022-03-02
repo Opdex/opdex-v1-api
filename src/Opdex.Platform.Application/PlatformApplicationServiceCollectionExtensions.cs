@@ -690,7 +690,7 @@ public static class PlatformApplicationServiceCollectionExtensions
 
     private static IServiceCollection AddCacheServices(this IServiceCollection services)
     {
-        services.AddSingleton<IWrappedTokenValidator, WrappedTokenValidator>();
+        services.AddSingleton<IWrappedTokenTrustValidator, WrappedTokenTrustValidator>();
         return services;
     }
 }

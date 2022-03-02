@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using Opdex.Platform.Application.Abstractions.Cache;
 using Opdex.Platform.Application.Abstractions.Models.MarketTokens;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
@@ -19,11 +20,13 @@ public class MarketTokenDtoAssembler : IModelAssembler<MarketToken, MarketTokenD
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
+    private readonly IWrappedTokenTrustValidator _wrappedTokenTrustValidator;
 
-    public MarketTokenDtoAssembler(IMediator mediator, IMapper mapper)
+    public MarketTokenDtoAssembler(IMediator mediator, IMapper mapper, IWrappedTokenTrustValidator wrappedTokenTrustValidator)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _wrappedTokenTrustValidator = wrappedTokenTrustValidator ?? throw new ArgumentNullException(nameof(wrappedTokenTrustValidator));
     }
 
     public async Task<MarketTokenDto> Assemble(MarketToken token)
@@ -44,6 +47,7 @@ public class MarketTokenDtoAssembler : IModelAssembler<MarketToken, MarketTokenD
         if (tokenWrapped is not null)
         {
             marketTokenDto.WrappedToken = _mapper.Map<WrappedTokenDetailsDto>(tokenWrapped);
+            marketTokenDto.WrappedToken.Trusted = await _wrappedTokenTrustValidator.Validate(token.Address);
         }
 
         var tokenIsMinedToken = attributeTypes.Contains(TokenAttributeType.Staking);

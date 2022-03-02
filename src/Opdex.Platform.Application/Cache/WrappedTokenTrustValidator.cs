@@ -11,13 +11,13 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Cache;
 
-public class WrappedTokenValidator : IWrappedTokenValidator
+public class WrappedTokenTrustValidator : IWrappedTokenTrustValidator
 {
     private readonly ISupportedContractsModule _supportedContractsModule;
 
     private ImmutableHashSet<Address> _trustedTokens;
 
-    public WrappedTokenValidator(ISupportedContractsModule supportedContractsModule)
+    public WrappedTokenTrustValidator(ISupportedContractsModule supportedContractsModule)
     {
         _supportedContractsModule = supportedContractsModule ?? throw new ArgumentNullException(nameof(supportedContractsModule));
     }

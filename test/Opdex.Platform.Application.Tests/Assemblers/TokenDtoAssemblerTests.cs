@@ -2,6 +2,7 @@ using AutoMapper;
 using FluentAssertions;
 using MediatR;
 using Moq;
+using Opdex.Platform.Application.Abstractions.Cache;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Common.Enums;
@@ -18,14 +19,16 @@ public class TokenDtoAssemblerTests
 {
     private readonly Mock<IMediator> _mediatorMock;
     private readonly TokenDtoAssembler _assembler;
+    private readonly Mock<IWrappedTokenTrustValidator> _wrappedTokenTrustValidatorMock;
 
     public TokenDtoAssemblerTests()
     {
         _mediatorMock = new Mock<IMediator>();
+        _wrappedTokenTrustValidatorMock = new Mock<IWrappedTokenTrustValidator>();
 
         var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformApplicationMapperProfile())).CreateMapper();
 
-        _assembler = new TokenDtoAssembler(_mediatorMock.Object, mapper);
+        _assembler = new TokenDtoAssembler(_mediatorMock.Object, mapper, _wrappedTokenTrustValidatorMock.Object);
     }
 
     [Fact]

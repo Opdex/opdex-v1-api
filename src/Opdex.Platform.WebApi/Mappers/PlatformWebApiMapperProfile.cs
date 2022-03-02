@@ -64,7 +64,6 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Validated, opt => opt.MapFrom(src => src.Validated))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .AfterMap<TrustedBridgeMappingAction>()
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<MinedTokenDistributionScheduleDto, MinedTokenDistributionScheduleResponseModel>()
