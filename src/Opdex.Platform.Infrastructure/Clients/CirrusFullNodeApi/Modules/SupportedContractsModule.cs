@@ -3,6 +3,7 @@ using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
+using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Serialization;
 using Opdex.Platform.Infrastructure.Http;
 using System;
 using System.Collections.Generic;
@@ -16,10 +17,11 @@ public class SupportedContractsModule : ApiClientBase, ISupportedContractsModule
 {
     private readonly OpdexConfiguration _opdexConfig;
 
-    public SupportedContractsModule(HttpClient httpClient, ILogger<SupportedContractsModule> logger, OpdexConfiguration opdexConfig)
-        : base(httpClient, logger)
+    public SupportedContractsModule(HttpClient httpClient, ILogger<SupportedContractsModule> logger,
+                                    OpdexConfiguration opdexConfig)
+        : base(httpClient, logger, StratisFullNode.SerializerSettings)
     {
-        _opdexConfig = opdexConfig;
+        _opdexConfig = opdexConfig ?? throw new ArgumentNullException(nameof(opdexConfig));
     }
 
     public async Task<IEnumerable<InterfluxMappingDto>> GetList(CancellationToken cancellationToken = default)
