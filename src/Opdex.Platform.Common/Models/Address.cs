@@ -56,7 +56,7 @@ public readonly struct Address : IEquatable<string>, IEquatable<Address>
 
     public override int GetHashCode()
     {
-        return Value.GetHashCode();
+        return Value is null ? "".GetHashCode() : Value.GetHashCode();
     }
 
     public override string ToString()

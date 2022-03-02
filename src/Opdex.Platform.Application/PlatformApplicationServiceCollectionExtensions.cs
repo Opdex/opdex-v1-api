@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Opdex.Platform.Application.Abstractions.Cache;
 using Opdex.Platform.Application.Abstractions.Commands.Addresses;
 using Opdex.Platform.Application.Abstractions.Commands.Auth;
 using Opdex.Platform.Application.Abstractions.Commands.Blocks;
@@ -183,6 +184,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Vaults.Pledges;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults.ProposalCertificates;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults.Proposals;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults.Votes;
+using Opdex.Platform.Application.Cache;
 using Opdex.Platform.Application.EntryHandlers.Auth;
 using Opdex.Platform.Application.EntryHandlers.Indexer;
 using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vaults;
@@ -217,6 +219,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddQueries();
         services.AddCommands();
         services.AddAssemblers();
+        services.AddCacheServices();
 
         return services;
     }
@@ -682,6 +685,12 @@ public static class PlatformApplicationServiceCollectionExtensions
         // Interflux Token Logs
         services.AddTransient<IModelAssembler<SupplyChangeLog, SupplyChangeEventDto>, SupplyChangeEventDtoAssembler>();
 
+        return services;
+    }
+
+    private static IServiceCollection AddCacheServices(this IServiceCollection services)
+    {
+        services.AddSingleton<IWrappedTokenValidator, WrappedTokenValidator>();
         return services;
     }
 }
