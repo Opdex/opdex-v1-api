@@ -373,6 +373,10 @@ public static class PlatformInfrastructureServiceCollectionExtensions
             .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
             .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
 
+        services.AddHttpClient<ISupportedContractsModule, SupportedContractsModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
+            .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
+            .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
+
         // Queries
         services.AddTransient<IRequestHandler<CallCirrusGetBestBlockReceiptQuery, BlockReceipt>, CallCirrusGetBestBlockReceiptQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetBlockReceiptByHashQuery, BlockReceipt>, CallCirrusGetBlockReceiptByHashQueryHandler>();
