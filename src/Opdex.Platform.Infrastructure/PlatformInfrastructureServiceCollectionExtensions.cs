@@ -394,6 +394,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<CallCirrusGetLiquidityAmountInQuoteQuery, UInt256>, CallCirrusGetLiquidityAmountInQuoteQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetBlockHashByHeightQuery, Sha256>, CallCirrusGetBlockHashByHeightQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenBalanceQuery, UInt256>, CallCirrusGetSrcTokenBalanceQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusTrustedWrappedTokenQuery, bool>, CallCirrusTrustedWrappedTokenQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetMiningGovernanceNominationsSummaryQuery, IEnumerable<MiningGovernanceContractNominationSummary>>, CallCirrusGetMiningGovernanceNominationsSummaryQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusLocalCallSmartContractMethodCommand, TransactionQuote>, CallCirrusLocalCallSmartContractMethodCommandHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetAddressCrsBalanceQuery, ulong>, CallCirrusGetAddressCrsBalanceQueryHandler>();

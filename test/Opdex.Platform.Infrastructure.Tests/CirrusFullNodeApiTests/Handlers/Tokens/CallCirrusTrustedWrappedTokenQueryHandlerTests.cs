@@ -1,55 +1,26 @@
 using FluentAssertions;
 using Moq;
-using Opdex.Platform.Application.Cache;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
+using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Tokens;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.Cache;
+namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Tokens;
 
-public class WrappedTokenTrustValidatorTests
+public class CallCirrusTrustedWrappedTokenQueryHandlerTests
 {
     private readonly Mock<ISupportedContractsModule> _supportedContractsModuleMock;
-    private readonly WrappedTokenTrustValidator _wrappedTokenTrustValidator;
+    private readonly CallCirrusTrustedWrappedTokenQueryHandler _handler;
 
-    public WrappedTokenTrustValidatorTests()
+    public CallCirrusTrustedWrappedTokenQueryHandlerTests()
     {
         _supportedContractsModuleMock = new Mock<ISupportedContractsModule>();
-        _wrappedTokenTrustValidator = new WrappedTokenTrustValidator(_supportedContractsModuleMock.Object);
-    }
-
-    [Fact]
-    public async Task Validate_OnFirstCall_SupportedContractsModuleGetList()
-    {
-        // Arrange
-        using var cancellationTokenSource = new CancellationTokenSource();
-        var cancellationToken = cancellationTokenSource.Token;
-
-        // Act
-        await _wrappedTokenTrustValidator.Validate(Address.Empty, cancellationToken);
-
-        // Assert
-        _supportedContractsModuleMock.Verify(callTo => callTo.GetList(cancellationToken), Times.Once);
-    }
-
-    [Fact]
-    public async Task Validate_OnSecondCall_DoNotCallOutToNode()
-    {
-        // Arrange
-        using var cancellationTokenSource = new CancellationTokenSource();
-        var cancellationToken = cancellationTokenSource.Token;
-
-        await _wrappedTokenTrustValidator.Validate(Address.Empty, cancellationToken);
-
-        // Act
-        await _wrappedTokenTrustValidator.Validate(Address.Empty, cancellationToken);
-
-        // Assert
-        _supportedContractsModuleMock.Verify(callTo => callTo.GetList(cancellationToken), Times.Once);
+        _handler = new CallCirrusTrustedWrappedTokenQueryHandler(_supportedContractsModuleMock.Object);
     }
 
     [Fact]
@@ -74,7 +45,7 @@ public class WrappedTokenTrustValidatorTests
 
 
         // Act
-        var isValid = await _wrappedTokenTrustValidator.Validate(Address.Empty);
+        var isValid = await _handler.Handle(new CallCirrusTrustedWrappedTokenQuery(new Address("tGVp2oniJ9WDNzRRT9xXTgteKdN1ZjC7mp")), CancellationToken.None);
 
         // Assert
         isValid.Should().Be(false);
@@ -102,7 +73,7 @@ public class WrappedTokenTrustValidatorTests
 
 
         // Act
-        var isValid = await _wrappedTokenTrustValidator.Validate(new Address("tNVR1r6WSWSCK7XVQsz9aJk3CdBGGvFgY5"));
+        var isValid = await _handler.Handle(new CallCirrusTrustedWrappedTokenQuery(new Address("tNVR1r6WSWSCK7XVQsz9aJk3CdBGGvFgY5")), CancellationToken.None);
 
         // Assert
         isValid.Should().Be(true);

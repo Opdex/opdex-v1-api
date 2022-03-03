@@ -21,6 +21,7 @@ public class PersistTokenWrappedCommandHandler : IRequestHandler<PersistTokenWra
                 {nameof(TokenWrappedEntity.NativeChainTypeId)},
                 {nameof(TokenWrappedEntity.NativeAddress)},
                 {nameof(TokenWrappedEntity.Validated)},
+                {nameof(TokenWrappedEntity.Trusted)},
                 {nameof(TokenWrappedEntity.CreatedBlock)},
                 {nameof(TokenWrappedEntity.ModifiedBlock)}
               ) VALUES (
@@ -29,6 +30,7 @@ public class PersistTokenWrappedCommandHandler : IRequestHandler<PersistTokenWra
                 @{nameof(TokenWrappedEntity.NativeChainTypeId)},
                 @{nameof(TokenWrappedEntity.NativeAddress)},
                 @{nameof(TokenWrappedEntity.Validated)},
+                @{nameof(TokenWrappedEntity.Trusted)},
                 @{nameof(TokenWrappedEntity.CreatedBlock)},
                 @{nameof(TokenWrappedEntity.ModifiedBlock)}
               );

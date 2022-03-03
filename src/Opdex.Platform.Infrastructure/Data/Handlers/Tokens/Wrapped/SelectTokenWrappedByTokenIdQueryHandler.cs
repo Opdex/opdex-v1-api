@@ -22,6 +22,7 @@ public class SelectTokenWrappedByTokenIdQueryHandler : IRequestHandler<SelectTok
                 {nameof(TokenWrappedEntity.NativeChainTypeId)},
                 {nameof(TokenWrappedEntity.NativeAddress)},
                 {nameof(TokenWrappedEntity.Validated)},
+                {nameof(TokenWrappedEntity.Trusted)},
                 {nameof(TokenWrappedEntity.CreatedBlock)},
                 {nameof(TokenWrappedEntity.ModifiedBlock)}
             FROM token_wrapped
