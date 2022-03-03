@@ -261,7 +261,7 @@ public enum LiquidityPoolOrderByType
     /// <summary>
     /// The default status of any is ignored in filter.
     /// </summary>
-    Any = 0,
+    CreatedBlock = 0,
 
     /// <summary>
     /// Order results by liquidity locked amounts.

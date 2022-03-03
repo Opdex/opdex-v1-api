@@ -50,7 +50,7 @@ public class SelectTokensWithFilterQueryHandlerTests
         ulong marketId = 1;
         var cursor = new TokensCursor(null, Enumerable.Empty<Address>(),
                                       Enumerable.Empty<TokenAttributeFilter>(), Enumerable.Empty<ChainType>(),
-                                      false, TokenOrderByType.Default, SortDirectionType.ASC,
+                                      false, TokenOrderByType.CreatedBlock, SortDirectionType.ASC,
                                       5, PagingDirection.Forward, default);
         string expected = "WHERE ts.MarketId = @MarketId";
 
@@ -72,7 +72,7 @@ public class SelectTokensWithFilterQueryHandlerTests
         var tokens = new Address[] { "PKHsZBS9Mbt4fE4W2T1U8wgTKSazNjhvYs" };
         var cursor = new TokensCursor(null, tokens,
             Enumerable.Empty<TokenAttributeFilter>(), Enumerable.Empty<ChainType>(),
-            false, TokenOrderByType.Default, SortDirectionType.ASC,
+            false, TokenOrderByType.CreatedBlock, SortDirectionType.ASC,
             5, PagingDirection.Forward, default);
 
         var expected = "t.Address IN @Tokens";
@@ -98,7 +98,7 @@ public class SelectTokensWithFilterQueryHandlerTests
         var tokenAttributes = new List<TokenAttributeFilter> { firstFilter, secondFilter };
         var cursor = new TokensCursor(null, Enumerable.Empty<Address>(),
             tokenAttributes, Enumerable.Empty<ChainType>(),
-            false, TokenOrderByType.Default, SortDirectionType.ASC,
+            false, TokenOrderByType.CreatedBlock, SortDirectionType.ASC,
             5, PagingDirection.Forward, default);
 
         const string expectedJoin = "LEFT JOIN token_attribute ta ON ta.TokenId = t.Id";
@@ -121,7 +121,7 @@ public class SelectTokensWithFilterQueryHandlerTests
         // Arrange
         var cursor = new TokensCursor("BTC", Enumerable.Empty<Address>(),
             Enumerable.Empty<TokenAttributeFilter>(), Enumerable.Empty<ChainType>(),
-            false, TokenOrderByType.Default, SortDirectionType.ASC,
+            false, TokenOrderByType.CreatedBlock, SortDirectionType.ASC,
             5, PagingDirection.Forward, default);
 
         const string name = "(t.Name LIKE CONCAT('%', @Keyword, '%') OR";
@@ -133,7 +133,7 @@ public class SelectTokensWithFilterQueryHandlerTests
 
         // Assert
         _dbContext.Verify(callTo => callTo.ExecuteQueryAsync(
-                It.Is<DatabaseQuery>(q => q.Sql.Contains(name) && q.Sql.Contains(symbol) &&  q.Sql.Contains(address)),
+                It.Is<DatabaseQuery>(q => q.Sql.Contains(name) && q.Sql.Contains(symbol) && q.Sql.Contains(address)),
                 It.IsAny<Func<TokenEntity, TokenSummaryEntity, Token>>(),
                 "Split"),
             Times.Once);
@@ -145,7 +145,7 @@ public class SelectTokensWithFilterQueryHandlerTests
         // Arrange
         var cursor = new TokensCursor("BTC", Enumerable.Empty<Address>(),
             Enumerable.Empty<TokenAttributeFilter>(), Enumerable.Empty<ChainType>(),
-            true, TokenOrderByType.Default, SortDirectionType.ASC,
+            true, TokenOrderByType.CreatedBlock, SortDirectionType.ASC,
             5, PagingDirection.Forward, default);
 
         // Act
@@ -153,7 +153,7 @@ public class SelectTokensWithFilterQueryHandlerTests
 
         // Assert
         _dbContext.Verify(callTo => callTo.ExecuteQueryAsync(
-            It.Is<DatabaseQuery>( q => !q.Sql.Contains("ts.PriceUsd > 0")),
+            It.Is<DatabaseQuery>(q => !q.Sql.Contains("ts.PriceUsd > 0")),
                 It.IsAny<Func<TokenEntity, TokenSummaryEntity, Token>>(),
                 "Split"),
             Times.Once);
@@ -165,7 +165,7 @@ public class SelectTokensWithFilterQueryHandlerTests
         // Arrange
         var cursor = new TokensCursor("BTC", Enumerable.Empty<Address>(),
             Enumerable.Empty<TokenAttributeFilter>(), Enumerable.Empty<ChainType>(),
-            false, TokenOrderByType.Default, SortDirectionType.ASC,
+            false, TokenOrderByType.CreatedBlock, SortDirectionType.ASC,
             5, PagingDirection.Forward, default);
 
         // Act
@@ -187,7 +187,7 @@ public class SelectTokensWithFilterQueryHandlerTests
         const uint limit = 25U;
         var cursor = new TokensCursor(null, Enumerable.Empty<Address>(),
             Enumerable.Empty<TokenAttributeFilter>(), Enumerable.Empty<ChainType>(),
-            false, TokenOrderByType.Default, orderBy, limit, PagingDirection.Forward, (null, 10));
+            false, TokenOrderByType.CreatedBlock, orderBy, limit, PagingDirection.Forward, (null, 10));
         // Act
         await _handler.Handle(new SelectTokensWithFilterQuery(0, cursor), CancellationToken.None);
 
@@ -260,7 +260,7 @@ public class SelectTokensWithFilterQueryHandlerTests
 
         // Assert
         _dbContext.Verify(callTo => callTo.ExecuteQueryAsync(
-                It.Is<DatabaseQuery>(q =>  q.Sql.Contains("(ts.PriceUsd, t.Id) < (@OrderByValue, @TokenId)") &&
+                It.Is<DatabaseQuery>(q => q.Sql.Contains("(ts.PriceUsd, t.Id) < (@OrderByValue, @TokenId)") &&
                                                q.Sql.Contains($"ORDER BY AVG(ts.PriceUsd) {SortDirectionType.DESC}, t.Id {SortDirectionType.DESC}") &&
                                                q.Sql.Contains($"LIMIT {limit + 1}")),
                 It.IsAny<Func<TokenEntity, TokenSummaryEntity, Token>>(),

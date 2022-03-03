@@ -139,7 +139,7 @@ public class GetTokensWithFilterTests
     {
         // Arrange
         var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), Enumerable.Empty<TokenAttributeFilter>(), Enumerable.Empty<ChainType>(), false,
-                                      TokenOrderByType.Default, SortDirectionType.ASC, 2, PagingDirection.Backward, ("50.00", 10));
+                                      TokenOrderByType.CreatedBlock, SortDirectionType.ASC, 2, PagingDirection.Backward, ("50.00", 10));
         var tokens = new[]
         {
             new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
