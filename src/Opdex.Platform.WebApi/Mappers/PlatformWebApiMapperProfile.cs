@@ -513,6 +513,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))
             .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
             .ForMember(dest => dest.Events, opt => opt.MapFrom(src => src.Events))
+            .ForMember(dest => dest.Error, opt => opt.Ignore())
             .AfterMap<TransactionErrorMappingAction>()
             .ValidateMemberList(MemberList.None);
 
@@ -704,6 +705,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.GasUsed, opt => opt.MapFrom(src => src.GasUsed))
             .ForMember(dest => dest.Events, opt => opt.MapFrom(src => src.Events))
             .ForMember(dest => dest.Request, opt => opt.MapFrom(src => src.Request))
+            .ForMember(dest => dest.Error, opt => opt.Ignore())
             .AfterMap<TransactionErrorMappingAction>()
             .ValidateMemberList(MemberList.None);
 
