@@ -95,8 +95,9 @@ public class Startup
             });
             options.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
             options.Map<IndexingAlreadyRunningException>(e => new StatusCodeProblemDetails(StatusCodes.Status503ServiceUnavailable) { Detail = e.Message });
+            options.Map<MaintenanceLockException>(_ => new StatusCodeProblemDetails(StatusCodes.Status503ServiceUnavailable) { Detail = "Currently undergoing maintenance" });
             options.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
-            options.IncludeExceptionDetails = (context, ex) =>
+            options.IncludeExceptionDetails = (context, _) =>
             {
                 var environment = context.RequestServices.GetRequiredService<IHostEnvironment>();
                 return environment.IsDevelopment();

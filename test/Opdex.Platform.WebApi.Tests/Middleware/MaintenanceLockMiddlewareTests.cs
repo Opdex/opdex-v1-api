@@ -7,8 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Moq;
+using Opdex.Platform.WebApi.Exceptions;
 using Opdex.Platform.WebApi.Middleware;
-using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -17,29 +17,17 @@ namespace Opdex.Platform.WebApi.Tests.Middleware;
 public class MaintenanceLockMiddlewareTests
 {
     [Fact]
-    public async Task Invoke_MaintenanceLockFalse_ProcessRequest()
+    public async Task Invoke_MaintenanceLockFalse_DoNotThrow()
     {
-        // Arrange
         using var host = await CreateHost(maintenanceLock: false);
-
-        // Act
-        var response = await host.GetTestClient().GetAsync("/");
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        await host.GetTestClient().Invoking(h => h.GetAsync("/")).Should().NotThrowAsync();
     }
 
     [Fact]
-    public async Task Invoke_MaintenanceLockTrue_Return503ServiceUnavailable()
+    public async Task Invoke_MaintenanceLockTrue_ThrowMaintenanceLockException()
     {
-        // Arrange
         using var host = await CreateHost(maintenanceLock: true);
-
-        // Act
-        var response = await host.GetTestClient().GetAsync("/");
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
+        await host.GetTestClient().Invoking(h => h.GetAsync("/")).Should().ThrowExactlyAsync<MaintenanceLockException>();
     }
 
     private static async Task<IHost> CreateHost(bool maintenanceLock)

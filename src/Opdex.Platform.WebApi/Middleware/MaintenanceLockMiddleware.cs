@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using Opdex.Platform.WebApi.Exceptions;
 using System;
 using System.Threading.Tasks;
 
@@ -16,13 +17,8 @@ public class MaintenanceLockMiddleware
 
     public async Task Invoke(HttpContext httpContext, IOptionsSnapshot<MaintenanceConfiguration> config)
     {
-        if (!config.Value.Locked)
-        {
-            await _next(httpContext);
-            return;
-        }
+        if (config.Value.Locked) throw new MaintenanceLockException();
 
-        httpContext.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-        await httpContext.Response.CompleteAsync();
+        await _next(httpContext);
     }
 }
