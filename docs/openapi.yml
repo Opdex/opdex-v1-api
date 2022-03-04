@@ -439,8 +439,6 @@ components:
         - CreateVaultCertificateEvent
         - RevokeVaultCertificateEvent
         - RedeemVaultCertificateEvent
-        - SetPendingVaultOwnershipEvent
-        - ClaimPendingVaultOwnershipEvent
         - CreateVaultProposalEvent
         - CompleteVaultProposalEvent
         - VaultProposalPledgeEvent
