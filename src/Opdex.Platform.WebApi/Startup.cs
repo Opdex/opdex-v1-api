@@ -189,6 +189,9 @@ public class Startup
 
         services.Configure<IndexerConfiguration>(Configuration.GetSection(nameof(IndexerConfiguration)));
 
+        // Maintenance Configurations
+        services.Configure<MaintenanceConfiguration>(Configuration.GetSection(nameof(MaintenanceConfiguration)));
+
         // Register project module services
         services.AddPlatformApplicationServices();
         services.AddPlatformInfrastructureServices(cirrusConfig.Get<CirrusConfiguration>(),
@@ -277,6 +280,7 @@ public class Startup
         app.UseSerilogRequestLogging();
         app.UseProblemDetails();
         app.UseMiddleware<RedirectToResourceMiddleware>();
+        app.UseMiddleware<MaintenanceLockMiddleware>();
         app.UseCors(options => options
                         .SetIsOriginAllowed(host => true)
                         .AllowAnyHeader()
