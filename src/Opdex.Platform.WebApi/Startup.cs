@@ -95,8 +95,9 @@ public class Startup
             });
             options.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
             options.Map<IndexingAlreadyRunningException>(e => new StatusCodeProblemDetails(StatusCodes.Status503ServiceUnavailable) { Detail = e.Message });
+            options.Map<MaintenanceLockException>(_ => new StatusCodeProblemDetails(StatusCodes.Status503ServiceUnavailable) { Detail = "Currently undergoing maintenance" });
             options.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
-            options.IncludeExceptionDetails = (context, ex) =>
+            options.IncludeExceptionDetails = (context, _) =>
             {
                 var environment = context.RequestServices.GetRequiredService<IHostEnvironment>();
                 return environment.IsDevelopment();
@@ -189,6 +190,9 @@ public class Startup
 
         services.Configure<IndexerConfiguration>(Configuration.GetSection(nameof(IndexerConfiguration)));
 
+        // Maintenance Configurations
+        services.Configure<MaintenanceConfiguration>(Configuration.GetSection(nameof(MaintenanceConfiguration)));
+
         // Register project module services
         services.AddPlatformApplicationServices();
         services.AddPlatformInfrastructureServices(cirrusConfig.Get<CirrusConfiguration>(),
@@ -277,6 +281,7 @@ public class Startup
         app.UseSerilogRequestLogging();
         app.UseProblemDetails();
         app.UseMiddleware<RedirectToResourceMiddleware>();
+        app.UseMiddleware<MaintenanceLockMiddleware>();
         app.UseCors(options => options
                         .SetIsOriginAllowed(host => true)
                         .AllowAnyHeader()
