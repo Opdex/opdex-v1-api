@@ -31,23 +31,25 @@ public class CreateTokenCommandHandler : IRequestHandler<CreateTokenCommand, ulo
         var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token, findOrThrow: false), CancellationToken.None);
         var tokenId = token?.Id ?? 0ul;
 
-        if (token is null)
+        if (token is not null)
         {
-            var summary = await _mediator.Send(new CallCirrusGetStandardTokenContractSummaryQuery(request.Token,
-                                                                                                  request.BlockHeight,
-                                                                                                  includeBaseProperties: true,
-                                                                                                  includeTotalSupply: true));
-
-            token = new Token(request.Token,
-                              summary.Name,
-                              summary.Symbol,
-                              (int)summary.Decimals.GetValueOrDefault(),
-                              summary.Sats.GetValueOrDefault(),
-                              summary.TotalSupply.GetValueOrDefault(),
-                              request.BlockHeight);
-
-            tokenId = await _mediator.Send(new MakeTokenCommand(token, request.BlockHeight), CancellationToken.None);
+            return tokenId;
         }
+
+        var summary = await _mediator.Send(new CallCirrusGetStandardTokenContractSummaryQuery(request.Token,
+                                                                                              request.BlockHeight,
+                                                                                              includeBaseProperties: true,
+                                                                                              includeTotalSupply: true));
+
+        token = new Token(request.Token,
+                          summary.Name,
+                          summary.Symbol,
+                          (int)summary.Decimals.GetValueOrDefault(),
+                          summary.Sats.GetValueOrDefault(),
+                          summary.TotalSupply.GetValueOrDefault(),
+                          request.BlockHeight);
+
+        tokenId = await _mediator.Send(new MakeTokenCommand(token, request.BlockHeight), CancellationToken.None);
 
         if (tokenId == 0)
         {
