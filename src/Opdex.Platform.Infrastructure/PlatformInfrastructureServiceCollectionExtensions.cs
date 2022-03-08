@@ -195,6 +195,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<PersistLiquidityPoolCommand, ulong>, PersistLiquidityPoolCommandHandler>();
         services.AddTransient<IRequestHandler<PersistLiquidityPoolSnapshotCommand, bool>, PersistLiquidityPoolSnapshotCommandHandler>();
         services.AddTransient<IRequestHandler<PersistLiquidityPoolSummaryCommand, ulong>, PersistLiquidityPoolSummaryCommandHandler>();
+        services.AddTransient<IRequestHandler<ExecuteUpdateMarketSummaryLiquidityPoolCountCommand, bool>, ExecuteUpdateMarketSummaryLiquidityPoolCountCommandHandler>();
 
         // Mining Pools
         services.AddTransient<IRequestHandler<PersistMiningPoolCommand, ulong>, PersistMiningPoolCommandHandler>();
