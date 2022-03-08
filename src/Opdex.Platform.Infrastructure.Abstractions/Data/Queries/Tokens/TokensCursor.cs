@@ -192,9 +192,9 @@ public enum ChainType
 public enum TokenOrderByType
 {
     /// <summary>
-    /// Ordered by the date they were added to Opdex.
+    /// Ordered by when they were indexed.
     /// </summary>
-    Default = 0,
+    CreatedBlock = 0,
 
     /// <summary>
     /// Ordered alphabetically by name.
