@@ -31,26 +31,29 @@ public class CreateTokenCommandHandler : IRequestHandler<CreateTokenCommand, ulo
         var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token, findOrThrow: false), CancellationToken.None);
         var tokenId = token?.Id ?? 0ul;
 
-        if (token is not null)
+        if (token is null)
         {
-            return tokenId;
+            var summary = await _mediator.Send(new CallCirrusGetStandardTokenContractSummaryQuery(request.Token,
+                                                                                                  request.BlockHeight,
+                                                                                                  includeBaseProperties: true,
+                                                                                                  includeTotalSupply: true));
+
+            token = new Token(request.Token,
+                              summary.Name,
+                              summary.Symbol,
+                              (int)summary.Decimals.GetValueOrDefault(),
+                              summary.Sats.GetValueOrDefault(),
+                              summary.TotalSupply.GetValueOrDefault(),
+                              request.BlockHeight);
+
+            tokenId = await _mediator.Send(new MakeTokenCommand(token, request.BlockHeight), CancellationToken.None);
         }
 
-        var summary = await _mediator.Send(new CallCirrusGetStandardTokenContractSummaryQuery(request.Token,
-            request.BlockHeight,
-            includeBaseProperties: true,
-            includeTotalSupply: true));
-
-        token = new Token(request.Token,
-            summary.Name,
-            summary.Symbol,
-            (int)summary.Decimals.GetValueOrDefault(),
-            summary.Sats.GetValueOrDefault(),
-            summary.TotalSupply.GetValueOrDefault(),
-            request.BlockHeight);
-
-        tokenId = await _mediator.Send(new MakeTokenCommand(token, request.BlockHeight));
-        if (tokenId == 0) _logger.LogError("Something went wrong indexing the token");
+        if (tokenId == 0)
+        {
+            _logger.LogError("Something went wrong indexing the token");
+            return tokenId;
+        }
 
         var interfluxSummary = await _mediator.Send(new CallCirrusGetInterfluxTokenContractSummaryQuery(request.Token, request.BlockHeight), CancellationToken.None);
         if (interfluxSummary is not null)
@@ -67,6 +70,7 @@ public class CreateTokenCommandHandler : IRequestHandler<CreateTokenCommand, ulo
             var tokenAttribute = new TokenAttribute(tokenId, attribute);
             return _mediator.Send(new MakeTokenAttributeCommand(tokenAttribute), CancellationToken.None);
         }));
+
         if (attributesPersisted.Any(a => !a)) _logger.LogError("Something went wrong indexing the token attributes");
 
         return tokenId;
