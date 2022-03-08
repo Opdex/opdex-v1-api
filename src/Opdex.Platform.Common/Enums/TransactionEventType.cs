@@ -16,8 +16,8 @@ public enum TransactionEventType
     // Liquidity pool logs
     AddLiquidityEvent = 8,
     RemoveLiquidityEvent = 9,
-    ReservesChangeEvent = 10,
-    SwapEvent = 11,
+    SwapEvent = 10,
+    ReservesChangeEvent = 11,
     StartStakingEvent = 12,
     StopStakingEvent = 13,
     CollectStakingRewardsEvent = 14,

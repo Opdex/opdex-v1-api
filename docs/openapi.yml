@@ -422,8 +422,8 @@ components:
         - ChangeMarketPermissionEvent
         - AddLiquidityEvent
         - RemoveLiquidityEvent
-        - ReservesChangeEvent
         - SwapEvent
+        - ReservesChangeEvent
         - StartStakingEvent
         - StopStakingEvent
         - CollectStakingRewardsEvent
