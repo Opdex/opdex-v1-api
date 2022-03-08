@@ -14,7 +14,7 @@ public class MarketSummary : BlockAudit
 
     public MarketSummary(ulong id, ulong marketId, decimal liquidityUsd, decimal dailyLiquidityUsdChangePercent, decimal volumeUsd, ulong stakingWeight,
                          decimal dailyStakingWeightChangePercent, decimal stakingUsd, decimal dailyStakingUsdChangePercent, decimal providerRewardsDailyUsd,
-                         decimal marketRewardsDailyUsd, ulong liquidityPoolCount, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
+                         decimal marketRewardsDailyUsd, uint liquidityPoolCount, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
     {
         Id = id;
         MarketId = marketId;
@@ -41,7 +41,7 @@ public class MarketSummary : BlockAudit
     public decimal DailyStakingUsdChangePercent { get; private set; }
     public decimal ProviderRewardsDailyUsd { get; private set; }
     public decimal MarketRewardsDailyUsd { get; private set; }
-    public ulong LiquidityPoolCount { get; }
+    public uint LiquidityPoolCount { get; }
 
     public void Update(MarketSnapshot snapshot, ulong blockHeight)
     {
