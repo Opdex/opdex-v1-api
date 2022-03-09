@@ -317,6 +317,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.VolumeUsd, opt => opt.MapFrom(src => src.VolumeUsd))
             .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => src.Staking))
             .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => src.Rewards))
+            .ForMember(dest => dest.LiquidityPoolCount, opt => opt.MapFrom(src => src.LiquidityPoolCount))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ValidateMemberList(MemberList.None);

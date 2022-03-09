@@ -148,7 +148,7 @@ public class PlatformInfrastructureMapperProfile : Profile
         CreateMap<MarketSummaryEntity, MarketSummary>()
             .ConstructUsing(src => new MarketSummary(src.Id, src.MarketId, src.LiquidityUsd, src.DailyLiquidityUsdChangePercent, src.VolumeUsd, src.StakingWeight,
                                 src.DailyStakingWeightChangePercent, src.StakingUsd, src.DailyStakingUsdChangePercent, src.ProviderRewardsDailyUsd, src.MarketRewardsDailyUsd,
-                                src.CreatedBlock, src.ModifiedBlock))
+                                src.LiquidityPoolCount, src.CreatedBlock, src.ModifiedBlock))
             .ValidateMemberList(MemberList.None);
 
         CreateMap<MarketPermissionEntity, MarketPermission>()

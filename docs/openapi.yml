@@ -2203,6 +2203,11 @@ components:
         rewards:
           $ref: "#/components/schemas/rewardSummary"
           description: Rewards summary
+        liquidityPoolCount:
+          type: integer
+          format: uint32
+          minimum: 0
+          description: Number of liquidity pools in the market
         createdBlock:
           type: integer
           format: uint64
@@ -4869,6 +4874,7 @@ paths:
                         providerDailyUsd: "1205.00639582"
                         marketDailyUsd: "241.00127916"
                         totalDailyUsd: "1446.00767498"
+                      liquidityPoolCount: 8
                       createdBlock: 2988898
                       modifiedBlock: 3042951
                 paging: {}
@@ -4984,6 +4990,7 @@ paths:
                     providerDailyUsd: "1205.00639582"
                     marketDailyUsd: "241.00127916"
                     totalDailyUsd: "1446.00767498"
+                  liquidityPoolCount: 8
                   createdBlock: 2988898
                   modifiedBlock: 3042951
           headers:

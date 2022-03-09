@@ -28,6 +28,7 @@ public class SelectMarketSummaryByMarketIdQueryHandler
                 {nameof(MarketSummaryEntity.DailyStakingUsdChangePercent)},
                 {nameof(MarketSummaryEntity.ProviderRewardsDailyUsd)},
                 {nameof(MarketSummaryEntity.MarketRewardsDailyUsd)},
+                {nameof(MarketSummaryEntity.LiquidityPoolCount)},
                 {nameof(MarketSummaryEntity.CreatedBlock)},
                 {nameof(MarketSummaryEntity.ModifiedBlock)}
             FROM market_summary

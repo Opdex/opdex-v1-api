@@ -5,6 +5,7 @@ using Opdex.Platform.Application.Abstractions.Commands.LiquidityPools;
 using Opdex.Platform.Application.Handlers.LiquidityPools;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.LiquidityPools;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Markets;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,7 +29,7 @@ public class MakeLiquidityPoolCommandHandlerTests
     {
         // Arrange
         // Act
-        void Act() => new MakeLiquidityPoolCommand(null);
+        void Act() => _ = new MakeLiquidityPoolCommand(null);
 
         // Assert
         Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Liquidity pool must be set.");
@@ -45,5 +46,36 @@ public class MakeLiquidityPoolCommandHandlerTests
 
         // Assert
         _mediatorMock.Verify(callTo => callTo.Send(It.Is<PersistLiquidityPoolCommand>(c => c.Pool == liquidityPool), CancellationToken.None), Times.Once);
+    }
+
+    [Fact]
+    public async Task MakeLiquidityPoolCommand_Sends_ExecuteUpdateMarketSummaryLiquidityPoolCountCommand()
+    {
+        // Arrange
+        var liquidityPool = new LiquidityPool(5, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", "ETH-CRS", 5, 15, 25, 500, 505);
+
+        // Act
+        await _handler.Handle(new MakeLiquidityPoolCommand(liquidityPool), CancellationToken.None);
+
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<ExecuteUpdateMarketSummaryLiquidityPoolCountCommand>(
+            c => c.MarketId == liquidityPool.MarketId && c.BlockHeight == liquidityPool.CreatedBlock), CancellationToken.None), Times.Once);
+    }
+
+    [Fact]
+    public async Task MakeLiquidityPoolCommand_Returns_PersistLiquidityPoolCommandResult()
+    {
+        // Arrange
+        const ulong id = 5;
+
+        var liquidityPool = new LiquidityPool(5, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", "ETH-CRS", 5, 15, 25, 500, 505);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<PersistLiquidityPoolCommand>(), It.IsAny<CancellationToken>()))
+                     .ReturnsAsync(id);
+
+        // Act
+        var result = await _handler.Handle(new MakeLiquidityPoolCommand(liquidityPool), CancellationToken.None);
+
+        // Assert
+        result.Should().Be(id);
     }
 }
