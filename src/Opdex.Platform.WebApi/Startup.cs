@@ -192,6 +192,7 @@ public class Startup
 
         // Maintenance Configurations
         services.Configure<MaintenanceConfiguration>(Configuration.GetSection(nameof(MaintenanceConfiguration)));
+        services.AddScoped<MaintenanceLockFilter>();
 
         // Register project module services
         services.AddPlatformApplicationServices();
@@ -281,7 +282,6 @@ public class Startup
         app.UseSerilogRequestLogging();
         app.UseProblemDetails();
         app.UseMiddleware<RedirectToResourceMiddleware>();
-        app.UseMiddleware<MaintenanceLockMiddleware>();
         app.UseCors(options => options
                         .SetIsOriginAllowed(host => true)
                         .AllowAnyHeader()

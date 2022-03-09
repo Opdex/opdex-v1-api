@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.WebApi.Caching;
+using Opdex.Platform.WebApi.Middleware;
 using Opdex.Platform.WebApi.Models.Requests.Blocks;
 using Opdex.Platform.WebApi.Models.Responses.Blocks;
 using System.Threading;
@@ -14,6 +15,7 @@ namespace Opdex.Platform.WebApi.Controllers;
 [ApiController]
 [Route("v{version:apiVersion}/blocks")]
 [ApiVersion("1")]
+[ServiceFilter(typeof(MaintenanceLockFilter))]
 public class BlocksController : ControllerBase
 {
     private readonly IMapper _mapper;

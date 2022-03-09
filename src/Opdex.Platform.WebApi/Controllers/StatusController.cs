@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.WebApi.Models.Responses.Status;
 
@@ -10,10 +11,12 @@ namespace Opdex.Platform.WebApi.Controllers;
 public class StatusController : ControllerBase
 {
     private readonly OpdexConfiguration _opdexConfiguration;
+    private readonly IOptionsSnapshot<MaintenanceConfiguration> _maintenanceConfig;
 
-    public StatusController(OpdexConfiguration opdexConfiguration)
+    public StatusController(OpdexConfiguration opdexConfiguration, IOptionsSnapshot<MaintenanceConfiguration> maintenanceConfig)
     {
         _opdexConfiguration = opdexConfiguration;
+        _maintenanceConfig = maintenanceConfig;
     }
 
     /// <summary>
@@ -27,7 +30,8 @@ public class StatusController : ControllerBase
         return new StatusResponseModel
         {
             Commit = _opdexConfiguration.CommitHash,
-            Identifier = _opdexConfiguration.InstanceId
+            Identifier = _opdexConfiguration.InstanceId,
+            UnderMaintenance = _maintenanceConfig.Value.Locked
         };
     }
 }

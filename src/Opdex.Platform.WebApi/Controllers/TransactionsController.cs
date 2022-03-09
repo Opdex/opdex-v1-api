@@ -13,6 +13,7 @@ using Opdex.Platform.WebApi.Models.Requests.Transactions;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Caching;
+using Opdex.Platform.WebApi.Middleware;
 using System.Linq;
 
 namespace Opdex.Platform.WebApi.Controllers;
@@ -20,6 +21,7 @@ namespace Opdex.Platform.WebApi.Controllers;
 [ApiController]
 [Route("v{version:apiVersion}/transactions")]
 [ApiVersion("1")]
+[ServiceFilter(typeof(MaintenanceLockFilter))]
 public class TransactionsController : ControllerBase
 {
     private readonly IMediator _mediator;
