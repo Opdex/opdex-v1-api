@@ -19,7 +19,7 @@ public class MarketSummaryTests
         const ulong createdBlock = 7;
 
         // Act
-        void Act() => new MarketSummary(marketId, createdBlock);
+        void Act() => _ = new MarketSummary(marketId, createdBlock);
 
         // Assert
         Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("MarketId must be greater than zero.");
@@ -42,10 +42,11 @@ public class MarketSummaryTests
         const decimal marketRewardsDailyUsd = 0.22m;
         const ulong createdBlock = 7;
         const ulong modifiedBlock = 8;
+        const int liquidityPoolCount = 50;
 
         // Act
         var result = new MarketSummary(id, marketId, liquidity, dailyLiquidityChange, volume, stakingWeight, dailyStakingChange, stakingUsd,
-                                       dailyStakingUsdChange, providerRewardsDailyUsd, marketRewardsDailyUsd, createdBlock, modifiedBlock);
+                                       dailyStakingUsdChange, providerRewardsDailyUsd, marketRewardsDailyUsd, liquidityPoolCount, createdBlock, modifiedBlock);
 
         // Assert
         result.Id.Should().Be(id);
@@ -58,6 +59,7 @@ public class MarketSummaryTests
         result.DailyStakingUsdChangePercent.Should().Be(dailyStakingUsdChange);
         result.ProviderRewardsDailyUsd.Should().Be(providerRewardsDailyUsd);
         result.MarketRewardsDailyUsd.Should().Be(marketRewardsDailyUsd);
+        result.LiquidityPoolCount.Should().Be(liquidityPoolCount);
         result.CreatedBlock.Should().Be(createdBlock);
         result.ModifiedBlock.Should().Be(modifiedBlock);
     }

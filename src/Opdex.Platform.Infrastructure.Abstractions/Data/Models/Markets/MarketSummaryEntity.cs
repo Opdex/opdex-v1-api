@@ -13,4 +13,5 @@ public class MarketSummaryEntity : AuditEntity
     public decimal DailyStakingUsdChangePercent { get; set; }
     public decimal ProviderRewardsDailyUsd { get; set; }
     public decimal MarketRewardsDailyUsd { get; set; }
+    public uint LiquidityPoolCount { get; set; }
 }

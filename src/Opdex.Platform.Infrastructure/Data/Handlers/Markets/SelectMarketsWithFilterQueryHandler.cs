@@ -133,7 +133,7 @@ public class SelectMarketsWithFilterQueryHandler : IRequestHandler<SelectMarkets
             whereFilterBuilder.AppendCondition($"m.{nameof(MarketEntity.StakingTokenId)} {stakingTokenIdOperator} 0");
         }
 
-        if (request.Cursor.OrderBy != MarketOrderByType.Default)
+        if (request.Cursor.OrderBy != MarketOrderByType.CreatedBlock)
         {
             tableJoins += " LEFT JOIN market_summary ms ON m.Id = ms.MarketId";
             var columnName = request.Cursor.OrderBy switch

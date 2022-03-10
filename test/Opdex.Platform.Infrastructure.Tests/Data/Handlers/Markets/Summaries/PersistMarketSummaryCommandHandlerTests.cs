@@ -47,7 +47,7 @@ public class PersistMarketSummaryCommandHandlerTests
     public async Task Update_MarketSummary_SendsSqlCommand()
     {
         const ulong expectedId = 10ul;
-        var model = new MarketSummary(expectedId, 1, 2.00m, 4.5m, 3.00m, 4, 6.5m, 5, 7, 8, 9, 10, 11);
+        var model = new MarketSummary(expectedId, 1, 2.00m, 4.5m, 3.00m, 4, 6.5m, 5, 7, 8, 9, 50, 10, 11);
         var command = new PersistMarketSummaryCommand(model);
 
         try
@@ -79,7 +79,7 @@ public class PersistMarketSummaryCommandHandlerTests
     public async Task Update_MarketSummary_Returns()
     {
         const ulong expectedId = 10ul;
-        var model = new MarketSummary(expectedId, 1, 2.00m, 4.5m, 3.00m, 4, 6.5m, 5, 7, 8, 9, 10, 11);
+        var model = new MarketSummary(expectedId, 1, 2.00m, 4.5m, 3.00m, 4, 6.5m, 5, 7, 8, 9, 50, 10, 11);
         var command = new PersistMarketSummaryCommand(model);
 
         _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
@@ -94,7 +94,7 @@ public class PersistMarketSummaryCommandHandlerTests
     public async Task PersistsMarketSummary_Fail()
     {
         const ulong expectedId = 0;
-        var model = new MarketSummary(expectedId, 1, 2.00m, 4.5m, 3.00m, 4, 6.5m, 5, 7, 8, 9, 10, 11);
+        var model = new MarketSummary(expectedId, 1, 2.00m, 4.5m, 3.00m, 4, 6.5m, 5, 7, 8, 9, 50, 10, 11);
         var command = new PersistMarketSummaryCommand(model);
 
         _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))

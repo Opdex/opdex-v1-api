@@ -1,6 +1,7 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.LiquidityPools;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Markets;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,8 +17,10 @@ public class MakeLiquidityPoolCommandHandler : IRequestHandler<MakeLiquidityPool
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    public Task<ulong> Handle(MakeLiquidityPoolCommand request, CancellationToken cancellationToken)
+    public async Task<ulong> Handle(MakeLiquidityPoolCommand request, CancellationToken cancellationToken)
     {
-        return _mediator.Send(new PersistLiquidityPoolCommand(request.LiquidityPool));
+        var poolId = await _mediator.Send(new PersistLiquidityPoolCommand(request.LiquidityPool), CancellationToken.None);
+        await _mediator.Send(new ExecuteUpdateMarketSummaryLiquidityPoolCountCommand(request.LiquidityPool.MarketId, request.LiquidityPool.CreatedBlock), CancellationToken.None);
+        return poolId;
     }
 }

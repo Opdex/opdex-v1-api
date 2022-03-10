@@ -246,7 +246,7 @@ components:
       description: An address on the Cirrus network
       minLength: 30
       maxLength: 42
-      pattern: ^[a-km-zA-HJ-NP-Z1-9]$
+      pattern: ^[a-km-zA-HJ-NP-Z1-9]+$
     crs:
       type: string
       pattern: CRS
@@ -270,10 +270,12 @@ components:
       type: string
       description: Property to sort tokens by
       enum:
+        - CreatedBlock
         - Name
         - Symbol
         - DailyPriceChangePercent
         - PriceUsd
+      default: CreatedBlock
     stakingStatusFilter:
       type: string
       description: Staking status filter
@@ -307,14 +309,17 @@ components:
       type: string
       description: Property to sort liquidity pools by
       enum:
+        - CreatedBlock
         - Liquidity
         - Volume
         - StakingWeight
         - Name
+      default: CreatedBlock
     marketOrderByType:
       type: string
       description: Property to sort markets by
       enum:
+        - CreatedBlock
         - LiquidityUsd
         - StakingUsd
         - StakingWeight
@@ -324,6 +329,7 @@ components:
         - DailyLiquidityUsdChangePercent
         - DailyStakingUsdChangePercent
         - DailyStakingWeightChangePercent
+      default: CreatedBlock
     marketTypeFilter:
       type: string
       description: Market type filter
@@ -416,8 +422,8 @@ components:
         - ChangeMarketPermissionEvent
         - AddLiquidityEvent
         - RemoveLiquidityEvent
-        - ReservesChangeEvent
         - SwapEvent
+        - ReservesChangeEvent
         - StartStakingEvent
         - StopStakingEvent
         - CollectStakingRewardsEvent
@@ -433,8 +439,6 @@ components:
         - CreateVaultCertificateEvent
         - RevokeVaultCertificateEvent
         - RedeemVaultCertificateEvent
-        - SetPendingVaultOwnershipEvent
-        - ClaimPendingVaultOwnershipEvent
         - CreateVaultProposalEvent
         - CompleteVaultProposalEvent
         - VaultProposalPledgeEvent
@@ -2199,6 +2203,11 @@ components:
         rewards:
           $ref: "#/components/schemas/rewardSummary"
           description: Rewards summary
+        liquidityPoolCount:
+          type: integer
+          format: uint32
+          minimum: 0
+          description: Number of liquidity pools in the market
         createdBlock:
           type: integer
           format: uint64
@@ -3927,7 +3936,6 @@ paths:
         - name: startDateTime
           in: query
           description: Start time for which to retrieve snapshots
-          required: true
           schema:
             type: string
             format: date-time
@@ -3935,7 +3943,6 @@ paths:
         - name: endDateTime
           in: query
           description: End time for which to retrieve snapshots
-          required: true
           schema:
             type: string
             format: date-time
@@ -4867,6 +4874,7 @@ paths:
                         providerDailyUsd: "1205.00639582"
                         marketDailyUsd: "241.00127916"
                         totalDailyUsd: "1446.00767498"
+                      liquidityPoolCount: 8
                       createdBlock: 2988898
                       modifiedBlock: 3042951
                 paging: {}
@@ -4982,6 +4990,7 @@ paths:
                     providerDailyUsd: "1205.00639582"
                     marketDailyUsd: "241.00127916"
                     totalDailyUsd: "1446.00767498"
+                  liquidityPoolCount: 8
                   createdBlock: 2988898
                   modifiedBlock: 3042951
           headers:
@@ -5029,7 +5038,6 @@ paths:
         - name: startDateTime
           in: query
           description: Start time for which to retrieve snapshots
-          required: true
           schema:
             type: string
             format: date-time
@@ -5037,7 +5045,6 @@ paths:
         - name: endDateTime
           in: query
           description: End time for which to retrieve snapshots
-          required: true
           schema:
             type: string
             format: date-time
@@ -5936,7 +5943,6 @@ paths:
         - name: startDateTime
           in: query
           description: Start time for which to retrieve snapshots
-          required: true
           schema:
             type: string
             format: date-time
@@ -5944,7 +5950,6 @@ paths:
         - name: endDateTime
           in: query
           description: End time for which to retrieve snapshots
-          required: true
           schema:
             type: string
             format: date-time
@@ -7198,7 +7203,6 @@ paths:
         - name: startDateTime
           in: query
           description: Start time for which to retrieve snapshots
-          required: true
           schema:
             type: string
             format: date-time
@@ -7206,7 +7210,6 @@ paths:
         - name: endDateTime
           in: query
           description: End time for which to retrieve snapshots
-          required: true
           schema:
             type: string
             format: date-time
