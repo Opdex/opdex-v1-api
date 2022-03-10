@@ -8,6 +8,7 @@ using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -53,7 +54,14 @@ public class CreateTokenCommandHandler : IRequestHandler<CreateTokenCommand, ulo
 
         if (tokenId == 0)
         {
-            _logger.LogError("Something went wrong indexing the token");
+            using (_logger.BeginScope(new Dictionary<string, object>
+                   {
+                       ["Address"] = request.Token
+                   }))
+            {
+                _logger.LogError("Something went wrong indexing the token");
+            }
+
             return tokenId;
         }
 
