@@ -33,7 +33,7 @@ public class ProcessGovernanceDeploymentTransactionCommandHandler : IRequestHand
     {
         try
         {
-            var transaction = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), CancellationToken.None) ??
+            var transaction = await _mediator.Send(new RetrieveTransactionByHashQuery(request.TxHash, findOrThrow: false), CancellationToken.None) ??
                               await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), CancellationToken.None);
 
             if (transaction == null || transaction.Id > 0) return Unit.Value;
@@ -53,8 +53,8 @@ public class ProcessGovernanceDeploymentTransactionCommandHandler : IRequestHand
             await _mediator.Send(new CreateCrsTokenSnapshotsCommand(hashBlock.MedianTime, transaction.BlockHeight), CancellationToken.None);
 
             // Insert Staking Token
-            var stakingAttributes = new[] { TokenAttributeType.Staking };
-            var stakingTokenId = await _mediator.Send(new CreateTokenCommand(transaction.NewContractAddress, stakingAttributes, transaction.BlockHeight));
+            var attributes = new[] { TokenAttributeType.Staking, TokenAttributeType.NonProvisional };
+            var stakingTokenId = await _mediator.Send(new CreateTokenCommand(transaction.NewContractAddress, attributes, transaction.BlockHeight));
 
             // Get token summary
             var stakingTokenSummary = await _mediator.Send(new RetrieveStakingTokenContractSummaryQuery(transaction.NewContractAddress,
