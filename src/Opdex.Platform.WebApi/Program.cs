@@ -35,24 +35,22 @@ public class Program
         Log.CloseAndFlush();
     }
 
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
+    private static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
             .ConfigureAppConfiguration((context, config) =>
             {
-                if (context.HostingEnvironment.IsProduction())
-                {
-                    var builtConfig = config.Build();
-                    var manager = new KeyVaultSecretManager();
-                    var secretClient = new SecretClient(
-                        new Uri($"https://{builtConfig["Azure:KeyVault:Name"]}.vault.azure.net/"),
-                        new DefaultAzureCredential());
+                if (!context.HostingEnvironment.IsProduction()) return;
 
-                    config.AddAzureKeyVault(secretClient, new AzureKeyVaultConfigurationOptions
-                    {
-                        Manager = new KeyVaultSecretManager(),
-                        ReloadInterval = TimeSpan.FromMinutes(10)
-                    });
-                }
+                var builtConfig = config.Build();
+                var secretClient = new SecretClient(
+                    new Uri($"https://{builtConfig["Azure:KeyVault:Name"]}.vault.azure.net/"),
+                    new DefaultAzureCredential());
+
+                config.AddAzureKeyVault(secretClient, new AzureKeyVaultConfigurationOptions
+                {
+                    Manager = new KeyVaultSecretManager(),
+                    ReloadInterval = TimeSpan.FromSeconds(16)
+                });
             })
             .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
             .UseSerilog((context, services, loggingConfiguration) =>
