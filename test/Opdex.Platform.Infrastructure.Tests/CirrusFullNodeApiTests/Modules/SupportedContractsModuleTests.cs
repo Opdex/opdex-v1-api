@@ -51,59 +51,67 @@ public class SupportedContractsModuleTests
         result.Should().BeEmpty();
     }
 
-    [Fact]
-    public async Task GetList_Testnet_VerifyCorrectRequest()
-    {
-        // Arrange
-        SetupClient(NetworkType.TESTNET);
-        _httpMessageHandlerMock.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK, "");
+    /***************************************************/
+    /* UNCOMMENT WHEN THE STATIC LIST HAS BEEN REMOVED */
+    /***************************************************/
 
-        // Act
-        await _supportedContractsModule.GetList();
+    // [Fact]
+    // public async Task GetList_Testnet_VerifyCorrectRequest()
+    // {
+    //     // Arrange
+    //     SetupClient(NetworkType.TESTNET);
+    //     _httpMessageHandlerMock.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK, "");
+    //
+    //     // Act
+    //     await _supportedContractsModule.GetList();
+    //
+    //     // Assert
+    //     _httpMessageHandlerMock.VerifyRequest(HttpMethod.Get, new Uri($"{BaseAddress}/SupportedContracts/list?networkType={(int)CirrusNetworkType.Testnet}"), Times.Once());
+    // }
+    //
+    // [Fact]
+    // public async Task GetList_Mainnet_VerifyCorrectRequest()
+    // {
+    //     // Arrange
+    //     SetupClient(NetworkType.MAINNET);
+    //     _httpMessageHandlerMock.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK, "");
+    //
+    //     // Act
+    //     await _supportedContractsModule.GetList();
+    //
+    //     // Assert
+    //     _httpMessageHandlerMock.VerifyRequest(HttpMethod.Get, new Uri($"{BaseAddress}/SupportedContracts/list?networkType={(int)CirrusNetworkType.Mainnet}"), Times.Once());
+    // }
+    //
+    // [Fact]
+    // public async Task GetList_ValidResponse_ReturnDeserialized()
+    // {
+    //     // Arrange
+    //     var interfluxMappings = new InterfluxMappingDto[]
+    //     {
+    //         new()
+    //         {
+    //             TokenName = "ChainLink",
+    //             NativeChainAddress = "nananana",
+    //             NativeNetwork = NativeChainType.Ethereum,
+    //             Src20Address = new Address("PUEcYJGdgj4QdEYTwEANsWnGKjmaS4NhcX")
+    //         }
+    //     };
+    //
+    //     SetupClient(NetworkType.MAINNET);
+    //     var responseContent = new StringContent(JsonConvert.SerializeObject(interfluxMappings, StratisFullNode.SerializerSettings));
+    //     _httpMessageHandlerMock.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK, responseContent);
+    //
+    //     // Act
+    //     var results = await _supportedContractsModule.GetList();
+    //
+    //     // Assert
+    //     results.Should().BeEquivalentTo(interfluxMappings);
+    // }
 
-        // Assert
-        _httpMessageHandlerMock.VerifyRequest(HttpMethod.Get, new Uri($"{BaseAddress}/SupportedContracts/list?networkType={(int)CirrusNetworkType.Testnet}"), Times.Once());
-    }
-
-    [Fact]
-    public async Task GetList_Mainnet_VerifyCorrectRequest()
-    {
-        // Arrange
-        SetupClient(NetworkType.MAINNET);
-        _httpMessageHandlerMock.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK, "");
-
-        // Act
-        await _supportedContractsModule.GetList();
-
-        // Assert
-        _httpMessageHandlerMock.VerifyRequest(HttpMethod.Get, new Uri($"{BaseAddress}/SupportedContracts/list?networkType={(int)CirrusNetworkType.Mainnet}"), Times.Once());
-    }
-
-    [Fact]
-    public async Task GetList_ValidResponse_ReturnDeserialized()
-    {
-        // Arrange
-        var interfluxMappings = new InterfluxMappingDto[]
-        {
-            new()
-            {
-                TokenName = "ChainLink",
-                NativeAddress = "nananana",
-                NativeNetwork = NativeChainType.Ethereum,
-                Src20Address = new Address("PUEcYJGdgj4QdEYTwEANsWnGKjmaS4NhcX")
-            }
-        };
-
-        SetupClient(NetworkType.MAINNET);
-        var responseContent = new StringContent(JsonConvert.SerializeObject(interfluxMappings, StratisFullNode.SerializerSettings));
-        _httpMessageHandlerMock.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK, responseContent);
-
-        // Act
-        var results = await _supportedContractsModule.GetList();
-
-        // Assert
-        results.Should().BeEquivalentTo(interfluxMappings);
-    }
+    /*******************************************************/
+    /* END UNCOMMENT WHEN THE STATIC LIST HAS BEEN REMOVED */
+    /*******************************************************/
 
     private void SetupClient(NetworkType networkType)
     {

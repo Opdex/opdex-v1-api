@@ -38,7 +38,7 @@ public class CallCirrusTrustedWrappedTokenQueryHandlerTests
             .ReturnsAsync(src20Address.Select(address => new InterfluxMappingDto
             {
                 NativeNetwork = NativeChainType.Ethereum,
-                NativeAddress = "NATIVE ADDRESS",
+                NativeChainAddress = "NATIVE ADDRESS",
                 Src20Address = address,
                 TokenName = "TOKEN NAME"
             }));
@@ -66,7 +66,7 @@ public class CallCirrusTrustedWrappedTokenQueryHandlerTests
             .ReturnsAsync(src20Address.Select(address => new InterfluxMappingDto
             {
                 NativeNetwork = NativeChainType.Ethereum,
-                NativeAddress = "NATIVE ADDRESS",
+                NativeChainAddress = "NATIVE ADDRESS",
                 Src20Address = address,
                 TokenName = "TOKEN NAME"
             }));
