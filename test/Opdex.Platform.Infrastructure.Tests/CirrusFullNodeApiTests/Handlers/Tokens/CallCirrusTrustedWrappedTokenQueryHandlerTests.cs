@@ -40,7 +40,8 @@ public class CallCirrusTrustedWrappedTokenQueryHandlerTests
                 NativeNetwork = NativeChainType.Ethereum,
                 NativeChainAddress = "NATIVE ADDRESS",
                 Src20Address = address,
-                TokenName = "TOKEN NAME"
+                TokenName = "TOKEN NAME",
+                Decimals = 5
             }));
 
 
@@ -68,7 +69,8 @@ public class CallCirrusTrustedWrappedTokenQueryHandlerTests
                 NativeNetwork = NativeChainType.Ethereum,
                 NativeChainAddress = "NATIVE ADDRESS",
                 Src20Address = address,
-                TokenName = "TOKEN NAME"
+                TokenName = "TOKEN NAME",
+                Decimals = 5
             }));
 
 
