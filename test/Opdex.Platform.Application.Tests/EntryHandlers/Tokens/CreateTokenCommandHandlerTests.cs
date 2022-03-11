@@ -139,6 +139,45 @@ public class CreateTokenCommandHandlerTests
     }
 
     [Fact]
+    public async Task CreateTokenCommand_InterfluxToken_ValidateTrusted()
+    {
+        // Arrange
+        Address tokenAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
+        const ulong blockHeight = 10;
+
+        var interfluxSummary = new InterfluxTokenContractSummary();
+        interfluxSummary.SetInterfluxDetails(new Address("PBHvTPaLKo5cVYBFdTfTgtjqfybLMJJ8W5"), ExternalChainType.Ethereum, "0x514910771af9ca656af840dff83e8264ecf986ca");
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetStandardTokenContractSummaryQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(() =>
+            {
+                var summary = new StandardTokenContractSummary(blockHeight);
+                summary.SetBaseProperties("ChainLink (InterFlux)", "iLINK", 18);
+                summary.SetTotalSupply(UInt256.Parse("1000000000000000000000000000000000000000"));
+                return summary;
+            });
+        const ulong tokenId = 5;
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeTokenCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(tokenId);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetInterfluxTokenContractSummaryQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(interfluxSummary);
+
+        // Act
+        try
+        {
+            await _handler.Handle(new CreateTokenCommand(tokenAddress, Array.Empty<TokenAttributeType>(), blockHeight), CancellationToken.None);
+        }
+        catch
+        {
+            // ignored
+        }
+
+        // Assert
+        _mediator.Verify(callTo => callTo.Send(It.Is<CallCirrusTrustedWrappedTokenQuery>(
+                c => c.Token == tokenAddress),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
     public async Task CreateTokenCommand_InterfluxToken_PersistAttribute()
     {
         // Arrange
@@ -155,7 +194,7 @@ public class CreateTokenCommandHandlerTests
                 summary.SetTotalSupply(UInt256.Parse("1000000000000000000000000000000000000000"));
                 return summary;
             });
-        ulong tokenId = 5;
+        const ulong tokenId = 5;
         _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeTokenCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(tokenId);
         _mediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetInterfluxTokenContractSummaryQuery>(), It.IsAny<CancellationToken>()))
@@ -197,7 +236,7 @@ public class CreateTokenCommandHandlerTests
                 summary.SetTotalSupply(UInt256.Parse("1000000000000000000000000000000000000000"));
                 return summary;
             });
-        ulong tokenId = 5;
+        const ulong tokenId = 5;
         _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeTokenCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(tokenId);
         _mediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetInterfluxTokenContractSummaryQuery>(), It.IsAny<CancellationToken>()))

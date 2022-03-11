@@ -70,7 +70,9 @@ public class CreateTokenCommandHandler : IRequestHandler<CreateTokenCommand, ulo
         {
             attributes = request.Attributes.Append(TokenAttributeType.Interflux);
 
-            var tokenWrapped = new TokenWrapped(tokenId, interfluxSummary.Owner, interfluxSummary.NativeChain, interfluxSummary.NativeAddress, request.BlockHeight);
+            var isTrusted = await _mediator.Send(new CallCirrusTrustedWrappedTokenQuery(token.Address), CancellationToken.None);
+
+            var tokenWrapped = new TokenWrapped(tokenId, interfluxSummary.Owner, interfluxSummary.NativeChain, interfluxSummary.NativeAddress, isTrusted, request.BlockHeight);
             var tokenWrappedId = await _mediator.Send(new MakeTokenWrappedCommand(tokenWrapped), CancellationToken.None);
             if (tokenWrappedId == 0) _logger.LogError("Something went wrong indexing the wrapped token mapping");
         }

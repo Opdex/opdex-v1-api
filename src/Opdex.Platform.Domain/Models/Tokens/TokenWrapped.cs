@@ -8,7 +8,7 @@ namespace Opdex.Platform.Domain.Models.Tokens;
 
 public class TokenWrapped : BlockAudit
 {
-    public TokenWrapped(ulong tokenId, Address owner, ExternalChainType nativeChain, string nativeAddress, ulong createdBlock)
+    public TokenWrapped(ulong tokenId, Address owner, ExternalChainType nativeChain, string nativeAddress, bool trusted, ulong createdBlock)
         : base(createdBlock)
     {
         if (tokenId == 0) throw new ArgumentOutOfRangeException(nameof(tokenId), "Token id must be greater than 0.");
@@ -18,11 +18,12 @@ public class TokenWrapped : BlockAudit
         Owner = owner;
         Validated = TryValidateWrapping(nativeChain, nativeAddress, out var formattedAddress);
         NativeChain = nativeChain;
+        Trusted = trusted;
         NativeAddress = formattedAddress;
     }
 
     public TokenWrapped(ulong id, ulong tokenId, Address owner, ExternalChainType nativeChain, string nativeAddress,
-        bool validated, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
+        bool validated, bool trusted, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
     {
         Id = id;
         TokenId = tokenId;
@@ -30,6 +31,7 @@ public class TokenWrapped : BlockAudit
         NativeChain = nativeChain;
         NativeAddress = nativeAddress;
         Validated = validated;
+        Trusted = trusted;
     }
 
     public ulong Id { get; }
@@ -38,6 +40,7 @@ public class TokenWrapped : BlockAudit
     public ExternalChainType NativeChain { get; }
     public string NativeAddress { get; }
     public bool Validated { get; }
+    public bool Trusted { get; }
 
     public void SetOwner(Address owner, ulong blockHeight)
     {

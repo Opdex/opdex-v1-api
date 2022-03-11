@@ -374,6 +374,10 @@ public static class PlatformInfrastructureServiceCollectionExtensions
             .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
             .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
 
+        services.AddHttpClient<ISupportedContractsModule, SupportedContractsModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
+            .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
+            .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
+
         // Queries
         services.AddTransient<IRequestHandler<CallCirrusGetBestBlockReceiptQuery, BlockReceipt>, CallCirrusGetBestBlockReceiptQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetBlockReceiptByHashQuery, BlockReceipt>, CallCirrusGetBlockReceiptByHashQueryHandler>();
@@ -391,6 +395,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<CallCirrusGetLiquidityAmountInQuoteQuery, UInt256>, CallCirrusGetLiquidityAmountInQuoteQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetBlockHashByHeightQuery, Sha256>, CallCirrusGetBlockHashByHeightQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenBalanceQuery, UInt256>, CallCirrusGetSrcTokenBalanceQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusTrustedWrappedTokenQuery, bool>, CallCirrusTrustedWrappedTokenQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetMiningGovernanceNominationsSummaryQuery, IEnumerable<MiningGovernanceContractNominationSummary>>, CallCirrusGetMiningGovernanceNominationsSummaryQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusLocalCallSmartContractMethodCommand, TransactionQuote>, CallCirrusLocalCallSmartContractMethodCommandHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetAddressCrsBalanceQuery, ulong>, CallCirrusGetAddressCrsBalanceQueryHandler>();

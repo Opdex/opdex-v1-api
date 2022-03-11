@@ -148,6 +148,7 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.Chain, opt => opt.MapFrom(src => src.NativeChain))
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.NativeAddress))
             .ForMember(dest => dest.Validated, opt => opt.MapFrom(src => src.Validated))
+            .ForMember(dest => dest.Trusted, opt => opt.MapFrom(src => src.Trusted))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ValidateMemberList(MemberList.None);
