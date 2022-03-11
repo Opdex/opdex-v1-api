@@ -15,6 +15,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Quotes;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Caching;
+using Opdex.Platform.WebApi.Middleware;
 using System.Collections.Generic;
 
 namespace Opdex.Platform.WebApi.Controllers;
@@ -22,7 +23,7 @@ namespace Opdex.Platform.WebApi.Controllers;
 [ApiController]
 [Route("v{version:apiVersion}/markets")]
 [ApiVersion("1")]
-[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+[ServiceFilter(typeof(MaintenanceLockFilter))]
 public class MarketsController : ControllerBase
 {
     private readonly IMediator _mediator;

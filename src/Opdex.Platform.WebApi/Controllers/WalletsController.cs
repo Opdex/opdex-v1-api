@@ -13,6 +13,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Staking;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Caching;
+using Opdex.Platform.WebApi.Middleware;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Wallets;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
@@ -22,6 +23,7 @@ namespace Opdex.Platform.WebApi.Controllers;
 [ApiController]
 [Route("v{version:apiVersion}/wallets")]
 [ApiVersion("1")]
+[ServiceFilter(typeof(MaintenanceLockFilter))]
 public class WalletsController : ControllerBase
 {
     private readonly IApplicationContext _context;

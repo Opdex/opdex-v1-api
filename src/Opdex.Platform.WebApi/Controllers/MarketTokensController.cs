@@ -8,6 +8,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Routers;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Caching;
+using Opdex.Platform.WebApi.Middleware;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests;
 using Opdex.Platform.WebApi.Models.Requests.MarketTokens;
@@ -23,6 +24,7 @@ namespace Opdex.Platform.WebApi.Controllers;
 [ApiController]
 [Route("v{version:apiVersion}/markets/{market}/tokens")]
 [ApiVersion("1")]
+[ServiceFilter(typeof(MaintenanceLockFilter))]
 public class MarketTokensController : ControllerBase
 {
     private readonly IMediator _mediator;
