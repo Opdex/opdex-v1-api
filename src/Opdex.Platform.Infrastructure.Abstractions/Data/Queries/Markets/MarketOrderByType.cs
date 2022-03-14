@@ -8,7 +8,7 @@ public enum MarketOrderByType
     /// <summary>
     /// Orders by the date they were added to Opdex
     /// </summary>
-    Default = 0,
+    CreatedBlock = 0,
     LiquidityUsd = 1,
     DailyLiquidityUsdChangePercent = 2,
     VolumeUsd = 3,

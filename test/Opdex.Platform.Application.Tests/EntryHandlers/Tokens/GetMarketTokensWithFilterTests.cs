@@ -10,7 +10,6 @@ using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.MarketTokens;
-using Opdex.Platform.Application.EntryHandlers.Tokens;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
@@ -48,8 +47,8 @@ public class GetMarketTokensWithFilterTests
         // Arrange
         var cursor = new TokensCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                                       new Address[] { "PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u" },
-                                      new [] { TokenAttributeFilter.NonProvisional, TokenAttributeFilter.Staking },
-                                      new [] { ChainType.Cirrus },
+                                      new[] { TokenAttributeFilter.NonProvisional, TokenAttributeFilter.Staking },
+                                      new[] { ChainType.Cirrus },
                                       false,
                                       TokenOrderByType.DailyPriceChangePercent,
                                       SortDirectionType.ASC,
@@ -81,8 +80,8 @@ public class GetMarketTokensWithFilterTests
         // Arrange
         var cursor = new TokensCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                                       new Address[] { "PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u" },
-                                      new TokenAttributeFilter[] {TokenAttributeFilter.NonProvisional, TokenAttributeFilter.Staking},
-                                      new [] { ChainType.Cirrus },
+                                      new TokenAttributeFilter[] { TokenAttributeFilter.NonProvisional, TokenAttributeFilter.Staking },
+                                      new[] { ChainType.Cirrus },
                                       false,
                                       TokenOrderByType.DailyPriceChangePercent,
                                       SortDirectionType.ASC,
@@ -108,8 +107,8 @@ public class GetMarketTokensWithFilterTests
         // Arrange
         var cursor = new TokensCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                                       new Address[] { "PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u" },
-                                      new[] {TokenAttributeFilter.NonProvisional, TokenAttributeFilter.Staking},
-                                      new [] { ChainType.Cirrus },
+                                      new[] { TokenAttributeFilter.NonProvisional, TokenAttributeFilter.Staking },
+                                      new[] { ChainType.Cirrus },
                                       false,
                                       TokenOrderByType.DailyPriceChangePercent,
                                       SortDirectionType.ASC,
@@ -137,7 +136,7 @@ public class GetMarketTokensWithFilterTests
         // Arrange
         var cursor = new TokensCursor(null, Enumerable.Empty<Address>(),
                                       Enumerable.Empty<TokenAttributeFilter>(), Enumerable.Empty<ChainType>(),
-                                      false, TokenOrderByType.Default,
+                                      false, TokenOrderByType.CreatedBlock,
                                       SortDirectionType.ASC, 25, PagingDirection.Forward, ("50.00", 10));
         var token = new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10);
         var market = GetMarket();

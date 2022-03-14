@@ -6,6 +6,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MiningPools;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Caching;
+using Opdex.Platform.WebApi.Middleware;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.MiningPools;
 using Opdex.Platform.WebApi.Models.Responses.MiningPools;
@@ -19,6 +20,7 @@ namespace Opdex.Platform.WebApi.Controllers;
 [ApiController]
 [Route("v{version:apiVersion}/mining-pools")]
 [ApiVersion("1")]
+[ServiceFilter(typeof(MaintenanceLockFilter))]
 public class MiningPoolsController : ControllerBase
 {
     private readonly IMapper _mapper;

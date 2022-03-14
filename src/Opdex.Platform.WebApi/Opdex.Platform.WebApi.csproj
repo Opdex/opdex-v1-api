@@ -8,8 +8,8 @@
 
     <ItemGroup>
         <PackageReference Include="AspNetCoreRateLimit" Version="4.0.1" />
-        <PackageReference Include="AutoMapper" Version="10.1.1" />
-        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+        <PackageReference Include="AutoMapper" Version="11.0.1" />
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
         <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.1" />
         <PackageReference Include="Azure.Identity" Version="1.5.0" />
         <PackageReference Include="CcAcca.ApplicationInsights.ProblemDetails" Version="1.1.1" />

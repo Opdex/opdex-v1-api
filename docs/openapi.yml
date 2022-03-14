@@ -201,6 +201,19 @@ components:
             status: 500
             extensions:
               traceId: 00-00000000000000000000000000000000-0000000000000000-00
+    UnderMaintenance:
+      description: Under maintenance
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/problemDetails"
+          example:
+            type: https://httpstatuses.com/503
+            title: Service Unavailable
+            status: 503
+            detail: Currently undergoing maintenance
+            extensions:
+              traceId: 00-00000000000000000000000000000000-0000000000000000-00
   schemas:
     problemDetails:
       type: object
@@ -246,7 +259,7 @@ components:
       description: An address on the Cirrus network
       minLength: 30
       maxLength: 42
-      pattern: ^[a-km-zA-HJ-NP-Z1-9]$
+      pattern: ^[a-km-zA-HJ-NP-Z1-9]+$
     crs:
       type: string
       pattern: CRS
@@ -270,10 +283,12 @@ components:
       type: string
       description: Property to sort tokens by
       enum:
+        - CreatedBlock
         - Name
         - Symbol
         - DailyPriceChangePercent
         - PriceUsd
+      default: CreatedBlock
     stakingStatusFilter:
       type: string
       description: Staking status filter
@@ -307,14 +322,17 @@ components:
       type: string
       description: Property to sort liquidity pools by
       enum:
+        - CreatedBlock
         - Liquidity
         - Volume
         - StakingWeight
         - Name
+      default: CreatedBlock
     marketOrderByType:
       type: string
       description: Property to sort markets by
       enum:
+        - CreatedBlock
         - LiquidityUsd
         - StakingUsd
         - StakingWeight
@@ -324,6 +342,7 @@ components:
         - DailyLiquidityUsdChangePercent
         - DailyStakingUsdChangePercent
         - DailyStakingWeightChangePercent
+      default: CreatedBlock
     marketTypeFilter:
       type: string
       description: Market type filter
@@ -416,8 +435,8 @@ components:
         - ChangeMarketPermissionEvent
         - AddLiquidityEvent
         - RemoveLiquidityEvent
-        - ReservesChangeEvent
         - SwapEvent
+        - ReservesChangeEvent
         - StartStakingEvent
         - StopStakingEvent
         - CollectStakingRewardsEvent
@@ -433,8 +452,6 @@ components:
         - CreateVaultCertificateEvent
         - RevokeVaultCertificateEvent
         - RedeemVaultCertificateEvent
-        - SetPendingVaultOwnershipEvent
-        - ClaimPendingVaultOwnershipEvent
         - CreateVaultProposalEvent
         - CompleteVaultProposalEvent
         - VaultProposalPledgeEvent
@@ -2199,6 +2216,11 @@ components:
         rewards:
           $ref: "#/components/schemas/rewardSummary"
           description: Rewards summary
+        liquidityPoolCount:
+          type: integer
+          format: uint32
+          minimum: 0
+          description: Number of liquidity pools in the market
         createdBlock:
           type: integer
           format: uint64
@@ -2890,6 +2912,9 @@ components:
         identifier:
           type: string
           description: Globally unique identifier of the current API instance
+        underMaintenance:
+          type: boolean
+          description: Whether the API is under maintenance
     vaultsResponse:
       type: object
       properties:
@@ -3353,6 +3378,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /blocks/{height}:
     get:
       tags:
@@ -3408,6 +3435,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /indexer:
     get:
       tags:
@@ -3674,6 +3703,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
     post:
       tags:
         - Liquidity Pools
@@ -3742,6 +3773,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /liquidity-pools/{pool}:
     get:
       tags:
@@ -3903,6 +3936,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /liquidity-pools/{pool}/history:
     get:
       tags:
@@ -3927,7 +3962,6 @@ paths:
         - name: startDateTime
           in: query
           description: Start time for which to retrieve snapshots
-          required: true
           schema:
             type: string
             format: date-time
@@ -3935,7 +3969,6 @@ paths:
         - name: endDateTime
           in: query
           description: End time for which to retrieve snapshots
-          required: true
           schema:
             type: string
             format: date-time
@@ -4094,6 +4127,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /liquidity-pools/{pool}/add:
     post:
       tags:
@@ -4207,6 +4242,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /liquidity-pools/{pool}/add/amount-in:
     post:
       tags:
@@ -4267,6 +4304,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /liquidity-pools/{pool}/remove:
     post:
       tags:
@@ -4384,6 +4423,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /liquidity-pools/{pool}/sync:
     post:
       tags:
@@ -4447,6 +4488,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /liquidity-pools/{pool}/skim:
     post:
       tags:
@@ -4526,6 +4569,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /liquidity-pools/{pool}/staking/start:
     post:
       tags:
@@ -4602,6 +4647,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /liquidity-pools/{pool}/staking/stop:
     post:
       tags:
@@ -4681,6 +4728,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /liquidity-pools/{pool}/staking/collect:
     post:
       tags:
@@ -4754,6 +4803,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /markets:
     get:
       tags:
@@ -4867,6 +4918,7 @@ paths:
                         providerDailyUsd: "1205.00639582"
                         marketDailyUsd: "241.00127916"
                         totalDailyUsd: "1446.00767498"
+                      liquidityPoolCount: 8
                       createdBlock: 2988898
                       modifiedBlock: 3042951
                 paging: {}
@@ -4896,6 +4948,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /markets/{market}:
     get:
       tags:
@@ -4982,6 +5036,7 @@ paths:
                     providerDailyUsd: "1205.00639582"
                     marketDailyUsd: "241.00127916"
                     totalDailyUsd: "1446.00767498"
+                  liquidityPoolCount: 8
                   createdBlock: 2988898
                   modifiedBlock: 3042951
           headers:
@@ -5011,6 +5066,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /markets/{market}/history:
     get:
       tags:
@@ -5029,7 +5086,6 @@ paths:
         - name: startDateTime
           in: query
           description: Start time for which to retrieve snapshots
-          required: true
           schema:
             type: string
             format: date-time
@@ -5037,7 +5093,6 @@ paths:
         - name: endDateTime
           in: query
           description: End time for which to retrieve snapshots
-          required: true
           schema:
             type: string
             format: date-time
@@ -5123,6 +5178,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /markets/staking:
     post:
       tags:
@@ -5202,6 +5259,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /markets/standard:
     post:
       tags:
@@ -5307,6 +5366,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /markets/{market}/standard/set-ownership:
     post:
       tags:
@@ -5386,6 +5447,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /markets/{market}/standard/claim-ownership:
     post:
       tags:
@@ -5454,6 +5517,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /markets/{market}/standard/permissions/{address}:
     get:
       tags:
@@ -5515,6 +5580,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
     post:
       tags:
         - Markets
@@ -5606,6 +5673,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /markets/{market}/standard/collect-fees:
     post:
       tags:
@@ -5689,6 +5758,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /markets/{market}/tokens:
     get:
       tags:
@@ -5832,6 +5903,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /markets/{market}/tokens/{token}:
     get:
       tags:
@@ -5905,6 +5978,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /markets/{market}/tokens/{token}/history:
     get:
       tags:
@@ -5936,7 +6011,6 @@ paths:
         - name: startDateTime
           in: query
           description: Start time for which to retrieve snapshots
-          required: true
           schema:
             type: string
             format: date-time
@@ -5944,7 +6018,6 @@ paths:
         - name: endDateTime
           in: query
           description: End time for which to retrieve snapshots
-          required: true
           schema:
             type: string
             format: date-time
@@ -6032,6 +6105,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /markets/{market}/tokens/{token}/swap:
     post:
       tags:
@@ -6142,6 +6217,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /markets/{market}/tokens/{token}/swap/amount-in:
     post:
       tags:
@@ -6209,6 +6286,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /markets/{market}/tokens/{token}/swap/amount-out:
     post:
       tags:
@@ -6276,6 +6355,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /mining-governances:
     get:
       tags:
@@ -6357,6 +6438,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /mining-governances/{governance}:
     get:
       tags:
@@ -6417,6 +6500,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /mining-governances/{governance}/reward-mining-pools:
     post:
       tags:
@@ -6491,6 +6576,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /mining-pools:
     get:
       tags:
@@ -6595,6 +6682,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /mining-pools/{pool}:
     get:
       tags:
@@ -6654,6 +6743,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /mining-pools/{pool}/start:
     post:
       tags:
@@ -6741,6 +6832,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /mining-pools/{pool}/stop:
     post:
       tags:
@@ -6828,6 +6921,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /mining-pools/{pool}/collect:
     post:
       tags:
@@ -6891,6 +6986,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /status:
     get:
       tags:
@@ -6908,6 +7005,7 @@ paths:
               example:
                 commit: 92ec53dc8388bc835eae5a892b29cb9519de7d97
                 identifier: ae89af2a-9774-4956-aa40-507edd38d200
+                underMaintenance: false
         429:
           $ref: "#/components/responses/TooManyRequests"
         500:
@@ -7043,6 +7141,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
     post:
       tags:
         - Tokens
@@ -7109,6 +7209,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /tokens/{token}:
     get:
       tags:
@@ -7174,6 +7276,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /tokens/{token}/history:
     get:
       tags:
@@ -7198,7 +7302,6 @@ paths:
         - name: startDateTime
           in: query
           description: Start time for which to retrieve snapshots
-          required: true
           schema:
             type: string
             format: date-time
@@ -7206,7 +7309,6 @@ paths:
         - name: endDateTime
           in: query
           description: End time for which to retrieve snapshots
-          required: true
           schema:
             type: string
             format: date-time
@@ -7294,6 +7396,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /tokens/{token}/approve:
     post:
       tags:
@@ -7380,6 +7484,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /tokens/{token}/distribute:
     post:
       tags:
@@ -7451,6 +7557,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /transactions:
     get:
       tags:
@@ -7609,6 +7717,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
     post:
       tags:
         - Transactions
@@ -7658,6 +7768,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /transactions/{hash}:
     get:
       tags:
@@ -7737,6 +7849,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /transactions/replay-quote:
     post:
       tags:
@@ -7828,6 +7942,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /vaults:
     get:
       tags:
@@ -7908,6 +8024,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /vaults/{vault}:
     get:
       tags:
@@ -7968,6 +8086,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /vaults/{vault}/certificates:
     get:
       tags:
@@ -8066,6 +8186,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /vaults/{vault}/certificates/redeem:
     post:
       tags:
@@ -8132,6 +8254,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /vaults/{vault}/pledges:
     get:
       tags:
@@ -8240,6 +8364,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /vaults/{vault}/proposals:
     get:
       tags:
@@ -8363,6 +8489,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /vaults/{vault}/proposals/create-certificate:
     post:
       tags:
@@ -8454,6 +8582,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /vaults/{vault}/proposals/revoke-certificate:
     post:
       tags:
@@ -8542,6 +8672,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /vaults/{vault}/proposals/minimum-pledge:
     post:
       tags:
@@ -8630,6 +8762,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /vaults/{vault}/proposals/minimum-vote:
     post:
       tags:
@@ -8718,6 +8852,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /vaults/{vault}/proposals/{proposalId}:
     get:
       tags:
@@ -8793,6 +8929,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /vaults/{vault}/proposals/{proposalId}/complete:
     post:
       tags:
@@ -8870,6 +9008,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /vaults/{vault}/proposals/{proposalId}/pledges:
     post:
       tags:
@@ -8962,6 +9102,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /vaults/{vault}/proposals/{proposalId}/pledges/withdraw:
     post:
       tags:
@@ -9050,6 +9192,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /vaults/{vault}/proposals/{proposalId}/pledges/{pledger}:
     get:
       tags:
@@ -9133,6 +9277,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /vaults/{vault}/proposals/{proposalId}/votes:
     post:
       tags:
@@ -9222,6 +9368,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /vaults/{vault}/proposals/{proposalId}/votes/withdraw:
     post:
       tags:
@@ -9310,6 +9458,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /vaults/{vault}/proposals/{proposalId}/votes/{voter}:
     get:
       tags:
@@ -9394,6 +9544,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /vaults/{vault}/votes:
     get:
       tags:
@@ -9504,6 +9656,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /wallets/{address}/allowance/{token}/approved/{spender}:
     get:
       tags:
@@ -9572,6 +9726,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /wallets/{address}/balance:
     get:
       tags:
@@ -9692,6 +9848,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /wallets/{address}/balance/{token}:
     get:
       tags:
@@ -9754,6 +9912,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
     post:
       tags:
         - Wallets
@@ -9817,6 +9977,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /wallets/{address}/mining:
     get:
       tags:
@@ -9915,6 +10077,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /wallets/{address}/mining/{pool}:
     get:
       tags:
@@ -9989,6 +10153,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /wallets/{address}/staking:
     get:
       tags:
@@ -10080,6 +10246,8 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
   /wallets/{address}/staking/{pool}:
     get:
       tags:
@@ -10154,3 +10322,5 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"

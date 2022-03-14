@@ -68,7 +68,7 @@ public class MarketFilterParametersValidatorTests
     }
 
     [Theory]
-    [InlineData(MarketOrderByType.Default)]
+    [InlineData(MarketOrderByType.CreatedBlock)]
     [InlineData(MarketOrderByType.LiquidityUsd)]
     [InlineData(MarketOrderByType.StakingUsd)]
     [InlineData(MarketOrderByType.StakingWeight)]

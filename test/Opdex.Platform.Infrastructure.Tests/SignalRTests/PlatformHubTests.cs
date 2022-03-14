@@ -188,7 +188,6 @@ public class PlatformHubTests
         // Arrange
         var unixTime10MinsFromNow = DateTimeOffset.UtcNow.AddMinutes(10).ToUnixTimeSeconds();
         var previousConnectionId = "QU5FWENSWVBURURDT05ORUNUSU9OSUQ";
-        var connectionId = "GO73rdOHET7W1FAuWp96Tw205af2011";
         var uid = "JztkuBy8zCCHSoPBmQ1D9YEUnNGYmRGE8j6EshsLRiSIF2aYLQiemjKsfHtqBFEJhxLjwtGRrzS3CZk6MDxa0A";
         var stratisId = $"sid:v1-dev-api.opdex.com/v1/auth/callback?uid={uid}&exp={unixTime10MinsFromNow}";
 

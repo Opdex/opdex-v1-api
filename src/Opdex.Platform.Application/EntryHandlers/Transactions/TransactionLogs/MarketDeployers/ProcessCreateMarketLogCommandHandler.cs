@@ -16,6 +16,7 @@ using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
+using System.Collections.Generic;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MarketDeployers;
 
@@ -48,11 +49,18 @@ public class ProcessCreateMarketLogCommandHandler : IRequestHandler<ProcessCreat
             Token stakingToken = null;
             if (!request.Log.StakingToken.IsZero)
             {
-                var stakingAttributes = new[] { TokenAttributeType.Staking };
-                var tokenId = await _mediator.Send(new CreateTokenCommand(request.Log.StakingToken, stakingAttributes, request.BlockHeight));
+                var attributes = new[] { TokenAttributeType.Staking, TokenAttributeType.NonProvisional };
+                var tokenId = await _mediator.Send(new CreateTokenCommand(request.Log.StakingToken, attributes, request.BlockHeight));
                 if (tokenId == 0)
                 {
-                    _logger.LogError("Unable to create market staking token");
+                    using (_logger.BeginScope(new Dictionary<string, object>
+                           {
+                               ["Address"] = request.Log.StakingToken
+                           }))
+                    {
+                        _logger.LogError("Unable to create market staking token");
+                    }
+
                     return false;
                 }
 

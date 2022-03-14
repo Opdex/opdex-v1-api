@@ -138,7 +138,7 @@ public class ProcessOwnershipTransferredLogCommandHandlerTests
         var token = new Token(1, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "Bitcoin", "BTC", 8, 100_000_000, 10000000, 2, 3);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(token);
-        var tokenWrapped = new TokenWrapped(1, token.Id, "Pb0mc7Nz9osaj4kc77HiBtV8L6DVGVV8kRb", ExternalChainType.Ethereum, "0x514910771af9ca656af840dff83e8264ecf986ca", true, 342, command.BlockHeight + 50);
+        var tokenWrapped = new TokenWrapped(1, token.Id, "Pb0mc7Nz9osaj4kc77HiBtV8L6DVGVV8kRb", ExternalChainType.Ethereum, "0x514910771af9ca656af840dff83e8264ecf986ca", true, true, 342, command.BlockHeight + 50);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenWrappedByTokenIdQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(tokenWrapped);
 
@@ -164,12 +164,12 @@ public class ProcessOwnershipTransferredLogCommandHandlerTests
         var token = new Token(1, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "Bitcoin", "BTC", 8, 100_000_000, 10000000, 2, 3);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(token);
-        var tokenWrapped = new TokenWrapped(1, token.Id, "Pb0mc7Nz9osaj4kc77HiBtV8L6DVGVV8kRb", ExternalChainType.Ethereum, "0x514910771af9ca656af840dff83e8264ecf986ca", true, 342, command.BlockHeight - 70);
+        var tokenWrapped = new TokenWrapped(1, token.Id, "Pb0mc7Nz9osaj4kc77HiBtV8L6DVGVV8kRb", ExternalChainType.Ethereum, "0x514910771af9ca656af840dff83e8264ecf986ca", true, true, 342, command.BlockHeight - 70);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenWrappedByTokenIdQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(tokenWrapped);
 
         // Act
-        var response = await _handler.Handle(command, CancellationToken.None);
+        await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         _mediatorMock.Verify(callTo => callTo.Send(

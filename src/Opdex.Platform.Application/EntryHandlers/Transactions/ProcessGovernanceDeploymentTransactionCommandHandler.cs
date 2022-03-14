@@ -10,6 +10,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
@@ -32,39 +33,28 @@ public class ProcessGovernanceDeploymentTransactionCommandHandler : IRequestHand
     {
         try
         {
-            var transaction = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), CancellationToken.None) ??
+            var transaction = await _mediator.Send(new RetrieveTransactionByHashQuery(request.TxHash, findOrThrow: false), CancellationToken.None) ??
                               await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), CancellationToken.None);
 
             if (transaction == null || transaction.Id > 0) return Unit.Value;
 
-            // Hosted environments would not be null, local environments would be null
-            var block = await _mediator.Send(new RetrieveBlockByHeightQuery(transaction.BlockHeight, findOrThrow: false));
-            DateTime blockTime;
+            // Deployments can have block gaps between transactions. Create all blocks in from our best block to the current block
+            // that the Core deployment transaction hash is within.
+            var bestBlock = await _mediator.Send(new GetBestBlockReceiptQuery(), CancellationToken.None);
+            var txHashBlockHeight = await _mediator.Send(new RetrieveCirrusBlockHashByHeightQuery(transaction.BlockHeight), CancellationToken.None);
+            var hashBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(txHashBlockHeight, findOrThrow: true), CancellationToken.None);
 
-            if (block == null)
+            while (bestBlock.Height <= hashBlock.Height && bestBlock.NextBlockHash.HasValue)
             {
-                // Get transaction block hash
-                var blockHash = await _mediator.Send(new RetrieveCirrusBlockHashByHeightQuery(transaction.BlockHeight));
-
-                // Get block by hash
-                var blockReceiptDto = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(blockHash, findOrThrow: true));
-
-                blockTime = blockReceiptDto.MedianTime;
-
-                // Make block
-                await _mediator.Send(new MakeBlockCommand(blockReceiptDto.Height, blockReceiptDto.Hash,
-                                                          blockReceiptDto.Time, blockReceiptDto.MedianTime));
-            }
-            else
-            {
-                blockTime = block.MedianTime;
+                await _mediator.Send(new MakeBlockCommand(bestBlock.Height, bestBlock.Hash, bestBlock.Time, bestBlock.MedianTime), CancellationToken.None);
+                bestBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(bestBlock.NextBlockHash.Value, findOrThrow: true), CancellationToken.None);
             }
 
-            await _mediator.Send(new CreateCrsTokenSnapshotsCommand(blockTime, transaction.BlockHeight), CancellationToken.None);
+            await _mediator.Send(new CreateCrsTokenSnapshotsCommand(hashBlock.MedianTime, transaction.BlockHeight), CancellationToken.None);
 
             // Insert Staking Token
-            var stakingAttributes = new[] { TokenAttributeType.Staking };
-            var stakingTokenId = await _mediator.Send(new CreateTokenCommand(transaction.NewContractAddress, stakingAttributes, transaction.BlockHeight));
+            var attributes = new[] { TokenAttributeType.Staking, TokenAttributeType.NonProvisional };
+            var stakingTokenId = await _mediator.Send(new CreateTokenCommand(transaction.NewContractAddress, attributes, transaction.BlockHeight));
 
             // Get token summary
             var stakingTokenSummary = await _mediator.Send(new RetrieveStakingTokenContractSummaryQuery(transaction.NewContractAddress,

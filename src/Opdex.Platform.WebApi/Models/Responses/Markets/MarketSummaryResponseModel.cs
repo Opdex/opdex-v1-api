@@ -33,6 +33,11 @@ public class MarketSummaryResponseModel
     public RewardsResponseModel Rewards { get; set; }
 
     /// <summary>
+    /// Number of liquidity pools in the market
+    /// </summary>
+    public uint LiquidityPoolCount { get; set; }
+
+    /// <summary>
     /// Block number at which the entity state was created.
     /// </summary>
     /// <example>2500000</example>

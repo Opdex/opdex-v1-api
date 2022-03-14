@@ -40,4 +40,10 @@ public static class CirrusUriHelper
     {
         public const string VerifyMessage = "Wallet/verifymessage";
     }
+
+
+    public static class SupportedContracts
+    {
+        public const string List = "SupportedContracts/list?networkType={0}";
+    }
 }

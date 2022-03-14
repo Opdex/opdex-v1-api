@@ -97,6 +97,7 @@ public class Startup
             });
             options.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
             options.Map<IndexingAlreadyRunningException>(e => new StatusCodeProblemDetails(StatusCodes.Status503ServiceUnavailable) { Detail = e.Message });
+            options.Map<MaintenanceLockException>(_ => new StatusCodeProblemDetails(StatusCodes.Status503ServiceUnavailable) { Detail = "Currently undergoing maintenance" });
             options.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
             options.IncludeExceptionDetails = (context, _) =>
             {
@@ -135,7 +136,6 @@ public class Startup
 
         // Automapper
         services.AddTransient<TransactionErrorMappingAction>();
-        services.AddTransient<TrustedBridgeMappingAction>();
         services.AddAutoMapper(mapperConfig =>
         {
             mapperConfig.AddProfile<PlatformApplicationMapperProfile>();
@@ -185,11 +185,11 @@ public class Startup
         var authConfig = Configuration.GetSection(nameof(AuthConfiguration));
         services.SetupConfiguration<AuthConfiguration>(authConfig);
 
-        // Interflux Configurations
-        var interfluxConfig = Configuration.GetSection(nameof(InterfluxConfiguration));
-        services.SetupConfiguration<InterfluxConfiguration>(interfluxConfig);
-
         services.Configure<IndexerConfiguration>(Configuration.GetSection(nameof(IndexerConfiguration)));
+
+        // Maintenance Configurations
+        services.Configure<MaintenanceConfiguration>(Configuration.GetSection(nameof(MaintenanceConfiguration)));
+        services.AddScoped<MaintenanceLockFilter>();
 
         // Register project module services
         services.AddPlatformApplicationServices();

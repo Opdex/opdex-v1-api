@@ -8,6 +8,7 @@ using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,27 +38,41 @@ public class CreateTokenCommandHandler : IRequestHandler<CreateTokenCommand, ulo
         }
 
         var summary = await _mediator.Send(new CallCirrusGetStandardTokenContractSummaryQuery(request.Token,
-            request.BlockHeight,
-            includeBaseProperties: true,
-            includeTotalSupply: true));
+                                                                                              request.BlockHeight,
+                                                                                              includeBaseProperties: true,
+                                                                                              includeTotalSupply: true));
 
         token = new Token(request.Token,
-            summary.Name,
-            summary.Symbol,
-            (int)summary.Decimals.GetValueOrDefault(),
-            summary.Sats.GetValueOrDefault(),
-            summary.TotalSupply.GetValueOrDefault(),
-            request.BlockHeight);
+                          summary.Name,
+                          summary.Symbol,
+                          (int)summary.Decimals.GetValueOrDefault(),
+                          summary.Sats.GetValueOrDefault(),
+                          summary.TotalSupply.GetValueOrDefault(),
+                          request.BlockHeight);
 
-        tokenId = await _mediator.Send(new MakeTokenCommand(token, request.BlockHeight));
-        if (tokenId == 0) _logger.LogError("Something went wrong indexing the token");
+        tokenId = await _mediator.Send(new MakeTokenCommand(token, request.BlockHeight), CancellationToken.None);
+
+        if (tokenId == 0)
+        {
+            using (_logger.BeginScope(new Dictionary<string, object>
+                   {
+                       ["Address"] = request.Token
+                   }))
+            {
+                _logger.LogError("Something went wrong indexing the token");
+            }
+
+            return tokenId;
+        }
 
         var interfluxSummary = await _mediator.Send(new CallCirrusGetInterfluxTokenContractSummaryQuery(request.Token, request.BlockHeight), CancellationToken.None);
         if (interfluxSummary is not null)
         {
             attributes = request.Attributes.Append(TokenAttributeType.Interflux);
 
-            var tokenWrapped = new TokenWrapped(tokenId, interfluxSummary.Owner, interfluxSummary.NativeChain, interfluxSummary.NativeAddress, request.BlockHeight);
+            var isTrusted = await _mediator.Send(new CallCirrusTrustedWrappedTokenQuery(token.Address), CancellationToken.None);
+
+            var tokenWrapped = new TokenWrapped(tokenId, interfluxSummary.Owner, interfluxSummary.NativeChain, interfluxSummary.NativeAddress, isTrusted, request.BlockHeight);
             var tokenWrappedId = await _mediator.Send(new MakeTokenWrappedCommand(tokenWrapped), CancellationToken.None);
             if (tokenWrappedId == 0) _logger.LogError("Something went wrong indexing the wrapped token mapping");
         }
@@ -67,6 +82,7 @@ public class CreateTokenCommandHandler : IRequestHandler<CreateTokenCommand, ulo
             var tokenAttribute = new TokenAttribute(tokenId, attribute);
             return _mediator.Send(new MakeTokenAttributeCommand(tokenAttribute), CancellationToken.None);
         }));
+
         if (attributesPersisted.Any(a => !a)) _logger.LogError("Something went wrong indexing the token attributes");
 
         return tokenId;

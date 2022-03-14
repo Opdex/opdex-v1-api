@@ -10,6 +10,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults.Certificates;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Caching;
+using Opdex.Platform.WebApi.Middleware;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Vaults;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
@@ -23,6 +24,7 @@ namespace Opdex.Platform.WebApi.Controllers;
 [ApiController]
 [Route("v{version:apiVersion}/vaults")]
 [ApiVersion("1")]
+[ServiceFilter(typeof(MaintenanceLockFilter))]
 public class VaultsController : ControllerBase
 {
     private readonly IApplicationContext _context;

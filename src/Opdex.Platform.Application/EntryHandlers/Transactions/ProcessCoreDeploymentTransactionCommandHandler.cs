@@ -8,7 +8,6 @@ using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Deployers;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 
@@ -29,23 +28,34 @@ public class ProcessCoreDeploymentTransactionCommandHandler : IRequestHandler<Pr
     {
         try
         {
-            var transaction = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), CancellationToken.None);
+            var transaction = await _mediator.Send(new RetrieveTransactionByHashQuery(request.TxHash, findOrThrow: false), CancellationToken.None) ??
+                              await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), CancellationToken.None);
 
             if (transaction is null || transaction.Id > 0) return Unit.Value;
 
-            // Deployments can have block gaps between transactions. Create all blocks in from our best block to the current block
-            // that the Core deployment transaction hash is within.
-            var bestBlock = await _mediator.Send(new GetBestBlockReceiptQuery(), CancellationToken.None);
-            var txHashBlockHeight = await _mediator.Send(new RetrieveCirrusBlockHashByHeightQuery(transaction.BlockHeight), CancellationToken.None);
-            var hashBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(txHashBlockHeight, findOrThrow: true), CancellationToken.None);
+            var block = await _mediator.Send(new RetrieveBlockByHeightQuery(transaction.BlockHeight, findOrThrow: false));
+            DateTime blockTime;
 
-            while (bestBlock.Height <= hashBlock.Height && bestBlock.NextBlockHash.HasValue)
+            if (block == null)
             {
-                await _mediator.Send(new MakeBlockCommand(bestBlock.Height, bestBlock.Hash, bestBlock.Time, bestBlock.MedianTime), CancellationToken.None);
-                bestBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(bestBlock.NextBlockHash.Value, findOrThrow: true), CancellationToken.None);
+                // Get transaction block hash
+                var blockHash = await _mediator.Send(new RetrieveCirrusBlockHashByHeightQuery(transaction.BlockHeight));
+
+                // Get block by hash
+                var blockReceiptDto = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(blockHash, findOrThrow: true));
+
+                blockTime = blockReceiptDto.MedianTime;
+
+                // Make block
+                await _mediator.Send(new MakeBlockCommand(blockReceiptDto.Height, blockReceiptDto.Hash,
+                                                          blockReceiptDto.Time, blockReceiptDto.MedianTime));
+            }
+            else
+            {
+                blockTime = block.MedianTime;
             }
 
-            await _mediator.Send(new CreateCrsTokenSnapshotsCommand(hashBlock.MedianTime, transaction.BlockHeight), CancellationToken.None);
+            await _mediator.Send(new CreateCrsTokenSnapshotsCommand(blockTime, transaction.BlockHeight), CancellationToken.None);
             await _mediator.Send(new CreateDeployerCommand(transaction.NewContractAddress, transaction.From, transaction.BlockHeight), CancellationToken.None);
             await _mediator.Send(new MakeTransactionCommand(transaction), CancellationToken.None);
         }

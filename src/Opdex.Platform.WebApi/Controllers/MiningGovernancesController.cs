@@ -6,6 +6,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MiningGovernances;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Caching;
+using Opdex.Platform.WebApi.Middleware;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.MiningGovernances;
 using Opdex.Platform.WebApi.Models.Responses.MiningGovernances;
@@ -19,6 +20,7 @@ namespace Opdex.Platform.WebApi.Controllers;
 [ApiController]
 [Route("v{version:apiVersion}/mining-governances")]
 [ApiVersion("1")]
+[ServiceFilter(typeof(MaintenanceLockFilter))]
 public class MiningGovernancesController : ControllerBase
 {
     private readonly IMediator _mediator;

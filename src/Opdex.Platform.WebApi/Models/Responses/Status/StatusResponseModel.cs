@@ -17,4 +17,9 @@ public class StatusResponseModel
     /// </summary>
     /// <example>ae89af2a-9774-4956-aa40-507edd38d200</example>
     public string Identifier { get; set; }
+
+    /// <summary>
+    /// Whether the API is under maintenance
+    /// </summary>
+    public bool UnderMaintenance { get; set; }
 }
