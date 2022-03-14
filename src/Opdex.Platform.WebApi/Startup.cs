@@ -78,7 +78,11 @@ public class Startup
         services.AddProblemDetails(options =>
         {
             options.ValidationProblemStatusCode = 400;
-            options.ShouldLogUnhandledException = (_, _, _) => false;
+            options.ShouldLogUnhandledException = (httpContext, exception, _) =>
+            {
+                httpContext.Items.Add("UnhandledException", exception);
+                return false;
+            };
             options.Map<InvalidDataException>(e => ProblemDetailsTemplates.CreateValidationProblemDetails(e.PropertyName, e.Message));
             options.Map<AlreadyIndexedException>(e => new StatusCodeProblemDetails(StatusCodes.Status400BadRequest) { Detail = e.Message });
             options.Map<NotAllowedException>(e => new StatusCodeProblemDetails(StatusCodes.Status403Forbidden) { Detail = e.Message });
@@ -94,7 +98,7 @@ public class Startup
             options.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
             options.Map<IndexingAlreadyRunningException>(e => new StatusCodeProblemDetails(StatusCodes.Status503ServiceUnavailable) { Detail = e.Message });
             options.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
-            options.IncludeExceptionDetails = (context, ex) =>
+            options.IncludeExceptionDetails = (context, _) =>
             {
                 var environment = context.RequestServices.GetRequiredService<IHostEnvironment>();
                 return environment.IsDevelopment();
@@ -272,7 +276,16 @@ public class Startup
         builder.Use(next => new IgnoreRequestPathsTelemetryProcessor(next));
         builder.Build();
 
-        app.UseSerilogRequestLogging();
+        app.UseSerilogRequestLogging(options =>
+        {
+            options.EnrichDiagnosticContext += (diagnosticContext, httpContext) =>
+            {
+                if (httpContext.Items.TryGetValue("UnhandledException", out var exception))
+                {
+                    diagnosticContext.SetException((Exception)exception);
+                }
+            };
+        });
         app.UseProblemDetails();
         app.UseMiddleware<RedirectToResourceMiddleware>();
         app.UseCors(options => options
