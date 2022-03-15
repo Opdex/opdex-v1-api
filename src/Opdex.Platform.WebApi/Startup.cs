@@ -78,9 +78,11 @@ public class Startup
         services.AddProblemDetails(options =>
         {
             options.ValidationProblemStatusCode = 400;
-            // Serilog.AspNetCore.RequestLoggingMiddleware does this better although exception is lost
-            // See https://github.com/serilog/serilog-aspnetcore/issues/270
-            options.ShouldLogUnhandledException = (_, _, problem) => problem.Status == 500;
+            options.ShouldLogUnhandledException = (httpContext, exception, _) =>
+            {
+                httpContext.Items.Add("UnhandledException", exception);
+                return false;
+            };
             options.Map<InvalidDataException>(e => ProblemDetailsTemplates.CreateValidationProblemDetails(e.PropertyName, e.Message));
             options.Map<AlreadyIndexedException>(e => new StatusCodeProblemDetails(StatusCodes.Status400BadRequest) { Detail = e.Message });
             options.Map<NotAllowedException>(e => new StatusCodeProblemDetails(StatusCodes.Status403Forbidden) { Detail = e.Message });
@@ -274,7 +276,16 @@ public class Startup
         builder.Use(next => new IgnoreRequestPathsTelemetryProcessor(next));
         builder.Build();
 
-        app.UseSerilogRequestLogging();
+        app.UseSerilogRequestLogging(options =>
+        {
+            options.EnrichDiagnosticContext += (diagnosticContext, httpContext) =>
+            {
+                if (httpContext.Items.TryGetValue("UnhandledException", out var exception))
+                {
+                    diagnosticContext.SetException((Exception)exception);
+                }
+            };
+        });
         app.UseProblemDetails();
         app.UseMiddleware<RedirectToResourceMiddleware>();
         app.UseCors(options => options
