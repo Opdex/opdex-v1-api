@@ -49,6 +49,7 @@ using Microsoft.Extensions.FileProviders;
 using System.Reflection;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.FeatureManagement;
+using System.Net.Http;
 
 namespace Opdex.Platform.WebApi;
 
@@ -199,17 +200,38 @@ public class Startup
         services.AddScoped<IApplicationContext, ApplicationContext>();
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
+            .AddJwtBearer(async options =>
             {
-                options.TokenValidationParameters = new TokenValidationParameters
+                if (Configuration.GetValue<bool?>("FeatureManagement:AuthServer") ?? false)
                 {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateIssuerSigningKey = true,
-                    ValidateLifetime = true,
-                    // temp solution, OAuth will prefer assymmetric key
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authConfig.Get<AuthConfiguration>().Opdex.SigningKey))
-                };
+                    var issuer = Configuration["AuthConfiguration:Issuer"];
+
+                    using var httpClient = new HttpClient();
+                    var jwksResponse = await httpClient.GetAsync($"https://{issuer}/v1/auth/jwks");
+                    var jwks = await jwksResponse.Content.ReadAsStringAsync();
+
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = issuer,
+                        ValidateAudience = false,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKeys = new JsonWebKeySet(jwks).GetSigningKeys(),
+                        ValidateLifetime = true,
+                    };
+                }
+                else
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateIssuerSigningKey = true,
+                        ValidateLifetime = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authConfig.Get<AuthConfiguration>().Opdex.SigningKey))
+                    };
+                }
+
                 options.Events = new JwtBearerEvents
                 {
                     OnMessageReceived = context =>
@@ -252,7 +274,7 @@ public class Startup
         });
 
         services.AddSingleton<IUserIdProvider, WalletAddressUserIdProvider>();
-        services.AddSingleton<IAuthorizationHandler, AdminOnlyHandler>();
+        services.AddScoped<IAuthorizationHandler, AdminOnlyHandler>();
 
         services.AddTransient<ITwoWayEncryptionProvider, AesCbcProvider>();
     }
