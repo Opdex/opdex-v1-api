@@ -12,8 +12,6 @@ info:
 servers:
   - url: https://v1-test-api.opdex.com/v1
 tags:
-  - name: Authentication
-    description: Authenticate with the API
   - name: Blocks
     description: Retrieve indexed block data
   - name: Indexer
@@ -1437,18 +1435,6 @@ components:
           format: int32
           minimum: 0
           description: Index to sort event order
-    stratisSignatureAuthRequest:
-      type: object
-      required:
-        - signature
-        - publicKey
-      properties:
-        signature:
-          type: string
-          description: Signed Stratis ID
-        publicKey:
-          $ref: "#/components/schemas/address"
-          description: Address of the message signer
     quoteCreateLiquidityPoolRequest:
       type: object
       description: Request to retrieve a create liquidity pool call quote
@@ -3165,149 +3151,6 @@ components:
           minimum: 1
           description: Block number at which the entity state was last modified
 paths:
-  /auth:
-    get:
-      tags:
-        - Authentication
-      summary: Get Stratis Id
-      description: >
-        Returns a new Stratis Id to sign and authenticate.
-        See the [specification](https://github.com/Opdex/SSAS) for further detail.
-      operationId: getStratisId
-      responses:
-        200:
-          description: Stratis Id was created
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: sid:test-app.opdex.com/v1/auth?uid=nd0ZT7yrMpLPa207v1uGk0uu9NNcKILgn0HLJXpLQxGKuI9RKnugLdZPz_05a2tX-rCuN0tHM6z3_Qs1yi0Lyg&exp=1643082000
-        429:
-          $ref: "#/components/responses/TooManyRequests"
-        500:
-          $ref: "#/components/responses/InternalServerError"
-    post:
-      tags:
-        - Authentication
-      summary: Stratis Signature Auth
-      description: >
-        Responds to a request from a Stratis Signature Auth signer directly.
-        See the [specification](https://github.com/Opdex/SSAS) for further detail.
-      operationId: authenticate
-      parameters:
-        - name: uid
-          in: query
-          description: Unique identifier for the Stratis ID
-          required: true
-          schema:
-            type: string
-          example: Lf5t5J-oAn3CZ9YY27JnK5XtpbjIOD3BxyvHhd80AQ4fsJ7o0J8i5uSjzHZ9jeS3
-        - name: exp
-          in: query
-          description: Unix timestamp indicating when the signature expires
-          required: true
-          schema:
-            type: integer
-            format: int64
-            minimum: 0
-            maximum: 273402300799
-          example: 1641220000
-      requestBody:
-        description: The Stratis Signature Auth body
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/stratisSignatureAuthRequest"
-            example:
-              signature: H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc=
-              publicKey: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
-      responses:
-        200:
-          description: Signature was validated successfully
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ3YWxsZXQiOiJQUFFkZVhkaldEQnpWTFVqZ1d3aTRtRlA0WTFtaHVOY1J1IiwibmJmIjoxNjQzMDgxNzM5LCJleHAiOjE2NDMxNjgxMzcsImlhdCI6MTY0MzA4MTczN30.xjiwjPxzgYbQlP6ON2-Mg3S7m-dWww41FISVXhOGEFY
-        400:
-          description: The request is not valid
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/validationProblemDetails"
-              example:
-                type: https://httpstatuses.com/400
-                title: One or more validation errors occurred.
-                status: 400
-                errors:
-                  exp:
-                    - Expiration date must be a unix timestamp.
-                extensions:
-                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
-        429:
-          $ref: "#/components/responses/TooManyRequests"
-        500:
-          $ref: "#/components/responses/InternalServerError"
-  /auth/callback:
-    post:
-      tags:
-        - Authentication
-      summary: Stratis Signature Auth Callback
-      description: >
-        Responds to a request from a Stratis Signature Auth signer's wallet.
-        See the [specification](https://github.com/Opdex/SSAS) for further detail.
-      operationId: authenticate callback
-      parameters:
-        - name: uid
-          in: query
-          description: Unique identifier for the Stratis ID
-          required: true
-          schema:
-            type: string
-          example: Lf5t5J-oAn3CZ9YY27JnK5XtpbjIOD3BxyvHhd80AQ4fsJ7o0J8i5uSjzHZ9jeS3
-        - name: exp
-          in: query
-          description: Unix timestamp indicating when the signature expires
-          required: true
-          schema:
-            type: integer
-            format: int64
-            minimum: 0
-            maximum: 273402300799
-          example: 1641220000
-      requestBody:
-        description: The Stratis Signature Auth body
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/stratisSignatureAuthRequest"
-            example:
-              signature: H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc=
-              publicKey: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
-      responses:
-        204:
-          description: Signature was validated successfully
-        400:
-          description: The request is not valid
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/validationProblemDetails"
-              example:
-                type: https://httpstatuses.com/400
-                title: One or more validation errors occurred.
-                status: 400
-                errors:
-                  exp:
-                    - Expiration date must be a unix timestamp.
-                extensions:
-                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
-        429:
-          $ref: "#/components/responses/TooManyRequests"
-        500:
-          $ref: "#/components/responses/InternalServerError"
   /blocks:
     get:
       tags:

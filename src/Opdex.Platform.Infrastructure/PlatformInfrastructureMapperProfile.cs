@@ -45,10 +45,6 @@ public class PlatformInfrastructureMapperProfile : Profile
 {
     public PlatformInfrastructureMapperProfile()
     {
-        CreateMap<AuthSuccessEntity, AuthSuccess>()
-            .ConstructUsing(src => new AuthSuccess(src.ConnectionId, src.Signer, src.Expiry))
-            .ValidateMemberList(MemberList.None);
-
         CreateMap<AdminEntity, Admin>()
             .ConstructUsing(src => new Admin(src.Id, src.Address))
             .ValidateMemberList(MemberList.None);
@@ -346,12 +342,6 @@ public class PlatformInfrastructureMapperProfile : Profile
                     _ => null
                 };
             });
-
-        CreateMap<AuthSuccess, AuthSuccessEntity>()
-            .ForMember(dest => dest.ConnectionId, opt => opt.MapFrom(src => src.ConnectionId))
-            .ForMember(dest => dest.Signer, opt => opt.MapFrom(src => src.Signer))
-            .ForMember(dest => dest.Expiry, opt => opt.MapFrom(src => src.Expiry))
-            .ValidateMemberList(MemberList.None);
 
         CreateMap<Admin, AdminEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))

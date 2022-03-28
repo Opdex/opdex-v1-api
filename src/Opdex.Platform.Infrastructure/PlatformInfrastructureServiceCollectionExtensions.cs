@@ -117,7 +117,6 @@ using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Attributes;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Auth;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinGeckoApi.Queries;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Auth;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens.Wrapped;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Auth;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Vaults;
@@ -175,9 +174,6 @@ public static class PlatformInfrastructureServiceCollectionExtensions
 
     private static void AddDataCommands(IServiceCollection services)
     {
-        // Auth
-        services.AddTransient<IRequestHandler<PersistAuthSuccessCommand, bool>, PersistAuthSuccessCommandHandler>();
-
         // Markets
         services.AddTransient<IRequestHandler<PersistMarketCommand, ulong>, PersistMarketCommandHandler>();
         services.AddTransient<IRequestHandler<PersistMarketPermissionCommand, ulong>, PersistMarketPermissionCommandHandler>();
@@ -238,9 +234,6 @@ public static class PlatformInfrastructureServiceCollectionExtensions
     private static void AddDataQueries(IServiceCollection services)
     {
         services.AddScoped<IDbContext, DbContext>();
-
-        // Auth
-        services.AddTransient<IRequestHandler<SelectAuthSuccessByConnectionIdQuery, AuthSuccess>, SelectAuthSuccessByConnectionIdQueryHandler>();
 
         // Admins
         services.AddTransient<IRequestHandler<SelectAdminByAddressQuery, Admin>, SelectAdminByAddressQueryHandler>();
@@ -444,7 +437,6 @@ public static class PlatformInfrastructureServiceCollectionExtensions
 
     private static void AddSignalRServices(IServiceCollection services)
     {
-        services.AddTransient<IRequestHandler<NotifyUserOfSuccessfulAuthenticationCommand, Unit>, NotifyUserOfSuccessfulAuthenticationCommandHandler>();
         services.AddTransient<IRequestHandler<NotifyUserOfBroadcastTransactionCommand, Unit>, NotifyUserOfBroadcastTransactionCommandHandler>();
         services.AddTransient<IRequestHandler<NotifyUserOfMinedTransactionCommand, Unit>, NotifyUserOfMinedTransactionCommandHandler>();
     }
