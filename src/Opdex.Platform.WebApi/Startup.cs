@@ -49,6 +49,7 @@ using Microsoft.Extensions.FileProviders;
 using System.Reflection;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.FeatureManagement;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 
 namespace Opdex.Platform.WebApi;
@@ -198,6 +199,9 @@ public class Startup
                                                    cmcConfig.Get<CoinMarketCapConfiguration>());
 
         services.AddScoped<IApplicationContext, ApplicationContext>();
+
+        // Fixes missing claims such as "sub" - https://leastprivilege.com/2017/11/15/missing-claims-in-the-asp-net-core-2-openid-connect-handler/
+        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(async options =>
