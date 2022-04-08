@@ -69,7 +69,7 @@ public class PlatformHub : Hub<IPlatformClient>
             SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
         };
 
-        tokenDescriptor.Subject.AddClaim(new Claim("wallet", authSuccess.Signer.ToString()));
+        tokenDescriptor.Subject.AddClaim(new Claim(JwtRegisteredClaimNames.Sub, authSuccess.Signer.ToString()));
         var admin = await _mediator.Send(new SelectAdminByAddressQuery(authSuccess.Signer, findOrThrow: false), CancellationToken.None);
         if (admin is not null) tokenDescriptor.Subject.AddClaim(new Claim("admin", "true"));
 
