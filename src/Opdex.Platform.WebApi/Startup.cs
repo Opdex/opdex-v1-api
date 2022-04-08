@@ -207,7 +207,7 @@ public class Startup
                     var issuer = Configuration["AuthConfiguration:Issuer"];
 
                     using var httpClient = new HttpClient();
-                    var jwksResponse = await httpClient.GetAsync($"https://{issuer}/v1/auth/jwks");
+                    var jwksResponse = await httpClient.GetAsync($"https://{issuer}/v1/auth/keys");
                     var jwks = await jwksResponse.Content.ReadAsStringAsync();
 
                     options.TokenValidationParameters = new TokenValidationParameters
