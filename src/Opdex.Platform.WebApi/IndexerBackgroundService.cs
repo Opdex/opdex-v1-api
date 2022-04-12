@@ -40,6 +40,7 @@ public class IndexerBackgroundService : BackgroundService
     {
         var started = false;
         var unavailable = false;
+        var bestBlockFailures = 0;
 
         IMediator mediator;
         await using var scope = _scopeFactory.CreateAsyncScope();
@@ -105,6 +106,13 @@ public class IndexerBackgroundService : BackgroundService
                     var bestBlock = await mediator.Send(new GetBestBlockReceiptQuery(), cancellationToken);
                     var lockReason = bestBlock is null ? IndexLockReason.Rewinding : IndexLockReason.Indexing;
 
+                    // Conclude a rewind is needed after 3 total attempts
+                    if (lockReason == IndexLockReason.Rewinding && ++bestBlockFailures < 3)
+                    {
+                        _logger.LogWarning("Best block receipt not found.");
+                        continue;
+                    }
+
                     var tryLock = await mediator.Send(new MakeIndexerLockCommand(lockReason), cancellationToken);
                     if (!tryLock)
                     {
@@ -129,6 +137,7 @@ public class IndexerBackgroundService : BackgroundService
                     }
 
                     unavailable = false;
+                    bestBlockFailures = 0;
                 }
                 catch (TaskCanceledException)
                 {
