@@ -19,6 +19,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Indexer;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models;
+using Opdex.Platform.WebApi.Auth;
 using Opdex.Platform.WebApi.Models.Responses.Index;
 
 namespace Opdex.Platform.WebApi.Controllers;
@@ -61,7 +62,7 @@ public class IndexerController : ControllerBase
     /// <param name="request">The mined token and market deployer transaction hashes to look up.</param>
     /// <param name="cancellationToken">Cancellation token</param>
     [HttpPost("resync-from-deployment")]
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = AdminOnlyRequirement.Name)]
     public async Task<IActionResult> ResyncFromDeployment(ResyncFromDeploymentRequest request, CancellationToken cancellationToken)
     {
         var markets = await _mediator.Send(new RetrieveAllMarketsQuery(), cancellationToken);
@@ -89,7 +90,7 @@ public class IndexerController : ControllerBase
     /// <param name="request">Request to rewind back to specific block.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPost("rewind")]
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = AdminOnlyRequirement.Name)]
     public async Task<ActionResult> Rewind(RewindRequest request, CancellationToken cancellationToken)
     {
         var startingBlock = await _mediator.Send(new RetrieveLatestBlockQuery(), CancellationToken.None);
