@@ -71,7 +71,7 @@ public class ProcessLatestBlocksCommandHandler : IRequestHandler<ProcessLatestBl
                 {
                     crsUsd ??= await GetCrsUsd(currentBlock.MedianTime);
 
-                    await _mediator.Send(new ProcessStaleLiquidityPoolSnapshotsCommand(currentBlock.Height, currentBlock.Time,
+                    await _mediator.Send(new ProcessStaleLiquidityPoolSnapshotsCommand(currentBlock.Height, currentBlock.MedianTime,
                                                                                        crsUsd.Value), CancellationToken.None);
                 }
 

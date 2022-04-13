@@ -130,7 +130,7 @@ public class AuthController : ControllerBase
             SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
         };
 
-        tokenDescriptor.Subject.AddClaim(new Claim("wallet", body.PublicKey));
+        tokenDescriptor.Subject.AddClaim(new Claim(JwtRegisteredClaimNames.Sub, body.PublicKey));
         var admin = await _mediator.Send(new GetAdminByAddressQuery(body.PublicKey, findOrThrow: false), cancellationToken);
         if (admin != null) tokenDescriptor.Subject.AddClaim(new Claim("admin", "true"));
 

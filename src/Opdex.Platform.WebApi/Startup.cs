@@ -49,6 +49,7 @@ using Microsoft.Extensions.FileProviders;
 using System.Reflection;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.FeatureManagement;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 
 namespace Opdex.Platform.WebApi;
@@ -199,6 +200,9 @@ public class Startup
 
         services.AddScoped<IApplicationContext, ApplicationContext>();
 
+        // Fixes missing claims such as "sub" - https://leastprivilege.com/2017/11/15/missing-claims-in-the-asp-net-core-2-openid-connect-handler/
+        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(async options =>
             {
@@ -207,7 +211,7 @@ public class Startup
                     var issuer = Configuration["AuthConfiguration:Issuer"];
 
                     using var httpClient = new HttpClient();
-                    var jwksResponse = await httpClient.GetAsync($"https://{issuer}/v1/auth/jwks");
+                    var jwksResponse = await httpClient.GetAsync($"https://{issuer}/v1/auth/keys");
                     var jwks = await jwksResponse.Content.ReadAsStringAsync();
 
                     options.TokenValidationParameters = new TokenValidationParameters
