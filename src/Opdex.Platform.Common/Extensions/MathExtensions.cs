@@ -26,9 +26,7 @@ public static class MathExtensions
         decimal marketUsd = 0m;
 
         // Zero staking weight, all fees to providers
-        var emptyStakingPool = stakingEnabled && stakingWeight == UInt256.Zero;
-
-        if (emptyStakingPool || !marketFeeEnabled)
+        if (!stakingEnabled || stakingWeight == UInt256.Zero || !marketFeeEnabled)
         {
             providerUsd = totalRewards;
         }
