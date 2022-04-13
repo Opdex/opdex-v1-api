@@ -35,7 +35,9 @@ public class GetMiningPositionByPoolQueryHandler : IRequestHandler<GetMiningPosi
             Address = request.Address,
             Amount = addressMining.Balance.ToDecimal(token.Decimals),
             MiningPool = miningPool.Address,
-            MiningToken = token.Address
+            MiningToken = token.Address,
+            ModifiedBlock = addressMining.ModifiedBlock,
+            CreatedBlock = addressMining.CreatedBlock
         };
     }
 }

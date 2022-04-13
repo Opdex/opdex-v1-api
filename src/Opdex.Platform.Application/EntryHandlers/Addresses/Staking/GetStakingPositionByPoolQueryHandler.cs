@@ -33,7 +33,9 @@ public class GetStakingPositionByPoolQueryHandler : IRequestHandler<GetStakingPo
             Address = addressStaking.Owner,
             Amount = addressStaking.Weight.ToDecimal(token.Decimals),
             LiquidityPool = request.LiquidityPoolAddress,
-            StakingToken = token.Address
+            StakingToken = token.Address,
+            ModifiedBlock = addressStaking.ModifiedBlock,
+            CreatedBlock = addressStaking.CreatedBlock
         };
     }
 }
