@@ -212,13 +212,22 @@ public class Startup
 
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateIssuer = true,
-                        ValidIssuer = issuer,
                         ValidateAudience = false,
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKeys = new JsonWebKeySet(jwks).GetSigningKeys(),
                         ValidateLifetime = true,
                     };
+
+                    if (Configuration.GetValue<bool>("FeatureManagement:AuthServer"))
+                    {
+                        options.TokenValidationParameters.ValidateIssuer = true;
+                        options.TokenValidationParameters.ValidIssuer = issuer;
+                        options.TokenValidationParameters.IssuerSigningKeys = new JsonWebKeySet(jwks).GetSigningKeys();
+                    }
+                    else
+                    {
+                        options.TokenValidationParameters.ValidateIssuer = false;
+                        options.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authConfig.Get<AuthConfiguration>().Opdex.SigningKey));
+                    }
                 }
                 else
                 {
@@ -270,11 +279,13 @@ public class Startup
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("AdminOnly", policy => policy.Requirements.Add(new AdminOnlyRequirement()));
+            options.AddPolicy(AdminOnlyRequirement.Name, policy => policy.Requirements.Add(new AdminOnlyRequirement()));
+            options.AddPolicy(AdminOrOwnedWalletRequirement.Name, policy => policy.Requirements.Add(new AdminOrOwnedWalletRequirement()));
         });
 
         services.AddSingleton<IUserIdProvider, WalletAddressUserIdProvider>();
         services.AddScoped<IAuthorizationHandler, AdminOnlyHandler>();
+        services.AddScoped<IAuthorizationHandler, AdminOrOwnedWalletHandler>();
 
         services.AddTransient<ITwoWayEncryptionProvider, AesCbcProvider>();
     }
@@ -294,7 +305,7 @@ public class Startup
         }
 
         var builder = configuration.DefaultTelemetrySink.TelemetryProcessorChainBuilder;
-        builder.UseAdaptiveSampling(maxTelemetryItemsPerSecond:5, excludedTypes:"Exception");
+        builder.UseAdaptiveSampling(maxTelemetryItemsPerSecond:5, excludedTypes:"Trace;Exception");
         builder.Use(next => new IgnoreRequestPathsTelemetryProcessor(next));
         builder.Build();
 

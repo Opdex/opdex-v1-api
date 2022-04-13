@@ -6,6 +6,8 @@ namespace Opdex.Platform.WebApi.Auth;
 
 public class AdminOnlyRequirement : IAuthorizationRequirement
 {
+    public const string Name = "AdminOnly";
+
     public AdminOnlyRequirement(string key = "true") // For now setting the default requirement to have a claim == "true".
     {
         if (!key.HasValue())

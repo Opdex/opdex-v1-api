@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.MiningPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
-using Opdex.Platform.Common.Extensions;
 using System;
 using System.Linq;
 using System.Threading;

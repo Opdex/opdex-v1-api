@@ -9971,6 +9971,19 @@ paths:
                     - Invalid address.
                 extensions:
                   traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        403:
+          description: User does not have permission
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/problemDetails"
+              example:
+                type: https://httpstatuses.com/404
+                title: Forbidden
+                detail: Cannot refresh position of another address
+                status: 403
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
         404:
           $ref: "#/components/responses/TokenNotFound"
         429:
@@ -10107,7 +10120,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/miningPositionsResponse"
+                $ref: "#/components/schemas/miningPositionResponse"
               example:
                 address: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
                 amount: "3.14831968"
@@ -10134,6 +10147,96 @@ paths:
                 errors:
                   address:
                     - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          description: Mining pool or mining position not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/problemDetails"
+              example:
+                type: https://httpstatuses.com/404
+                title: Not Found
+                detail: Mining pool not found.
+                status: 404
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
+    post:
+      tags:
+        - Wallets
+      summary: Refresh Mining Position
+      description: Retrieves and indexes the latest mining position of a tracked SRC token for an address.
+      operationId: refreshMiningPosition
+      security:
+        - opdexAuth: []
+      parameters:
+        - name: address
+          in: path
+          description: Address holding the position
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+        - name: pool
+          in: path
+          description: Address of the mining pool
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+      responses:
+        200:
+          description: Mining position details refreshed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/miningPositionResponse"
+              example:
+                address: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                amount: "3.14831968"
+                miningPool: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+                miningToken: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                createdBlock: 2991138
+                modifiedBlock: 2991446
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  address:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        403:
+          description: User does not have permission
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/problemDetails"
+              example:
+                type: https://httpstatuses.com/404
+                title: Forbidden
+                detail: Cannot refresh position of another address
+                status: 403
                 extensions:
                   traceId: 00-00000000000000000000000000000000-0000000000000000-00
         404:
@@ -10211,7 +10314,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/miningPositionsResponse"
+                $ref: "#/components/schemas/stakingPositionsResponse"
               example:
                 results:
                   - address: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
@@ -10276,7 +10379,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/miningPositionsResponse"
+                $ref: "#/components/schemas/stakingPositionResponse"
               example:
                 address: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
                 amount: "555.94827358"
@@ -10303,6 +10406,96 @@ paths:
                 errors:
                   address:
                     - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          description: Liquidity pool or staking position not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/problemDetails"
+              example:
+                type: https://httpstatuses.com/404
+                title: Not Found
+                detail: Liquidity pool not found.
+                status: 404
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+        503:
+          $ref: "#/components/responses/UnderMaintenance"
+    post:
+      tags:
+        - Wallets
+      summary: Refresh Staking Position
+      description: Retrieves and indexes the latest staking position of a tracked SRC token for an address.
+      operationId: refreshStakingPosition
+      security:
+        - opdexAuth: []
+      parameters:
+        - name: address
+          in: path
+          description: Address holding the position
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+        - name: pool
+          in: path
+          description: Address of the liquidity pool
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tRs6rXfHuLhKZhWuWpycLASzAyn4kXo6bT
+      responses:
+        200:
+          description: Staking position details refreshed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/stakingPositionResponse"
+              example:
+                address: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                amount: "555.94827358"
+                liquidityPool: tVFhXcS3gVb49MSTsaDFoqkxLrAUiNEN7n
+                stakingToken: tTTuKbCR2UnsEByXBp1ynBz91J2yz63h1c
+                createdBlock: 3646922
+                modifiedBlock: 3721001
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=15
+              description: Holds directives that control caching
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  address:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        403:
+          description: User does not have permission
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/problemDetails"
+              example:
+                type: https://httpstatuses.com/404
+                title: Forbidden
+                detail: Cannot refresh position of another address
+                status: 403
                 extensions:
                   traceId: 00-00000000000000000000000000000000-0000000000000000-00
         404:
