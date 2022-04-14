@@ -81,14 +81,13 @@ public class SmartContractsModule : ApiClientBase, ISmartContractsModule
             LocalCallResponseDto response = null;
             for (var retryCount = 0; retryCount < 3; retryCount++)
             {
-                var callResult = await PostAsync<LocalCallResponseDto>(uri, httpRequest.Content, cancellationToken: cancellationToken);
-                if (callResult.HasError && callResult.ErrorMessage.Value == "No code at this address.")
+                response = await PostAsync<LocalCallResponseDto>(uri, httpRequest.Content, cancellationToken: cancellationToken);
+                if (response.HasError && response.ErrorMessage.Value == "No code at this address.")
                 {
                     await Task.Delay(TimeSpan.FromMilliseconds(500 + (500 * retryCount)), cancellationToken);
                     continue;
                 }
 
-                response = callResult;
                 break;
             }
 
