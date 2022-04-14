@@ -3,17 +3,16 @@ using HttpContextMoq;
 using HttpContextMoq.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
-using Microsoft.FeatureManagement;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Moq;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Auth;
 using Opdex.Platform.Application.Abstractions.Models.Auth;
 using Opdex.Platform.Common.Configurations;
+using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.WebApi.Auth;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,27 +20,27 @@ using Xunit;
 
 namespace Opdex.Platform.WebApi.Tests.Auth;
 
-public class AdminOnlyHandlerTests
+public class AdminOrOwnedWalletHandlerTests
 {
     private readonly AuthConfiguration _authConfiguration;
     private readonly Mock<IMediator> _mediatorMock;
     private readonly HttpContextMock _httpContextMock;
 
-    private readonly AdminOnlyHandler _handler;
+    private readonly AdminOrOwnedWalletHandler _handler;
 
-    public AdminOnlyHandlerTests()
+    public AdminOrOwnedWalletHandlerTests()
     {
         _httpContextMock = new HttpContextMock();
         _authConfiguration = new AuthConfiguration { AdminKey = "L5MMq0~h492*Dg1pxX" };
         _mediatorMock = new Mock<IMediator>();
-        _handler = new AdminOnlyHandler(_authConfiguration, _mediatorMock.Object);
+        _handler = new AdminOrOwnedWalletHandler(_authConfiguration, _mediatorMock.Object);
     }
 
     [Fact]
-    public async Task AdminOnlyRequirement_UserNotLoggedIn_DoNotSucceed()
+    public async Task HandleRequirementAsync_UserNotLoggedIn_DoNotSucceed()
     {
         // Arrange
-        var requirements = new[] { new AdminOnlyRequirement() };
+        var requirements = new[] { new AdminOrOwnedWalletRequirement() };
         var user = new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>()));
         var context = new AuthorizationHandlerContext(requirements, user, _httpContextMock);
 
@@ -58,34 +57,35 @@ public class AdminOnlyHandlerTests
     }
 
     [Fact]
-    public async Task AdminOnlyRequirement_UserLoggedIn_CheckIfAdmin()
+    public async Task HandleRequirementAsync_UserIsTargetWallet_Succeed()
     {
         // Arrange
         const string address = "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm";
 
-        var requirements = new[] { new AdminOnlyRequirement() };
+        var requirements = new[] { new AdminOrOwnedWalletRequirement() };
         var claims = new[] { new Claim(JwtRegisteredClaimNames.Sub, address) };
         var user = new ClaimsPrincipal(new ClaimsIdentity(claims));
         var context = new AuthorizationHandlerContext(requirements, user, _httpContextMock);
+        _httpContextMock.SetupUrl("https://api.opdex.com/v1/wallets/tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm/balance");
 
         // Act
         await _handler.HandleAsync(context);
 
         // Assert
-        _mediatorMock.Verify(callTo => callTo.Send(
-            It.Is<GetAdminByAddressQuery>(q => q.Address == address), It.IsAny<CancellationToken>()), Times.Once);
+        context.HasSucceeded.Should().Be(true);
     }
 
     [Fact]
-    public async Task AdminOnlyRequirement_NotAdmin_DoNotSucceed()
+    public async Task HandleRequirementAsync_DifferentAddressAndNotAdmin_ThrowNotAllowedException()
     {
         // Arrange
-        const string address = "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm";
+        const string address = "tHYHem7cLKgoLkeb792yn4WayqKzLrjJak";
 
-        var requirements = new[] { new AdminOnlyRequirement() };
+        var requirements = new[] { new AdminOrOwnedWalletRequirement() };
         var claims = new[] { new Claim(JwtRegisteredClaimNames.Sub, address) };
         var user = new ClaimsPrincipal(new ClaimsIdentity(claims));
         var context = new AuthorizationHandlerContext(requirements, user, _httpContextMock);
+        _httpContextMock.SetupUrl("https://api.opdex.com/v1/wallets/tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm/balance");
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetAdminByAddressQuery>(), It.IsAny<CancellationToken>()))
                      .ReturnsAsync((AdminDto)null);
@@ -95,22 +95,23 @@ public class AdminOnlyHandlerTests
         });
 
         // Act
-        await _handler.HandleAsync(context);
+        Task Act() => _handler.HandleAsync(context);
 
         // Assert
-        context.HasSucceeded.Should().Be(false);
+        await this.Invoking(async _ => await Act()).Should().ThrowExactlyAsync<NotAllowedException>();
     }
 
     [Fact]
-    public async Task AdminOnlyRequirement_AdminButNoKeyHeader_DoNotSucceed()
+    public async Task HandleRequirementAsync_DifferentAddressAndAdminButNoKeyHeader_DoNotSucceed()
     {
         // Arrange
-        const string address = "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm";
+        const string address = "tHYHem7cLKgoLkeb792yn4WayqKzLrjJak";
 
-        var requirements = new[] { new AdminOnlyRequirement() };
+        var requirements = new[] { new AdminOrOwnedWalletRequirement() };
         var claims = new[] { new Claim(JwtRegisteredClaimNames.Sub, address) };
         var user = new ClaimsPrincipal(new ClaimsIdentity(claims));
         var context = new AuthorizationHandlerContext(requirements, user, _httpContextMock);
+        _httpContextMock.SetupUrl("https://api.opdex.com/v1/wallets/tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm/balance");
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetAdminByAddressQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new AdminDto { Address = address });
@@ -127,15 +128,16 @@ public class AdminOnlyHandlerTests
     }
 
     [Fact]
-    public async Task AdminOnlyRequirement_AdminButWrongKeyHeader_DoNotSucceed()
+    public async Task HandleRequirementAsync_DifferentAddressAndAdminButWrongKeyHeader_DoNotSucceed()
     {
         // Arrange
-        const string address = "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm";
+        const string address = "tHYHem7cLKgoLkeb792yn4WayqKzLrjJak";
 
-        var requirements = new[] { new AdminOnlyRequirement() };
+        var requirements = new[] { new AdminOrOwnedWalletRequirement() };
         var claims = new[] { new Claim(JwtRegisteredClaimNames.Sub, address) };
         var user = new ClaimsPrincipal(new ClaimsIdentity(claims));
         var context = new AuthorizationHandlerContext(requirements, user, _httpContextMock);
+        _httpContextMock.SetupUrl("https://api.opdex.com/v1/wallets/tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm/balance");
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetAdminByAddressQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new AdminDto { Address = address });
@@ -152,15 +154,16 @@ public class AdminOnlyHandlerTests
     }
 
     [Fact]
-    public async Task AdminOnlyRequirement_AdminWithKey_Succeed()
+    public async Task HandleRequirementAsync_DifferentAddressAndAdminWithKey_Succeed()
     {
         // Arrange
-        const string address = "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm";
+        const string address = "tHYHem7cLKgoLkeb792yn4WayqKzLrjJak";
 
-        var requirements = new[] { new AdminOnlyRequirement() };
+        var requirements = new[] { new AdminOrOwnedWalletRequirement() };
         var claims = new[] { new Claim(JwtRegisteredClaimNames.Sub, address) };
         var user = new ClaimsPrincipal(new ClaimsIdentity(claims));
         var context = new AuthorizationHandlerContext(requirements, user, _httpContextMock);
+        _httpContextMock.SetupUrl("https://api.opdex.com/v1/wallets/tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm/balance");
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetAdminByAddressQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new AdminDto { Address = address });

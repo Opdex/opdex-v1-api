@@ -13,47 +13,29 @@ namespace Opdex.Platform.WebApi.Auth;
 
 public class AdminOnlyHandler : AuthorizationHandler<AdminOnlyRequirement>
 {
-    private readonly IFeatureManager _featureManager;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly AuthConfiguration _authConfig;
     private readonly IMediator _mediator;
 
-    private const string AdminClaim = "admin";
-
-    public AdminOnlyHandler(IFeatureManager featureManager, IHttpContextAccessor httpContextAccessor,
-                            AuthConfiguration authConfig, IMediator mediator)
+    public AdminOnlyHandler(AuthConfiguration authConfig, IMediator mediator)
     {
-        _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         _authConfig = authConfig ?? throw new ArgumentNullException(nameof(authConfig));
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        _featureManager = featureManager ?? throw new ArgumentNullException(nameof(featureManager));
     }
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, AdminOnlyRequirement requirement)
     {
-        if (await _featureManager.IsEnabledAsync("AuthServer"))
-        {
-            if (!context.User.HasClaim(c => c.Type == JwtRegisteredClaimNames.Sub)) return;
+        if (!context.User.HasClaim(c => c.Type == JwtRegisteredClaimNames.Sub)) return;
+        var wallet = context.User.FindFirstValue(JwtRegisteredClaimNames.Sub);
 
-            var wallet = context.User.FindFirstValue(JwtRegisteredClaimNames.Sub);
-            var admin = await _mediator.Send(new GetAdminByAddressQuery(wallet, findOrThrow: false));
-            if (admin is null) return;
+        var httpContext = context.Resource as HttpContext ??
+                          throw new InvalidOperationException("Can only handle admin policy for HTTP requests");
 
-            if (!_httpContextAccessor.HttpContext!.Request.Headers.TryGetValue("X-Admin-Key", out var key)) return;
-            if (key != _authConfig.AdminKey) return;
+        var admin = await _mediator.Send(new GetAdminByAddressQuery(wallet, findOrThrow: false));
+        if (admin is null) return;
 
-            context.Succeed(requirement);
-        }
-        else
-        {
-            // Return if not found
-            if (!context.User.HasClaim(c => c.Type == AdminClaim)) return;
+        if (!httpContext.Request.Headers.TryGetValue("X-Admin-Key", out var key)) return;
+        if (key != _authConfig.AdminKey) return;
 
-            // Validate the admin key provided against the configuration
-            if (context.User.FindFirst(c => c.Type == AdminClaim)!.Value.Equals(bool.TrueString, StringComparison.InvariantCultureIgnoreCase))
-            {
-                context.Succeed(requirement);
-            }
-        }
+        context.Succeed(requirement);
     }
 }
