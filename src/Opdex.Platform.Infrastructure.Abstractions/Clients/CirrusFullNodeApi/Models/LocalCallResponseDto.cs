@@ -21,11 +21,7 @@ public class LocalCallResponseDto
     // This should be done better in general
     public T DeserializeValue<T>()
     {
-        if (HasError)
-        {
-            var error = JsonConvert.SerializeObject(ErrorMessage);
-            throw new Exception(error);
-        }
+        if (HasError) throw new Exception(ErrorMessage.Value);
 
         if (Return == null) return default;
 
