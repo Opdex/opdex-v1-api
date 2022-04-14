@@ -70,4 +70,21 @@ public class MathExtensionsTests
     {
         MathExtensions.PercentChange(current, previous).Should().Be(expected);
     }
+
+    [Theory]
+    [InlineData(10.00, "0", true, 3, true, .03, 0)]
+    [InlineData(10.00, "0", false, 3, true, .03, 0)]
+    [InlineData(10.00, "0", false, 3, false, .03, 0)]
+    [InlineData(20.00, "1", true, 3, true, .05, .01)]
+    [InlineData(20.00, "1", true, 10, true, .17, .03)]
+    [InlineData(20.00, "1", true, 10, false, .2, 0)]
+    public void VolumeBasedRewards_Success(decimal volumeUsd, string stakingWeight, bool stakingEnabled, uint transactionFee, bool marketFeeEnabled,
+                                  decimal expectedProviderUsd, decimal expectedMarketUsd)
+    {
+        (decimal providerUsd, decimal marketUsd) = MathExtensions.VolumeBasedRewards(volumeUsd, UInt256.Parse(stakingWeight), stakingEnabled,
+                                                                                     transactionFee, marketFeeEnabled);
+
+        providerUsd.Should().Be(expectedProviderUsd);
+        marketUsd.Should().Be(expectedMarketUsd);
+    }
 }

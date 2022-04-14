@@ -64,7 +64,7 @@ public class WalletsControllerTests
 
         // Assert
         response.Result.Should().BeOfType<OkObjectResult>();
-        ((OkObjectResult)response.Result).Value.Should().Be(addressBalances);
+        ((OkObjectResult)response.Result!).Value.Should().Be(addressBalances);
     }
 
     [Fact]
@@ -98,23 +98,7 @@ public class WalletsControllerTests
 
         // Act
         response.Result.Should().BeOfType<OkObjectResult>();
-        ((OkObjectResult)response.Result).Value.Should().Be(tokenBalance);
-    }
-
-    [Fact]
-    public async Task RefreshAddressBalance_InvalidWalletAddress_ReturnUnauthorized()
-    {
-        // Arrange
-        var walletAddress = new Address("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy");
-        var tokenAddress = new Address("PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5");
-
-        var cancellationToken = new CancellationTokenSource().Token;
-
-        // Act
-        var response = await _controller.RefreshAddressBalance(walletAddress, tokenAddress, cancellationToken);
-
-        // Assert
-        response.Result.Should().BeOfType<UnauthorizedResult>();
+        ((OkObjectResult)response.Result!).Value.Should().Be(tokenBalance);
     }
 
     [Fact]
@@ -155,7 +139,7 @@ public class WalletsControllerTests
         // Assert
 
         response.Result.Should().BeOfType<OkObjectResult>();
-        ((OkObjectResult)response.Result).Value.Should().Be(addressBalanceResponse);
+        ((OkObjectResult)response.Result!).Value.Should().Be(addressBalanceResponse);
     }
 
     [Fact]
@@ -185,7 +169,7 @@ public class WalletsControllerTests
 
         // Assert
         response.Result.Should().BeOfType<OkObjectResult>();
-        ((OkObjectResult)response.Result).Value.Should().Be(miningPositions);
+        ((OkObjectResult)response.Result!).Value.Should().Be(miningPositions);
     }
 
     [Fact]
@@ -215,7 +199,7 @@ public class WalletsControllerTests
 
         // Assert
         response.Result.Should().BeOfType<OkObjectResult>();
-        ((OkObjectResult)response.Result).Value.Should().Be(stakingPositions);
+        ((OkObjectResult)response.Result!).Value.Should().Be(stakingPositions);
     }
 
     [Fact]
@@ -249,7 +233,7 @@ public class WalletsControllerTests
 
         // Act
         response.Result.Should().BeOfType<OkObjectResult>();
-        ((OkObjectResult)response.Result).Value.Should().Be(stakingPosition);
+        ((OkObjectResult)response.Result!).Value.Should().Be(stakingPosition);
     }
 
     [Fact]
@@ -283,7 +267,7 @@ public class WalletsControllerTests
 
         // Act
         response.Result.Should().BeOfType<OkObjectResult>();
-        ((OkObjectResult)response.Result).Value.Should().Be(miningPosition);
+        ((OkObjectResult)response.Result!).Value.Should().Be(miningPosition);
     }
 
     [Fact]
@@ -327,6 +311,6 @@ public class WalletsControllerTests
 
         // Assert
         response.Result.Should().BeOfType<OkObjectResult>();
-        ((OkObjectResult)response.Result).Value.Should().Be(approvedAllowanceResponseModel);
+        ((OkObjectResult)response.Result!).Value.Should().Be(approvedAllowanceResponseModel);
     }
 }

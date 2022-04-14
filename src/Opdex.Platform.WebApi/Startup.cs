@@ -49,6 +49,8 @@ using Microsoft.Extensions.FileProviders;
 using System.Reflection;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.FeatureManagement;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
 
 namespace Opdex.Platform.WebApi;
 
@@ -198,18 +200,51 @@ public class Startup
 
         services.AddScoped<IApplicationContext, ApplicationContext>();
 
+        // Fixes missing claims such as "sub" - https://leastprivilege.com/2017/11/15/missing-claims-in-the-asp-net-core-2-openid-connect-handler/
+        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
+            .AddJwtBearer(async options =>
             {
-                options.TokenValidationParameters = new TokenValidationParameters
+                if (Configuration.GetValue<bool?>("FeatureManagement:AuthServer") ?? false)
                 {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateIssuerSigningKey = true,
-                    ValidateLifetime = true,
-                    // temp solution, OAuth will prefer assymmetric key
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authConfig.Get<AuthConfiguration>().Opdex.SigningKey))
-                };
+                    var issuer = Configuration["AuthConfiguration:Issuer"];
+
+                    using var httpClient = new HttpClient();
+                    var jwksResponse = await httpClient.GetAsync($"https://{issuer}/v1/auth/keys");
+                    var jwks = await jwksResponse.Content.ReadAsStringAsync();
+
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateAudience = false,
+                        ValidateIssuerSigningKey = true,
+                        ValidateLifetime = true,
+                    };
+
+                    if (Configuration.GetValue<bool>("FeatureManagement:AuthServer"))
+                    {
+                        options.TokenValidationParameters.ValidateIssuer = true;
+                        options.TokenValidationParameters.ValidIssuer = issuer;
+                        options.TokenValidationParameters.IssuerSigningKeys = new JsonWebKeySet(jwks).GetSigningKeys();
+                    }
+                    else
+                    {
+                        options.TokenValidationParameters.ValidateIssuer = false;
+                        options.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authConfig.Get<AuthConfiguration>().Opdex.SigningKey));
+                    }
+                }
+                else
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateIssuerSigningKey = true,
+                        ValidateLifetime = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authConfig.Get<AuthConfiguration>().Opdex.SigningKey))
+                    };
+                }
+
                 options.Events = new JwtBearerEvents
                 {
                     OnMessageReceived = context =>
@@ -248,11 +283,13 @@ public class Startup
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("AdminOnly", policy => policy.Requirements.Add(new AdminOnlyRequirement()));
+            options.AddPolicy(AdminOnlyRequirement.Name, policy => policy.Requirements.Add(new AdminOnlyRequirement()));
+            options.AddPolicy(AdminOrOwnedWalletRequirement.Name, policy => policy.Requirements.Add(new AdminOrOwnedWalletRequirement()));
         });
 
         services.AddSingleton<IUserIdProvider, WalletAddressUserIdProvider>();
-        services.AddSingleton<IAuthorizationHandler, AdminOnlyHandler>();
+        services.AddScoped<IAuthorizationHandler, AdminOnlyHandler>();
+        services.AddScoped<IAuthorizationHandler, AdminOrOwnedWalletHandler>();
 
         services.AddTransient<ITwoWayEncryptionProvider, AesCbcProvider>();
     }
@@ -272,7 +309,7 @@ public class Startup
         }
 
         var builder = configuration.DefaultTelemetrySink.TelemetryProcessorChainBuilder;
-        builder.UseAdaptiveSampling(maxTelemetryItemsPerSecond:5, excludedTypes:"Exception");
+        builder.UseAdaptiveSampling(maxTelemetryItemsPerSecond:5, excludedTypes:"Trace;Exception");
         builder.Use(next => new IgnoreRequestPathsTelemetryProcessor(next));
         builder.Build();
 

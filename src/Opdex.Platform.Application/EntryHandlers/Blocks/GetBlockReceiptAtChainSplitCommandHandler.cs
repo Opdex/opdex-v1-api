@@ -2,7 +2,6 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
-using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models.Blocks;
 using System;
 using System.Collections.Generic;
@@ -13,8 +12,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks;
 
 public class GetBlockReceiptAtChainSplitCommandHandler : IRequestHandler<GetBlockReceiptAtChainSplitCommand, BlockReceipt>
 {
-    public const int MaxReorg = 10_800;
-
     private readonly ILogger<GetBlockReceiptAtChainSplitCommandHandler> _logger;
     private readonly IMediator _mediator;
 
@@ -46,7 +43,7 @@ public class GetBlockReceiptAtChainSplitCommandHandler : IRequestHandler<GetBloc
                { "ReorgLength", reorgLength },
             }))
         {
-            _logger.LogInformation("Chain split detected");
+            _logger.LogWarning("Chain split detected");
         }
 
         return bestBlock;

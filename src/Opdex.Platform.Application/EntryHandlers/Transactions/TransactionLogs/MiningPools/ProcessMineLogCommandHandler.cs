@@ -45,7 +45,7 @@ public class ProcessMineLogCommandHandler : IRequestHandler<ProcessMineLogComman
                 if (miningPositionId == 0)
                 {
                     // Don't exit here, we will want to attempt to update the mining pool below
-                    _logger.LogWarning($"Unexpected error updating mining position for {request.Log.Miner}");
+                    _logger.LogWarning("Unexpected error updating mining position for {Miner}", request.Log.Miner);
                 }
             }
 

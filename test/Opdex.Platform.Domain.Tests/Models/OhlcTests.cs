@@ -168,4 +168,25 @@ public class OhlcTests
         ohlc.Low.Should().Be(update);
         ohlc.Close.Should().Be(update);
     }
+
+    [Fact]
+    public void Update_ExistingDecimal_Success_Test()
+    {
+        // Arrange
+        const decimal open = 10m;
+        const decimal high = 20m;
+        const decimal low = 9m;
+        const decimal close = 15m;
+        const decimal update = 22m;
+        var ohlc = new Ohlc<decimal>(open, high, low, close);
+
+        // Act
+        ohlc.Update(update);
+
+        // Assert
+        ohlc.Open.Should().Be(open);
+        ohlc.High.Should().Be(update);
+        ohlc.Low.Should().Be(low);
+        ohlc.Close.Should().Be(update);
+    }
 }

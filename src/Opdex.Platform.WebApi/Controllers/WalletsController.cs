@@ -6,12 +6,15 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Mining;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Staking;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Allowances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Mining;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Staking;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.WebApi.Auth;
 using Opdex.Platform.WebApi.Caching;
 using Opdex.Platform.WebApi.Middleware;
 using Opdex.Platform.WebApi.Models;
@@ -21,7 +24,7 @@ using Opdex.Platform.WebApi.Models.Responses.Wallet;
 namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
-[Route("v{version:apiVersion}/wallets")]
+[Route("v{version:apiVersion}/wallets/{address}")]
 [ApiVersion("1")]
 [ServiceFilter(typeof(MaintenanceLockFilter))]
 public class WalletsController : ControllerBase
@@ -44,7 +47,7 @@ public class WalletsController : ControllerBase
     /// <param name="spender">Address for the spender of the allowance.</param>
     /// <param name="cancellationToken">Cancellation Token</param>
     /// <returns>Approved allowance summary</returns>
-    [HttpGet("{address}/allowance/{token}/approved/{spender}")]
+    [HttpGet("allowance/{token}/approved/{spender}")]
     [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<ApprovedAllowanceResponseModel>> GetAllowance([FromRoute] Address address,
                                                                                  [FromRoute] Address token,
@@ -63,7 +66,7 @@ public class WalletsController : ControllerBase
     /// <param name="filters">Filter parameters.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A collection of address balance summaries by token.</returns>
-    [HttpGet("{address}/balance")]
+    [HttpGet("balance")]
     [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<AddressBalancesResponseModel>> GetAddressBalances([FromRoute] Address address,
                                                                                      [FromQuery] AddressBalanceFilterParameters filters,
@@ -80,7 +83,7 @@ public class WalletsController : ControllerBase
     /// <param name="token">Address of the token to get the balance of, or CRS.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Address balance summary.</returns>
-    [HttpGet("{address}/balance/{token}")]
+    [HttpGet("balance/{token}")]
     [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<AddressBalanceResponseModel>> GetAddressBalanceByToken([FromRoute] Address address,
                                                                                           [FromRoute] Address token,
@@ -97,14 +100,13 @@ public class WalletsController : ControllerBase
     /// <param name="token">Address of the token to refresh the balance of, or CRS.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Address balance summary.</returns>
-    [HttpPost("{address}/balance/{token}")]
-    [Authorize]
+    [HttpPost("balance/{token}")]
+    [Authorize(Policy = AdminOrOwnedWalletRequirement.Name)]
     [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<AddressBalanceResponseModel>> RefreshAddressBalance([FromRoute] Address address,
                                                                                        [FromRoute] Address token,
                                                                                        CancellationToken cancellationToken)
     {
-        if (_context.Wallet != address) return Unauthorized();
         if (token == Address.Cirrus) throw new InvalidDataException(nameof(token), "Address must be SRC token address.");
         var balance = await _mediator.Send(new CreateRefreshAddressBalanceCommand(address, token), cancellationToken);
         var response = _mapper.Map<AddressBalanceResponseModel>(balance);
@@ -118,7 +120,7 @@ public class WalletsController : ControllerBase
     /// <param name="filters">Filter parameters.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Mining position summaries</returns>
-    [HttpGet("{address}/mining")]
+    [HttpGet("mining")]
     [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<MiningPositionsResponseModel>> GetMiningPositions([FromRoute] Address address,
                                                                                      [FromQuery] MiningPositionFilterParameters filters,
@@ -135,7 +137,7 @@ public class WalletsController : ControllerBase
     /// <param name="pool">The address of the mining pool.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Mining position summary</returns>
-    [HttpGet("{address}/mining/{pool}")]
+    [HttpGet("mining/{pool}")]
     [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<MiningPositionResponseModel>> GetMiningPositionByPool([FromRoute] Address address,
                                                                                          [FromRoute] Address pool,
@@ -146,13 +148,25 @@ public class WalletsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpPost("mining/{pool}")]
+    [Authorize(Policy = AdminOrOwnedWalletRequirement.Name)]
+    [CacheUntilNextBlock(CacheType.Public)]
+    public async Task<ActionResult<StakingPositionResponseModel>> RefreshMiningPosition([FromRoute] Address address,
+                                                                                        [FromRoute] Address pool,
+                                                                                        CancellationToken cancellationToken)
+    {
+        var position = await _mediator.Send(new CreateRefreshMiningPositionCommand(address, pool), cancellationToken);
+        var response = _mapper.Map<MiningPositionResponseModel>(position);
+        return Ok(response);
+    }
+
     /// <summary>Get Staking Positions</summary>
     /// <remarks>Retrieves the staking position of an address in all staking pools.</remarks>
     /// <param name="address">Address of the wallet.</param>
     /// <param name="filters">Filter parameters.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Staking position summaries</returns>
-    [HttpGet("{address}/staking")]
+    [HttpGet("staking")]
     [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<StakingPositionsResponseModel>> GetStakingPositions([FromRoute] Address address,
                                                                                        [FromQuery] StakingPositionFilterParameters filters,
@@ -169,13 +183,25 @@ public class WalletsController : ControllerBase
     /// <param name="pool">Liquidity pool to search</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Staking position summary</returns>
-    [HttpGet("{address}/staking/{pool}")]
+    [HttpGet("staking/{pool}")]
     [CacheUntilNextBlock(CacheType.Public)]
     public async Task<ActionResult<StakingPositionResponseModel>> GetStakingPositionByPool([FromRoute] Address address,
                                                                                            [FromRoute] Address pool,
                                                                                            CancellationToken cancellationToken)
     {
         var position = await _mediator.Send(new GetStakingPositionByPoolQuery(address, pool), cancellationToken);
+        var response = _mapper.Map<StakingPositionResponseModel>(position);
+        return Ok(response);
+    }
+
+    [HttpPost("staking/{pool}")]
+    [Authorize(Policy = AdminOrOwnedWalletRequirement.Name)]
+    [CacheUntilNextBlock(CacheType.Public)]
+    public async Task<ActionResult<StakingPositionResponseModel>> RefreshStakingPosition([FromRoute] Address address,
+                                                                                         [FromRoute] Address pool,
+                                                                                         CancellationToken cancellationToken)
+    {
+        var position = await _mediator.Send(new CreateRefreshStakingPositionCommand(address, pool), cancellationToken);
         var response = _mapper.Map<StakingPositionResponseModel>(position);
         return Ok(response);
     }

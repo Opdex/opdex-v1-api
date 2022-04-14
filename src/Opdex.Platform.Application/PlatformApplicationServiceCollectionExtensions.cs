@@ -386,7 +386,9 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<CreateDistributeTokensTransactionQuoteCommand, TransactionQuoteDto>, CreateDistributeTokensTransactionQuoteCommandHandler>();
         services.AddTransient<IRequestHandler<CreateRewindAddressBalancesCommand, bool>, CreateRewindAddressBalancesCommandHandler>();
         services.AddTransient<IRequestHandler<CreateRewindMiningPositionsCommand, bool>, CreateRewindMiningPositionsCommandHandler>();
+        services.AddTransient<IRequestHandler<CreateRefreshMiningPositionCommand, MiningPositionDto>, CreateRefreshMiningPositionCommandHandler>();
         services.AddTransient<IRequestHandler<CreateRewindStakingPositionsCommand, bool>, CreateRewindStakingPositionsCommandHandler>();
+        services.AddTransient<IRequestHandler<CreateRefreshStakingPositionCommand, StakingPositionDto>, CreateRefreshStakingPositionCommandHandler>();
         services.AddTransient<IRequestHandler<CreateAddressBalanceCommand, ulong>, CreateAddressBalanceCommandHandler>();
         services.AddTransient<IRequestHandler<CreateTokenCommand, ulong>, CreateTokenCommandHandler>();
         services.AddTransient<IRequestHandler<CreateAddTokenCommand, TokenDto>, CreateAddTokenCommandHandler>();
