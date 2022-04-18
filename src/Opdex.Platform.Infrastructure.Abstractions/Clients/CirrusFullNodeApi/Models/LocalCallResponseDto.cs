@@ -16,14 +16,12 @@ public class LocalCallResponseDto
     public Error ErrorMessage { get; set; }
     public object Return { get; set; }
 
+    public bool HasError => ErrorMessage?.Value?.HasValue() ?? false;
+
     // This should be done better in general
     public T DeserializeValue<T>()
     {
-        if (ErrorMessage?.Value?.HasValue() == true)
-        {
-            var error = JsonConvert.SerializeObject(ErrorMessage);
-            throw new Exception(error);
-        }
+        if (HasError) throw new Exception(ErrorMessage.Value);
 
         if (Return == null) return default;
 

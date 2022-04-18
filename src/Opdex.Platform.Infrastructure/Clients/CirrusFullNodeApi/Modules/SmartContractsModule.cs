@@ -6,6 +6,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Model
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Serialization;
 using Opdex.Platform.Infrastructure.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -77,7 +78,20 @@ public class SmartContractsModule : ApiClientBase, ISmartContractsModule
 
         using (_logger.BeginScope(logDetails))
         {
-            return await PostAsync<LocalCallResponseDto>(uri, httpRequest.Content, cancellationToken: cancellationToken);
+            LocalCallResponseDto response = null;
+            for (var retryCount = 0; retryCount < 3; retryCount++)
+            {
+                response = await PostAsync<LocalCallResponseDto>(uri, httpRequest.Content, cancellationToken: cancellationToken);
+                if (response.HasError && response.ErrorMessage.Value == "No code at this address.")
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(500 + (500 * retryCount)), cancellationToken);
+                    continue;
+                }
+
+                break;
+            }
+
+            return response;
         }
     }
 
