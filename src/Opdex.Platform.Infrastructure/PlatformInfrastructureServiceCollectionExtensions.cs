@@ -1,5 +1,3 @@
-using CoinGecko.Clients;
-using CoinGecko.Interfaces;
 using Dapper;
 using System.Collections.Generic;
 using MediatR;
@@ -133,6 +131,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Votes;
 using Opdex.Platform.Infrastructure.Abstractions.Feeds;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Transactions;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Vaults;
+using Opdex.Platform.Infrastructure.Clients.CoinGeckoApi;
 using Opdex.Platform.Infrastructure.Clients.CoinGeckoApi.Handlers;
 using Opdex.Platform.Infrastructure.Data.Handlers.Auth;
 using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Summaries;

@@ -1,5 +1,3 @@
-using CoinGecko.Clients;
-using CoinGecko.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinGeckoApi.Queries;
@@ -31,9 +29,9 @@ public class CallCoinGeckoGetStraxHistoricalPriceQueryHandler : IRequestHandler<
     public async Task<decimal> Handle(CallCoinGeckoGetStraxHistoricalPriceQuery request, CancellationToken cancellationToken)
     {
         int hoursDiff = DateTime.UtcNow - request.DateTime > TimeSpan.FromDays(90) ? 24 : 1;
-        var from = new DateTimeOffset(request.DateTime.AddHours(-hoursDiff).ToUniversalTime()).ToUnixTimeSeconds().ToString();
-        var to = new DateTimeOffset(request.DateTime.AddHours(hoursDiff).ToUniversalTime()).ToUnixTimeSeconds().ToString();
-        var marketData = await _client.CoinsClient.GetMarketChartRangeByCoinId(CoinGeckoTokens.STRAX, CoinGeckoTokens.USD, from, to);
+        var from = request.DateTime.AddHours(-hoursDiff);
+        var to = request.DateTime.AddHours(hoursDiff);
+        var marketData = await _client.CoinsClient.GetMarketChartRangeByCoinId(CoinGeckoCoin.Strax, CoinGeckoCoin.Usd, from, to, cancellationToken);
 
         if ((marketData?.Prices?.Length ?? 0) == 0)
         {

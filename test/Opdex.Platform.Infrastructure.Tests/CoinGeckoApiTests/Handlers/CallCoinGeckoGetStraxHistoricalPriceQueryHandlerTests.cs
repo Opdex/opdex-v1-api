@@ -1,11 +1,10 @@
-using CoinGecko.Entities.Response.Coins;
-using CoinGecko.Interfaces;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinGeckoApi.Queries;
 using Opdex.Platform.Infrastructure.Clients.CoinGeckoApi;
 using Opdex.Platform.Infrastructure.Clients.CoinGeckoApi.Handlers;
+using Opdex.Platform.Infrastructure.Clients.CoinGeckoApi.Models;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,8 +29,8 @@ public class CallCoinGeckoGetStraxHistoricalPriceQueryHandlerTests
     public async Task Handle_ResultIsNull_ReturnZero()
     {
         // Arrange
-        _coinsClientMock.Setup(callTo => callTo.GetMarketChartRangeByCoinId(CoinGeckoTokens.STRAX, CoinGeckoTokens.USD,
-                It.IsAny<string>(), It.IsAny<string>()))
+        _coinsClientMock.Setup(callTo => callTo.GetMarketChartRangeByCoinId(CoinGeckoCoin.Strax, CoinGeckoCoin.Usd,
+                It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((MarketChartById)null);
 
         // Act
@@ -45,8 +44,8 @@ public class CallCoinGeckoGetStraxHistoricalPriceQueryHandlerTests
     public async Task Handle_NoPricesReturned_ReturnZero()
     {
         // Arrange
-        _coinsClientMock.Setup(callTo => callTo.GetMarketChartRangeByCoinId(CoinGeckoTokens.STRAX, CoinGeckoTokens.USD,
-                It.IsAny<string>(), It.IsAny<string>()))
+        _coinsClientMock.Setup(callTo => callTo.GetMarketChartRangeByCoinId(CoinGeckoCoin.Strax, CoinGeckoCoin.Usd,
+                It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new MarketChartById
             {
                 Prices = Array.Empty<decimal?[]>()
@@ -63,8 +62,8 @@ public class CallCoinGeckoGetStraxHistoricalPriceQueryHandlerTests
     public async Task Handle_SinglePriceFoundInRange_ReturnPrice()
     {
         // Arrange
-        _coinsClientMock.Setup(callTo => callTo.GetMarketChartRangeByCoinId(CoinGeckoTokens.STRAX, CoinGeckoTokens.USD,
-                It.IsAny<string>(), It.IsAny<string>()))
+        _coinsClientMock.Setup(callTo => callTo.GetMarketChartRangeByCoinId(CoinGeckoCoin.Strax, CoinGeckoCoin.Usd,
+                It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new MarketChartById
             {
                 Prices = new[]
@@ -86,8 +85,8 @@ public class CallCoinGeckoGetStraxHistoricalPriceQueryHandlerTests
         // Arrange
         var requestedTime = new DateTime(2022, 01, 11, 15, 00, 00, DateTimeKind.Utc);
         var requestedTimeMs = new DateTimeOffset(requestedTime).ToUnixTimeMilliseconds();
-        _coinsClientMock.Setup(callTo => callTo.GetMarketChartRangeByCoinId(CoinGeckoTokens.STRAX, CoinGeckoTokens.USD,
-                It.IsAny<string>(), It.IsAny<string>()))
+        _coinsClientMock.Setup(callTo => callTo.GetMarketChartRangeByCoinId(CoinGeckoCoin.Strax, CoinGeckoCoin.Usd,
+                It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new MarketChartById
             {
                 Prices = new[]

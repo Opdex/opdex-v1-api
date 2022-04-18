@@ -1,4 +1,3 @@
-using CoinGecko.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinGeckoApi.Queries;
@@ -20,8 +19,8 @@ public class CallCoinGeckoGetStraxLatestPriceQueryHandler : IRequestHandler<Call
 
     public async Task<decimal> Handle(CallCoinGeckoGetStraxLatestPriceQuery request, CancellationToken cancellationToken)
     {
-        var result = await _client.CoinsClient.GetAllCoinDataWithId(CoinGeckoTokens.STRAX, "false", false, true, false, false, false);
-        if ((result?.MarketData?.CurrentPrice?.TryGetValue(CoinGeckoTokens.USD, out var usdPrice) ?? false) && usdPrice.HasValue)
+        var result = await _client.CoinsClient.GetAllCoinDataWithId(CoinGeckoCoin.Strax, false, false, true, false, false, false, cancellationToken);
+        if ((result?.MarketData?.CurrentPrice?.TryGetValue(CoinGeckoCoin.Usd.Name, out var usdPrice) ?? false) && usdPrice.HasValue)
         {
             return usdPrice.Value;
         }
