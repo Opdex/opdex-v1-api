@@ -1,11 +1,10 @@
-using CoinGecko.Entities.Response.Coins;
-using CoinGecko.Interfaces;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinGeckoApi.Queries;
 using Opdex.Platform.Infrastructure.Clients.CoinGeckoApi;
 using Opdex.Platform.Infrastructure.Clients.CoinGeckoApi.Handlers;
+using Opdex.Platform.Infrastructure.Clients.CoinGeckoApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -31,9 +30,9 @@ public class CallCoinGeckoGetStraxLatestPriceQueryHandlerTests
     public async Task Handle_NullResult_ReturnZero()
     {
         // Arrange
-        _coinsClientMock.Setup(callTo => callTo.GetAllCoinDataWithId(CoinGeckoTokens.STRAX, It.IsAny<string>(),
-                It.IsAny<bool>(), true, It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>()))
-            .ReturnsAsync((CoinFullDataById)null);
+        _coinsClientMock.Setup(callTo => callTo.GetAllCoinDataWithId(CoinGeckoCoin.Strax, It.IsAny<bool>(),
+                It.IsAny<bool>(), true, It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((FullCoinDataById)null);
 
         // Act
         var response = await _handler.Handle(new CallCoinGeckoGetStraxLatestPriceQuery(), CancellationToken.None);
@@ -46,13 +45,13 @@ public class CallCoinGeckoGetStraxLatestPriceQueryHandlerTests
     public async Task Handle_NullValue_ReturnZero()
     {
         // Arrange
-        _coinsClientMock.Setup(callTo => callTo.GetAllCoinDataWithId(CoinGeckoTokens.STRAX, It.IsAny<string>(),
-                It.IsAny<bool>(), true, It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>()))
-            .ReturnsAsync(new CoinFullDataById()
+        _coinsClientMock.Setup(callTo => callTo.GetAllCoinDataWithId(CoinGeckoCoin.Strax, It.IsAny<bool>(),
+                It.IsAny<bool>(), true, It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new FullCoinDataById
             {
-                MarketData = new CoinByIdMarketData()
+                MarketData = new MarketData
                 {
-                    CurrentPrice = new Dictionary<string, decimal?>() { { CoinGeckoTokens.USD, null } }
+                    CurrentPrice = new Dictionary<string, decimal?>() { { CoinGeckoCoin.Usd.Name, null } }
                 }
             });
 
@@ -67,14 +66,14 @@ public class CallCoinGeckoGetStraxLatestPriceQueryHandlerTests
     public async Task Handle_NonNullResult_ReturnExpected()
     {
         // Arrange
-        decimal expected = 12.34M;
-        _coinsClientMock.Setup(callTo => callTo.GetAllCoinDataWithId(CoinGeckoTokens.STRAX, It.IsAny<string>(),
-                It.IsAny<bool>(), true, It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>()))
-            .ReturnsAsync(new CoinFullDataById()
+        const decimal expected = 12.34M;
+        _coinsClientMock.Setup(callTo => callTo.GetAllCoinDataWithId(CoinGeckoCoin.Strax, It.IsAny<bool>(),
+                It.IsAny<bool>(), true, It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new FullCoinDataById()
             {
-                MarketData = new CoinByIdMarketData()
+                MarketData = new MarketData()
                 {
-                    CurrentPrice = new Dictionary<string, decimal?>() { { CoinGeckoTokens.USD, expected } }
+                    CurrentPrice = new Dictionary<string, decimal?>() { { CoinGeckoCoin.Usd.Name, expected } }
                 }
             });
 
