@@ -8,6 +8,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Domain.Models.Transactions;
 using Polly;
 using Polly.Retry;
+using System.Collections.Generic;
 using System.Net.Http;
 
 namespace Opdex.Platform.Application.Handlers.Transactions;
@@ -35,7 +36,11 @@ public class RetrieveCirrusTransactionByHashQueryHandler : IRequestHandler<Retri
 
         if (query.Outcome == OutcomeType.Successful) return query.Result;
 
-        _logger.LogError("Transaction could not be retrieved from Cirrus");
+        var logProperties = new Dictionary<string, object> { { "TxHash", request.TxHash } };
+        using (_logger.BeginScope(logProperties))
+        {
+            _logger.LogError("Transaction could not be retrieved from Cirrus");
+        }
         return null;
     }
 }
