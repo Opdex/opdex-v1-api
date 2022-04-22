@@ -206,44 +206,21 @@ public class Startup
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(async options =>
             {
-                if (Configuration.GetValue<bool?>("FeatureManagement:AuthServer") ?? false)
+                var issuer = Configuration["AuthConfiguration:Issuer"];
+
+                using var httpClient = new HttpClient();
+                var jwksResponse = await httpClient.GetAsync($"https://{issuer}/v1/auth/keys");
+                var jwks = await jwksResponse.Content.ReadAsStringAsync();
+
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    var issuer = Configuration["AuthConfiguration:Issuer"];
-
-                    using var httpClient = new HttpClient();
-                    var jwksResponse = await httpClient.GetAsync($"https://{issuer}/v1/auth/keys");
-                    var jwks = await jwksResponse.Content.ReadAsStringAsync();
-
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateAudience = false,
-                        ValidateIssuerSigningKey = true,
-                        ValidateLifetime = true,
-                    };
-
-                    if (Configuration.GetValue<bool>("FeatureManagement:AuthServer"))
-                    {
-                        options.TokenValidationParameters.ValidateIssuer = true;
-                        options.TokenValidationParameters.ValidIssuer = issuer;
-                        options.TokenValidationParameters.IssuerSigningKeys = new JsonWebKeySet(jwks).GetSigningKeys();
-                    }
-                    else
-                    {
-                        options.TokenValidationParameters.ValidateIssuer = false;
-                        options.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authConfig.Get<AuthConfiguration>().Opdex.SigningKey));
-                    }
-                }
-                else
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        ValidateIssuerSigningKey = true,
-                        ValidateLifetime = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authConfig.Get<AuthConfiguration>().Opdex.SigningKey))
-                    };
-                }
+                    ValidateIssuer = true,
+                    ValidIssuer = issuer,
+                    ValidateAudience = false,
+                    IssuerSigningKeys = new JsonWebKeySet(jwks).GetSigningKeys(),
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
+                };
 
                 options.Events = new JwtBearerEvents
                 {
