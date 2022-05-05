@@ -25,7 +25,7 @@ public class CreateAddressBalanceCommandHandler : IRequestHandler<CreateAddressB
         var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token), cancellationToken);
 
         // Get an existing address balance or create a new one
-        var addressBalance = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(request.Wallet, token.Id, findOrThrow: false))
+        var addressBalance = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(request.Wallet, token.Id, findOrThrow: false), cancellationToken)
                              ?? new AddressBalance(token.Id, request.Wallet, UInt256.Zero, request.Block);
 
         // Reject making out of date updates to address balances
@@ -35,6 +35,6 @@ public class CreateAddressBalanceCommandHandler : IRequestHandler<CreateAddressB
         }
 
         // Follow through and upsert the address balance
-        return await _mediator.Send(new MakeAddressBalanceCommand(addressBalance, token.Address, request.Block), CancellationToken.None);
+        return await _mediator.Send(new MakeAddressBalanceCommand(addressBalance, token.Address, request.Block), cancellationToken);
     }
 }

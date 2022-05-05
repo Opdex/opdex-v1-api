@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Tokens;
+namespace Opdex.Platform.Application.Handlers.Tokens.Attributes;
 
 public class RetrieveTokenAttributesByTokenIdQueryHandler : IRequestHandler<RetrieveTokenAttributesByTokenIdQuery, IEnumerable<TokenAttribute>>
 {
@@ -18,8 +18,8 @@ public class RetrieveTokenAttributesByTokenIdQueryHandler : IRequestHandler<Retr
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    public Task<IEnumerable<TokenAttribute>> Handle(RetrieveTokenAttributesByTokenIdQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<TokenAttribute>> Handle(RetrieveTokenAttributesByTokenIdQuery request, CancellationToken cancellationToken)
     {
-        return _mediator.Send(new SelectTokenAttributesByTokenIdQuery(request.TokenId), cancellationToken);
+        return await _mediator.Send(new SelectTokenAttributesByTokenIdQuery(request.TokenId), cancellationToken);
     }
 }

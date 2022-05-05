@@ -42,7 +42,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: Authorize with a bearer token obtained from SignalR
+      description: Authorize with a bearer token obtained from Opdex auth server
   responses:
     LiquidityPoolNotFound:
       description: Liquidity pool not found
