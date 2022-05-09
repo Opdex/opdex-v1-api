@@ -291,6 +291,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<SelectTokenSummaryByTokenIdQuery, TokenSummary>, SelectTokenSummaryByTokenIdQueryHandler>();
         services.AddTransient<IRequestHandler<SelectTokenSummaryByMarketAndTokenIdQuery, TokenSummary>, SelectTokenSummaryByMarketAndTokenIdQueryHandler>();
         services.AddTransient<IRequestHandler<SelectTokenAttributesByTokenIdQuery, IEnumerable<TokenAttribute>>, SelectTokenAttributesByTokenIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectTokenAttributesByTokenAddressQuery, IEnumerable<TokenAttribute>>, SelectTokenAttributesByTokenAddressQueryHandler>();
         services.AddTransient<IRequestHandler<SelectTokenWrappedByTokenIdQuery, TokenWrapped>, SelectTokenWrappedByTokenIdQueryHandler>();
 
         // Mining Governances

@@ -1,5 +1,6 @@
 using FluentAssertions;
 using MediatR;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
@@ -10,9 +11,7 @@ using Opdex.Platform.Application.EntryHandlers.Addresses.Balances;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Blocks;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.BlockStore;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -29,7 +28,7 @@ public class CreateRefreshAddressBalanceCommandHandlerTests
     {
         _mediatorMock = new Mock<IMediator>();
         _assemblerMock = new Mock<IModelAssembler<AddressBalance, AddressBalanceDto>>();
-        _handler = new CreateRefreshAddressBalanceCommandHandler(_mediatorMock.Object, _assemblerMock.Object);
+        _handler = new CreateRefreshAddressBalanceCommandHandler(_mediatorMock.Object, _assemblerMock.Object, new NullLogger<CreateRefreshAddressBalanceCommandHandler>());
     }
 
     [Fact]
@@ -44,7 +43,10 @@ public class CreateRefreshAddressBalanceCommandHandlerTests
         {
             await _handler.Handle(command, cancellationToken);
         }
-        catch (Exception) { }
+        catch (Exception)
+        {
+            // ignored
+        }
 
         // Assert
         _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), cancellationToken), Times.Once);

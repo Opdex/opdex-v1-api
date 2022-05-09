@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Opdex.Platform.Application.Abstractions.Queries.Tokens;
 
 /// <summary>
-/// Retrieve token attributes based on a TokenId.
+/// Retrieve token attributes based on a token id.
 /// </summary>
 public class RetrieveTokenAttributesByTokenIdQuery : IRequest<IEnumerable<TokenAttribute>>
 {
