@@ -26,7 +26,7 @@ public class Transaction
             throw new ArgumentNullException(nameof(from), "From address must be set.");
         }
 
-        if (to == Address.Empty && newContractAddress == Address.Empty)
+        if (success && to == Address.Empty && newContractAddress == Address.Empty)
         {
             throw new ArgumentNullException(nameof(to), "To address must be set.");
         }
