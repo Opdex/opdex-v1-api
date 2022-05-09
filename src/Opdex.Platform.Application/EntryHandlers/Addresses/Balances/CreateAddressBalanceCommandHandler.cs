@@ -35,6 +35,6 @@ public class CreateAddressBalanceCommandHandler : IRequestHandler<CreateAddressB
         }
 
         // Follow through and upsert the address balance
-        return await _mediator.Send(new MakeAddressBalanceCommand(addressBalance, token.Address, request.Block), cancellationToken);
+        return await _mediator.Send(new MakeAddressBalanceCommand(addressBalance, token.Address, request.Block), CancellationToken.None);
     }
 }
