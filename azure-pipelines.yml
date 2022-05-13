@@ -78,18 +78,19 @@ stages:
               artifactName: "$(ARTIFACT_NAME)"
             displayName: Share
 
-  - stage: DEV
-    displayName: "Release to devnet (Azure)"
-    dependsOn: CI
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main')) # Don't run deployment for PRs against the branch.
-    jobs:
-      - template: ${{ variables.releaseTemplate }}
-        parameters:
-          environment: "dev"
+#  - stage: DEV
+#    displayName: "Release to devnet (Azure)"
+#    dependsOn: CI
+#    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main')) # Don't run deployment for PRs against the branch.
+#    jobs:
+#      - template: ${{ variables.releaseTemplate }}
+#        parameters:
+#          environment: "dev"
 
   - stage: TEST
     displayName: "Release to testnet (Azure)"
-    dependsOn: DEV
+    dependsOn: CI
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main')) # Don't run deployment for PRs against the branch.
     jobs:
       - template: ${{ variables.releaseTemplate }}
         parameters:
