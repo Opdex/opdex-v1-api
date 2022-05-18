@@ -11,6 +11,7 @@ using Opdex.Platform.Application.Exceptions;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 using System;
 using System.Collections.Generic;
@@ -42,6 +43,9 @@ public class CreateAddTokenCommandHandler : IRequestHandler<CreateAddTokenComman
         }
 
         var latestBlock = await _mediator.Send(new GetBestBlockReceiptQuery(), CancellationToken.None);
+
+        var contractDetails = await _mediator.Send(new CallCirrusGetContractCodeQuery(request.Token), CancellationToken.None);
+        if (contractDetails.Type is null) throw new InvalidDataException("token", "Invalid token address.");
 
         StandardTokenContractSummary summary;
         try

@@ -401,6 +401,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<CallCirrusGetVaultProposalVoteSummaryByProposalIdAndVoterQuery, VaultProposalVoteSummary>, CallCirrusGetVaultProposalVoteSummaryByProposalIdAndVoterQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetVaultProposalPledgeByProposalIdAndPledgerQuery, ulong>, CallCirrusGetVaultProposalPledgeByProposalIdAndPledgerQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetVaultContractCertificateSummaryByOwnerQuery, VaultContractCertificateSummary>, CallCirrusGetVaultContractCertificateSummaryByOwnerQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetContractCodeQuery, ContractCodeDto>, CallCirrusGetContractCodeQueryHandler>();
 
         // Commands
         services.AddTransient<IRequestHandler<CallCirrusCallSmartContractMethodCommand, Sha256>, CallCirrusCallSmartContractMethodCommandHandler>();

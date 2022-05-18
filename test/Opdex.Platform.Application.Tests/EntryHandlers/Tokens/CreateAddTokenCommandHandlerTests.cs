@@ -17,6 +17,8 @@ using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 using System;
 using System.Linq;
@@ -81,6 +83,8 @@ public class CreateAddTokenCommandHandlerTests
                                             Sha256.Parse("bec4d5e4f8d01f8741ccd268504d8b9a1086273ad2fca90eed55096da9bc910b"),
                                             Sha256.Parse("4d35ea70ce77c42fad7852045694c3c0ec30a7aa069e9cec769f344f14d3d9f9"),
                                             Sha256.Parse("ad0bea2255c37ec43daa5446f2599b9f23bd36ec79ab52c2323470d0e08b718d"), Enumerable.Empty<Sha256>());
+        var contractCodeDto = new ContractCodeDto { Type = "StandardToken256" };
+        _mockMediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetContractCodeQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(contractCodeDto);
         _mockMediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync((Token)null);
         _mockMediator.Setup(callTo => callTo.Send(It.IsAny<GetBestBlockReceiptQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockReceipt);
 
@@ -107,6 +111,8 @@ public class CreateAddTokenCommandHandlerTests
             Sha256.Parse("bec4d5e4f8d01f8741ccd268504d8b9a1086273ad2fca90eed55096da9bc910b"),
             Sha256.Parse("4d35ea70ce77c42fad7852045694c3c0ec30a7aa069e9cec769f344f14d3d9f9"),
             Sha256.Parse("ad0bea2255c37ec43daa5446f2599b9f23bd36ec79ab52c2323470d0e08b718d"), Enumerable.Empty<Sha256>());
+        var contractCodeDto = new ContractCodeDto { Type = "StandardToken256" };
+        _mockMediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetContractCodeQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(contractCodeDto);
         var tokenSummary = new StandardTokenContractSummary(blockReceipt.Height);
         tokenSummary.SetBaseProperties("Bitcoin (Wrapped)", "xBTC", 8);
         tokenSummary.SetTotalSupply(2100000000000000);
@@ -141,6 +147,8 @@ public class CreateAddTokenCommandHandlerTests
             Sha256.Parse("bec4d5e4f8d01f8741ccd268504d8b9a1086273ad2fca90eed55096da9bc910b"),
             Sha256.Parse("4d35ea70ce77c42fad7852045694c3c0ec30a7aa069e9cec769f344f14d3d9f9"),
             Sha256.Parse("ad0bea2255c37ec43daa5446f2599b9f23bd36ec79ab52c2323470d0e08b718d"), Enumerable.Empty<Sha256>());
+        var contractCodeDto = new ContractCodeDto { Type = "StandardToken256" };
+        _mockMediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetContractCodeQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(contractCodeDto);
         var tokenSummary = new StandardTokenContractSummary(blockReceipt.Height);
         tokenSummary.SetBaseProperties("Native", "NTV", 8);
         tokenSummary.SetTotalSupply(UInt256.Parse("100000000000000000"));        _mockMediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync((Token)null);
@@ -177,6 +185,8 @@ public class CreateAddTokenCommandHandlerTests
             Sha256.Parse("bec4d5e4f8d01f8741ccd268504d8b9a1086273ad2fca90eed55096da9bc910b"),
             Sha256.Parse("4d35ea70ce77c42fad7852045694c3c0ec30a7aa069e9cec769f344f14d3d9f9"),
             Sha256.Parse("ad0bea2255c37ec43daa5446f2599b9f23bd36ec79ab52c2323470d0e08b718d"), Enumerable.Empty<Sha256>());
+        var contractCodeDto = new ContractCodeDto { Type = "StandardToken256" };
+        _mockMediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetContractCodeQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(contractCodeDto);
         var tokenSummary = new StandardTokenContractSummary(blockReceipt.Height);
         tokenSummary.SetBaseProperties("ChainLink (InterFlux)", "iLINK", 18);
         tokenSummary.SetTotalSupply(UInt256.Parse("1000000000000000000000000000"));
@@ -217,6 +227,8 @@ public class CreateAddTokenCommandHandlerTests
             Sha256.Parse("bec4d5e4f8d01f8741ccd268504d8b9a1086273ad2fca90eed55096da9bc910b"),
             Sha256.Parse("4d35ea70ce77c42fad7852045694c3c0ec30a7aa069e9cec769f344f14d3d9f9"),
             Sha256.Parse("ad0bea2255c37ec43daa5446f2599b9f23bd36ec79ab52c2323470d0e08b718d"), Enumerable.Empty<Sha256>());
+        var contractCodeDto = new ContractCodeDto { Type = "StandardToken256" };
+        _mockMediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetContractCodeQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(contractCodeDto);
         var tokenSummary = new StandardTokenContractSummary(blockReceipt.Height);
         tokenSummary.SetBaseProperties("ChainLink (InterFlux)", "iLINK", 18);
         tokenSummary.SetTotalSupply(UInt256.Parse("1000000000000000000000000000"));
@@ -258,6 +270,8 @@ public class CreateAddTokenCommandHandlerTests
             Sha256.Parse("bec4d5e4f8d01f8741ccd268504d8b9a1086273ad2fca90eed55096da9bc910b"),
             Sha256.Parse("4d35ea70ce77c42fad7852045694c3c0ec30a7aa069e9cec769f344f14d3d9f9"),
             Sha256.Parse("ad0bea2255c37ec43daa5446f2599b9f23bd36ec79ab52c2323470d0e08b718d"), Enumerable.Empty<Sha256>());
+        var contractCodeDto = new ContractCodeDto { Type = "StandardToken256" };
+        _mockMediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetContractCodeQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(contractCodeDto);
         var tokenSummary = new StandardTokenContractSummary(blockReceipt.Height);
         tokenSummary.SetBaseProperties("ChainLink (InterFlux)", "iLINK", 18);
         tokenSummary.SetTotalSupply(UInt256.Parse("1000000000000000000000000000"));
@@ -294,6 +308,27 @@ public class CreateAddTokenCommandHandlerTests
     }
 
     [Fact]
+    public async Task Handle_CallCirrusGetContractCodeQuery_ThrowInvalidDataException()
+    {
+        // Arrange
+        var blockReceipt = new BlockReceipt(Sha256.Parse("59218de9ed9bc1df4400fdf4b968ec6ca42baccbdb7f25c923345ba84d5eb5b3"), 5000, DateTime.Now, DateTime.Now,
+                                            Sha256.Parse("bec4d5e4f8d01f8741ccd268504d8b9a1086273ad2fca90eed55096da9bc910b"),
+                                            Sha256.Parse("4d35ea70ce77c42fad7852045694c3c0ec30a7aa069e9cec769f344f14d3d9f9"),
+                                            Sha256.Parse("ad0bea2255c37ec43daa5446f2599b9f23bd36ec79ab52c2323470d0e08b718d"), Enumerable.Empty<Sha256>());
+        _mockMediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetContractCodeQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new ContractCodeDto());
+        _mockMediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync((Token)null);
+        _mockMediator.Setup(callTo => callTo.Send(It.IsAny<GetBestBlockReceiptQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockReceipt);
+
+        // Act
+        Task Act() => _handler.Handle(new CreateAddTokenCommand("PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV"), CancellationToken.None);
+
+        // Assert
+        var exception = await Assert.ThrowsAsync<InvalidDataException>(Act);
+        exception.PropertyName.Should().Be("token");
+        exception.Message.Should().Be("Invalid token address.");
+    }
+
+    [Fact]
     public async Task Handle_CallCirrusGetStandardTokenContractSummaryQueryFails_ThrowInvalidDataException()
     {
         // Arrange
@@ -301,6 +336,8 @@ public class CreateAddTokenCommandHandlerTests
                                             Sha256.Parse("bec4d5e4f8d01f8741ccd268504d8b9a1086273ad2fca90eed55096da9bc910b"),
                                             Sha256.Parse("4d35ea70ce77c42fad7852045694c3c0ec30a7aa069e9cec769f344f14d3d9f9"),
                                             Sha256.Parse("ad0bea2255c37ec43daa5446f2599b9f23bd36ec79ab52c2323470d0e08b718d"), Enumerable.Empty<Sha256>());
+        var contractCodeDto = new ContractCodeDto { Type = "StandardToken256" };
+        _mockMediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetContractCodeQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(contractCodeDto);
         _mockMediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync((Token)null);
         _mockMediator.Setup(callTo => callTo.Send(It.IsAny<GetBestBlockReceiptQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockReceipt);
         _mockMediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetStandardTokenContractSummaryQuery>(), It.IsAny<CancellationToken>()))
@@ -324,6 +361,8 @@ public class CreateAddTokenCommandHandlerTests
                                             Sha256.Parse("bec4d5e4f8d01f8741ccd268504d8b9a1086273ad2fca90eed55096da9bc910b"),
                                             Sha256.Parse("4d35ea70ce77c42fad7852045694c3c0ec30a7aa069e9cec769f344f14d3d9f9"),
                                             Sha256.Parse("ad0bea2255c37ec43daa5446f2599b9f23bd36ec79ab52c2323470d0e08b718d"), Enumerable.Empty<Sha256>());
+        var contractCodeDto = new ContractCodeDto { Type = "StandardToken256" };
+        _mockMediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetContractCodeQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(contractCodeDto);
         var tokenSummary = new StandardTokenContractSummary(blockReceipt.Height);
         tokenSummary.SetBaseProperties("Bitcoin (Wrapped)", "xBTC", 8);
         tokenSummary.SetTotalSupply(2100000000000000);
@@ -353,6 +392,8 @@ public class CreateAddTokenCommandHandlerTests
                                             Sha256.Parse("bec4d5e4f8d01f8741ccd268504d8b9a1086273ad2fca90eed55096da9bc910b"),
                                             Sha256.Parse("4d35ea70ce77c42fad7852045694c3c0ec30a7aa069e9cec769f344f14d3d9f9"),
                                             Sha256.Parse("ad0bea2255c37ec43daa5446f2599b9f23bd36ec79ab52c2323470d0e08b718d"), Enumerable.Empty<Sha256>());
+        var contractCodeDto = new ContractCodeDto { Type = "StandardToken256" };
+        _mockMediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetContractCodeQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(contractCodeDto);
         var tokenSummary = new StandardTokenContractSummary(blockReceipt.Height);
         tokenSummary.SetBaseProperties("Bitcoin (Wrapped)", "xBTC", 8);
         tokenSummary.SetTotalSupply(2100000000000000);
