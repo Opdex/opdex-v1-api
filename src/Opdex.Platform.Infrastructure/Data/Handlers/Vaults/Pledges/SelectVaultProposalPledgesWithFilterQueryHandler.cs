@@ -91,7 +91,7 @@ public class SelectVaultProposalPledgesWithFilterQueryHandler : IRequestHandler<
             // going backward in descending order, use greater than
             if (request.Cursor.PagingDirection == PagingDirection.Backward && request.Cursor.SortDirection == SortDirectionType.DESC) sortOperator = ">";
 
-            whereFilterBuilder.Append($" WHERE {nameof(VaultProposalPledgeEntity.Id)} {sortOperator} @{nameof(SqlParams.PledgeId)}");
+            whereFilterBuilder.Append($" WHERE p.{nameof(VaultProposalPledgeEntity.Id)} {sortOperator} @{nameof(SqlParams.PledgeId)}");
         }
 
         whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
